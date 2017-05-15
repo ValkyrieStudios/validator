@@ -1,0 +1,23 @@
+{
+  "name": "@valkyriestudios/validator",
+  "version": "0.0.0",
+  "description": "Configurable validator component for the Valkyrie Core",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "postversion": "git push --follow-tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/valkyrie_core/validator.git"
+  },
+  "author": "Valkyrie Studios <contact@valkyriestudios.be>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/valkyrie_core/validator/issues"
+  },
+  "homepage": "https://gitlab.com/valkyrie_core/validator#README",
+  "dependencies": {
+    "@valkyriestudios/core-utils": "^1.4.1"
+  }
+}
