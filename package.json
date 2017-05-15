@@ -1,6 +1,6 @@
 {
   "name": "@valkyriestudios/validator",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Configurable validator component for the Valkyrie Core",
   "main": "index.js",
   "scripts": {
