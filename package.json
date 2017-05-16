@@ -18,6 +18,6 @@
   },
   "homepage": "https://gitlab.com/valkyrie_core/validator#README",
   "dependencies": {
-    "@valkyriestudios/core-utils": "^1.4.1"
+    "@valkyriestudios/utils": "^1.5.0"
   }
 }

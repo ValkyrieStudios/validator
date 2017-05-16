@@ -1,7 +1,7 @@
-import {isObject} from '@valkyriestudios/core-utils/object';
-import {deepGet, deepSet, deepFreeze} from '@valkyriestudios/core-utils/deep';
-import {isString} from '@valkyriestudios/core-utils/string';
-import {isArray} from '@valkyriestudios/core-utils/array';
+import {isObject} from '@valkyriestudios/utils/object';
+import {deepGet, deepSet, deepFreeze} from '@valkyriestudios/utils/deep';
+import {isString} from '@valkyriestudios/utils/string';
+import {isArray} from '@valkyriestudios/utils/array';
 
 import vAlphaNumSpaces  from './functions/vAlphaNumSpaces';
 import vArray           from './functions/vArray';

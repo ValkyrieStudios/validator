@@ -1,6 +1,6 @@
-import {isNumber} from '@valkyriestudios/core-utils/number';
-import {isString} from '@valkyriestudios/core-utils/string';
-import {isArray}  from '@valkyriestudios/core-utils/array';
+import {isNumber} from '@valkyriestudios/utils/number';
+import {isString} from '@valkyriestudios/utils/string';
+import {isArray}  from '@valkyriestudios/utils/array';
 
 export default function vMin (val, minimum) {
     if (!val || !minimum) {
