@@ -1,4 +1,4 @@
-image: node:7.6.0
+image: node:8.2.1
 
 cache:
   paths:
@@ -18,7 +18,7 @@ test:
 
 publish:
   stage: deploy
-  only: 
+  only:
     - tags
   script:
     - echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}'>.npmrc

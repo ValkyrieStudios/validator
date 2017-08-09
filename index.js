@@ -56,14 +56,18 @@ export default class Validator {
 
         const parsed_rules = deepFreeze(Object.keys(rules).reduce(parse, Object.create(null)));
 
+        //  Set is_valid as a property on the validator, this will reflect the validity even if evaluation
+        //  results are not caught
+        this.is_valid = false;
+
         //  Set the parsed rules as a get property on our validation instance
-        Object.defineProperty(this, '$$validationrules', {
+        Object.defineProperty(this, 'rules', {
             get : () => parsed_rules,
         });
     }
 
     validate (data) {
-        const keys = Object.keys(this.$$validationrules);
+        const keys = Object.keys(this.rules);
         const evaluation = {
             is_valid : true,
             errors : Object.create(null),
@@ -76,7 +80,7 @@ export default class Validator {
         }
 
         const run = (key) => {
-            const cursor = deepGet(this.$$validationrules, key);
+            const cursor = deepGet(this.rules, key);
 
             //  Recursively validate
             if (isObject(cursor) && !isArray(cursor)) {
@@ -104,11 +108,14 @@ export default class Validator {
             }
         }
 
-        //  Prep the evaluation for the keys in the validationrules
+        //  Prep the evaluation for the keys in the rules
         keys.forEach((key) => {
             deepSet(evaluation.errors, key, Object.create(null));
             run(key);
         });
+
+        //  Set is_valid based on this evaluation
+        this.is_valid = evaluation.is_valid;
 
         return deepFreeze(evaluation);
     }
