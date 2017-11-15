@@ -19,5 +19,18 @@
   "homepage": "https://gitlab.com/valkyrie_core/validator#README",
   "dependencies": {
     "@valkyriestudios/utils": "latest"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-plugin-check-es2015-constants": "^6.22.0",
+    "babel-plugin-transform-member-expression-literals": "^6.8.5",
+    "babel-plugin-transform-minify-booleans": "^6.8.3",
+    "babel-plugin-transform-property-literals": "^6.8.5",
+    "babel-plugin-transform-remove-console": "^6.8.5",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-replace": "^0.6.1"
   }
 }
