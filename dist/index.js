@@ -50,6 +50,10 @@ var _vSize = require('./functions/vSize');
 
 var _vSize2 = _interopRequireDefault(_vSize);
 
+var _vEqualTo = require('./functions/vEqualTo');
+
+var _vEqualTo2 = _interopRequireDefault(_vEqualTo);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -65,7 +69,8 @@ var _validateFn = Object.freeze({
     max: _vMax2.default,
     min: _vMin2.default,
     required: _vRequired2.default,
-    size: _vSize2.default
+    size: _vSize2.default,
+    equal_to: _vEqualTo2.default
 });
 
 var Validator = function () {
@@ -87,6 +92,21 @@ var Validator = function () {
                     var params = rule_string.split(':');
                     var type = params.shift();
 
+                    //  Parse parameters into callback functions
+                    params = params.reduce(function (acc, param) {
+                        if (/^\<([A-z]|[0-9]|\_|\.)+\>$/g.test(param)) {
+                            param = param.substr(1, param.length - 2);
+                            acc.push(function (data) {
+                                return (0, _deep.deepGet)(data, param);
+                            });
+                        } else {
+                            acc.push(function () {
+                                return param;
+                            });
+                        }
+                        return acc;
+                    }, []);
+
                     rule_acc.push({
                         type: type,
                         params: params
@@ -100,8 +120,8 @@ var Validator = function () {
 
         var parsed_rules = (0, _deep.deepFreeze)(Object.keys(rules).reduce(parse, Object.create(null)));
 
-        //  Set is_valid as a property on the validator, this will reflect the validity even if evaluation
-        //  results are not caught
+        //  Set is_valid as a property on the validator, this will reflect the
+        //  validity even if evaluation results are not caught
         this.is_valid = !1;
 
         //  Set the parsed rules as a get property on our validation instance
@@ -147,8 +167,14 @@ var Validator = function () {
                 if ((0, _array.isArray)(cursor)) {
                     cursor.forEach(function (rule) {
                         var val = (0, _deep.deepGet)(data, key);
+                        //  Each param rule is a cb function that should be
+                        //  executed on each run, retrieving the value inside of the dataset
+                        var params = rule.params.reduce(function (acc, param_rule) {
+                            acc.push(param_rule(data));
+                            return acc;
+                        }, []);
 
-                        if (!_validateFn[rule.type].apply(_this, [val].concat(_toConsumableArray(rule.params)))) {
+                        if (!_validateFn[rule.type].apply(_this, [val].concat(_toConsumableArray(params)))) {
                             (0, _deep.deepGet)(evaluation.errors, key).push({
                                 msg: rule.type
                             });

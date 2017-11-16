@@ -12,6 +12,7 @@ import vMin             from './functions/vMin';
 import vNumber          from './functions/vNumber';
 import vRequired        from './functions/vRequired';
 import vSize            from './functions/vSize';
+import vEqualTo         from './functions/vEqualTo';
 
 const _validateFn = Object.freeze({
     alpha_num_spaces    : vAlphaNumSpaces,
@@ -23,6 +24,7 @@ const _validateFn = Object.freeze({
     min                 : vMin,
     required            : vRequired,
     size                : vSize,
+    equal_to            : vEqualTo,
 });
 
 export default class Validator {
@@ -40,8 +42,19 @@ export default class Validator {
 
             if (isString(cursor)) {
                 deepSet(acc, key, cursor.split('|').reduce((rule_acc, rule_string) => {
-                    const params = rule_string.split(':');
+                    let params = rule_string.split(':');
                     const type = params.shift();
+
+                    //  Parse parameters into callback functions
+                    params = params.reduce((acc, param) => {
+                        if (/^\<([A-z]|[0-9]|\_|\.)+\>$/g.test(param)) {
+                            param = param.substr(1, param.length - 2);
+                            acc.push((data) => deepGet(data, param));
+                        } else {
+                            acc.push(() => param);
+                        }
+                        return acc;
+                    }, []);
 
                     rule_acc.push({
                         type : type,
@@ -56,8 +69,8 @@ export default class Validator {
 
         const parsed_rules = deepFreeze(Object.keys(rules).reduce(parse, Object.create(null)));
 
-        //  Set is_valid as a property on the validator, this will reflect the validity even if evaluation
-        //  results are not caught
+        //  Set is_valid as a property on the validator, this will reflect the
+        //  validity even if evaluation results are not caught
         this.is_valid = false;
 
         //  Set the parsed rules as a get property on our validation instance
@@ -97,8 +110,14 @@ export default class Validator {
             if (isArray(cursor)) {
                 cursor.forEach((rule) => {
                     const val = deepGet(data, key);
+                    //  Each param rule is a cb function that should be
+                    //  executed on each run, retrieving the value inside of the dataset
+                    const params = rule.params.reduce((acc, param_rule) => {
+                        acc.push(param_rule(data));
+                        return acc;
+                    }, []);
 
-                    if (!_validateFn[rule.type].apply(this, [val, ...rule.params])) {
+                    if (!_validateFn[rule.type].apply(this, [val, ...params])) {
                         deepGet(evaluation.errors, key).push({
                             msg: rule.type,
                         });
