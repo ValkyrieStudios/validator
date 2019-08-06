@@ -1,45 +1,66 @@
-import {isObject} from '@valkyriestudios/utils/object';
-import {deepGet, deepSet, deepFreeze} from '@valkyriestudios/utils/deep';
-import {isString} from '@valkyriestudios/utils/string';
-import {isArray} from '@valkyriestudios/utils/array';
+import {isObject}           from '@valkyriestudios/utils/object';
+import {deepGet, deepSet }  from '@valkyriestudios/utils/deep';
+import {isString}           from '@valkyriestudios/utils/string';
+import {isArray}            from '@valkyriestudios/utils/array';
 
-import vAlphaNumSpaces  from './functions/vAlphaNumSpaces';
-import vArray           from './functions/vArray';
-import vBoolean         from './functions/vBoolean';
-import vEmail           from './functions/vEmail';
-import vMax             from './functions/vMax';
-import vMin             from './functions/vMin';
-import vNumber          from './functions/vNumber';
-import vRequired        from './functions/vRequired';
-import vSize            from './functions/vSize';
-import vEqualTo         from './functions/vEqualTo';
+import vAlphaNumSpaces      from './functions/vAlphaNumSpaces';
+import vArray               from './functions/vArray';
+import vBetween             from './functions/vBetween';
+import vBoolean             from './functions/vBoolean';
+import vDate                from './functions/vDate';
+import vDateWithFormat      from './functions/vDateWithFormat';
+import vEmail               from './functions/vEmail';
+import vEqualTo             from './functions/vEqualTo';
+import vGreaterThan         from './functions/vGreaterThan';
+import vGreaterThanOrEqual  from './functions/vGreaterThanOrEqual';
+import vIn                  from './functions/vIn';
+import vLessThan            from './functions/vLessThan';
+import vLessThanOrEqual     from './functions/vLessThanOrEqual';
+import vMax                 from './functions/vMax';
+import vMin                 from './functions/vMin';
+import vNumber              from './functions/vNumber';
+import vRequired            from './functions/vRequired';
+import vSize                from './functions/vSize';
+import vString              from './functions/vString';
 
-const _validateFn = Object.freeze({
-    alpha_num_spaces    : vAlphaNumSpaces,
-    array               : vArray,
-    boolean             : vBoolean,
-    email               : vEmail,
-    number              : vNumber,
-    max                 : vMax,
-    min                 : vMin,
-    required            : vRequired,
-    size                : vSize,
-    equal_to            : vEqualTo,
-});
+const _validateFn = {
+    alpha_num_spaces        : vAlphaNumSpaces,
+    array                   : vArray,
+    between                 : vBetween,             //  TODO
+    boolean                 : vBoolean,
+    date                    : vDate,                //  TODO
+    date_with_format        : vDateWithFormat,      //  TODO
+    email                   : vEmail,
+    equal_to                : vEqualTo,
+    greater_than            : vGreaterThan,         //  TODO
+    greater_than_or_equal   : vGreaterThanOrEqual,  //  TODO
+    in                      : vIn,                  //  TODO
+    less_than               : vLessThan,            //  TODO
+    less_than_or_equal      : vLessThanOrEqual,     //  TODO
+    max                     : vMax,
+    min                     : vMin,
+    number                  : vNumber,
+    required                : vRequired,
+    size                    : vSize,
+    string                  : vString,
+};
 
 export default class Validator {
 
-    constructor (rules) {
+    constructor (rules = undefined) {
+        //  Check for rules
+        if (rules === undefined || !isObject(rules) || isArray(rules)) {
+            throw new TypeError('Please provide an object to define the rules of this validator');
+        }
+
         //  Recursively parse our validation rules, to allow for deeply nested validation to be done
         function parse (acc, key) {
             const cursor = deepGet(rules, key);
 
-            if (isObject(cursor)) {
-                Object.keys(cursor)
-                    .map((cursor_key) => `${key}.${cursor_key}`)
-                    .reduce(parse, acc);
-            }
+            //  If the cursor is an object, go deeper into the object
+            if (isObject(cursor)) Object.keys(cursor).map(cursor_key => `${key}.${cursor_key}`).reduce(parse, acc);
 
+            //  If the cursor is a string, we've hit a rule
             if (isString(cursor)) {
                 deepSet(acc, key, cursor.split('|').reduce((rule_acc, rule_string) => {
                     let params = rule_string.split(':');
@@ -56,86 +77,93 @@ export default class Validator {
                         return acc;
                     }, []);
 
-                    rule_acc.push({
-                        type : type,
-                        params : params
-                    });
+                    rule_acc.push({ type, params });
                     return rule_acc;
                 }, []));
+            } else {
+                //  Throw a type error if neither a string nor an object
+                throw new TypeError('The rule for a key needs to a string value');
             }
 
             return acc;
         }
 
-        const parsed_rules = deepFreeze(Object.keys(rules).reduce(parse, Object.create(null)));
+        const parsed_rules = Object.keys(rules).reduce(parse, Object.create(null));
 
         //  Set is_valid as a property on the validator, this will reflect the
         //  validity even if evaluation results are not caught
-        this.is_valid = false;
+        this.evaluation = Object.seal({ is_valid: false, errors: {} });
 
         //  Set the parsed rules as a get property on our validation instance
-        Object.defineProperty(this, 'rules', {
-            get : () => parsed_rules,
-        });
+        Object.defineProperty(this, 'rules', { get : () => parsed_rules });
+    }
+
+    get is_valid () {
+        return this.evaluation.is_valid;
+    }
+
+    get errors () {
+        return this.evaluation.errors;
     }
 
     validate (data) {
         const keys = Object.keys(this.rules);
-        const evaluation = {
-            is_valid : true,
-            errors : Object.create(null),
-        };
 
-        //  No data passed ? Check if rules were set up
+        //  Reset evaluation
+        this.evaluation.is_valid = true;
+        this.evaluation.errors = Object.create(null);
+
+        //  No data passed? Check if rules were set up
         if (!data) {
-            evaluation.is_valid = !!(keys.length === 0);
-            return deepFreeze(evaluation);
+            this.evaluation.is_valid = !!(keys.length === 0);
+        } else {
+            const run = (key) => {
+                const cursor = deepGet(this.rules, key);
+
+                //  Recursively validate
+                if (isObject(cursor) && !isArray(cursor)) {
+                    return Object.keys(cursor).map((cursor_key) => {
+                        cursor_key = `${key}.${cursor_key}`;
+                        deepSet(this.evaluation.errors, cursor_key, []);
+                        return cursor_key;
+                    }).forEach(run);
+                } else {
+                    deepSet(this.evaluation.errors, key, []);
+                }
+
+                //  Validate array of rules for this property
+                if (isArray(cursor)) {
+                    cursor.forEach((rule) => {
+                        const val = deepGet(data, key);
+
+                        //  Each param rule is a cb function that should be executed on each run, retrieving
+                        //  the value inside of the dataset
+                        const params = rule.params.reduce((acc, param_rule) => {
+                            acc.push(param_rule(data));
+                            return acc;
+                        }, []);
+
+                        if (!_validateFn[rule.type].apply(this, [val, ...params])) {
+                            deepGet(this.evaluation.errors, key).push({
+                                msg: rule.type,
+                            });
+                            this.evaluation.is_valid = false;
+                        }
+                    });
+                }
+            };
+
+            //  Prep the evaluation for the keys in the rules
+            keys.forEach((key) => {
+                deepSet(this.evaluation.errors, key, Object.create(null));
+                run(key);
+            });
         }
 
-        const run = (key) => {
-            const cursor = deepGet(this.rules, key);
+        return Object.assign({}, this.evaluation);
+    }
 
-            //  Recursively validate
-            if (isObject(cursor) && !isArray(cursor)) {
-                return Object.keys(cursor).map((cursor_key) => {
-                    cursor_key = `${key}.${cursor_key}`;
-                    deepSet(evaluation.errors, cursor_key, []);
-                    return cursor_key;
-                }).forEach(run);
-            } else {
-                deepSet(evaluation.errors, key, []);
-            }
-
-            //  Validate array of rules for this property
-            if (isArray(cursor)) {
-                cursor.forEach((rule) => {
-                    const val = deepGet(data, key);
-                    //  Each param rule is a cb function that should be
-                    //  executed on each run, retrieving the value inside of the dataset
-                    const params = rule.params.reduce((acc, param_rule) => {
-                        acc.push(param_rule(data));
-                        return acc;
-                    }, []);
-
-                    if (!_validateFn[rule.type].apply(this, [val, ...params])) {
-                        deepGet(evaluation.errors, key).push({
-                            msg: rule.type,
-                        });
-                        evaluation.is_valid = false;
-                    }
-                });
-            }
-        }
-
-        //  Prep the evaluation for the keys in the rules
-        keys.forEach((key) => {
-            deepSet(evaluation.errors, key, Object.create(null));
-            run(key);
-        });
-
-        //  Set is_valid based on this evaluation
-        this.is_valid = evaluation.is_valid;
-
-        return deepFreeze(evaluation);
+    static extend (name, fn) {
+        //  TODO
     }
 }
