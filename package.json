@@ -1,7 +1,7 @@
 {
   "name": "@valkyriestudios/validator",
   "version": "1.2.0",
-  "description": "A configurable javascript validator",
+  "description": "A lightweight configurable javascript validator",
   "main": "index.js",
   "author": {
     "name": "Peter Vermeulen",
@@ -40,11 +40,11 @@
     "gulp": "^4.0.0",
     "gulp-babel": "^8.0.0",
     "jasmine-core": "^3.3.0",
-    "karma": "^3.1.1",
-    "karma-chrome-launcher": "^2.2.0",
+    "karma": "^4.2.0",
+    "karma-chrome-launcher": "^3.0.0",
     "karma-jasmine": "^2.0.1",
     "karma-spec-reporter": "0.0.32",
-    "karma-webpack": "^3.0.5",
+    "karma-webpack": "^4.0.2",
     "puppeteer": "^1.10.0",
     "webpack": "^4.25.1"
   }
