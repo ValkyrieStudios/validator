@@ -8,7 +8,7 @@ import vArray               from './functions/vArray';
 import vBetween             from './functions/vBetween';
 import vBoolean             from './functions/vBoolean';
 import vDate                from './functions/vDate';
-import vDateWithFormat      from './functions/vDateWithFormat';
+import vDateFormat          from './functions/vDateFormat';
 import vEmail               from './functions/vEmail';
 import vEqualTo             from './functions/vEqualTo';
 import vGreaterThan         from './functions/vGreaterThan';
@@ -29,7 +29,7 @@ const _validateFn = {
     between                 : vBetween,             //  TODO
     boolean                 : vBoolean,
     date                    : vDate,                //  TODO
-    date_with_format        : vDateWithFormat,      //  TODO
+    date_format             : vDateFormat,          //  TODO
     email                   : vEmail,
     equal_to                : vEqualTo,
     greater_than            : vGreaterThan,         //  TODO
