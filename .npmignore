@@ -2,3 +2,4 @@
 .eslintrc
 src/
 gulpfile.js
+yarn.lock
