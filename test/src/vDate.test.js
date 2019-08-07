@@ -1,6 +1,5 @@
 'use strict';
 
-import vDate        from '../../src/functions/vDate';
 import Validator    from '../../src/index';
 
 describe("[FN] vDate", () => {
@@ -16,6 +15,8 @@ describe("[FN] vDate", () => {
         i : [],
         j : '',
         k : new String('Foo'),
+        l : new Array(),
+        n : Object.create(null),
     };
 
     it ('should validate a date correctly', () => {
@@ -29,7 +30,7 @@ describe("[FN] vDate", () => {
         expect(evaluation.errors.g).toEqual([]);
     });
 
-    it ('should not validate other types as valid booleans', () => {
+    it ('should not validate other types as valid dates', () => {
         const validator = new Validator({
             a : 'date',
             b : 'date',
@@ -42,6 +43,8 @@ describe("[FN] vDate", () => {
             i : 'date',
             j : 'date',
             k : 'date',
+            l : 'date',
+            n : 'date',
         });
 
         const evaluation = validator.validate(subject);
@@ -63,6 +66,8 @@ describe("[FN] vDate", () => {
             i : 'date',
             j : 'date',
             k : 'date',
+            l : 'date',
+            n : 'date',
         });
 
         const evaluation = validator.validate(subject);
@@ -79,6 +84,8 @@ describe("[FN] vDate", () => {
         expect(evaluation.errors.i).toEqual([{msg:'date'}]);
         expect(evaluation.errors.j).toEqual([{msg:'date'}]);
         expect(evaluation.errors.k).toEqual([{msg:'date'}]);
+        expect(evaluation.errors.l).toEqual([{msg:'date'}]);
+        expect(evaluation.errors.n).toEqual([{msg:'date'}]);
     });
 
 });

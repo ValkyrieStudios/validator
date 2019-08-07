@@ -1,6 +1,5 @@
 'use strict';
 
-import vString      from '../../src/functions/vString';
 import Validator    from '../../src/index';
 
 describe("[FN] vString", () => {
@@ -16,6 +15,8 @@ describe("[FN] vString", () => {
         i : [],
         j : '',
         k : new String('Foo'),
+        l : new Array(),
+        n : Object.create(null),
     };
 
     it ('should validate a string correctly', () => {
@@ -46,6 +47,8 @@ describe("[FN] vString", () => {
             i : 'string',
             j : 'string',
             k : 'string',
+            l : 'string',
+            n : 'string',
         });
 
         const evaluation = validator.validate(subject);
@@ -67,6 +70,8 @@ describe("[FN] vString", () => {
             i : 'string',
             j : 'string',
             k : 'string',
+            l : 'string',
+            n : 'string',
         });
 
         const evaluation = validator.validate(subject);
@@ -83,6 +88,8 @@ describe("[FN] vString", () => {
         expect(evaluation.errors.i).toEqual([{msg:'string'}]);
         expect(evaluation.errors.j).toEqual([]);
         expect(evaluation.errors.k).toEqual([]);
+        expect(evaluation.errors.l).toEqual([{msg:'string'}]);
+        expect(evaluation.errors.n).toEqual([{msg:'string'}]);
     });
 
 });

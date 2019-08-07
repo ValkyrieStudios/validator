@@ -1,6 +1,5 @@
 'use strict';
 
-import vNumber      from '../../src/functions/vNumber';
 import Validator    from '../../src/index';
 
 describe("[FN] vBoolean", () => {
@@ -16,6 +15,8 @@ describe("[FN] vBoolean", () => {
         i : [],
         j : '',
         k : new String('Foo'),
+        l : new Array(),
+        n : Object.create(null),
     };
 
     it ('should validate a boolean correctly', () => {
@@ -44,6 +45,8 @@ describe("[FN] vBoolean", () => {
             i : 'boolean',
             j : 'boolean',
             k : 'boolean',
+            l : 'boolean',
+            n : 'boolean',
         });
 
         const evaluation = validator.validate(subject);
@@ -65,6 +68,8 @@ describe("[FN] vBoolean", () => {
             i : 'boolean',
             j : 'boolean',
             k : 'boolean',
+            l : 'boolean',
+            n : 'boolean',
         });
 
         const evaluation = validator.validate(subject);
@@ -81,6 +86,8 @@ describe("[FN] vBoolean", () => {
         expect(evaluation.errors.i).toEqual([{msg:'boolean'}]);
         expect(evaluation.errors.j).toEqual([{msg:'boolean'}]);
         expect(evaluation.errors.k).toEqual([{msg:'boolean'}]);
+        expect(evaluation.errors.l).toEqual([{msg:'boolean'}]);
+        expect(evaluation.errors.n).toEqual([{msg:'boolean'}]);
     });
 
 });

@@ -1,6 +1,5 @@
 'use strict';
 
-import vNumber      from '../../src/functions/vNumber';
 import Validator    from '../../src/index';
 
 describe("[FN] vNumber", () => {
@@ -16,6 +15,8 @@ describe("[FN] vNumber", () => {
         i : [],
         j : '',
         k : new String('Foo'),
+        l : new Array(),
+        n : Object.create(null),
     };
 
     it ('should validate a number correctly', () => {
@@ -44,6 +45,8 @@ describe("[FN] vNumber", () => {
             i : 'number',
             j : 'number',
             k : 'number',
+            l : 'number',
+            n : 'number',
         });
 
         const evaluation = validator.validate(subject);
@@ -65,6 +68,8 @@ describe("[FN] vNumber", () => {
             i : 'number',
             j : 'number',
             k : 'number',
+            l : 'number',
+            n : 'number',
         });
 
         const evaluation = validator.validate(subject);
@@ -81,6 +86,8 @@ describe("[FN] vNumber", () => {
         expect(evaluation.errors.i).toEqual([{msg:'number'}]);
         expect(evaluation.errors.j).toEqual([{msg:'number'}]);
         expect(evaluation.errors.k).toEqual([{msg:'number'}]);
+        expect(evaluation.errors.l).toEqual([{msg:'number'}]);
+        expect(evaluation.errors.n).toEqual([{msg:'number'}]);
     });
 
 });
