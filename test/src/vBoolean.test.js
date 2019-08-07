@@ -2,7 +2,7 @@
 
 import Validator    from '../../src/index';
 
-describe("[FN] vBoolean", () => {
+describe("[PRIMITIVE] vBoolean", () => {
     const subject = {
         a : 100,
         b : 200,

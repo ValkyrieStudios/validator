@@ -3,7 +3,7 @@
 import vString      from '../../src/functions/vString';
 import Validator    from '../../src/index';
 
-describe("[FN] vArray", () => {
+describe("[PRIMITIVE] vArray", () => {
     const subject = {
         a : 100,
         b : 200,
