@@ -1,3 +1,5 @@
+'use strict';
+
 import {isBoolean} from '@valkyriestudios/utils/boolean';
 
 export default function vBoolean (val, equals = null) {

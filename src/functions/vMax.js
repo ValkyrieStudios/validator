@@ -1,3 +1,5 @@
+'use strict';
+
 import {isNumber} from '@valkyriestudios/utils/number';
 import {isString} from '@valkyriestudios/utils/string';
 import {isArray} from '@valkyriestudios/utils/array';
