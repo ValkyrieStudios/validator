@@ -19,6 +19,7 @@ import vLessThanOrEqual     from './functions/vLessThanOrEqual';
 import vMax                 from './functions/vMax';
 import vMin                 from './functions/vMin';
 import vNumber              from './functions/vNumber';
+import vObject              from './functions/vObject';
 import vRequired            from './functions/vRequired';
 import vSize                from './functions/vSize';
 import vString              from './functions/vString';
@@ -40,6 +41,7 @@ const _validateFn = {
     max                     : vMax,
     min                     : vMin,
     number                  : vNumber,
+    object                  : vObject,
     required                : vRequired,
     size                    : vSize,
     string                  : vString,
