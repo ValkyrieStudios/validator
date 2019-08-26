@@ -1,7 +1,9 @@
 'use strict';
 
+import { isString } from '@valkyriestudios/utils/string';
+
 export default function vAlphaNumSpaces (val) {
-    return val
-        ? /^([a-z0-9\s])+$/igm.test(val)
-        : false;
+    if (!isString(val)) return false;
+
+    return val ? /^[a-zA-Z0-9 ]*$/ig.test(val) : false;
 }
