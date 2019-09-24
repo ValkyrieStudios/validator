@@ -1,9 +1,8 @@
 'use strict';
 
-import vString      from '../../src/functions/vString';
 import Validator    from '../../src/index';
 
-describe("[PRIMITIVE] vArray", () => {
+describe("vArray", () => {
     const subject = {
         a : 100,
         b : 200,

@@ -1,50 +1,54 @@
-import {isObject}           from '@valkyriestudios/utils/object';
-import {deepGet, deepSet }  from '@valkyriestudios/utils/deep';
-import {isString}           from '@valkyriestudios/utils/string';
-import {isArray}            from '@valkyriestudios/utils/array';
+'use strict'
 
-import vAlphaNumSpaces      from './functions/vAlphaNumSpaces';
-import vArray               from './functions/vArray';
-import vBetween             from './functions/vBetween';
-import vBoolean             from './functions/vBoolean';
-import vDate                from './functions/vDate';
-import vDateFormat          from './functions/vDateFormat';
-import vEmail               from './functions/vEmail';
-import vEqualTo             from './functions/vEqualTo';
-import vGreaterThan         from './functions/vGreaterThan';
-import vGreaterThanOrEqual  from './functions/vGreaterThanOrEqual';
-import vIn                  from './functions/vIn';
-import vLessThan            from './functions/vLessThan';
-import vLessThanOrEqual     from './functions/vLessThanOrEqual';
-import vMax                 from './functions/vMax';
-import vMin                 from './functions/vMin';
-import vNumber              from './functions/vNumber';
-import vObject              from './functions/vObject';
-import vRequired            from './functions/vRequired';
-import vSize                from './functions/vSize';
-import vString              from './functions/vString';
+import {isObject}               from '@valkyriestudios/utils/object';
+import {deepGet, deepSet }      from '@valkyriestudios/utils/deep';
+import {isString}               from '@valkyriestudios/utils/string';
+import {isArray}                from '@valkyriestudios/utils/array';
+
+import vAlphaNumSpaces          from './functions/vAlphaNumSpaces';
+import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline';
+import vArray                   from './functions/vArray';
+import vBetween                 from './functions/vBetween';
+import vBoolean                 from './functions/vBoolean';
+import vDate                    from './functions/vDate';
+import vDateFormat              from './functions/vDateFormat';
+import vEmail                   from './functions/vEmail';
+import vEqualTo                 from './functions/vEqualTo';
+import vGreaterThan             from './functions/vGreaterThan';
+import vGreaterThanOrEqual      from './functions/vGreaterThanOrEqual';
+import vIn                      from './functions/vIn';
+import vLessThan                from './functions/vLessThan';
+import vLessThanOrEqual         from './functions/vLessThanOrEqual';
+import vMax                     from './functions/vMax';
+import vMin                     from './functions/vMin';
+import vNumber                  from './functions/vNumber';
+import vObject                  from './functions/vObject';
+import vRequired                from './functions/vRequired';
+import vSize                    from './functions/vSize';
+import vString                  from './functions/vString';
 
 const _validateFn = {
-    alpha_num_spaces        : vAlphaNumSpaces,
-    array                   : vArray,
-    between                 : vBetween,             //  TODO
-    boolean                 : vBoolean,
-    date                    : vDate,                //  TODO
-    date_format             : vDateFormat,          //  TODO
-    email                   : vEmail,
-    equal_to                : vEqualTo,
-    greater_than            : vGreaterThan,         //  TODO
-    greater_than_or_equal   : vGreaterThanOrEqual,  //  TODO
-    in                      : vIn,                  //  TODO
-    less_than               : vLessThan,            //  TODO
-    less_than_or_equal      : vLessThanOrEqual,     //  TODO
-    max                     : vMax,
-    min                     : vMin,
-    number                  : vNumber,
-    object                  : vObject,
-    required                : vRequired,
-    size                    : vSize,
-    string                  : vString,
+    alpha_num_spaces            : vAlphaNumSpaces,          //  TESTED
+    alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline, //  TESTED
+    array                       : vArray,                   //  TESTED
+    between                     : vBetween,             //  TODO
+    boolean                     : vBoolean,                 //  TESTED
+    date                        : vDate,                    //  TESTED
+    date_format                 : vDateFormat,          //  TODO
+    email                       : vEmail,
+    equal_to                    : vEqualTo,
+    greater_than                : vGreaterThan,         //  TODO
+    greater_than_or_equal       : vGreaterThanOrEqual,  //  TODO
+    in                          : vIn,                  //  TODO
+    less_than                   : vLessThan,            //  TODO
+    less_than_or_equal          : vLessThanOrEqual,     //  TODO
+    max                         : vMax,
+    min                         : vMin,
+    number                      : vNumber,                  //  TESTED
+    object                      : vObject,                  //  TESTED
+    required                    : vRequired,
+    size                        : vSize,
+    string                      : vString,                  //  TESTED
 };
 
 export default class Validator {
@@ -166,6 +170,6 @@ export default class Validator {
     }
 
     static extend (name, fn) {
-        //  TODO
+        //  TODO : Extend Logic
     }
 }
