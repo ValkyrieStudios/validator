@@ -17,6 +17,7 @@ import vEqualTo                 from './functions/vEqualTo';
 import vGreaterThan             from './functions/vGreaterThan';
 import vGreaterThanOrEqual      from './functions/vGreaterThanOrEqual';
 import vIn                      from './functions/vIn';
+import vInteger                 from './functions/vInteger';
 import vLessThan                from './functions/vLessThan';
 import vLessThanOrEqual         from './functions/vLessThanOrEqual';
 import vMax                     from './functions/vMax';
@@ -28,27 +29,28 @@ import vSize                    from './functions/vSize';
 import vString                  from './functions/vString';
 
 const _validateFn = {
-    alpha_num_spaces            : vAlphaNumSpaces,          //  TESTED
-    alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline, //  TESTED
-    array                       : vArray,                   //  TESTED
-    between                     : vBetween,             //  TODO
-    boolean                     : vBoolean,                 //  TESTED
-    date                        : vDate,                    //  TESTED
-    date_format                 : vDateFormat,          //  TODO
+    alpha_num_spaces            : vAlphaNumSpaces,
+    alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
+    array                       : vArray,
+    between                     : vBetween,
+    boolean                     : vBoolean,
+    date                        : vDate,
+    date_format                 : vDateFormat,
     email                       : vEmail,
     equal_to                    : vEqualTo,
-    greater_than                : vGreaterThan,         //  TODO
-    greater_than_or_equal       : vGreaterThanOrEqual,  //  TODO
-    in                          : vIn,                  //  TODO
-    less_than                   : vLessThan,            //  TODO
-    less_than_or_equal          : vLessThanOrEqual,     //  TODO
+    greater_than                : vGreaterThan,
+    greater_than_or_equal       : vGreaterThanOrEqual,
+    in                          : vIn,
+    integer                     : vInteger,
+    less_than                   : vLessThan,
+    less_than_or_equal          : vLessThanOrEqual,
     max                         : vMax,
     min                         : vMin,
-    number                      : vNumber,                  //  TESTED
-    object                      : vObject,                  //  TESTED
+    number                      : vNumber,
+    object                      : vObject,
     required                    : vRequired,
     size                        : vSize,
-    string                      : vString,                  //  TESTED
+    string                      : vString,
 };
 
 export default class Validator {

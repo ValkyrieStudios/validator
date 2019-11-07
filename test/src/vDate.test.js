@@ -1,6 +1,6 @@
 'use strict';
 
-import Validator    from '../../src/index';
+import Validator from '../../src/index';
 
 describe("vDate", () => {
     const subject = {
