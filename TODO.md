@@ -1,7 +1,6 @@
 # Rules
 
 - vBetween
-- vGreaterThanOrEqual
 - vIn
 - vLessThan
 - vLessThanOrEqual
@@ -11,7 +10,6 @@
 
 - vBetween
 - vEqualTo
-- vGreaterThanOrEqual
 - vIn
 - vLessThan
 - vLessThanOrEqual
