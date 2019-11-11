@@ -68,7 +68,10 @@ export default class Validator {
 
             //  If the cursor is a string, we've hit a rule
             if (isString(cursor)) {
-                deepSet(acc, key, cursor.split('|').reduce((rule_acc, rule_string) => {
+                //  Get sometimes
+                const sometimes = !!(cursor.substr(0, 1) === '?');
+
+                deepSet(acc, key, (sometimes ? cursor.substr(1) : cursor).split('|').reduce((rule_acc, rule_string) => {
                     let params = rule_string.split(':');
                     const type = params.shift();
 
@@ -83,7 +86,7 @@ export default class Validator {
                         return acc;
                     }, []);
 
-                    rule_acc.push({ type, params });
+                    rule_acc.push({ type, params, sometimes });
                     return rule_acc;
                 }, []));
             } else {
@@ -141,6 +144,9 @@ export default class Validator {
                 if (isArray(cursor)) {
                     cursor.forEach((rule) => {
                         const val = deepGet(data, key);
+
+                        //  If no value is provided and rule.sometimes is set to true, simply return
+                        if (!val && rule.sometimes) return;
 
                         //  Each param rule is a cb function that should be executed on each run, retrieving
                         //  the value inside of the dataset

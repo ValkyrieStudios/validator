@@ -15,7 +15,8 @@ describe("Validator - Core", () => {
         k : new String('Foo'),
     };
 
-    //  Validate that it has all the necessary functions
+//  Validate that it has all the necessary functions
+
     it ('should instantiate to a validator object', () => {
         const validator = new Validator({});
 
@@ -48,7 +49,8 @@ describe("Validator - Core", () => {
         expect(Validator.errors).toEqual(undefined);
     });
 
-    //  Validate that the returned value from validate(...) has the correct format
+//  Validate that the returned value from validate(...) has the correct format
+
     it ('should return a properly formatted evaluation object', () => {
         const evaluation = (new Validator({ a : 'number' })).validate(subject);
 
@@ -96,7 +98,8 @@ describe("Validator - Core", () => {
         expect(evaluation.errors.a[0].params).toEqual(['150']);
     });
 
-    //  Validate functionality
+//  Validate functionality
+
     it ('should remember the validity of the last validation run', () => {
         const validator = new Validator({ a : 'number' });
 
@@ -145,6 +148,26 @@ describe("Validator - Core", () => {
         expect(function () {
             const v = new Validator({ foo: 5, a : { b: 'string', params: [] }});
         }).toThrowError(TypeError);
+    });
+
+    it ('sometimes flag(?) should validate correctly if set and no value is passed', () => {
+        const evaluation = (new Validator({ a : '?number' })).validate({});
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.a).toEqual([]);
+    });
+
+    it ('sometimes flag (?) should not interfere with other validation rules', () => {
+        const evaluation = (new Validator({
+            a : '?number',
+            b : 'number|less_than:20',
+        })).validate({});
+
+        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.errors.b).toEqual([
+            {msg: 'number', params: []},
+            {msg: 'less_than', params: ['20']}
+        ]);
     });
 
 })
