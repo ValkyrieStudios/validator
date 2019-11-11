@@ -2,7 +2,6 @@
 
 - vBetween
 - vIn
-- vLessThan
 - vLessThanOrEqual
 - vRequired
 
@@ -11,7 +10,6 @@
 - vBetween
 - vEqualTo
 - vIn
-- vLessThan
 - vLessThanOrEqual
 - vMax
 - vRequired
