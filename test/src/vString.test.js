@@ -20,11 +20,11 @@ describe("vString", () => {
     };
 
     it ('should validate a string correctly', () => {
-        const validator = new Validator({
-            c : 'string',
-            j : 'string',
-            k : 'string',
-        });
+        const keys = ['c', 'j', 'k'];
+        const validator = new Validator([...keys].reduce((acc, key) => {
+            acc[key] = 'string';
+            return acc;
+        }, {}));
 
         const evaluation = validator.validate(subject);
 
@@ -35,21 +35,11 @@ describe("vString", () => {
     });
 
     it ('should not validate other types as valid strings', () => {
-        const validator = new Validator({
-            a : 'string',
-            b : 'string',
-            c : 'string',
-            d : 'string',
-            e : 'string',
-            f : 'string',
-            g : 'string',
-            h : 'string',
-            i : 'string',
-            j : 'string',
-            k : 'string',
-            l : 'string',
-            n : 'string',
-        });
+        const keys = Object.keys(subject);
+        const validator = new Validator([...keys].reduce((acc, key) => {
+            acc[key] = 'string';
+            return acc;
+        }, {}));
 
         const evaluation = validator.validate(subject);
 
@@ -58,38 +48,20 @@ describe("vString", () => {
     });
 
     it ('should return a correct error message when invalid', () => {
-        const validator = new Validator({
-            a : 'string',
-            b : 'string',
-            c : 'string',
-            d : 'string',
-            e : 'string',
-            f : 'string',
-            g : 'string',
-            h : 'string',
-            i : 'string',
-            j : 'string',
-            k : 'string',
-            l : 'string',
-            n : 'string',
-        });
+        const valid_keys    = ['c', 'j', 'k'];
+        const invalid_keys  = ['a', 'b', 'd', 'e', 'f', 'g', 'h', 'i', 'l', 'n'];
+
+        const validator = new Validator([...valid_keys, ...invalid_keys].reduce((acc, key) => {
+            acc[key] = 'string';
+            return acc;
+        }, {}));
 
         const evaluation = validator.validate(subject);
 
         expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg:'string'}]);
-        expect(evaluation.errors.b).toEqual([{msg:'string'}]);
-        expect(evaluation.errors.c).toEqual([]);
-        expect(evaluation.errors.d).toEqual([{msg:'string'}]);
-        expect(evaluation.errors.e).toEqual([{msg:'string'}]);
-        expect(evaluation.errors.f).toEqual([{msg:'string'}]);
-        expect(evaluation.errors.g).toEqual([{msg:'string'}]);
-        expect(evaluation.errors.h).toEqual([{msg:'string'}]);
-        expect(evaluation.errors.i).toEqual([{msg:'string'}]);
-        expect(evaluation.errors.j).toEqual([]);
-        expect(evaluation.errors.k).toEqual([]);
-        expect(evaluation.errors.l).toEqual([{msg:'string'}]);
-        expect(evaluation.errors.n).toEqual([{msg:'string'}]);
+
+        valid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([]));
+        invalid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([{msg:'string', params: []}]));
     });
 
 });

@@ -33,21 +33,11 @@ describe("vObject", () => {
     });
 
     it ('should not validate other types as valid objects', () => {
-        const validator = new Validator({
-            a : 'object',
-            b : 'object',
-            c : 'object',
-            d : 'object',
-            e : 'object',
-            f : 'object',
-            g : 'object',
-            h : 'object',
-            i : 'object',
-            j : 'object',
-            k : 'object',
-            l : 'object',
-            n : 'object',
-        });
+        const keys = Object.keys(subject);
+        const validator = new Validator([...keys].reduce((acc, key) => {
+            acc[key] = 'object';
+            return acc;
+        }, {}));
 
         const evaluation = validator.validate(subject);
 
@@ -56,38 +46,19 @@ describe("vObject", () => {
     });
 
     it ('should return a correct error message when invalid', () => {
-        const validator = new Validator({
-            a : 'object',
-            b : 'object',
-            c : 'object',
-            d : 'object',
-            e : 'object',
-            f : 'object',
-            g : 'object',
-            h : 'object',
-            i : 'object',
-            j : 'object',
-            k : 'object',
-            l : 'object',
-            n : 'object',
-        });
+        const valid_keys    = ['h', 'n'];
+        const invalid_keys  = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'i', 'j', 'k', 'l'];
+
+        const validator = new Validator([...valid_keys, ...invalid_keys].reduce((acc, key) => {
+            acc[key] = 'object';
+            return acc;
+        }, {}));
+
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.b).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.c).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.d).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.e).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.f).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.g).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.h).toEqual([]);
-        expect(evaluation.errors.i).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.j).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.k).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.l).toEqual([{msg:'object'}]);
-        expect(evaluation.errors.n).toEqual([]);
+        valid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([]));
+        invalid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([{msg:'object', params: []}]));
     });
 
 });

@@ -86,7 +86,7 @@ describe("vAlphaNumSpaces", () => {
         const evaluation = validator.validate(subject);
 
         expect(evaluation.is_valid).toEqual(false);
-        keys.forEach((val) => expect(evaluation.errors[val]).toEqual([{msg: 'alpha_num_spaces'}]));
+        keys.forEach((val) => expect(evaluation.errors[val]).toEqual([{msg: 'alpha_num_spaces', params: []}]));
     });
 
     it ('should not validate other non-alphanumeric strings as valid alphanumeric strings', () => {
@@ -103,7 +103,7 @@ describe("vAlphaNumSpaces", () => {
         const evaluation = validator.validate(subject);
 
         expect(evaluation.is_valid).toEqual(false);
-        keys.forEach((val) => expect(evaluation.errors[val]).toEqual([{msg: 'alpha_num_spaces'}]));
+        keys.forEach((val) => expect(evaluation.errors[val]).toEqual([{msg: 'alpha_num_spaces', params: []}]));
     });
 
 });

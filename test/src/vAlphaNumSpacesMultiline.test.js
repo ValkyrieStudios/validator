@@ -87,7 +87,7 @@ describe("vAlphaNumSpacesMultiline", () => {
         const evaluation = validator.validate(subject);
 
         expect(evaluation.is_valid).toEqual(false);
-        keys.forEach((val) => expect(evaluation.errors[val]).toEqual([{msg: 'alpha_num_spaces_multiline'}]));
+        keys.forEach((val) => expect(evaluation.errors[val]).toEqual([{msg: 'alpha_num_spaces_multiline', params: []}]));
     });
 
     it ('should not validate other non-alphanumeric strings as valid alphanumeric multiline strings', () => {
@@ -104,7 +104,7 @@ describe("vAlphaNumSpacesMultiline", () => {
         const evaluation = validator.validate(subject);
 
         expect(evaluation.is_valid).toEqual(false);
-        keys.forEach((val) => expect(evaluation.errors[val]).toEqual([{msg: 'alpha_num_spaces_multiline'}]));
+        keys.forEach((val) => expect(evaluation.errors[val]).toEqual([{msg: 'alpha_num_spaces_multiline', params: []}]));
     });
 
 });

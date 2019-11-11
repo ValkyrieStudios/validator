@@ -33,21 +33,11 @@ describe("vArray", () => {
     });
 
     it ('should not validate other types as valid arrays', () => {
-        const validator = new Validator({
-            a : 'array',
-            b : 'array',
-            c : 'array',
-            d : 'array',
-            e : 'array',
-            f : 'array',
-            g : 'array',
-            h : 'array',
-            i : 'array',
-            j : 'array',
-            k : 'array',
-            l : 'array',
-            n : 'array',
-        });
+        const keys = Object.keys(subject);
+        const validator = new Validator([...keys].reduce((acc, key) => {
+            acc[key] = 'array';
+            return acc;
+        }, {}));
 
         const evaluation = validator.validate(subject);
 
@@ -56,38 +46,20 @@ describe("vArray", () => {
     });
 
     it ('should return a correct error message when invalid', () => {
-        const validator = new Validator({
-            a : 'array',
-            b : 'array',
-            c : 'array',
-            d : 'array',
-            e : 'array',
-            f : 'array',
-            g : 'array',
-            h : 'array',
-            i : 'array',
-            j : 'array',
-            k : 'array',
-            l : 'array',
-            n : 'array',
-        });
+        const valid_keys    = ['i', 'l'];
+        const invalid_keys  = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'n'];
+
+        const validator = new Validator([...valid_keys, ...invalid_keys].reduce((acc, key) => {
+            acc[key] = 'array';
+            return acc;
+        }, {}));
 
         const evaluation = validator.validate(subject);
 
         expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg:'array'}]);
-        expect(evaluation.errors.b).toEqual([{msg:'array'}]);
-        expect(evaluation.errors.c).toEqual([{msg:'array'}]);
-        expect(evaluation.errors.d).toEqual([{msg:'array'}]);
-        expect(evaluation.errors.e).toEqual([{msg:'array'}]);
-        expect(evaluation.errors.f).toEqual([{msg:'array'}]);
-        expect(evaluation.errors.g).toEqual([{msg:'array'}]);
-        expect(evaluation.errors.h).toEqual([{msg:'array'}]);
-        expect(evaluation.errors.i).toEqual([]);
-        expect(evaluation.errors.j).toEqual([{msg:'array'}]);
-        expect(evaluation.errors.k).toEqual([{msg:'array'}]);
-        expect(evaluation.errors.l).toEqual([]);
-        expect(evaluation.errors.n).toEqual([{msg:'array'}]);
+
+        valid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([]));
+        invalid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([{msg:'array', params: []}]));
     });
 
 });

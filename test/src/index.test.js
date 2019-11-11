@@ -50,11 +50,7 @@ describe("Validator - Core", () => {
 
     //  Validate that the returned value from validate(...) has the correct format
     it ('should return a properly formatted evaluation object', () => {
-        const validator = new Validator({
-            a : 'number',
-        });
-
-        const evaluation = validator.validate(subject);
+        const evaluation = (new Validator({ a : 'number' })).validate(subject);
 
         //  Evaluate object
         expect(evaluation).toEqual(jasmine.any(Object));
@@ -69,6 +65,38 @@ describe("Validator - Core", () => {
         expect(evaluation.errors).toEqual(jasmine.any(Object));
     });
 
+    it ('should have errors where the object contains a msg and a params property', () => {
+        const evaluation = (new Validator({ c : 'number' })).validate(subject);
+
+        //  Evalute object
+        expect(evaluation.errors.c).toEqual(jasmine.any(Array));
+        expect(evaluation.errors.c[0]).toEqual(jasmine.any(Object));
+
+        //  Check for msg
+        expect(evaluation.errors.c[0].msg).toEqual(jasmine.any(String));
+        expect(evaluation.errors.c[0]).toEqual(jasmine.objectContaining({ msg: 'number' }));
+
+        //  Check for params
+        expect(evaluation.errors.c[0].params).toEqual(jasmine.any(Array));
+        expect(evaluation.errors.c[0]).toEqual(jasmine.objectContaining({ params: [] }));
+    });
+
+    it ('should have errors where the key is the rule that failed', () => {
+        const evaluation = (new Validator({ c : 'number' })).validate(subject);
+        expect(evaluation.errors.c[0].msg).toEqual('number');
+    });
+
+    it ('should have errors where the params object is empty if no param was passed', () => {
+        const evaluation = (new Validator({ c : 'number' })).validate(subject);
+        expect(evaluation.errors.c[0].params).toEqual([]);
+    });
+
+    it ('should have errors where the params object contains the passed param if passed', () => {
+        const evaluation = (new Validator({ a : 'greater_than:150' })).validate(subject);
+        expect(evaluation.errors.a[0].params).toEqual(['150']);
+    });
+
+    //  Validate functionality
     it ('should remember the validity of the last validation run', () => {
         const validator = new Validator({ a : 'number' });
 
@@ -76,7 +104,7 @@ describe("Validator - Core", () => {
 
         expect(validator.is_valid).toEqual(false);
         expect(validator.errors).toEqual(jasmine.any(Object));
-        expect(validator.errors.a).toEqual([{msg:'number'}]);
+        expect(validator.errors.a).toEqual([{msg:'number', params: []}]);
 
         validator.validate({ a: 10 });
 
@@ -111,11 +139,11 @@ describe("Validator - Core", () => {
         }).not.toThrowError(TypeError);
 
         expect(function () {
-            const v = new Validator({ foo: 'number', a : { b: 'string' }});
+            const v = new Validator({ foo: 'number', a : { b: 'string', params: [] }});
         }).toThrowError(TypeError);
 
         expect(function () {
-            const v = new Validator({ foo: 5, a : { b: 'string' }});
+            const v = new Validator({ foo: 5, a : { b: 'string', params: [] }});
         }).toThrowError(TypeError);
     });
 

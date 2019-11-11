@@ -33,21 +33,11 @@ describe("vBoolean", () => {
     });
 
     it ('should not validate other types as valid booleans', () => {
-        const validator = new Validator({
-            a : 'boolean',
-            b : 'boolean',
-            c : 'boolean',
-            d : 'boolean',
-            e : 'boolean',
-            f : 'boolean',
-            g : 'boolean',
-            h : 'boolean',
-            i : 'boolean',
-            j : 'boolean',
-            k : 'boolean',
-            l : 'boolean',
-            n : 'boolean',
-        });
+        const keys = Object.keys(subject);
+        const validator = new Validator([...keys].reduce((acc, key) => {
+            acc[key] = 'boolean';
+            return acc;
+        }, {}));
 
         const evaluation = validator.validate(subject);
 
@@ -56,38 +46,20 @@ describe("vBoolean", () => {
     });
 
     it ('should return a correct error message when invalid', () => {
-        const validator = new Validator({
-            a : 'boolean',
-            b : 'boolean',
-            c : 'boolean',
-            d : 'boolean',
-            e : 'boolean',
-            f : 'boolean',
-            g : 'boolean',
-            h : 'boolean',
-            i : 'boolean',
-            j : 'boolean',
-            k : 'boolean',
-            l : 'boolean',
-            n : 'boolean',
-        });
+        const valid_keys    = ['d', 'e'];
+        const invalid_keys  = ['a', 'b', 'c', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'n'];
+
+        const validator = new Validator([...valid_keys, ...invalid_keys].reduce((acc, key) => {
+            acc[key] = 'boolean';
+            return acc;
+        }, {}));
 
         const evaluation = validator.validate(subject);
 
         expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg:'boolean'}]);
-        expect(evaluation.errors.b).toEqual([{msg:'boolean'}]);
-        expect(evaluation.errors.c).toEqual([{msg:'boolean'}]);
-        expect(evaluation.errors.d).toEqual([]);
-        expect(evaluation.errors.e).toEqual([]);
-        expect(evaluation.errors.f).toEqual([{msg:'boolean'}]);
-        expect(evaluation.errors.g).toEqual([{msg:'boolean'}]);
-        expect(evaluation.errors.h).toEqual([{msg:'boolean'}]);
-        expect(evaluation.errors.i).toEqual([{msg:'boolean'}]);
-        expect(evaluation.errors.j).toEqual([{msg:'boolean'}]);
-        expect(evaluation.errors.k).toEqual([{msg:'boolean'}]);
-        expect(evaluation.errors.l).toEqual([{msg:'boolean'}]);
-        expect(evaluation.errors.n).toEqual([{msg:'boolean'}]);
+
+        valid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([]));
+        invalid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([{msg:'boolean', params: []}]));
     });
 
 });

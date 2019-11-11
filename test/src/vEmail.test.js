@@ -42,7 +42,7 @@ describe("vEmail", () => {
 
         expect(evaluation.is_valid).toEqual(false);
 
-        keys.forEach((key) => expect(evaluation.errors[key]).toEqual([{msg:'email'}]));
+        keys.forEach((key) => expect(evaluation.errors[key]).toEqual([{msg:'email', params: []}]));
     });
 
 //  Valid email tests

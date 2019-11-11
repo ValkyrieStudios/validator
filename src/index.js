@@ -152,6 +152,7 @@ export default class Validator {
                         if (!_validateFn[rule.type].apply(this, [val, ...params])) {
                             deepGet(this.evaluation.errors, key).push({
                                 msg: rule.type,
+                                params,
                             });
                             this.evaluation.is_valid = false;
                         }
