@@ -1,7 +1,6 @@
 # Rules
 
 - vBetween
-- vDateFormat
 - vGreaterThan
 - vGreaterThanOrEqual
 - vIn
@@ -12,7 +11,6 @@
 # Tests
 
 - vBetween
-- vDateFormat
 - vEqualTo
 - vGreaterThan
 - vGreaterThanOrEqual
