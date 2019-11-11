@@ -2,7 +2,6 @@
 
 - vBetween
 - vIn
-- vLessThanOrEqual
 - vRequired
 
 # Tests
@@ -10,7 +9,6 @@
 - vBetween
 - vEqualTo
 - vIn
-- vLessThanOrEqual
 - vMax
 - vRequired
 - vSize
