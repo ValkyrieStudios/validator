@@ -22,6 +22,13 @@ describe("vIn", () => {
         expect(evaluation.errors.b).toEqual([]);
     });
 
+    it ('should be invalid when no params are passed', () => {
+        const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({ a: 'hello' });
+
+        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.errors.a).toEqual([{msg: 'in', params: [undefined] }]);
+    });
+
     it ('should return a correct error message when invalid', () => {
         const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({ a: 'hello', meta: { params: ['foo', 'bar']} });
 
