@@ -2,6 +2,7 @@
 
 import { isNumber, isNumericalNaN } from '@valkyriestudios/utils/number';
 import { isString } from '@valkyriestudios/utils/string';
+import { isArray } from '@valkyriestudios/utils/array';
 
 export default function vBetween (val, param_before = undefined, param_after = undefined) {
     //  Convert param into float

@@ -1,7 +1,7 @@
 # Tests
 
 - vRequired
-- vSize
+- Validator Core : Complex configurations / mixing of rules and types
 
 # Functionality
 
