@@ -203,8 +203,7 @@ validate on length |
 | in | Validate that a provided value is in a set of values, this requires parameterization (see above) |
 | integer | Validate that a provided value is an integer, this will see NaN as invalid |
 | less_than | Validate that a provided value is less than a provided number, if passed a string or array this will validate on length |
-| less_than_or_equal | Validate that a provided value is less than or equal to a provided number, if passed a string or array this will validate on
-length |
+| less_than_or_equal | Validate that a provided value is less than or equal to a provided number, if passed a string or array this will validate on length |
 | max | Alias of less_than_or_equal |
 | min | Alias of greater_than_or_equal |
 | number | Validate that a provided value is a number, this will see NaN as invalid |
