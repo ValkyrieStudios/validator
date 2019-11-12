@@ -75,11 +75,18 @@ export default class Validator {
                     let params = rule_string.split(':');
                     const type = params.shift();
 
+                    //  Get parameters
+                    params = params.length > 0 ? params[0].split(',') : [];
+
                     //  Parse parameters into callback functions
                     params = params.reduce((acc, param) => {
                         if (/^\<([A-z]|[0-9]|\_|\.)+\>$/g.test(param)) {
                             param = param.substr(1, param.length - 2);
-                            acc.push((data) => deepGet(data, param));
+                            acc.push((data) => {
+                                try {
+                                    return deepGet(data, param);
+                                } catch (err) { return undefined; }
+                            });
                         } else {
                             acc.push(() => param);
                         }
@@ -155,7 +162,7 @@ export default class Validator {
                             return acc;
                         }, []);
 
-                        if (!_validateFn[rule.type].apply(this, [val, ...params])) {
+                        if (!_validateFn[rule.type].call(this, val, ...params)) {
                             deepGet(this.evaluation.errors, key).push({
                                 msg: rule.type,
                                 params,
@@ -177,6 +184,6 @@ export default class Validator {
     }
 
     static extend (name, fn) {
-        //  TODO : Extend Logic
+        Object.defineProperty(_validateFn, name, { get : () => fn });
     }
 }

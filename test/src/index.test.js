@@ -1,3 +1,5 @@
+'use strict';
+
 import Validator from '../../src/index';
 
 describe("Validator - Core", () => {
@@ -150,6 +152,8 @@ describe("Validator - Core", () => {
         }).toThrowError(TypeError);
     });
 
+//  Flag : Sometimes
+
     it ('sometimes flag(?) should validate correctly if set and no value is passed', () => {
         const evaluation = (new Validator({ a : '?number' })).validate({});
         expect(evaluation.is_valid).toEqual(true);
@@ -168,6 +172,71 @@ describe("Validator - Core", () => {
             {msg: 'number', params: []},
             {msg: 'less_than', params: ['20']}
         ]);
+    });
+
+//  Flag : Parameter
+
+    it ('parameter flag (<...>) should allow link to passed parameter', () => {
+        const evaluation = (new Validator({ a: 'equal_to:<foo>'})).validate({ a: 'hello', foo: 'hello' });
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.a).toEqual([]);
+    });
+
+    it ('parameter flag (<...>) should fail if parameter is not passed', () => {
+        const evaluation = (new Validator({ a: 'equal_to:<foo>'})).validate({ a: 'hello', foobar: 'hello' });
+        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.errors.a).toEqual([{msg:'equal_to', params: [undefined]}]);
+    });
+
+    it ('parameter flag (<...>) should allow multiple parameters inside the same ruleset', () => {
+        const evaluation = (new Validator({ a: 'between:<min>|<max>'})).validate({ a: 5, min: 3, max: 7 });
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.a).toEqual([]);
+    });
+
+    it ('parameter flag (<...>) should allow multiple parameters inside the same config', () => {
+        const evaluation = (new Validator({ a: 'in:<arr1>', b: 'in:<arr2>'})).validate({ a: 1, b: 2, arr1: [1, 3, 5], arr2: [2, 4, 6] });
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.errors.b).toEqual([]);
+    });
+
+//  Extend functionality
+
+    it ('extend functionality should work', () => {
+        Validator.extend('trick', function (val, p1) {
+            return p1 === 'treat' ? (val === 'trick') : (p1 === 'trick' ? val === 'treat' : false);
+        });
+
+        const evaluation = (new Validator({ a: 'trick:<b>' })).validate({ a: 'trick', b: 'treat' });
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.a).toEqual([]);
+    });
+
+    it ('extend functionality should work with multiple parameters', () => {
+        Validator.extend('sum', function (val, p1, p2) {
+            return val === (p1 + p2);
+        });
+
+        const evaluation = (new Validator({ a: 'sum:<b>,<c>' })).validate({ a: 4, b: 1, c: 3 });
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.a).toEqual([]);
+    });
+
+    it ('extend functionality should work across multiple instances', () => {
+        Validator.extend('double', function (val, p1, p2) {
+            return val === (p1 * 2);
+        });
+
+        //  Evaluation
+        const evaluation = (new Validator({ a: 'double:<b>' })).validate({ a: 4, b: 2 });
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.a).toEqual([]);
+
+        //  Second evaluation
+        const evaluation2 = (new Validator({ a: 'double:<b>' })).validate({ a: 4, b: 2 });
+        expect(evaluation2.is_valid).toEqual(true);
+        expect(evaluation2.errors.a).toEqual([]);
     });
 
 })
