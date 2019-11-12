@@ -1,19 +1,7 @@
 'use strict';
 
-import {isNumber} from '@valkyriestudios/utils/number';
-import {isString} from '@valkyriestudios/utils/string';
-import {isArray} from '@valkyriestudios/utils/array';
+import vLessThanOrEqual from './vLessThanOrEqual';
 
-export default function vMax (val, maximum) {
-    if (!val || !maximum) {
-        return false;
-    }
-
-    if (isNumber(val)) {
-        return (val <= maximum);
-    }
-
-    return (isString(val) || isArray(val))
-        ? val.length <= maximum
-        : false;
+export default function vMax (val, maximum = undefined) {
+    return vLessThanOrEqual(val, maximum);
 }

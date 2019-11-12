@@ -1,6 +1,5 @@
 # Tests
 
-- vMax
 - vRequired
 - vSize
 
