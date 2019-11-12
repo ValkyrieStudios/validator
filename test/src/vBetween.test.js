@@ -29,6 +29,11 @@ describe("vBetween", () => {
         expect(evaluation.is_valid).toEqual(true);
     });
 
+    it ('should allow an array as an acceptable value', () => {
+        const evaluation = (new Validator({ a: 'between:5,10' })).validate({ a: ['foo', 'bar', 'bar', 'foo', 'hello', 'world'] });
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
     it ('should allow a numerical value as an acceptable value', () => {
         const evaluation = (new Validator({ a: 'between:10,20' })).validate({ a: 15 });
         expect(evaluation.is_valid).toEqual(true);
@@ -54,15 +59,15 @@ describe("vBetween", () => {
             f : new RegExp(),
             g : new Date(),
             h : {},
-            i : [],
+            i : ['hey', 'hi', 'hello'],
             j : 'abc',
             k : new String('Foo'),
-            l : new Array(),
+            l : new Array(3),
             m : Object.create(null),
         };
 
-        const valid_keys    = ['a', 'b', 'c', 'j', 'k'];
-        const invalid_keys  = ['d', 'e', 'f', 'g', 'h', 'i', 'l', 'm'];
+        const valid_keys    = ['a', 'b', 'c', 'j', 'k', 'i', 'l'];
+        const invalid_keys  = ['d', 'e', 'f', 'g', 'h', 'm'];
         const rules         = [...valid_keys, ...invalid_keys].reduce((acc, key) => {
             acc[key] = 'between:2,300';
             return acc;
@@ -100,6 +105,33 @@ describe("vBetween", () => {
 
     it ('should validate a string whose length is larger than the end parameter as invalid', () => {
         const evaluation = (new Validator({ a: 'between:2,5' })).validate({ a: 'Frantic' });
+        expect(evaluation.is_valid).toEqual(false);
+    });
+
+//  Array
+
+    it ('should validate an array whose length is between the provided parameters as valid', () => {
+        const evaluation = (new Validator({ a: 'between:2,6' })).validate({ a: ['The', 'fox', 'leaped'] });
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
+    it ('should validate an array whose length is equal to the start parameter as invalid', () => {
+        const evaluation = (new Validator({ a: 'between:3,10' })).validate({ a: ['The', 'Fox', 'leaped'] });
+        expect(evaluation.is_valid).toEqual(false);
+    });
+
+    it ('should validate an array whose length is equal to the end parameter as invalid', () => {
+        const evaluation = (new Validator({ a: 'between:1,3' })).validate({ a: ['The', 'Fox', 'leaped'] });
+        expect(evaluation.is_valid).toEqual(false);
+    });
+
+    it ('should validate an array whose length is smaller than the start parameter as invalid', () => {
+        const evaluation = (new Validator({ a: 'between:10,20' })).validate({ a: ['Strong'] });
+        expect(evaluation.is_valid).toEqual(false);
+    });
+
+    it ('should validate a string whose length is larger than the end parameter as invalid', () => {
+        const evaluation = (new Validator({ a: 'between:2,5' })).validate({ a: ['The', 'fox', 'leaped', 'over', 'the', 'fence'] });
         expect(evaluation.is_valid).toEqual(false);
     });
 

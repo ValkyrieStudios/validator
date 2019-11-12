@@ -22,6 +22,11 @@ describe("vLessThanOrEqual", () => {
         expect(evaluation.is_valid).toEqual(true);
     });
 
+    it ('should allow an array as an acceptable value', () => {
+        const evaluation = (new Validator({ a: 'less_than_or_equal:5' })).validate({ a: ['foo', 'bar'] });
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
     it ('should allow a numerical value as an acceptable value', () => {
         const evaluation = (new Validator({ a: 'less_than_or_equal:10' })).validate({ a: 5 });
         expect(evaluation.is_valid).toEqual(true);
@@ -54,8 +59,8 @@ describe("vLessThanOrEqual", () => {
             m : Object.create(null),
         };
 
-        const valid_keys    = ['a', 'b', 'c', 'j', 'k'];
-        const invalid_keys  = ['d', 'e', 'f', 'g', 'h', 'i', 'l', 'm'];
+        const valid_keys    = ['a', 'b', 'c', 'j', 'k', 'i', 'l'];
+        const invalid_keys  = ['d', 'e', 'f', 'g', 'h', 'm'];
         const rules         = [...valid_keys, ...invalid_keys].reduce((acc, key) => {
             acc[key] = 'less_than_or_equal:250';
             return acc;
@@ -83,6 +88,23 @@ describe("vLessThanOrEqual", () => {
 
     it ('should validate a string whose length is larger than the provided parameter as invalid', () => {
         const evaluation = (new Validator({ a: 'less_than_or_equal:8' })).validate({ a: 'hello world' });
+        expect(evaluation.is_valid).toEqual(false);
+    });
+
+//  Array
+
+    it ('should validate an array whose length is smaller than the provided parameter as valid', () => {
+        const evaluation = (new Validator({ a: 'less_than_or_equal:10' })).validate({ a: [1,2,3] });
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
+    it ('should validate an array whose length is equal to the provided parameter as valid', () => {
+        const evaluation = (new Validator({ a: 'less_than_or_equal:6' })).validate({ a: [1,2,3,4,5,6] });
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
+    it ('should validate an array whose length is larger than the provided parameter as invalid', () => {
+        const evaluation = (new Validator({ a: 'less_than_or_equal:4' })).validate({ a: ['apple', 'fear', 'mango', 'grape', 'orange']});
         expect(evaluation.is_valid).toEqual(false);
     });
 

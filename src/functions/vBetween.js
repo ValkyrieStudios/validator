@@ -15,7 +15,7 @@ export default function vBetween (val, param_before = undefined, param_after = u
     if (!isNumber(check_before) || isNumericalNaN(check_before)) return false;
 
     //  Is value is string, use length for validation
-    if (isString(val)) return val.length > check_before && val.length < check_after;
+    if (isString(val) || isArray(val)) return val.length > check_before && val.length < check_after;
 
     //  If value is numerical, use primitive for validation
     if (isNumber(val) && !isNumericalNaN(val)) return val > check_before && val < check_after;

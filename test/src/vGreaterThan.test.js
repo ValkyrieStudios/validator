@@ -22,6 +22,11 @@ describe("vGreaterThan", () => {
         expect(evaluation.is_valid).toEqual(true);
     });
 
+    it ('should allow an array as an acceptable value', () => {
+        const evaluation = (new Validator({ a: 'greater_than:5' })).validate({ a: ['foo', 'bar', 'bar', 'foo', 'hello', 'world'] });
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
     it ('should allow a numerical value as an acceptable value', () => {
         const evaluation = (new Validator({ a: 'greater_than:10' })).validate({ a: 15 });
         expect(evaluation.is_valid).toEqual(true);
@@ -47,15 +52,15 @@ describe("vGreaterThan", () => {
             f : new RegExp(),
             g : new Date(),
             h : {},
-            i : [],
+            i : ['this', 'rocks', 'sweet'],
             j : 'abc',
             k : new String('Foo'),
-            l : new Array(),
+            l : new Array(3),
             m : Object.create(null),
         };
 
-        const valid_keys    = ['a', 'b', 'c', 'j', 'k'];
-        const invalid_keys  = ['d', 'e', 'f', 'g', 'h', 'i', 'l', 'm'];
+        const valid_keys    = ['a', 'b', 'c', 'j', 'k', 'i', 'l'];
+        const invalid_keys  = ['d', 'e', 'f', 'g', 'h', 'm'];
         const rules         = [...valid_keys, ...invalid_keys].reduce((acc, key) => {
             acc[key] = 'greater_than:2';
             return acc;
@@ -83,6 +88,23 @@ describe("vGreaterThan", () => {
 
     it ('should validate a string whose length is smaller than the provided parameter as invalid', () => {
         const evaluation = (new Validator({ a: 'greater_than:8' })).validate({ a: 'Frantic' });
+        expect(evaluation.is_valid).toEqual(false);
+    });
+
+//  Array
+
+    it ('should validate an array whose length is greater than the provided parameter as valid', () => {
+        const evaluation = (new Validator({ a: 'greater_than:3' })).validate({ a: [1,2,3,4] });
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
+    it ('should validate an array whose length is equal to the provided parameter as invalid', () => {
+        const evaluation = (new Validator({ a: 'greater_than:3' })).validate({ a: ['hello', 'this', 'is'] });
+        expect(evaluation.is_valid).toEqual(false);
+    });
+
+    it ('should validate an array whose length is smaller than the provided parameter as invalid', () => {
+        const evaluation = (new Validator({ a: 'greater_than:3' })).validate({ a: ['hello', 'this'] });
         expect(evaluation.is_valid).toEqual(false);
     });
 
