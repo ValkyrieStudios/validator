@@ -66,11 +66,10 @@ export default class Validator {
             const cursor = deepGet(rules, key);
 
             //  If the cursor is an object, go deeper into the object
-            if (isObject(cursor)) Object.keys(cursor).map(cursor_key => `${key}.${cursor_key}`).reduce(parse, acc);
-
-            //  If the cursor is a string, we've hit a rule
-            if (isString(cursor)) {
-                //  Get sometimes
+            if (isObject(cursor)) {
+                Object.keys(cursor).map(cursor_key => `${key}.${cursor_key}`).reduce(parse, acc);
+            } else if (isString(cursor)) {
+                //  If the cursor is a string, we've hit a rule
                 const sometimes = !!(cursor.substr(0, 1) === '?');
 
                 deepSet(acc, key, (sometimes ? cursor.substr(1) : cursor).split('|').reduce((rule_acc, rule_string) => {

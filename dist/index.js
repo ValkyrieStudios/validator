@@ -113,12 +113,12 @@ function () {
     function parse(acc, key) {
       var cursor = (0, _deep.deepGet)(rules, key); //  If the cursor is an object, go deeper into the object
 
-      if ((0, _object.isObject)(cursor)) Object.keys(cursor).map(function (cursor_key) {
-        return "".concat(key, ".").concat(cursor_key);
-      }).reduce(parse, acc); //  If the cursor is a string, we've hit a rule
-
-      if ((0, _string.isString)(cursor)) {
-        //  Get sometimes
+      if ((0, _object.isObject)(cursor)) {
+        Object.keys(cursor).map(function (cursor_key) {
+          return "".concat(key, ".").concat(cursor_key);
+        }).reduce(parse, acc);
+      } else if ((0, _string.isString)(cursor)) {
+        //  If the cursor is a string, we've hit a rule
         var sometimes = !!(cursor.substr(0, 1) === '?');
         (0, _deep.deepSet)(acc, key, (sometimes ? cursor.substr(1) : cursor).split('|').reduce(function (rule_acc, rule_string) {
           var params = rule_string.split(':');

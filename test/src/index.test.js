@@ -300,4 +300,32 @@ describe("Validator - Core", () => {
         expect(evaluation.errors.gender).toEqual([{msg: 'in', params: [['m', 'f', 'o']]}]);
     });
 
+    it ('should be able to validate complex multidimensional objects [4]', () => {
+        const evaluation = (new Validator({
+            address: {
+                street: 'required|string|alpha_num_spaces',
+                nr: 'required|integer',
+                zip: 'required|integer|between:1000,9999',
+            },
+            contact: {
+                email: 'required|string|email',
+            }
+        })).validate({
+            address: {
+                street: 'First avenue',
+                nr: 50,
+                zip: 1500
+            },
+            contact: {
+                email: 'contact.valkyriestudios.be'
+            },
+        });
+
+        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.errors.address.street).toEqual([]);
+        expect(evaluation.errors.address.nr).toEqual([]);
+        expect(evaluation.errors.address.zip).toEqual([]);
+        expect(evaluation.errors.contact.email).toEqual([{msg: 'email', params: []}]);
+    });
+
 })
