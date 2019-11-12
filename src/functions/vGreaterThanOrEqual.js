@@ -3,7 +3,9 @@
 import { isNumber, isNumericalNaN } from '@valkyriestudios/utils/number';
 import { isString } from '@valkyriestudios/utils/string';
 
-export default function vGreaterThanOrEqual (val, param) {
+export default function vGreaterThanOrEqual (val, param = undefined) {
+    if (param === undefined) return false;
+
     //  Convert param into float
     let check = parseFloat(param);
 

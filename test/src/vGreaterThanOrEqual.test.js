@@ -4,6 +4,13 @@ import Validator from '../../src/index';
 
 describe("vGreaterThanOrEqual", () => {
 
+    it ('should be invalid when no params are passed', () => {
+        const evaluation = (new Validator({ a: 'greater_than_or_equal:<meta.params>' })).validate({ a: 10 });
+
+        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.errors.a).toEqual([{msg: 'greater_than_or_equal', params: [undefined] }]);
+    });
+
     it ('should return a correct error message when invalid', () => {
         const evaluation = (new Validator({ a: 'greater_than_or_equal:10' })).validate({ a: 5 });
         expect(evaluation.is_valid).toEqual(false);

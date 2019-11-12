@@ -3,7 +3,9 @@
 import { isNumber, isNumericalNaN } from '@valkyriestudios/utils/number';
 import { isString } from '@valkyriestudios/utils/string';
 
-export default function vLessThan (val, param) {
+export default function vLessThan (val, param = undefined) {
+    if (param === undefined) return false;
+
     //  Convert param into float
     let check = parseFloat(param);
 
