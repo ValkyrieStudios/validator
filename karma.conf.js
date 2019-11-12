@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = function(config) {
     config.set({
         basePath: './',
@@ -8,9 +10,23 @@ module.exports = function(config) {
         exclude: [],
         preprocessors: {
             'test/test_index.js': ['webpack'],
+            'src/**/*.js': ['coverage'],
         },
         webpack: {
             mode: 'development',
+            module: {
+                rules: [
+                    //  instrument only testing sources with Istanbul
+                    {
+                        test: /\.js$/,
+                        use: {
+                            loader: 'istanbul-instrumenter-loader',
+                            options: { esModules: true },
+                        },
+                        include: path.resolve('src/')
+                    }
+                ]
+            }
         },
         webpackMiddleware: {
             noInfo: true,
@@ -23,13 +39,16 @@ module.exports = function(config) {
                 random: false,
             },
         },
-        reporters: ['spec'],
+        reporters: ['spec', 'coverage'],
         port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
         autoWatch: true,
         browsers: ['ChromeHeadless'],
         singleRun: true,
+        coverageReporter: {
+            reporters: [{type: 'lcov'}],
+        },
         customLaunchers: {
             ChromeHeadless: {
                 base: 'Chrome',
