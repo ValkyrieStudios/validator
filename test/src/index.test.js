@@ -189,7 +189,7 @@ describe("Validator - Core", () => {
     });
 
     it ('parameter flag (<...>) should allow multiple parameters inside the same ruleset', () => {
-        const evaluation = (new Validator({ a: 'between:<min>|<max>'})).validate({ a: 5, min: 3, max: 7 });
+        const evaluation = (new Validator({ a: 'between:<min>,<max>'})).validate({ a: 5, min: 3, max: 7 });
         expect(evaluation.is_valid).toEqual(true);
         expect(evaluation.errors.a).toEqual([]);
     });

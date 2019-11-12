@@ -1,10 +1,5 @@
-# Rules
-
-- vBetween
-
 # Tests
 
-- vBetween
 - vMax
 - vRequired
 - vSize
