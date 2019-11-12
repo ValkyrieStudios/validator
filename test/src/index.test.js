@@ -239,4 +239,65 @@ describe("Validator - Core", () => {
         expect(evaluation2.errors.a).toEqual([]);
     });
 
+//  Complex validations
+
+    it ('should be able to validate complex objects [1]', () => {
+        const evaluation = (new Validator({
+            password: 'required|string|min:8',
+            password_confirmation: 'required|equal_to:<password>',
+        })).validate({
+            password: 'thisIsMy1Little!Secret',
+            password_confirmation: 'thisIsMy1Little!Secret',
+        });
+
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.password).toEqual([]);
+        expect(evaluation.errors.password_confirmation).toEqual([]);
+    });
+
+    it ('should be able to validate complex objects [2]', () => {
+        const evaluation = (new Validator({
+            first_name: 'required|string|alpha_num_spaces|min:2',
+            last_name: 'required|string|alpha_num_spaces|min:2',
+            age: '?required|integer|between:1,150',
+            gender: 'required|in:<meta.gender_options>',
+        })).validate({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            gender: 'm',
+            meta: {
+                gender_options: ['m','f','o'],
+            },
+        });
+
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.first_name).toEqual([]);
+        expect(evaluation.errors.last_name).toEqual([]);
+        expect(evaluation.errors.age).toEqual([]);
+        expect(evaluation.errors.gender).toEqual([]);
+    });
+
+    it ('should be able to validate complex objects [3]', () => {
+        const evaluation = (new Validator({
+            first_name: 'required|string|alpha_num_spaces|min:2',
+            last_name: 'required|string|alpha_num_spaces|min:2',
+            age: '?required|integer|between:1,150',
+            gender: 'required|in:<meta.gender_options>',
+        })).validate({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            gender: 'X',
+            age: {},
+            meta: {
+                gender_options: ['m','f','o'],
+            },
+        });
+
+        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.errors.first_name).toEqual([]);
+        expect(evaluation.errors.last_name).toEqual([]);
+        expect(evaluation.errors.age).toEqual([{msg: 'integer', params: []}, {msg: 'between', params: ['1', '150']}]);
+        expect(evaluation.errors.gender).toEqual([{msg: 'in', params: [['m', 'f', 'o']]}]);
+    });
+
 })
