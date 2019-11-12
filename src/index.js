@@ -51,6 +51,8 @@ const _validateFn = {
     string                      : vString,
 };
 
+let param_cache = {};
+
 export default class Validator {
 
     constructor (rules = undefined) {
@@ -83,6 +85,8 @@ export default class Validator {
                         if (/^\<([A-z]|[0-9]|\_|\.)+\>$/g.test(param)) {
                             param = param.substr(1, param.length - 2);
                             acc.push((data) => {
+                                if (Object.prototype.hasOwnProperty.call(param_cache, param)) return param_cache[param];
+
                                 try {
                                     return deepGet(data, param);
                                 } catch (err) { return undefined; }
@@ -124,6 +128,9 @@ export default class Validator {
 
     validate (data) {
         const keys = Object.keys(this.rules);
+
+        //  Reset param cache
+        param_cache = {};
 
         //  Reset evaluation
         this.evaluation.is_valid = true;
