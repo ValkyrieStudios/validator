@@ -18,7 +18,7 @@ export default function vEmail (val) {
     //  Validate domain part
     if (parts[1].length > 253) return false;
     if (/^(?:(?=[a-z0-9-]{1,63}\.)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?=[a-z0-9-]{1,63}\z)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/ig.test(parts[1]) !== false) return true;
-    if (/^\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(parts[1]) === false) return false;
+    if (/^\w+([\.-]?\w+)*(\.\w{2,5})+$/.test(parts[1]) === false) return false;
 
     return true;
 }

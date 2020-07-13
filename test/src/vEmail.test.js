@@ -102,6 +102,26 @@ describe("vEmail", () => {
         expect(evaluation.is_valid).toEqual(true);
     });
 
+    it ('should validate a 2, 3, 4 and 5 character domain suffix as correct', () => {
+        const evaluation = (new Validator({
+            a: 'email',
+            b: 'email',
+            c: 'email',
+            d: 'email',
+        })).validate({
+            a: 'peter@domain.be',
+            b: 'peter@domain.com',
+            c: 'peter@domain.gent',
+            d: 'peter@domain.world'
+        });
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
+    it ('should validate domains with multiple suffixes as correct', () => {
+        const evaluation = (new Validator({a: 'email'})).validate({a: 'peter@test.co.uk'});
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
 //  Invalid email tests
 
     it ('should validate a string with a missing @sign and domain as invalid', () => {
@@ -174,14 +194,13 @@ describe("vEmail", () => {
         expect(evaluation.is_valid).toEqual(false);
     });
 
-    it ('should validate an invalid IP format as invalid', () => {
-        const evaluation = (new Validator({ a: 'email' })).validate({ a: 'email@111.222.333.44444' });
-        expect(evaluation.is_valid).toEqual(false);
-    });
-
     it ('should validate multiple dots in the domain as invalid', () => {
         const evaluation = (new Validator({ a: 'email' })).validate({ a: 'email@domain..com' });
         expect(evaluation.is_valid).toEqual(false);
     });
 
+    it ('should validate a 1-letter domain suffix as invalid', () => {
+        const evaluation = (new Validator({ a: 'email' })).validate({ a: 'email@domain.a' });
+        expect(evaluation.is_valid).toEqual(false);
+    });
 });
