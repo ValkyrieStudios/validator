@@ -5,13 +5,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = vEmail;
 
-var _string = require("@valkyriestudios/utils/string");
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/string/is"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 //  We don't use a single regex for validation as there is no one single
 //  regex that works for all
 function vEmail(val) {
   if (!val) return false;
-  if (!(0, _string.isString)(val)) return false;
+  if (!(0, _is["default"])(val)) return false;
   var parts = val.split('@');
   if (parts.length !== 2) return false; //  Validate username part
 

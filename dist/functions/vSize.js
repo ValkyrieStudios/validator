@@ -5,11 +5,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = vSize;
 
-var _number = require("@valkyriestudios/utils/number");
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/number/is"));
 
-var _string = require("@valkyriestudios/utils/string");
+var _isNumericalNaN = _interopRequireDefault(require("@valkyriestudios/utils/number/isNumericalNaN"));
 
-var _array = require("@valkyriestudios/utils/array");
+var _is2 = _interopRequireDefault(require("@valkyriestudios/utils/string/is"));
+
+var _is3 = _interopRequireDefault(require("@valkyriestudios/utils/array/is"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function vSize(val) {
   var equals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
@@ -17,6 +21,6 @@ function vSize(val) {
 
   var check = parseFloat(equals); //  If equals is not numerical or nan, return false
 
-  if (!(0, _number.isNumber)(check) || (0, _number.isNumericalNaN)(check)) return false;
-  return (0, _string.isString)(val) || (0, _array.isArray)(val) ? val.length === check : false;
+  if (!(0, _is["default"])(check) || (0, _isNumericalNaN["default"])(check)) return false;
+  return (0, _is2["default"])(val) || (0, _is3["default"])(val) ? val.length === check : false;
 }

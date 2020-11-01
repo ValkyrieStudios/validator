@@ -5,8 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = vObject;
 
-var _object = require("@valkyriestudios/utils/object");
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/object/is"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function vObject(data) {
-  return (0, _object.isObject)(data);
+  return (0, _is["default"])(data);
 }

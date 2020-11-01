@@ -5,8 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = vDate;
 
-var _date = require("@valkyriestudios/utils/date");
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/date/is"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function vDate(data) {
-  return (0, _date.isDate)(data);
+  return (0, _is["default"])(data);
 }

@@ -1,8 +1,9 @@
 'use strict';
 
-import { isNumber, isNumericalNaN } from '@valkyriestudios/utils/number';
-import {isString} from '@valkyriestudios/utils/string';
-import {isArray} from '@valkyriestudios/utils/array';
+import isNumber         from '@valkyriestudios/utils/number/is';
+import isNumericalNaN   from '@valkyriestudios/utils/number/isNumericalNaN';
+import isString         from '@valkyriestudios/utils/string/is';
+import isArray          from '@valkyriestudios/utils/array/is';
 
 export default function vSize (val, equals = undefined) {
     if (!val || !equals) return false;

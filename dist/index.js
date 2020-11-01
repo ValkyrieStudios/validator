@@ -5,13 +5,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _object = require("@valkyriestudios/utils/object");
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/object/is"));
 
-var _deep = require("@valkyriestudios/utils/deep");
+var _get = _interopRequireDefault(require("@valkyriestudios/utils/deep/get"));
 
-var _string = require("@valkyriestudios/utils/string");
+var _set = _interopRequireDefault(require("@valkyriestudios/utils/deep/set"));
 
-var _array = require("@valkyriestudios/utils/array");
+var _is2 = _interopRequireDefault(require("@valkyriestudios/utils/string/is"));
+
+var _is3 = _interopRequireDefault(require("@valkyriestudios/utils/array/is"));
 
 var _vAlphaNumSpaces = _interopRequireDefault(require("./functions/vAlphaNumSpaces"));
 
@@ -105,22 +107,22 @@ function () {
     _classCallCheck(this, Validator);
 
     //  Check for rules
-    if (rules === undefined || !(0, _object.isObject)(rules) || (0, _array.isArray)(rules)) {
+    if (rules === undefined || !(0, _is["default"])(rules) || (0, _is3["default"])(rules)) {
       throw new TypeError('Please provide an object to define the rules of this validator');
     } //  Recursively parse our validation rules, to allow for deeply nested validation to be done
 
 
     function parse(acc, key) {
-      var cursor = (0, _deep.deepGet)(rules, key); //  If the cursor is an object, go deeper into the object
+      var cursor = (0, _get["default"])(rules, key); //  If the cursor is an object, go deeper into the object
 
-      if ((0, _object.isObject)(cursor)) {
+      if ((0, _is["default"])(cursor)) {
         Object.keys(cursor).map(function (cursor_key) {
           return "".concat(key, ".").concat(cursor_key);
         }).reduce(parse, acc);
-      } else if ((0, _string.isString)(cursor)) {
+      } else if ((0, _is2["default"])(cursor)) {
         //  If the cursor is a string, we've hit a rule
         var sometimes = !!(cursor.substr(0, 1) === '?');
-        (0, _deep.deepSet)(acc, key, (sometimes ? cursor.substr(1) : cursor).split('|').reduce(function (rule_acc, rule_string) {
+        (0, _set["default"])(acc, key, (sometimes ? cursor.substr(1) : cursor).split('|').reduce(function (rule_acc, rule_string) {
           var params = rule_string.split(':');
           var type = params.shift(); //  Get parameters
 
@@ -133,7 +135,7 @@ function () {
                 if (Object.prototype.hasOwnProperty.call(param_cache, param)) return param_cache[param];
 
                 try {
-                  return (0, _deep.deepGet)(data, param);
+                  return (0, _get["default"])(data, param);
                 } catch (err) {
                   return undefined;
                 }
@@ -192,24 +194,24 @@ function () {
         this.evaluation.is_valid = !!(keys.length === 0);
       } else {
         var run = function run(key) {
-          var cursor = (0, _deep.deepGet)(_this.rules, key); //  Recursively validate
+          var cursor = (0, _get["default"])(_this.rules, key); //  Recursively validate
 
-          if ((0, _object.isObject)(cursor) && !(0, _array.isArray)(cursor)) {
+          if ((0, _is["default"])(cursor) && !(0, _is3["default"])(cursor)) {
             return Object.keys(cursor).map(function (cursor_key) {
               cursor_key = "".concat(key, ".").concat(cursor_key);
-              (0, _deep.deepSet)(_this.evaluation.errors, cursor_key, []);
+              (0, _set["default"])(_this.evaluation.errors, cursor_key, []);
               return cursor_key;
             }).forEach(run);
           } else {
-            (0, _deep.deepSet)(_this.evaluation.errors, key, []);
+            (0, _set["default"])(_this.evaluation.errors, key, []);
           } //  Validate array of rules for this property
 
 
-          if ((0, _array.isArray)(cursor)) {
+          if ((0, _is3["default"])(cursor)) {
             cursor.forEach(function (rule) {
               var _validateFn$rule$type;
 
-              var val = (0, _deep.deepGet)(data, key); //  If no value is provided and rule.sometimes is set to true, simply return
+              var val = (0, _get["default"])(data, key); //  If no value is provided and rule.sometimes is set to true, simply return
 
               if (!val && rule.sometimes) return; //  Each param rule is a cb function that should be executed on each run, retrieving
               //  the value inside of the dataset
@@ -220,7 +222,7 @@ function () {
               }, []);
 
               if (!(_validateFn$rule$type = _validateFn[rule.type]).call.apply(_validateFn$rule$type, [_this, val].concat(_toConsumableArray(params)))) {
-                (0, _deep.deepGet)(_this.evaluation.errors, key).push({
+                (0, _get["default"])(_this.evaluation.errors, key).push({
                   msg: rule.type,
                   params: params
                 });
@@ -232,7 +234,7 @@ function () {
 
 
         keys.forEach(function (key) {
-          (0, _deep.deepSet)(_this.evaluation.errors, key, Object.create(null));
+          (0, _set["default"])(_this.evaluation.errors, key, Object.create(null));
           run(key);
         });
       }

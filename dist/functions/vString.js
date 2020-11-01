@@ -5,8 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = vString;
 
-var _string = require("@valkyriestudios/utils/string");
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/string/is"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function vString(data) {
-  return (0, _string.isString)(data);
+  return (0, _is["default"])(data);
 }

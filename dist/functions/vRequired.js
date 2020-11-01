@@ -5,16 +5,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = vRequired;
 
-var _number = require("@valkyriestudios/utils/number");
+var _isNumericalNaN = _interopRequireDefault(require("@valkyriestudios/utils/number/isNumericalNaN"));
 
-var _string = require("@valkyriestudios/utils/string");
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/string/is"));
 
-var _array = require("@valkyriestudios/utils/array");
+var _is2 = _interopRequireDefault(require("@valkyriestudios/utils/array/is"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function vRequired(val) {
   if (val === null || val === undefined) return false;
-  if ((0, _string.isString)(val)) return !(val.trim() === '');
-  if ((0, _array.isArray)(val)) return !(val.length === 0);
-  if ((0, _number.isNumericalNaN)(val)) return false;
+  if ((0, _is["default"])(val)) return !(val.trim() === '');
+  if ((0, _is2["default"])(val)) return !(val.length === 0);
+  if ((0, _isNumericalNaN["default"])(val)) return false;
   return true;
 }

@@ -5,11 +5,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = vBetween;
 
-var _number = require("@valkyriestudios/utils/number");
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/number/is"));
 
-var _string = require("@valkyriestudios/utils/string");
+var _isNumericalNaN = _interopRequireDefault(require("@valkyriestudios/utils/number/isNumericalNaN"));
 
-var _array = require("@valkyriestudios/utils/array");
+var _is2 = _interopRequireDefault(require("@valkyriestudios/utils/string/is"));
+
+var _is3 = _interopRequireDefault(require("@valkyriestudios/utils/array/is"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function vBetween(val) {
   var param_before = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
@@ -18,12 +22,12 @@ function vBetween(val) {
   var check_after = parseFloat(param_after);
   var check_before = parseFloat(param_before); //  If param_after is not numerical or nan, return false
 
-  if (!(0, _number.isNumber)(check_after) || (0, _number.isNumericalNaN)(check_after)) return false; //  If param_before is not numerical or nan, return false
+  if (!(0, _is["default"])(check_after) || (0, _isNumericalNaN["default"])(check_after)) return false; //  If param_before is not numerical or nan, return false
 
-  if (!(0, _number.isNumber)(check_before) || (0, _number.isNumericalNaN)(check_before)) return false; //  Is value is string, use length for validation
+  if (!(0, _is["default"])(check_before) || (0, _isNumericalNaN["default"])(check_before)) return false; //  Is value is string, use length for validation
 
-  if ((0, _string.isString)(val) || (0, _array.isArray)(val)) return val.length > check_before && val.length < check_after; //  If value is numerical, use primitive for validation
+  if ((0, _is2["default"])(val) || (0, _is3["default"])(val)) return val.length > check_before && val.length < check_after; //  If value is numerical, use primitive for validation
 
-  if ((0, _number.isNumber)(val) && !(0, _number.isNumericalNaN)(val)) return val > check_before && val < check_after;
+  if ((0, _is["default"])(val) && !(0, _isNumericalNaN["default"])(val)) return val > check_before && val < check_after;
   return false;
 }

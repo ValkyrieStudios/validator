@@ -1,9 +1,9 @@
 'use strict';
 
-import { isString }     from '@valkyriestudios/utils/string';
-import { isBoolean }    from '@valkyriestudios/utils/boolean';
-import { isNumber }     from '@valkyriestudios/utils/number';
-import { fnv1A }        from '@valkyriestudios/utils/hash';
+import isString     from '@valkyriestudios/utils/string/is';
+import isBoolean    from '@valkyriestudios/utils/boolean/is';
+import isNumber     from '@valkyriestudios/utils/number/is';
+import fnv1A        from '@valkyriestudios/utils/hash/fnv1A';
 
 export default function vIn (val, params = undefined) {
     if (params === undefined) return false;

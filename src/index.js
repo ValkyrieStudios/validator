@@ -1,9 +1,10 @@
 'use strict'
 
-import {isObject}               from '@valkyriestudios/utils/object';
-import {deepGet, deepSet }      from '@valkyriestudios/utils/deep';
-import {isString}               from '@valkyriestudios/utils/string';
-import {isArray}                from '@valkyriestudios/utils/array';
+import isObject     from '@valkyriestudios/utils/object/is';
+import deepGet      from '@valkyriestudios/utils/deep/get';
+import deepSet      from '@valkyriestudios/utils/deep/set';
+import isString     from '@valkyriestudios/utils/string/is';
+import isArray      from '@valkyriestudios/utils/array/is';
 
 import vAlphaNumSpaces          from './functions/vAlphaNumSpaces';
 import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline';

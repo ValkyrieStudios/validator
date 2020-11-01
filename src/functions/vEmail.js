@@ -1,6 +1,6 @@
 'use strict';
 
-import {isString} from '@valkyriestudios/utils/string';
+import isString from '@valkyriestudios/utils/string/is';
 
 //  We don't use a single regex for validation as there is no one single
 //  regex that works for all
