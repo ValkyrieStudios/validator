@@ -102,6 +102,12 @@ describe("Validator - Core", () => {
 
 //  Validate functionality
 
+    it ('should validate to true if no data was passed and no rules were set up', () => {
+        const validator = new Validator({});
+        const evaluation = validator.validate();
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
     it ('should remember the validity of the last validation run', () => {
         const validator = new Validator({ a : 'number' });
 
@@ -196,6 +202,13 @@ describe("Validator - Core", () => {
 
     it ('parameter flag (<...>) should allow multiple parameters inside the same config', () => {
         const evaluation = (new Validator({ a: 'in:<arr1>', b: 'in:<arr2>'})).validate({ a: 1, b: 2, arr1: [1, 3, 5], arr2: [2, 4, 6] });
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.errors.b).toEqual([]);
+    });
+
+    it ('parameter flag (<...>) should allow the same parameter on multiple rules inside the same config', () => {
+        const evaluation = (new Validator({ a: 'in:<arr1>', b: 'in:<arr1>'})).validate({a: 1, b: 2, arr1: [1, 2, 3]});
         expect(evaluation.is_valid).toEqual(true);
         expect(evaluation.errors.a).toEqual([]);
         expect(evaluation.errors.b).toEqual([]);

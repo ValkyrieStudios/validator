@@ -17,6 +17,9 @@ describe("vInteger", () => {
         k : new String('Foo'),
         l : new Array(),
         n : Object.create(null),
+        o : NaN,
+        p : undefined,
+        q : Number.NEGATIVE_INFINITY,
     };
 
     it ('should validate an integer correctly', () => {
@@ -43,7 +46,7 @@ describe("vInteger", () => {
 
     it ('should return a correct error message when invalid', () => {
         const valid_keys    = ['a'];
-        const invalid_keys  = ['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'n'];
+        const invalid_keys  = ['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'n', 'o', 'p', 'q'];
 
         const validator = new Validator([...valid_keys, ...invalid_keys].reduce((acc, key) => {
             acc[key] = 'integer';

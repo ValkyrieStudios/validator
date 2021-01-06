@@ -18,6 +18,28 @@ describe("vBetween", () => {
         expect(evaluation3.errors.a).toEqual([{msg: 'between', params: [undefined, undefined] }]);
     });
 
+    it ('should be invalid when incorrect params are passed', () => {
+        const evaluation = (new Validator({ a: 'between:0,hi' })).validate({ a: 10 });
+        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.errors.a).toEqual([{msg: 'between', params: ['0', 'hi'] }]);
+
+        const evaluation2 = (new Validator({ a: 'between:hi,hi' })).validate({ a: 10 });
+        expect(evaluation2.is_valid).toEqual(false);
+        expect(evaluation2.errors.a).toEqual([{msg: 'between', params: ['hi', 'hi'] }]);
+
+        const evaluation3 = (new Validator({ a: 'between:0' })).validate({ a: 10 });
+        expect(evaluation3.is_valid).toEqual(false);
+        expect(evaluation3.errors.a).toEqual([{msg: 'between', params: ['0'] }]);
+
+        const evaluation4 = (new Validator({ a: 'between:hi,0' })).validate({ a: 10 });
+        expect(evaluation4.is_valid).toEqual(false);
+        expect(evaluation4.errors.a).toEqual([{msg: 'between', params: ['hi', '0'] }]);
+
+        const evaluation5 = (new Validator({ a: 'between' })).validate({ a: 10 });
+        expect(evaluation5.is_valid).toEqual(false);
+        expect(evaluation5.errors.a).toEqual([{msg: 'between', params: [] }]);
+    })
+
     it ('should return a correct error message when invalid', () => {
         const evaluation = (new Validator({ a: 'between:5,15' })).validate({ a: 25 });
         expect(evaluation.is_valid).toEqual(false);

@@ -60,8 +60,6 @@ const _validateFn = {
     url_subdomain               : vUrlSubdomain,
 };
 
-let param_cache = {};
-
 export default class Validator {
 
     constructor (rules = undefined) {
@@ -93,8 +91,6 @@ export default class Validator {
                         if (/^\<([A-z]|[0-9]|\_|\.)+\>$/g.test(param)) {
                             param = param.substr(1, param.length - 2);
                             acc.push((data) => {
-                                if (Object.prototype.hasOwnProperty.call(param_cache, param)) return param_cache[param];
-
                                 try {
                                     return deepGet(data, param);
                                 } catch (err) { return undefined; }
@@ -137,9 +133,6 @@ export default class Validator {
     validate (data) {
         const keys = Object.keys(this.rules);
 
-        //  Reset param cache
-        param_cache = {};
-
         //  Reset evaluation
         this.evaluation.is_valid = true;
         this.evaluation.errors = Object.create(null);
@@ -163,29 +156,28 @@ export default class Validator {
                 }
 
                 //  Validate array of rules for this property
-                if (isArray(cursor)) {
-                    cursor.forEach((rule) => {
-                        const val = deepGet(data, key);
+                if (!isArray(cursor)) return;
+                cursor.forEach((rule) => {
+                    const val = deepGet(data, key);
 
-                        //  If no value is provided and rule.sometimes is set to true, simply return
-                        if (!val && rule.sometimes) return;
+                    //  If no value is provided and rule.sometimes is set to true, simply return
+                    if (!val && rule.sometimes) return;
 
-                        //  Each param rule is a cb function that should be executed on each run, retrieving
-                        //  the value inside of the dataset
-                        const params = rule.params.reduce((acc, param_rule) => {
-                            acc.push(param_rule(data));
-                            return acc;
-                        }, []);
+                    //  Each param rule is a cb function that should be executed on each run, retrieving
+                    //  the value inside of the dataset
+                    const params = rule.params.reduce((acc, param_rule) => {
+                        acc.push(param_rule(data));
+                        return acc;
+                    }, []);
 
-                        if (!_validateFn[rule.type].call(this, val, ...params)) {
-                            deepGet(this.evaluation.errors, key).push({
-                                msg: rule.type,
-                                params,
-                            });
-                            this.evaluation.is_valid = false;
-                        }
-                    });
-                }
+                    if (!_validateFn[rule.type].call(this, val, ...params)) {
+                        deepGet(this.evaluation.errors, key).push({
+                            msg: rule.type,
+                            params,
+                        });
+                        this.evaluation.is_valid = false;
+                    }
+                });
             };
 
             //  Prep the evaluation for the keys in the rules

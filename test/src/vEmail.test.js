@@ -139,6 +139,21 @@ describe("vEmail", () => {
         expect(evaluation.is_valid).toEqual(false);
     });
 
+    it ('should validate a string with a username longer than 64 characters as invalid', () => {
+        const evaluation = (new Validator({ a: 'email' })).validate({ a: 'thisisawaytoolongusernamethatshouldfailvalidationifiamcorrectaboutit@domain.com' });
+        expect(evaluation.is_valid).toEqual(false);
+    });
+
+    it ('should validate a string with a domain part longer than 253 characters as invalid', () => {
+        const evaluation = (new Validator({ a: 'email' })).validate({ a: 'peter@thisisawaytoolongusernamethatshouldfailvalidationifiamcorrectaboutitthisisawaytoolongusernamethatshouldfailvalidationifiamcorrectaboutitthisisawaytoolongusernamethatshouldfailvalidationifiamcorrectaboutitthisisawaytoolongusernamethatshouldfailvalidationifiamcorrectaboutitthisisawaytoolongusernamethatshouldfailvalidationifiamcorrectaboutitthisisawaytoolongusernamethatshouldfailvalidationifiamcorrectaboutitthisisawaytoolongusernamethatshouldfailvalidationifiamcorrectaboutitthisisawaytoolongusernamethatshouldfailvalidationifiamcorrectaboutit.com' });
+        expect(evaluation.is_valid).toEqual(false);
+    });
+
+    it ('should validate a wrong domain as invalid', () => {
+        const evaluation = (new Validator({ a: 'email' })).validate({ a: 'peter@|thisshouldnotbevalid<|.com' });
+        expect(evaluation.is_valid).toEqual(false);
+    });
+
     it ('should validate encoded html within the email as invalid', () => {
         const evaluation = (new Validator({ a: 'email' })).validate({ a: 'Joe Smith <email@domain.com>' });
         expect(evaluation.is_valid).toEqual(false);
