@@ -11,6 +11,7 @@ import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline';
 import vArray                   from './functions/vArray';
 import vBetween                 from './functions/vBetween';
 import vBoolean                 from './functions/vBoolean';
+import vColorHex                from './functions/vColorHex';
 import vDate                    from './functions/vDate';
 import vEmail                   from './functions/vEmail';
 import vEqualTo                 from './functions/vEqualTo';
@@ -27,6 +28,8 @@ import vObject                  from './functions/vObject';
 import vRequired                from './functions/vRequired';
 import vSize                    from './functions/vSize';
 import vString                  from './functions/vString';
+import vUrl                     from './functions/vUrl';
+import vUrlSubdomain            from './functions/vUrlSubdomain';
 
 const _validateFn = {
     alpha_num_spaces            : vAlphaNumSpaces,
@@ -34,6 +37,7 @@ const _validateFn = {
     array                       : vArray,
     between                     : vBetween,
     boolean                     : vBoolean,
+    color_hex                   : vColorHex,
     date                        : vDate,
     email                       : vEmail,
     equal_to                    : vEqualTo,
@@ -50,6 +54,8 @@ const _validateFn = {
     required                    : vRequired,
     size                        : vSize,
     string                      : vString,
+    url                         : vUrl,
+    url_subdomain               : vUrlSubdomain,
 };
 
 let param_cache = {};
