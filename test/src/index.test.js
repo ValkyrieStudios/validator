@@ -239,6 +239,23 @@ describe("Validator - Core", () => {
         expect(evaluation2.errors.a).toEqual([]);
     });
 
+    it ('extend functionality should allow redefining the same validity function', () => {
+        Validator.extend('ismyname', function (val, p1, p2) {return val === 'peter';});
+
+        //  Evaluation
+        const evaluation = (new Validator({ name: 'ismyname' })).validate({ name: 'peter' });
+        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.errors.name).toEqual([]);
+
+        //  Redefine
+        Validator.extend('ismyname', function (val, p1, p2) {return val === 'josh';});
+
+        //  Second evaluation
+        const evaluation2 = (new Validator({ name: 'ismyname' })).validate({ name: 'peter' });
+        expect(evaluation2.is_valid).toEqual(false);
+        expect(evaluation2.errors.name).toEqual([{msg:'ismyname', params: []}]);
+    });
+
 //  Complex validations
 
     it ('should be able to validate complex objects [1]', () => {
