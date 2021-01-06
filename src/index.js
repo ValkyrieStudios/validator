@@ -191,6 +191,10 @@ export default class Validator {
     }
 
     static extend (name, fn) {
-        Object.defineProperty(_validateFn, name, { get : () => fn });
+        //  If prop already exists, delete it
+        if (_validateFn[name]) delete _validateFn[name];
+
+        //  Define property with a configurable flag to allow reconfiguration
+        Object.defineProperty(_validateFn, name, {configurable: true, get : () => fn});
     }
 }
