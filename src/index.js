@@ -29,6 +29,7 @@ import vRequired                from './functions/vRequired';
 import vSize                    from './functions/vSize';
 import vString                  from './functions/vString';
 import vUrl                     from './functions/vUrl';
+import vUrlNoQuery              from './functions/vUrlNoQuery';
 import vUrlSubdomain            from './functions/vUrlSubdomain';
 
 const _validateFn = {
@@ -55,6 +56,7 @@ const _validateFn = {
     size                        : vSize,
     string                      : vString,
     url                         : vUrl,
+    url_noquery                 : vUrlNoQuery,
     url_subdomain               : vUrlSubdomain,
 };
 
