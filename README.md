@@ -194,6 +194,7 @@ The following list shows you all the default rules that are provided by this lib
 | array | Validate that a provided value is an array |
 | between | Validate that a provided value is between two numbers, if passed a string or array this will validate on length |
 | boolean | Validate that a provided value is a boolean |
+| color_hex | Validate that a provided value is a hex color (with the # included) |
 | date | Validate that a provided value is a date object |
 | email | Validate that a provided value is an email, take note: this only structurally tests if an email is good, it doesn't test whether an email actually exists |
 | equal_to | Validate that a provided value is equal to another value, this can be used on primitives (string, number, boolean) but also on non-primitives (objects, arrays, dates). Equality checks for non-primitives are done through FNV1A hashing |
@@ -211,6 +212,8 @@ validate on length |
 | required | Validate that a provided value is not empty, arrays will be seen as valid if at least 1 element is present, strings will be seen as empty if when trimmed the length is bigger than 0, null and undefined will not be valid and a NaN will also be rejected |
 | size | Validate that a provided value has a specific size, this only applies to strings and arrays and checks on length |
 | string | Validate that a provided value is a string |
+| url | Validate that a provided value is a url, this allows for query string values as well |
+| url_noquery | Validate that a provided value is a url without any query string values |
 
 ## Contributors
 - Peter Vermeulen : [Valkyrie Studios](www.valkyriestudios.be)

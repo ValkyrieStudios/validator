@@ -11,5 +11,5 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 function vAlphaNumSpaces(val) {
   if (!(0, _is["default"])(val)) return false;
-  return val ? /^[a-zA-Z0-9 ]*$/ig.test(val) : false;
+  return /^[a-zA-Z0-9 ]*$/ig.test(val);
 }

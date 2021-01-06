@@ -30,7 +30,6 @@ import vSize                    from './functions/vSize';
 import vString                  from './functions/vString';
 import vUrl                     from './functions/vUrl';
 import vUrlNoQuery              from './functions/vUrlNoQuery';
-import vUrlSubdomain            from './functions/vUrlSubdomain';
 
 const _validateFn = {
     alpha_num_spaces            : vAlphaNumSpaces,
@@ -57,7 +56,6 @@ const _validateFn = {
     string                      : vString,
     url                         : vUrl,
     url_noquery                 : vUrlNoQuery,
-    url_subdomain               : vUrlSubdomain,
 };
 
 export default class Validator {

@@ -25,6 +25,8 @@ var _vBetween = _interopRequireDefault(require("./functions/vBetween"));
 
 var _vBoolean = _interopRequireDefault(require("./functions/vBoolean"));
 
+var _vColorHex = _interopRequireDefault(require("./functions/vColorHex"));
+
 var _vDate = _interopRequireDefault(require("./functions/vDate"));
 
 var _vEmail = _interopRequireDefault(require("./functions/vEmail"));
@@ -57,6 +59,10 @@ var _vSize = _interopRequireDefault(require("./functions/vSize"));
 
 var _vString = _interopRequireDefault(require("./functions/vString"));
 
+var _vUrl = _interopRequireDefault(require("./functions/vUrl"));
+
+var _vUrlNoQuery = _interopRequireDefault(require("./functions/vUrlNoQuery"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -83,6 +89,7 @@ var _validateFn = {
   array: _vArray["default"],
   between: _vBetween["default"],
   "boolean": _vBoolean["default"],
+  color_hex: _vColorHex["default"],
   date: _vDate["default"],
   email: _vEmail["default"],
   equal_to: _vEqualTo["default"],
@@ -98,9 +105,10 @@ var _validateFn = {
   object: _vObject["default"],
   required: _vRequired["default"],
   size: _vSize["default"],
-  string: _vString["default"]
+  string: _vString["default"],
+  url: _vUrl["default"],
+  url_noquery: _vUrlNoQuery["default"]
 };
-var param_cache = {};
 
 var Validator = /*#__PURE__*/function () {
   function Validator() {
@@ -134,8 +142,6 @@ var Validator = /*#__PURE__*/function () {
             if (/^\<([A-z]|[0-9]|\_|\.)+\>$/g.test(param)) {
               param = param.substr(1, param.length - 2);
               acc.push(function (data) {
-                if (Object.prototype.hasOwnProperty.call(param_cache, param)) return param_cache[param];
-
                 try {
                   return (0, _get["default"])(data, param);
                 } catch (err) {
@@ -185,9 +191,7 @@ var Validator = /*#__PURE__*/function () {
     value: function validate(data) {
       var _this = this;
 
-      var keys = Object.keys(this.rules); //  Reset param cache
-
-      param_cache = {}; //  Reset evaluation
+      var keys = Object.keys(this.rules); //  Reset evaluation
 
       this.evaluation.is_valid = true;
       this.evaluation.errors = Object.create(null); //  No data passed? Check if rules were set up
@@ -209,29 +213,28 @@ var Validator = /*#__PURE__*/function () {
           } //  Validate array of rules for this property
 
 
-          if ((0, _is3["default"])(cursor)) {
-            cursor.forEach(function (rule) {
-              var _validateFn$rule$type;
+          if (!(0, _is3["default"])(cursor)) return;
+          cursor.forEach(function (rule) {
+            var _validateFn$rule$type;
 
-              var val = (0, _get["default"])(data, key); //  If no value is provided and rule.sometimes is set to true, simply return
+            var val = (0, _get["default"])(data, key); //  If no value is provided and rule.sometimes is set to true, simply return
 
-              if (!val && rule.sometimes) return; //  Each param rule is a cb function that should be executed on each run, retrieving
-              //  the value inside of the dataset
+            if (!val && rule.sometimes) return; //  Each param rule is a cb function that should be executed on each run, retrieving
+            //  the value inside of the dataset
 
-              var params = rule.params.reduce(function (acc, param_rule) {
-                acc.push(param_rule(data));
-                return acc;
-              }, []);
+            var params = rule.params.reduce(function (acc, param_rule) {
+              acc.push(param_rule(data));
+              return acc;
+            }, []);
 
-              if (!(_validateFn$rule$type = _validateFn[rule.type]).call.apply(_validateFn$rule$type, [_this, val].concat(_toConsumableArray(params)))) {
-                (0, _get["default"])(_this.evaluation.errors, key).push({
-                  msg: rule.type,
-                  params: params
-                });
-                _this.evaluation.is_valid = false;
-              }
-            });
-          }
+            if (!(_validateFn$rule$type = _validateFn[rule.type]).call.apply(_validateFn$rule$type, [_this, val].concat(_toConsumableArray(params)))) {
+              (0, _get["default"])(_this.evaluation.errors, key).push({
+                msg: rule.type,
+                params: params
+              });
+              _this.evaluation.is_valid = false;
+            }
+          });
         }; //  Prep the evaluation for the keys in the rules
 
 
@@ -256,7 +259,11 @@ var Validator = /*#__PURE__*/function () {
   }], [{
     key: "extend",
     value: function extend(name, fn) {
+      //  If prop already exists, delete it
+      if (_validateFn[name]) delete _validateFn[name]; //  Define property with a configurable flag to allow reconfiguration
+
       Object.defineProperty(_validateFn, name, {
+        configurable: true,
         get: function get() {
           return fn;
         }
