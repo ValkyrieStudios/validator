@@ -5,12 +5,7 @@ gulp.task('default', () => {
     return gulp
         .src(['src/**/*.js'])
         .pipe(babel({
-            presets: [
-                '@babel/preset-env',
-            ],
-            plugins : [
-                '@babel/plugin-proposal-class-properties',
-            ]
+            presets: ['@babel/preset-env'],
         }))
         .pipe(gulp.dest('dist/'));
 });
