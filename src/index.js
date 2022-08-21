@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 import isObject     from '@valkyriestudios/utils/object/is';
 import deepGet      from '@valkyriestudios/utils/deep/get';
@@ -31,7 +31,7 @@ import vString                  from './functions/vString';
 import vUrl                     from './functions/vUrl';
 import vUrlNoQuery              from './functions/vUrlNoQuery';
 
-const _validateFn = {
+const validateFn = {
     alpha_num_spaces            : vAlphaNumSpaces,
     alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
     array                       : vArray,
@@ -85,21 +85,23 @@ export default class Validator {
                     params = params.length > 0 ? params[0].split(',') : [];
 
                     //  Parse parameters into callback functions
-                    params = params.reduce((acc, param) => {
-                        if (/^\<([A-z]|[0-9]|\_|\.)+\>$/g.test(param)) {
+                    params = params.reduce((params_acc, param) => {
+                        if (/^<([A-z]|[0-9]|_|\.)+>$/g.test(param)) {
                             param = param.substr(1, param.length - 2);
-                            acc.push((data) => {
+                            params_acc.push(data => {
                                 try {
                                     return deepGet(data, param);
-                                } catch (err) { return undefined; }
+                                } catch (err) {
+                                    return undefined;
+                                }
                             });
                         } else {
-                            acc.push(() => param);
+                            params_acc.push(() => param);
                         }
-                        return acc;
+                        return params_acc;
                     }, []);
 
-                    rule_acc.push({ type, params, sometimes });
+                    rule_acc.push({type, params, sometimes});
                     return rule_acc;
                 }, []));
             } else {
@@ -114,10 +116,13 @@ export default class Validator {
 
         //  Set is_valid as a property on the validator, this will reflect the
         //  validity even if evaluation results are not caught
-        this.evaluation = Object.seal({ is_valid: false, errors: {} });
+        this.evaluation = Object.seal({
+            is_valid: false,
+            errors: {},
+        });
 
         //  Set the parsed rules as a get property on our validation instance
-        Object.defineProperty(this, 'rules', { get : () => parsed_rules });
+        Object.defineProperty(this, 'rules', {get: () => parsed_rules});
     }
 
     get is_valid () {
@@ -139,12 +144,12 @@ export default class Validator {
         if (!data) {
             this.evaluation.is_valid = !!(keys.length === 0);
         } else {
-            const run = (key) => {
+            const run = key => {
                 const cursor = deepGet(this.rules, key);
 
                 //  Recursively validate
                 if (isObject(cursor) && !isArray(cursor)) {
-                    return Object.keys(cursor).map((cursor_key) => {
+                    return Object.keys(cursor).map(cursor_key => {
                         cursor_key = `${key}.${cursor_key}`;
                         deepSet(this.evaluation.errors, cursor_key, []);
                         return cursor_key;
@@ -155,7 +160,7 @@ export default class Validator {
 
                 //  Validate array of rules for this property
                 if (!isArray(cursor)) return;
-                cursor.forEach((rule) => {
+                cursor.forEach(rule => {
                     const val = deepGet(data, key);
 
                     //  If no value is provided and rule.sometimes is set to true, simply return
@@ -168,7 +173,7 @@ export default class Validator {
                         return acc;
                     }, []);
 
-                    if (!_validateFn[rule.type].call(this, val, ...params)) {
+                    if (!validateFn[rule.type].call(this, val, ...params)) {
                         deepGet(this.evaluation.errors, key).push({
                             msg: rule.type,
                             params,
@@ -179,7 +184,7 @@ export default class Validator {
             };
 
             //  Prep the evaluation for the keys in the rules
-            keys.forEach((key) => {
+            keys.forEach(key => {
                 deepSet(this.evaluation.errors, key, Object.create(null));
                 run(key);
             });
@@ -190,9 +195,10 @@ export default class Validator {
 
     static extend (name, fn) {
         //  If prop already exists, delete it
-        if (_validateFn[name]) delete _validateFn[name];
+        if (validateFn[name]) delete validateFn[name];
 
         //  Define property with a configurable flag to allow reconfiguration
-        Object.defineProperty(_validateFn, name, {configurable: true, get : () => fn});
+        Object.defineProperty(validateFn, name, {configurable: true, get : () => fn});
     }
+
 }

@@ -9,7 +9,7 @@ export default function vLessThan (val, param = undefined) {
     if (param === undefined) return false;
 
     //  Convert param into float
-    let check = parseFloat(param);
+    const check = parseFloat(param);
 
     //  If param is not numerical or nan, return false
     if (!isNumber(check) || isNumericalNaN(check)) return false;

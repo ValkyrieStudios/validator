@@ -7,8 +7,8 @@ import isArray          from '@valkyriestudios/utils/array/is';
 
 export default function vBetween (val, param_before = undefined, param_after = undefined) {
     //  Convert param into float
-    let check_after = parseFloat(param_after);
-    let check_before = parseFloat(param_before);
+    const check_after = parseFloat(param_after);
+    const check_before = parseFloat(param_before);
 
     //  If param_after is not numerical or nan, return false
     if (!isNumber(check_after) || isNumericalNaN(check_after)) return false;
