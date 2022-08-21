@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vString", () => {
     const subject = {
         a : 100,
@@ -28,10 +37,10 @@ describe("vString", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.c).toEqual([]);
-        expect(evaluation.errors.j).toEqual([]);
-        expect(evaluation.errors.k).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.c).to.deep.equal([]);
+        expect(evaluation.errors.j).to.deep.equal([]);
+        expect(evaluation.errors.k).to.deep.equal([]);
     });
 
     it ('should not validate other types as valid strings', () => {
@@ -43,8 +52,22 @@ describe("vString", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors).toEqual(jasmine.any(Object));
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({
+            a: [{msg: 'string', params: []}],
+            b: [{msg: 'string', params: []}],
+            c: [],
+            d: [{msg: 'string', params: []}],
+            e: [{msg: 'string', params: []}],
+            f: [{msg: 'string', params: []}],
+            g: [{msg: 'string', params: []}],
+            h: [{msg: 'string', params: []}],
+            i: [{msg: 'string', params: []}],
+            j: [],
+            k: [],
+            l: [{msg: 'string', params: []}],
+            n: [{msg: 'string', params: []}],
+        });
     });
 
     it ('should return a correct error message when invalid', () => {
@@ -58,10 +81,10 @@ describe("vString", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.is_valid).to.eql(false);
 
-        valid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([]));
-        invalid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([{msg:'string', params: []}]));
+        valid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([]));
+        invalid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([{msg:'string', params: []}]));
     });
 
 });

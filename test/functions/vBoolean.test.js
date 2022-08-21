@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vBoolean", () => {
     const subject = {
         a : 100,
@@ -27,9 +36,9 @@ describe("vBoolean", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.d).toEqual([]);
-        expect(evaluation.errors.e).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.d).to.deep.equal([]);
+        expect(evaluation.errors.e).to.deep.equal([]);
     });
 
     it ('should not validate other types as valid booleans', () => {
@@ -41,8 +50,22 @@ describe("vBoolean", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors).toEqual(jasmine.any(Object));
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({
+            a: [{msg: 'boolean', params: []}],
+            b: [{msg: 'boolean', params: []}],
+            c: [{msg: 'boolean', params: []}],
+            d: [],
+            e: [],
+            f: [{msg: 'boolean', params: []}],
+            g: [{msg: 'boolean', params: []}],
+            h: [{msg: 'boolean', params: []}],
+            i: [{msg: 'boolean', params: []}],
+            j: [{msg: 'boolean', params: []}],
+            k: [{msg: 'boolean', params: []}],
+            l: [{msg: 'boolean', params: []}],
+            n: [{msg: 'boolean', params: []}],
+        });
     });
 
     it ('should return a correct error message when invalid', () => {
@@ -56,10 +79,10 @@ describe("vBoolean", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.is_valid).to.eql(false);
 
-        valid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([]));
-        invalid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([{msg:'boolean', params: []}]));
+        valid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([]));
+        invalid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([{msg:'boolean', params: []}]));
     });
 
 });

@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vDate", () => {
     const subject = {
         a : 100,
@@ -23,8 +32,8 @@ describe("vDate", () => {
         const validator = new Validator({ g : 'date' });
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.g).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.g).to.deep.equal([]);
     });
 
     it ('should not validate other types as valid dates', () => {
@@ -36,8 +45,22 @@ describe("vDate", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors).toEqual(jasmine.any(Object));
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({
+            a: [{msg: 'date', params: []}],
+            b: [{msg: 'date', params: []}],
+            c: [{msg: 'date', params: []}],
+            d: [{msg: 'date', params: []}],
+            e: [{msg: 'date', params: []}],
+            f: [{msg: 'date', params: []}],
+            g: [],
+            h: [{msg: 'date', params: []}],
+            i: [{msg: 'date', params: []}],
+            j: [{msg: 'date', params: []}],
+            k: [{msg: 'date', params: []}],
+            l: [{msg: 'date', params: []}],
+            n: [{msg: 'date', params: []}],
+        });
     });
 
     it ('should return a correct error message when invalid', () => {
@@ -51,10 +74,10 @@ describe("vDate", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.is_valid).to.eql(false);
 
-        valid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([]));
-        invalid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([{msg:'date', params: []}]));
+        valid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([]));
+        invalid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([{msg:'date', params: []}]));
     });
 
 });

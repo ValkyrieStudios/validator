@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vUrl", () => {
 
     const invalids = [
@@ -103,8 +112,8 @@ describe("vUrl", () => {
 
         for (let el of valids) {
             const evaluation = v.validate({a: el});
-            expect(evaluation.is_valid).toEqual(true);
-            expect(evaluation.errors.a).toEqual([]);
+            expect(evaluation.is_valid).to.eql(true);
+            expect(evaluation.errors.a).to.deep.equal([]);
         }
     });
 
@@ -113,8 +122,8 @@ describe("vUrl", () => {
 
         for (let el of invalids) {
             const evaluation = v.validate({a: el});
-            expect(evaluation.is_valid).toEqual(false);
-            expect(evaluation.errors.a).toEqual([{msg:'url', params: []}]);
+            expect(evaluation.is_valid).to.eql(false);
+            expect(evaluation.errors.a).to.deep.equal([{msg:'url', params: []}]);
         }
     });
 
@@ -123,8 +132,8 @@ describe("vUrl", () => {
 
         for (let el of invalid_url) {
             const evaluation = v.validate({a: el});
-            expect(evaluation.is_valid).toEqual(false);
-            expect(evaluation.errors.a).toEqual([{msg:'url', params: []}]);
+            expect(evaluation.is_valid).to.eql(false);
+            expect(evaluation.errors.a).to.deep.equal([{msg:'url', params: []}]);
         }
     });
 });

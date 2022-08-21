@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vIn", () => {
 
     it ('should validate correctly', () => {
@@ -17,23 +26,23 @@ describe("vIn", () => {
             },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('should be invalid when no params are passed', () => {
         const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({ a: 'hello' });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'in', params: [undefined] }]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: [undefined] }]);
     });
 
     it ('should return a correct error message when invalid', () => {
         const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({ a: 'hello', meta: { params: ['foo', 'bar']} });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{ msg: 'in', params: [['foo', 'bar']] }]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{ msg: 'in', params: [['foo', 'bar']] }]);
     });
 
 //  Primitive string
@@ -45,9 +54,9 @@ describe("vIn", () => {
             meta: { params: 'Hello' },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('should validate a wrong primitive string check as invalid', () => {
@@ -57,9 +66,9 @@ describe("vIn", () => {
             meta: { params: 'Hello' },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'in', params: ['Hello']}]);
-        expect(evaluation.errors.b).toEqual([{msg: 'in', params: ['Hello']}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: ['Hello']}]);
+        expect(evaluation.errors.b).to.deep.equal([{msg: 'in', params: ['Hello']}]);
     });
 
     it ('should take case sensitivity into account for primitive string checks', () => {
@@ -69,9 +78,9 @@ describe("vIn", () => {
             meta: { params: 'Hello' },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([{msg: 'in', params: ['Hello']}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([{msg: 'in', params: ['Hello']}]);
     });
 
 //  Primitive integer
@@ -83,9 +92,9 @@ describe("vIn", () => {
             meta: { params: [50, 60, 70, 80, 90, 100, 250] },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('should validate a wrong primitive integer check as invalid', () => {
@@ -96,10 +105,10 @@ describe("vIn", () => {
             meta: { params: [50, 60, 70, 80, 90, 100, 250] },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'in', params: [[50,60,70,80,90,100,250]]}]);
-        expect(evaluation.errors.b).toEqual([{msg: 'in', params: [[50,60,70,80,90,100,250]]}]);
-        expect(evaluation.errors.c).toEqual([]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: [[50,60,70,80,90,100,250]]}]);
+        expect(evaluation.errors.b).to.deep.equal([{msg: 'in', params: [[50,60,70,80,90,100,250]]}]);
+        expect(evaluation.errors.c).to.deep.equal([]);
     });
 
 //  Boolean check
@@ -111,9 +120,9 @@ describe("vIn", () => {
             meta: { params: [true, false, false] },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('should validate an incorrect boolean check as invalid', () => {
@@ -123,9 +132,9 @@ describe("vIn", () => {
             meta: { a_params: [true, true, true], b_params: [false, false, false]},
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'in', params: [[true, true, true]]}]);
-        expect(evaluation.errors.b).toEqual([{msg: 'in', params: [[false, false, false]]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: [[true, true, true]]}]);
+        expect(evaluation.errors.b).to.deep.equal([{msg: 'in', params: [[false, false, false]]}]);
     });
 
 //  Date check
@@ -136,8 +145,8 @@ describe("vIn", () => {
             meta: { params: [new Date('1990-02-07'), new Date('2019-02-07')] },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('should validate an incorrect date check as invalid', () => {
@@ -146,8 +155,8 @@ describe("vIn", () => {
             meta: { params: [new Date('1990-02-07'), new Date('2019-02-07')] },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'in', params:[[new Date('1990-02-07'), new Date('2019-02-07')]]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params:[[new Date('1990-02-07'), new Date('2019-02-07')]]}]);
     });
 
 //  Object check
@@ -158,8 +167,8 @@ describe("vIn", () => {
             meta: { params: [{a: 10, b: 2}, {c: 3, d:4 }] },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('should validate a wrong object check as invalid', () => {
@@ -168,8 +177,8 @@ describe("vIn", () => {
             meta: { params: [{a: 10, b: 2}, {c: 3, d:4 }] },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'in', params: [[{a: 10, b: 2}, {c: 3, d:4 }]]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: [[{a: 10, b: 2}, {c: 3, d:4 }]]}]);
     });
 
 //  Array check
@@ -180,8 +189,8 @@ describe("vIn", () => {
             meta: { params: [[1, 'hello', 2, 'world'], ['foo'], ['bar']] },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('should validate a wrong array check as invalid', () => {
@@ -190,8 +199,8 @@ describe("vIn", () => {
             meta: { params: [[1, 'hello', 2, 'world'], ['foo'], ['bar']] },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'in', params: [[[1, 'hello', 2, 'world'], ['foo'], ['bar']]]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: [[[1, 'hello', 2, 'world'], ['foo'], ['bar']]]}]);
     });
 
 //  Mix
@@ -203,9 +212,9 @@ describe("vIn", () => {
             meta: { params: [new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}] },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('should validate a wrong check with mixed params as invalid', () => {
@@ -215,9 +224,9 @@ describe("vIn", () => {
             meta: { params: [new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}] },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([{msg: 'in', params: [[new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}]]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([{msg: 'in', params: [[new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}]]}]);
     });
 
 });

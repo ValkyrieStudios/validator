@@ -1,6 +1,15 @@
 'use strict';
 
-import Validator from '../../src/index';
+import Validator from '../src/index';
+
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
 
 describe("Validator - Core", () => {
     const subject = {
@@ -23,32 +32,29 @@ describe("Validator - Core", () => {
         const validator = new Validator({});
 
         //  It should have a validate function on its instance
-        expect(validator.validate).toBeDefined();
-        expect(validator.validate).toEqual(jasmine.any(Function));
+        should.exist(validator.validate);
+        assert.typeOf(validator.validate, 'Function');
 
         //  It should have a extend function on the class
-        expect(Validator.extend).toBeDefined();
-        expect(Validator.extend).toEqual(jasmine.any(Function));
+        should.exist(Validator.extend);
+        assert.typeOf(Validator.extend, 'Function');
 
         //  It should not have a extend function on its instance
-        expect(validator.extend).not.toBeDefined();
-        expect(validator.extend).not.toEqual(jasmine.any(Function));
+        should.not.exist(validator.extend);
 
         //  It should have an 'is_valid' property that is a boolean and by default set to false
-        expect(validator.is_valid).toBeDefined();
-        expect(validator.is_valid).toEqual(false);
+        should.exist(validator.is_valid);
+        expect(validator.is_valid).to.eql(false);
 
         //  It should have an 'errors' property that is an Object and by default set to an empty object
-        expect(validator.errors).toBeDefined();
-        expect(validator.errors).toEqual(Object.create(null));
+        should.exist(validator.errors);
+        expect(validator.errors).to.deep.equal(Object.create(null));
 
         //  It should not have an 'is_valid' property on the class
-        expect(Validator.is_valid).not.toBeDefined();
-        expect(Validator.is_valid).toEqual(undefined);
+        should.not.exist(Validator.is_valid);
 
         //  It should not have an 'errors' property on the class
-        expect(Validator.errors).not.toBeDefined();
-        expect(Validator.errors).toEqual(undefined);
+        should.not.exist(Validator.errors);
     });
 
 //  Validate that the returned value from validate(...) has the correct format
@@ -57,47 +63,40 @@ describe("Validator - Core", () => {
         const evaluation = (new Validator({ a : 'number' })).validate(subject);
 
         //  Evaluate object
-        expect(evaluation).toEqual(jasmine.any(Object));
-        expect(Object.keys(evaluation)).toEqual(['is_valid', 'errors']);
+        assert.typeOf(evaluation, 'Object');
+        expect(Object.keys(evaluation)).to.deep.equal(['is_valid', 'errors']);
 
         //  Evaluate object structure : is_valid
-        expect(evaluation.is_valid).toBeDefined();
-        expect(evaluation.is_valid).toEqual(jasmine.any(Boolean));
+        should.exist(evaluation.is_valid);
+        assert.typeOf(evaluation.is_valid, 'Boolean');
 
         //  Evaluate object structure : errors
-        expect(evaluation.errors).toBeDefined();
-        expect(evaluation.errors).toEqual(jasmine.any(Object));
+        should.exist(evaluation.errors);
+        assert.typeOf(evaluation.errors, 'Object');
+        expect(evaluation.errors).to.deep.equal({a: []});
     });
 
     it ('should have errors where the object contains a msg and a params property', () => {
         const evaluation = (new Validator({ c : 'number' })).validate(subject);
 
-        //  Evalute object
-        expect(evaluation.errors.c).toEqual(jasmine.any(Array));
-        expect(evaluation.errors.c[0]).toEqual(jasmine.any(Object));
-
-        //  Check for msg
-        expect(evaluation.errors.c[0].msg).toEqual(jasmine.any(String));
-        expect(evaluation.errors.c[0]).toEqual(jasmine.objectContaining({ msg: 'number' }));
-
-        //  Check for params
-        expect(evaluation.errors.c[0].params).toEqual(jasmine.any(Array));
-        expect(evaluation.errors.c[0]).toEqual(jasmine.objectContaining({ params: [] }));
+        expect(evaluation.errors).to.deep.equal({
+            c: [{msg: 'number', params: []}],
+        });
     });
 
     it ('should have errors where the key is the rule that failed', () => {
         const evaluation = (new Validator({ c : 'number' })).validate(subject);
-        expect(evaluation.errors.c[0].msg).toEqual('number');
+        expect(evaluation.errors.c[0].msg).to.eql('number');
     });
 
     it ('should have errors where the params object is empty if no param was passed', () => {
         const evaluation = (new Validator({ c : 'number' })).validate(subject);
-        expect(evaluation.errors.c[0].params).toEqual([]);
+        expect(evaluation.errors.c[0].params).to.deep.equal([]);
     });
 
     it ('should have errors where the params object contains the passed param if passed', () => {
         const evaluation = (new Validator({ a : 'greater_than:150' })).validate(subject);
-        expect(evaluation.errors.a[0].params).toEqual(['150']);
+        expect(evaluation.errors.a[0].params).to.deep.equal(['150']);
     });
 
 //  Validate functionality
@@ -105,7 +104,7 @@ describe("Validator - Core", () => {
     it ('should validate to true if no data was passed and no rules were set up', () => {
         const validator = new Validator({});
         const evaluation = validator.validate();
-        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.is_valid).to.eql(true);
     });
 
     it ('should remember the validity of the last validation run', () => {
@@ -113,57 +112,59 @@ describe("Validator - Core", () => {
 
         validator.validate({ a: 'foo' });
 
-        expect(validator.is_valid).toEqual(false);
-        expect(validator.errors).toEqual(jasmine.any(Object));
-        expect(validator.errors.a).toEqual([{msg:'number', params: []}]);
+        expect(validator.is_valid).to.eql(false);
+        expect(validator.errors).to.deep.equal({
+            a: [{msg: 'number', params: []}],
+        });
 
         validator.validate({ a: 10 });
 
-        expect(validator.is_valid).toEqual(true);
-        expect(validator.errors).toEqual(jasmine.any(Object));
-        expect(validator.errors.a).toEqual([]);
+        expect(validator.is_valid).to.eql(true);
+        expect(validator.errors).to.deep.equal({
+            a: [],
+        });
     });
 
     it ('should throw a type error when passed wrong configuration options', () => {
         expect(function () {
             const v = new Validator();
-        }).toThrowError(TypeError);
+        }).to.throw();
 
         expect(function () {
             const v = new Validator(5);
-        }).toThrowError(TypeError);
+        }).to.throw();
 
         expect(function () {
             const v = new Validator([{ hello: 'world' }, 5, true]);
-        }).toThrowError(TypeError);
+        }).to.throw();
 
         expect(function () {
             const v = new Validator('foo');
-        }).toThrowError(TypeError);
+        }).to.throw();
 
         expect(function () {
             const v = new Validator({});
-        }).not.toThrowError(TypeError);
+        }).not.to.throw();
 
         expect(function () {
             const v = new Validator({ foo: 'string' });
-        }).not.toThrowError(TypeError);
+        }).not.to.throw();
 
         expect(function () {
             const v = new Validator({ foo: 'number', a : { b: 'string', params: [] }});
-        }).toThrowError(TypeError);
+        }).to.throw();
 
         expect(function () {
             const v = new Validator({ foo: 5, a : { b: 'string', params: [] }});
-        }).toThrowError(TypeError);
+        }).to.throw();
     });
 
 //  Flag : Sometimes
 
     it ('sometimes flag(?) should validate correctly if set and no value is passed', () => {
         const evaluation = (new Validator({ a : '?number' })).validate({});
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('sometimes flag (?) should not interfere with other validation rules', () => {
@@ -172,46 +173,48 @@ describe("Validator - Core", () => {
             b : 'number|less_than:20',
         })).validate({});
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([
-            {msg: 'number', params: []},
-            {msg: 'less_than', params: ['20']}
-        ]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({
+            a: [],
+            b: [
+                {msg: 'number', params: []},
+                {msg: 'less_than', params: ['20']}
+            ],
+        });
     });
 
 //  Flag : Parameter
 
     it ('parameter flag (<...>) should allow link to passed parameter', () => {
         const evaluation = (new Validator({ a: 'equal_to:<foo>'})).validate({ a: 'hello', foo: 'hello' });
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('parameter flag (<...>) should fail if parameter is not passed', () => {
         const evaluation = (new Validator({ a: 'equal_to:<foo>'})).validate({ a: 'hello', foobar: 'hello' });
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg:'equal_to', params: [undefined]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg:'equal_to', params: [undefined]}]);
     });
 
     it ('parameter flag (<...>) should allow multiple parameters inside the same ruleset', () => {
         const evaluation = (new Validator({ a: 'between:<min>,<max>'})).validate({ a: 5, min: 3, max: 7 });
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('parameter flag (<...>) should allow multiple parameters inside the same config', () => {
         const evaluation = (new Validator({ a: 'in:<arr1>', b: 'in:<arr2>'})).validate({ a: 1, b: 2, arr1: [1, 3, 5], arr2: [2, 4, 6] });
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('parameter flag (<...>) should allow the same parameter on multiple rules inside the same config', () => {
         const evaluation = (new Validator({ a: 'in:<arr1>', b: 'in:<arr1>'})).validate({a: 1, b: 2, arr1: [1, 2, 3]});
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
 //  Extend functionality
@@ -222,8 +225,8 @@ describe("Validator - Core", () => {
         });
 
         const evaluation = (new Validator({ a: 'trick:<b>' })).validate({ a: 'trick', b: 'treat' });
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('extend functionality should work with multiple parameters', () => {
@@ -232,8 +235,8 @@ describe("Validator - Core", () => {
         });
 
         const evaluation = (new Validator({ a: 'sum:<b>,<c>' })).validate({ a: 4, b: 1, c: 3 });
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('extend functionality should work across multiple instances', () => {
@@ -243,13 +246,13 @@ describe("Validator - Core", () => {
 
         //  Evaluation
         const evaluation = (new Validator({ a: 'double:<b>' })).validate({ a: 4, b: 2 });
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
 
         //  Second evaluation
         const evaluation2 = (new Validator({ a: 'double:<b>' })).validate({ a: 4, b: 2 });
-        expect(evaluation2.is_valid).toEqual(true);
-        expect(evaluation2.errors.a).toEqual([]);
+        expect(evaluation2.is_valid).to.eql(true);
+        expect(evaluation2.errors.a).to.deep.equal([]);
     });
 
     it ('extend functionality should allow redefining the same validity function', () => {
@@ -257,16 +260,16 @@ describe("Validator - Core", () => {
 
         //  Evaluation
         const evaluation = (new Validator({ name: 'ismyname' })).validate({ name: 'peter' });
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.name).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.name).to.deep.equal([]);
 
         //  Redefine
         Validator.extend('ismyname', function (val, p1, p2) {return val === 'josh';});
 
         //  Second evaluation
         const evaluation2 = (new Validator({ name: 'ismyname' })).validate({ name: 'peter' });
-        expect(evaluation2.is_valid).toEqual(false);
-        expect(evaluation2.errors.name).toEqual([{msg:'ismyname', params: []}]);
+        expect(evaluation2.is_valid).to.eql(false);
+        expect(evaluation2.errors.name).to.deep.equal([{msg:'ismyname', params: []}]);
     });
 
 //  Complex validations
@@ -280,9 +283,9 @@ describe("Validator - Core", () => {
             password_confirmation: 'thisIsMy1Little!Secret',
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.password).toEqual([]);
-        expect(evaluation.errors.password_confirmation).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.password).to.deep.equal([]);
+        expect(evaluation.errors.password_confirmation).to.deep.equal([]);
     });
 
     it ('should be able to validate complex objects [2]', () => {
@@ -300,11 +303,11 @@ describe("Validator - Core", () => {
             },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.first_name).toEqual([]);
-        expect(evaluation.errors.last_name).toEqual([]);
-        expect(evaluation.errors.age).toEqual([]);
-        expect(evaluation.errors.gender).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.first_name).to.deep.equal([]);
+        expect(evaluation.errors.last_name).to.deep.equal([]);
+        expect(evaluation.errors.age).to.deep.equal([]);
+        expect(evaluation.errors.gender).to.deep.equal([]);
     });
 
     it ('should be able to validate complex objects [3]', () => {
@@ -323,11 +326,11 @@ describe("Validator - Core", () => {
             },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.first_name).toEqual([]);
-        expect(evaluation.errors.last_name).toEqual([]);
-        expect(evaluation.errors.age).toEqual([{msg: 'integer', params: []}, {msg: 'between', params: ['1', '150']}]);
-        expect(evaluation.errors.gender).toEqual([{msg: 'in', params: [['m', 'f', 'o']]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.first_name).to.deep.equal([]);
+        expect(evaluation.errors.last_name).to.deep.equal([]);
+        expect(evaluation.errors.age).to.deep.equal([{msg: 'integer', params: []}, {msg: 'between', params: ['1', '150']}]);
+        expect(evaluation.errors.gender).to.deep.equal([{msg: 'in', params: [['m', 'f', 'o']]}]);
     });
 
     it ('should be able to validate complex multidimensional objects [4]', () => {
@@ -351,11 +354,11 @@ describe("Validator - Core", () => {
             },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.address.street).toEqual([]);
-        expect(evaluation.errors.address.nr).toEqual([]);
-        expect(evaluation.errors.address.zip).toEqual([]);
-        expect(evaluation.errors.contact.email).toEqual([{msg: 'email', params: []}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.address.street).to.deep.equal([]);
+        expect(evaluation.errors.address.nr).to.deep.equal([]);
+        expect(evaluation.errors.address.zip).to.deep.equal([]);
+        expect(evaluation.errors.contact.email).to.deep.equal([{msg: 'email', params: []}]);
     });
 
 })

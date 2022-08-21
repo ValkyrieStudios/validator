@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vEqualTo", () => {
 
     it ('should validate correctly', () => {
@@ -17,23 +26,23 @@ describe("vEqualTo", () => {
             },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('should be invalid when no params are passed', () => {
         const evaluation = (new Validator({ a: 'equal_to:<meta.params>' })).validate({ a: 'hello' });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'equal_to', params: [undefined] }]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'equal_to', params: [undefined] }]);
     });
 
     it ('should return a correct error message when invalid', () => {
         const evaluation = (new Validator({ a: 'equal_to:<meta.params>' })).validate({ a: 'hello', meta: { params: 'foo' } });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{ msg: 'equal_to', params: ['foo'] }]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{ msg: 'equal_to', params: ['foo'] }]);
     });
 
 //  Primitive string
@@ -44,8 +53,8 @@ describe("vEqualTo", () => {
             meta: { params: 'Valkyrie Studios' },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('should validate a wrong primitive string check as unequal', () => {
@@ -54,8 +63,8 @@ describe("vEqualTo", () => {
             meta: { params: 'mys3cretpassword is so cool' },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'equal_to', params: ['mys3cretpassword is so cool']}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'equal_to', params: ['mys3cretpassword is so cool']}]);
     });
 
     it ('should take case sensitivity into account for primitive string checks', () => {
@@ -64,8 +73,8 @@ describe("vEqualTo", () => {
             meta: { params: 'hello my darling' },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'equal_to', params: ['hello my darling']}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'equal_to', params: ['hello my darling']}]);
     });
 
 //  Primitive integer
@@ -76,8 +85,8 @@ describe("vEqualTo", () => {
             meta: { params: 50 },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('should validate a wrong primitive integer check as invalid', () => {
@@ -86,8 +95,8 @@ describe("vEqualTo", () => {
             meta: { params: 4096 },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'equal_to', params: [4096]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'equal_to', params: [4096]}]);
     });
 
 //  Primitive float
@@ -98,8 +107,8 @@ describe("vEqualTo", () => {
             meta: { params: 3.14159265359 },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('should validate a wrong primitive float check as invalid', () => {
@@ -108,8 +117,8 @@ describe("vEqualTo", () => {
             meta: { params: Math.PI },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'equal_to', params: [Math.PI]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'equal_to', params: [Math.PI]}]);
     });
 
 //  Boolean check
@@ -121,9 +130,9 @@ describe("vEqualTo", () => {
             meta: { params: true, b_params: false },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('should validate an incorrect boolean check as invalid', () => {
@@ -133,9 +142,9 @@ describe("vEqualTo", () => {
             meta: { params: false, b_params: true },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'equal_to', params: [false]}]);
-        expect(evaluation.errors.b).toEqual([{msg: 'equal_to', params: [true]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'equal_to', params: [false]}]);
+        expect(evaluation.errors.b).to.deep.equal([{msg: 'equal_to', params: [true]}]);
     });
 
 //  Date check
@@ -147,9 +156,9 @@ describe("vEqualTo", () => {
             meta: { params: new Date('1990-02-07'), b_params: new Date('2014-11-01') },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('should validate an incorrect date check as invalid', () => {
@@ -158,8 +167,8 @@ describe("vEqualTo", () => {
             meta: { params: new Date('1990-02-07') },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'equal_to', params:[new Date('1990-02-07')]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'equal_to', params:[new Date('1990-02-07')]}]);
     });
 
 //  Object check
@@ -170,8 +179,8 @@ describe("vEqualTo", () => {
             meta: { params: {a: 10, b: 2} },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('should validate a wrong object check as invalid', () => {
@@ -180,8 +189,8 @@ describe("vEqualTo", () => {
             meta: { params: { a: 10, b: 2 } },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'equal_to', params: [{a: 10, b: 2}] }]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'equal_to', params: [{a: 10, b: 2}] }]);
     });
 
 //  Array check
@@ -192,8 +201,8 @@ describe("vEqualTo", () => {
             meta: { params: [1, 'hello', 2, 'world'] },
         });
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('should validate a wrong array check as invalid', () => {
@@ -202,8 +211,8 @@ describe("vEqualTo", () => {
             meta: { params: [1, 'hello', 2, 'world'] },
         });
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'equal_to', params: [[1, 'hello', 2, 'world']]}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'equal_to', params: [[1, 'hello', 2, 'world']]}]);
     });
 
 //  Mix
@@ -223,8 +232,8 @@ describe("vEqualTo", () => {
 
         const evaluation = (new Validator(rules)).validate(Object.assign({}, tests, {meta: tests}));
 
-        expect(evaluation.is_valid).toEqual(true);
-        Object.keys(tests).forEach((key) => expect(evaluation.errors[key]).toEqual([]));
+        expect(evaluation.is_valid).to.eql(true);
+        Object.keys(tests).forEach((key) => expect(evaluation.errors[key]).to.deep.equal([]));
     });
 
     it ('should validate a wrong check with mixed params as invalid', () => {
@@ -249,8 +258,8 @@ describe("vEqualTo", () => {
 
         const evaluation = (new Validator(rules)).validate(Object.assign({}, tests, {meta: tests_against }));
 
-        expect(evaluation.is_valid).toEqual(false);
-        Object.keys(tests).forEach((key) => expect(evaluation.errors[key]).toEqual([{msg: 'equal_to', params: [tests_against[key]]}]));
+        expect(evaluation.is_valid).to.eql(false);
+        Object.keys(tests).forEach((key) => expect(evaluation.errors[key]).to.deep.equal([{msg: 'equal_to', params: [tests_against[key]]}]));
     });
 
 });

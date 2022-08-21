@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vNumber", () => {
     const subject = {
         a : 100,
@@ -27,9 +36,9 @@ describe("vNumber", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.a).toEqual([]);
-        expect(evaluation.errors.b).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+        expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('should not validate other types as valid numbers', () => {
@@ -41,8 +50,22 @@ describe("vNumber", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors).toEqual(jasmine.any(Object));
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({
+            a: [],
+            b: [],
+            c: [{msg: 'number', params: []}],
+            d: [{msg: 'number', params: []}],
+            e: [{msg: 'number', params: []}],
+            f: [{msg: 'number', params: []}],
+            g: [{msg: 'number', params: []}],
+            h: [{msg: 'number', params: []}],
+            i: [{msg: 'number', params: []}],
+            j: [{msg: 'number', params: []}],
+            k: [{msg: 'number', params: []}],
+            l: [{msg: 'number', params: []}],
+            n: [{msg: 'number', params: []}],
+        });
     });
 
     it ('should return a correct error message when invalid', () => {
@@ -56,10 +79,10 @@ describe("vNumber", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.is_valid).to.eql(false);
 
-        valid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([]));
-        invalid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([{msg:'number', params: []}]));
+        valid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([]));
+        invalid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([{msg:'number', params: []}]));
     });
 
 });

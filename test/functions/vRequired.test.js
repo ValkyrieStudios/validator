@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vRequired", () => {
 
     it ('should be valid if passed a correct value', () => {
@@ -23,45 +32,45 @@ describe("vRequired", () => {
         }, {});
 
         const evaluation = (new Validator(rules)).validate(subject);
-        expect(evaluation.is_valid).toEqual(true);
+        expect(evaluation.is_valid).to.eql(true);
 
-        Object.keys(subject).forEach(key => expect(evaluation.errors[key]).toEqual([]));
+        Object.keys(subject).forEach(key => expect(evaluation.errors[key]).to.deep.equal([]));
     });
 
     it ('should be invalid if not passed', () => {
         const evaluation = (new Validator({ a: 'required' })).validate({});
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'required', params: []}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'required', params: []}]);
     });
 
     it ('should be invalid if passed as undefined', () => {
         const evaluation = (new Validator({ a: 'required' })).validate({ a: undefined });
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'required', params: []}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'required', params: []}]);
     });
 
     it ('should be invalid if passed as an empty string', () => {
         const evaluation = (new Validator({ a: 'required' })).validate({ a: '' });
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'required', params: []}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'required', params: []}]);
     });
 
     it ('should be invalid if passed a string that only contains spaces', () => {
         const evaluation = (new Validator({ a: 'required' })).validate({ a: '' });
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'required', params: []}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'required', params: []}]);
     });
 
     it ('should be invalid if passed as an empty array', () => {
         const evaluation = (new Validator({ a: 'required' })).validate({ a: [] });
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'required', params: []}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'required', params: []}]);
     });
 
     it ('should be invalid if passed a NaN', () => {
         const evaluation = (new Validator({ a: 'required' })).validate({ a: Number.NaN });
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors.a).toEqual([{msg: 'required', params: []}]);
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'required', params: []}]);
     });
 
 });

@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vArray", () => {
     const subject = {
         a : 100,
@@ -27,9 +36,9 @@ describe("vArray", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(true);
-        expect(evaluation.errors.i).toEqual([]);
-        expect(evaluation.errors.l).toEqual([]);
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.i).to.deep.equal([]);
+        expect(evaluation.errors.l).to.deep.equal([]);
     });
 
     it ('should not validate other types as valid arrays', () => {
@@ -41,8 +50,22 @@ describe("vArray", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
-        expect(evaluation.errors).toEqual(jasmine.any(Object));
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({
+            a: [{msg: 'array', params: []}],
+            b: [{msg: 'array', params: []}],
+            c: [{msg: 'array', params: []}],
+            d: [{msg: 'array', params: []}],
+            e: [{msg: 'array', params: []}],
+            f: [{msg: 'array', params: []}],
+            g: [{msg: 'array', params: []}],
+            h: [{msg: 'array', params: []}],
+            i: [],
+            j: [{msg: 'array', params: []}],
+            k: [{msg: 'array', params: []}],
+            l: [],
+            n: [{msg: 'array', params: []}],
+        });
     });
 
     it ('should return a correct error message when invalid', () => {
@@ -56,10 +79,10 @@ describe("vArray", () => {
 
         const evaluation = validator.validate(subject);
 
-        expect(evaluation.is_valid).toEqual(false);
+        expect(evaluation.is_valid).to.eql(false);
 
-        valid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([]));
-        invalid_keys.forEach(key => expect(evaluation.errors[key]).toEqual([{msg:'array', params: []}]));
+        valid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([]));
+        invalid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([{msg:'array', params: []}]));
     });
 
 });

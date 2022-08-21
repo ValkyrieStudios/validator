@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vUrlNoQuery", () => {
 
     const invalids = [
@@ -105,8 +114,8 @@ describe("vUrlNoQuery", () => {
 
         for (let el of valids) {
             const evaluation = v.validate({a: el});
-            expect(evaluation.is_valid).toEqual(true);
-            expect(evaluation.errors.a).toEqual([]);
+            expect(evaluation.is_valid).to.eql(true);
+            expect(evaluation.errors.a).to.deep.equal([]);
         }
     });
 
@@ -115,8 +124,8 @@ describe("vUrlNoQuery", () => {
 
         for (let el of valid_with_query) {
             const evaluation = v.validate({a: el});
-            expect(evaluation.is_valid).toEqual(false);
-            expect(evaluation.errors.a).toEqual([{msg:'url_noquery', params: []}]);
+            expect(evaluation.is_valid).to.eql(false);
+            expect(evaluation.errors.a).to.deep.equal([{msg:'url_noquery', params: []}]);
         }
     });
 
@@ -125,8 +134,8 @@ describe("vUrlNoQuery", () => {
 
         for (let el of invalids) {
             const evaluation = v.validate({a: el});
-            expect(evaluation.is_valid).toEqual(false);
-            expect(evaluation.errors.a).toEqual([{msg:'url_noquery', params: []}]);
+            expect(evaluation.is_valid).to.eql(false);
+            expect(evaluation.errors.a).to.deep.equal([{msg:'url_noquery', params: []}]);
         }
     });
 
@@ -135,8 +144,8 @@ describe("vUrlNoQuery", () => {
 
         for (let el of invalid_url) {
             const evaluation = v.validate({a: el});
-            expect(evaluation.is_valid).toEqual(false);
-            expect(evaluation.errors.a).toEqual([{msg:'url_noquery', params: []}]);
+            expect(evaluation.is_valid).to.eql(false);
+            expect(evaluation.errors.a).to.deep.equal([{msg:'url_noquery', params: []}]);
         }
     });
 });

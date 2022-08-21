@@ -2,6 +2,15 @@
 
 import Validator from '../../src/index';
 
+const chai = require('chai');
+const spies = require('chai-spies');
+chai.use(spies);
+
+const expect = chai.expect;
+const assert = chai.assert;
+const should = chai.should();
+const spy = chai.spy;
+
 describe("vColorHex", () => {
     const invalids = [
         100,
@@ -61,8 +70,8 @@ describe("vColorHex", () => {
 
         for (let el of valids) {
             const evaluation = v.validate({a: el});
-            expect(evaluation.is_valid).toEqual(true);
-            expect(evaluation.errors.a).toEqual([]);
+            expect(evaluation.is_valid).to.eql(true);
+            expect(evaluation.errors.a).to.deep.equal([]);
         }
     });
 
@@ -71,8 +80,8 @@ describe("vColorHex", () => {
 
         for (let el of invalids) {
             const evaluation = v.validate({a: el});
-            expect(evaluation.is_valid).toEqual(false);
-            expect(evaluation.errors.a).toEqual([{msg:'color_hex', params: []}]);
+            expect(evaluation.is_valid).to.eql(false);
+            expect(evaluation.errors.a).to.deep.equal([{msg:'color_hex', params: []}]);
         }
     });
 
@@ -81,8 +90,8 @@ describe("vColorHex", () => {
 
         for (let el of invalid_hex) {
             const evaluation = v.validate({a: el});
-            expect(evaluation.is_valid).toEqual(false);
-            expect(evaluation.errors.a).toEqual([{msg:'color_hex', params: []}]);
+            expect(evaluation.is_valid).to.eql(false);
+            expect(evaluation.errors.a).to.deep.equal([{msg:'color_hex', params: []}]);
         }
     });
 
