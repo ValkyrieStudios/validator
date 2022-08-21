@@ -1,12 +1,11 @@
 'use strict';
 
-import isString from '@valkyriestudios/utils/string/is';
+import Is from '@valkyriestudios/utils/is';
 
 //  We don't use a single regex for validation as there is no one single
 //  regex that works for all
 export default function vEmail (val) {
-    if (!val) return false;
-    if (!isString(val)) return false;
+    if (!Is.NotEmptyString(val)) return false;
 
     const parts = val.split('@');
     if (parts.length !== 2) return false;

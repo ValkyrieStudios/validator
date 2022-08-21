@@ -1,14 +1,12 @@
 'use strict';
 
-import isString     from '@valkyriestudios/utils/string/is';
-import isBoolean    from '@valkyriestudios/utils/boolean/is';
-import isNumber     from '@valkyriestudios/utils/number/is';
-import fnv1A        from '@valkyriestudios/utils/hash/fnv1A';
+import Is 		from '@valkyriestudios/utils/is';
+import fnv1A    from '@valkyriestudios/utils/hash/fnv1A';
 
 export default function vIn (val, params = undefined) {
-    if (params === undefined) return false;
+    if (!Is.NotEmptyArray(params) && !Is.NotEmptyString(params)) return false;
 
-    if (isString(val) || isNumber(val) || isBoolean(val)) {
+    if (Is.String(val) || Is.Number(val) || Is.Boolean(val)) {
         return params.indexOf(val) > -1;
     }
 

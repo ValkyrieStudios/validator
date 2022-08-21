@@ -1,7 +1,7 @@
 'use strict';
 
-import isString from '@valkyriestudios/utils/string/is';
+import Is from '@valkyriestudios/utils/is';
 
 export default function vString (data) {
-    return isString(data);
+    return Is.String(data);
 }

@@ -1,14 +1,13 @@
 'use strict';
 
-import isObject     from '@valkyriestudios/utils/object/is';
-import deepGet      from '@valkyriestudios/utils/deep/get';
-import deepSet      from '@valkyriestudios/utils/deep/set';
-import isString     from '@valkyriestudios/utils/string/is';
-import isArray      from '@valkyriestudios/utils/array/is';
+import Is       from '@valkyriestudios/utils/is';
+import deepGet  from '@valkyriestudios/utils/deep/get';
+import deepSet  from '@valkyriestudios/utils/deep/set';
 
 import vAlphaNumSpaces          from './functions/vAlphaNumSpaces';
 import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline';
 import vArray                   from './functions/vArray';
+import vArrayNe                 from './functions/vArrayNe';
 import vBetween                 from './functions/vBetween';
 import vBoolean                 from './functions/vBoolean';
 import vColorHex                from './functions/vColorHex';
@@ -25,9 +24,11 @@ import vMax                     from './functions/vMax';
 import vMin                     from './functions/vMin';
 import vNumber                  from './functions/vNumber';
 import vObject                  from './functions/vObject';
+import vObjectNe                from './functions/vObjectNe';
 import vRequired                from './functions/vRequired';
 import vSize                    from './functions/vSize';
 import vString                  from './functions/vString';
+import vStringNe                from './functions/vStringNe';
 import vUrl                     from './functions/vUrl';
 import vUrlNoQuery              from './functions/vUrlNoQuery';
 
@@ -35,6 +36,7 @@ const validateFn = {
     alpha_num_spaces            : vAlphaNumSpaces,
     alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
     array                       : vArray,
+    array_ne                    : vArrayNe,
     between                     : vBetween,
     boolean                     : vBoolean,
     color_hex                   : vColorHex,
@@ -51,9 +53,11 @@ const validateFn = {
     min                         : vMin,
     number                      : vNumber,
     object                      : vObject,
+    object_ne                   : vObjectNe,
     required                    : vRequired,
     size                        : vSize,
     string                      : vString,
+    string_ne                   : vStringNe,
     url                         : vUrl,
     url_noquery                 : vUrlNoQuery,
 };
@@ -62,18 +66,16 @@ export default class Validator {
 
     constructor (rules = undefined) {
         //  Check for rules
-        if (rules === undefined || !isObject(rules) || isArray(rules)) {
-            throw new TypeError('Please provide an object to define the rules of this validator');
-        }
+        if (!Is.Object(rules)) throw new TypeError('Please provide an object to define the rules of this validator');
 
         //  Recursively parse our validation rules, to allow for deeply nested validation to be done
         function parse (acc, key) {
             const cursor = deepGet(rules, key);
 
             //  If the cursor is an object, go deeper into the object
-            if (isObject(cursor)) {
+            if (Is.Object(cursor)) {
                 Object.keys(cursor).map(cursor_key => `${key}.${cursor_key}`).reduce(parse, acc);
-            } else if (isString(cursor)) {
+            } else if (Is.NotEmptyString(cursor)) {
                 //  If the cursor is a string, we've hit a rule
                 const sometimes = !!(cursor.substr(0, 1) === '?');
 
@@ -148,7 +150,7 @@ export default class Validator {
                 const cursor = deepGet(this.rules, key);
 
                 //  Recursively validate
-                if (isObject(cursor) && !isArray(cursor)) {
+                if (Is.NotEmptyObject(cursor)) {
                     return Object.keys(cursor).map(cursor_key => {
                         cursor_key = `${key}.${cursor_key}`;
                         deepSet(this.evaluation.errors, cursor_key, []);
@@ -159,7 +161,7 @@ export default class Validator {
                 }
 
                 //  Validate array of rules for this property
-                if (!isArray(cursor)) return;
+                if (!Is.NotEmptyArray(cursor)) return;
                 cursor.forEach(rule => {
                     const val = deepGet(data, key);
 

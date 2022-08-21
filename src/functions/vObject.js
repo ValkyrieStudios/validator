@@ -1,7 +1,7 @@
 'use strict';
 
-import isObject from '@valkyriestudios/utils/object/is';
+import Is from '@valkyriestudios/utils/is';
 
 export default function vObject (data) {
-    return isObject(data);
+    return Is.Object(data);
 }

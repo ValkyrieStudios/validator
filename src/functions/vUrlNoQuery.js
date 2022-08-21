@@ -1,9 +1,9 @@
 'use strict';
 
-import isString from '@valkyriestudios/utils/string/is';
+import Is from '@valkyriestudios/utils/is';
 
 export default function vUrl (data) {
-    if (!isString(data)) return false;
+    if (!Is.NotEmptyString(data)) return false;
 
     //  Check for query string identifier
     if (data.indexOf('?') > -1) return false;

@@ -19,8 +19,8 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "nyc --reporter=lcov --reporter=text-summary mocha --colors --require @babel/register ./test/**/*.test.js",
-    "test_ci": "nyc --reporter=lcov mocha --colors --require @babel/register ./test/**/*.test.js",
+    "test": "nyc --reporter=lcov --reporter=text-summary mocha --colors --require @babel/register --recursive ./test",
+    "test_ci": "nyc --reporter=lcov mocha --colors --require @babel/register --recursive ./test",
     "lint": "./node_modules/.bin/eslint ./src",
     "build": "gulp && npm run lint",
     "codecov": "codecov"

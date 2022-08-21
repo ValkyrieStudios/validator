@@ -1,9 +1,9 @@
 'use strict';
 
-import isNumber from '@valkyriestudios/utils/number/is';
+import Is from '@valkyriestudios/utils/is';
 
 export default function vInteger (val) {
-    if (!isNumber(val)) return false;
+    if (!Is.Number(val)) return false;
     if (!Number.isFinite(val)) return false;
     return Math.floor(val) === val;
 }

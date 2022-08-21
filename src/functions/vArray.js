@@ -1,7 +1,7 @@
 'use strict';
 
-import isArray from '@valkyriestudios/utils/array/is';
+import Is from '@valkyriestudios/utils/is';
 
 export default function vArray (val) {
-    return isArray(val);
+    return Is.Array(val);
 }

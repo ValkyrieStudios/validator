@@ -1,9 +1,9 @@
 'use strict';
 
-import isBoolean from '@valkyriestudios/utils/boolean/is';
+import Is from '@valkyriestudios/utils/is';
 
 export default function vBoolean (val, equals = null) {
-    return isBoolean(val) && equals !== null
+    return Is.Boolean(val) && equals !== null
         ? !!val === !!equals
-        : isBoolean(val);
+        : Is.Boolean(val);
 }

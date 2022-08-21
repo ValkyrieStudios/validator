@@ -1,9 +1,9 @@
 'use strict';
 
-import isString from '@valkyriestudios/utils/string/is';
+import Is from '@valkyriestudios/utils/is';
 
 export default function vAlphaNumSpacesMultiline (val) {
-    if (!isString(val)) return false;
+    if (!Is.String(val)) return false;
 
     return /^[a-zA-Z0-9\s]*$/igm.test(val);
 }
