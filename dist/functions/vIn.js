@@ -5,11 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = vIn;
 
-var _is = _interopRequireDefault(require("@valkyriestudios/utils/string/is"));
-
-var _is2 = _interopRequireDefault(require("@valkyriestudios/utils/boolean/is"));
-
-var _is3 = _interopRequireDefault(require("@valkyriestudios/utils/number/is"));
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
 
 var _fnv1A = _interopRequireDefault(require("@valkyriestudios/utils/hash/fnv1A"));
 
@@ -21,7 +17,7 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
@@ -29,9 +25,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 function vIn(val) {
   var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
-  if (params === undefined) return false;
+  if (!_is["default"].NotEmptyArray(params) && !_is["default"].NotEmptyString(params)) return false;
 
-  if ((0, _is["default"])(val) || (0, _is3["default"])(val) || (0, _is2["default"])(val)) {
+  if (_is["default"].String(val) || _is["default"].Number(val) || _is["default"].Boolean(val)) {
     return params.indexOf(val) > -1;
   }
 

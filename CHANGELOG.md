@@ -7,6 +7,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Added
+- Feat: new rule - string_ne
+- Feat: new rule - array_ne
+- Feat: new rule - object_ne
 - Dep: @babel/register@7.18.9
 - Dep: chai@4.3.6
 - Dep: chai-as-promised@7.1.1

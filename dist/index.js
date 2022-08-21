@@ -5,21 +5,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _is = _interopRequireDefault(require("@valkyriestudios/utils/object/is"));
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
 
 var _get = _interopRequireDefault(require("@valkyriestudios/utils/deep/get"));
 
 var _set = _interopRequireDefault(require("@valkyriestudios/utils/deep/set"));
-
-var _is2 = _interopRequireDefault(require("@valkyriestudios/utils/string/is"));
-
-var _is3 = _interopRequireDefault(require("@valkyriestudios/utils/array/is"));
 
 var _vAlphaNumSpaces = _interopRequireDefault(require("./functions/vAlphaNumSpaces"));
 
 var _vAlphaNumSpacesMultiline = _interopRequireDefault(require("./functions/vAlphaNumSpacesMultiline"));
 
 var _vArray = _interopRequireDefault(require("./functions/vArray"));
+
+var _vArrayNe = _interopRequireDefault(require("./functions/vArrayNe"));
 
 var _vBetween = _interopRequireDefault(require("./functions/vBetween"));
 
@@ -53,11 +51,15 @@ var _vNumber = _interopRequireDefault(require("./functions/vNumber"));
 
 var _vObject = _interopRequireDefault(require("./functions/vObject"));
 
+var _vObjectNe = _interopRequireDefault(require("./functions/vObjectNe"));
+
 var _vRequired = _interopRequireDefault(require("./functions/vRequired"));
 
 var _vSize = _interopRequireDefault(require("./functions/vSize"));
 
 var _vString = _interopRequireDefault(require("./functions/vString"));
+
+var _vStringNe = _interopRequireDefault(require("./functions/vStringNe"));
 
 var _vUrl = _interopRequireDefault(require("./functions/vUrl"));
 
@@ -71,7 +73,7 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
@@ -81,12 +83,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-var _validateFn = {
+var validateFn = {
   alpha_num_spaces: _vAlphaNumSpaces["default"],
   alpha_num_spaces_multiline: _vAlphaNumSpacesMultiline["default"],
   array: _vArray["default"],
+  array_ne: _vArrayNe["default"],
   between: _vBetween["default"],
   "boolean": _vBoolean["default"],
   color_hex: _vColorHex["default"],
@@ -103,9 +106,11 @@ var _validateFn = {
   min: _vMin["default"],
   number: _vNumber["default"],
   object: _vObject["default"],
+  object_ne: _vObjectNe["default"],
   required: _vRequired["default"],
   size: _vSize["default"],
   string: _vString["default"],
+  string_ne: _vStringNe["default"],
   url: _vUrl["default"],
   url_noquery: _vUrlNoQuery["default"]
 };
@@ -117,19 +122,16 @@ var Validator = /*#__PURE__*/function () {
     _classCallCheck(this, Validator);
 
     //  Check for rules
-    if (rules === undefined || !(0, _is["default"])(rules) || (0, _is3["default"])(rules)) {
-      throw new TypeError('Please provide an object to define the rules of this validator');
-    } //  Recursively parse our validation rules, to allow for deeply nested validation to be done
-
+    if (!_is["default"].Object(rules)) throw new TypeError('Please provide an object to define the rules of this validator'); //  Recursively parse our validation rules, to allow for deeply nested validation to be done
 
     function parse(acc, key) {
       var cursor = (0, _get["default"])(rules, key); //  If the cursor is an object, go deeper into the object
 
-      if ((0, _is["default"])(cursor)) {
+      if (_is["default"].Object(cursor)) {
         Object.keys(cursor).map(function (cursor_key) {
           return "".concat(key, ".").concat(cursor_key);
         }).reduce(parse, acc);
-      } else if ((0, _is2["default"])(cursor)) {
+      } else if (_is["default"].NotEmptyString(cursor)) {
         //  If the cursor is a string, we've hit a rule
         var sometimes = !!(cursor.substr(0, 1) === '?');
         (0, _set["default"])(acc, key, (sometimes ? cursor.substr(1) : cursor).split('|').reduce(function (rule_acc, rule_string) {
@@ -138,10 +140,10 @@ var Validator = /*#__PURE__*/function () {
 
           params = params.length > 0 ? params[0].split(',') : []; //  Parse parameters into callback functions
 
-          params = params.reduce(function (acc, param) {
-            if (/^\<([A-z]|[0-9]|\_|\.)+\>$/g.test(param)) {
+          params = params.reduce(function (params_acc, param) {
+            if (/^<([A-z]|[0-9]|_|\.)+>$/g.test(param)) {
               param = param.substr(1, param.length - 2);
-              acc.push(function (data) {
+              params_acc.push(function (data) {
                 try {
                   return (0, _get["default"])(data, param);
                 } catch (err) {
@@ -149,12 +151,12 @@ var Validator = /*#__PURE__*/function () {
                 }
               });
             } else {
-              acc.push(function () {
+              params_acc.push(function () {
                 return param;
               });
             }
 
-            return acc;
+            return params_acc;
           }, []);
           rule_acc.push({
             type: type,
@@ -187,6 +189,16 @@ var Validator = /*#__PURE__*/function () {
   }
 
   _createClass(Validator, [{
+    key: "is_valid",
+    get: function get() {
+      return this.evaluation.is_valid;
+    }
+  }, {
+    key: "errors",
+    get: function get() {
+      return this.evaluation.errors;
+    }
+  }, {
     key: "validate",
     value: function validate(data) {
       var _this = this;
@@ -202,7 +214,7 @@ var Validator = /*#__PURE__*/function () {
         var run = function run(key) {
           var cursor = (0, _get["default"])(_this.rules, key); //  Recursively validate
 
-          if ((0, _is["default"])(cursor) && !(0, _is3["default"])(cursor)) {
+          if (_is["default"].NotEmptyObject(cursor)) {
             return Object.keys(cursor).map(function (cursor_key) {
               cursor_key = "".concat(key, ".").concat(cursor_key);
               (0, _set["default"])(_this.evaluation.errors, cursor_key, []);
@@ -213,7 +225,7 @@ var Validator = /*#__PURE__*/function () {
           } //  Validate array of rules for this property
 
 
-          if (!(0, _is3["default"])(cursor)) return;
+          if (!_is["default"].NotEmptyArray(cursor)) return;
           cursor.forEach(function (rule) {
             var _validateFn$rule$type;
 
@@ -227,7 +239,7 @@ var Validator = /*#__PURE__*/function () {
               return acc;
             }, []);
 
-            if (!(_validateFn$rule$type = _validateFn[rule.type]).call.apply(_validateFn$rule$type, [_this, val].concat(_toConsumableArray(params)))) {
+            if (!(_validateFn$rule$type = validateFn[rule.type]).call.apply(_validateFn$rule$type, [_this, val].concat(_toConsumableArray(params)))) {
               (0, _get["default"])(_this.evaluation.errors, key).push({
                 msg: rule.type,
                 params: params
@@ -246,23 +258,13 @@ var Validator = /*#__PURE__*/function () {
 
       return Object.assign({}, this.evaluation);
     }
-  }, {
-    key: "is_valid",
-    get: function get() {
-      return this.evaluation.is_valid;
-    }
-  }, {
-    key: "errors",
-    get: function get() {
-      return this.evaluation.errors;
-    }
   }], [{
     key: "extend",
     value: function extend(name, fn) {
       //  If prop already exists, delete it
-      if (_validateFn[name]) delete _validateFn[name]; //  Define property with a configurable flag to allow reconfiguration
+      if (validateFn[name]) delete validateFn[name]; //  Define property with a configurable flag to allow reconfiguration
 
-      Object.defineProperty(_validateFn, name, {
+      Object.defineProperty(validateFn, name, {
         configurable: true,
         get: function get() {
           return fn;

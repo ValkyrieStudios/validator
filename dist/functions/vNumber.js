@@ -5,12 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = vNumber;
 
-var _is = _interopRequireDefault(require("@valkyriestudios/utils/number/is"));
-
-var _isNumericalNaN = _interopRequireDefault(require("@valkyriestudios/utils/number/isNumericalNaN"));
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function vNumber(val) {
-  return (0, _is["default"])(val) && !(0, _isNumericalNaN["default"])(val);
+  return _is["default"].Number(val);
 }

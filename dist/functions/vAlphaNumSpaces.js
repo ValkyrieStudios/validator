@@ -5,11 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = vAlphaNumSpaces;
 
-var _is = _interopRequireDefault(require("@valkyriestudios/utils/string/is"));
+var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function vAlphaNumSpaces(val) {
-  if (!(0, _is["default"])(val)) return false;
+  if (!_is["default"].String(val)) return false;
   return /^[a-zA-Z0-9 ]*$/ig.test(val);
 }
