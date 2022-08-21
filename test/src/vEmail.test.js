@@ -184,6 +184,11 @@ describe("vEmail", () => {
         expect(evaluation.is_valid).toEqual(false);
     });
 
+    it ('should validate umlaut characters in the address field as valid', () => {
+        const evaluation = (new Validator({ a: 'email' })).validate({ a: 'janköping@bastardburgers.se' });
+        expect(evaluation.is_valid).toEqual(true);
+    });
+
     it ('should validate unicode characters in the address field as invalid', () => {
         const evaluation = (new Validator({ a: 'email' })).validate({ a: 'あいうえお@domain.com' });
         expect(evaluation.is_valid).toEqual(false);
