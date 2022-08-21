@@ -122,7 +122,7 @@ Parameterization happens through the following syntax `<myparam>` where myparam 
 
 Example of a parameterized equal to rule:
 ```
-const v = new Validator({ a: 'equal_to:<meta.b>' });
+const v = new Validator({ a: 'equal_to:<b>' });
 
 v.validate({ a: 'hello', b: 'world' }); // is_valid = false
 v.validate({ a: 'foo', b: 'foo' }); // is_valid = true
@@ -130,7 +130,7 @@ v.validate({ a: 'foo', b: 'foo' }); // is_valid = true
 
 Example of a parameterized greater_than rule:
 ```
-const v = new Validator({ a: 'greater_than:<meta.b>' });
+const v = new Validator({ a: 'greater_than:<b>' });
 
 v.validate({ a: 50, b: 40 }); // is_valid = true
 v.validate({ a: 10, b: 20 }); // is_valid = false
@@ -146,7 +146,7 @@ To make use of the `?` flag, place it at the very start of the defined rule.
 
 Example of an optional rule:
 ```
-const v = new Validator({ gender: '?string|in:<meta.genders>'});
+const v = new Validator({ gender: '?string|in:<genders>'});
 
 v.validate({ genders: ['m', 'f', 'o']}); // is_valid = true
 v.validate({ gender: 'X', genders: ['m', 'f', 'o']}); // is_valid = false
@@ -192,6 +192,7 @@ The following list shows you all the default rules that are provided by this lib
 | alpha_num_spaces | Validate a string to only contain alphabetical, numerical and space characters |
 | alpha_num_spaces_multiline | Ditto alpha_num_spaces but with the addition of allowing linebreak and carriage returns |
 | array | Validate that a provided value is an array |
+| array_ne | Same behavior as `array`, with the additional check that empty arrays will not be seen as valid |
 | between | Validate that a provided value is between two numbers, if passed a string or array this will validate on length |
 | boolean | Validate that a provided value is a boolean |
 | color_hex | Validate that a provided value is a hex color (with the # included) |
@@ -209,9 +210,11 @@ validate on length |
 | min | Alias of greater_than_or_equal |
 | number | Validate that a provided value is a number, this will see NaN as invalid |
 | object | Validate that a provided value is an object, arrays will not be seen as objects by this rule |
+| object_ne | Same behavior as `object`, with the additional check that empty objects will not be seen as valid |
 | required | Validate that a provided value is not empty, arrays will be seen as valid if at least 1 element is present, strings will be seen as empty if when trimmed the length is bigger than 0, null and undefined will not be valid and a NaN will also be rejected |
 | size | Validate that a provided value has a specific size, this only applies to strings and arrays and checks on length |
 | string | Validate that a provided value is a string |
+| string_ne | Same behavior as `string`, with the additional check that empty strings (after trimming) will not be seen as valid |
 | url | Validate that a provided value is a url, this allows for query string values as well |
 | url_noquery | Validate that a provided value is a url without any query string values |
 
