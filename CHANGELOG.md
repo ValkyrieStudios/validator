@@ -7,6 +7,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- Dep: Upgrade @valkyriestudios/utils to 5.2.0
 - Dep: Upgrade @babel/core to 7.19.3
 - Dep: Upgrade @babel/preset-env to 7.19.3
 - Dep: Upgrade eslint to 8.24.0

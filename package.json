@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/ValkyrieStudios/validator#readme",
   "dependencies": {
-    "@valkyriestudios/utils": "^5.1.0"
+    "@valkyriestudios/utils": "^5.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
