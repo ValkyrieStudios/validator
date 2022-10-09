@@ -6,11 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Validator@extendMulti: Extend the validator by passing an object, each key should have a function as its value
+
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 5.2.0
 - Dep: Upgrade @babel/core to 7.19.3
 - Dep: Upgrade @babel/preset-env to 7.19.3
 - Dep: Upgrade eslint to 8.24.0
+- Validator@extend: Will now throw if the name passed is not a string and the value passed is not a function
 
 ## [2.3.0] - 2022-08-21
 ### Added

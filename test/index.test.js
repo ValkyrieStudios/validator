@@ -12,6 +12,11 @@ const should = chai.should();
 const spy = chai.spy;
 
 describe("Validator - Core", () => {
+
+    const obj_tests = [[0,1,2], 1, 2, 3, .5, 0.4, -1, true, new Date(), /1/g, false, 'hello', 'abc'];
+    const str_tests = [{a:1}, [0,1,2], true, new Date(), /1/g, false, 123, 0.123];
+    const fn_tests  = [{a:1}, [0,1,2], true, new Date(), /1/g, false, 'hello', '', 'abc', 123, 0.123];
+
     const subject = {
         a : 100,
         b : 200,
@@ -41,6 +46,13 @@ describe("Validator - Core", () => {
 
         //  It should not have a extend function on its instance
         should.not.exist(validator.extend);
+
+        //  It should have a extendMulti function on the class
+        should.exist(Validator.extendMulti);
+        assert.typeOf(Validator.extendMulti, 'Function');
+
+        //  It should not have a extendMulti function on its instance
+        should.not.exist(validator.extendMulti);
 
         //  It should have an 'is_valid' property that is a boolean and by default set to false
         should.exist(validator.is_valid);
@@ -219,6 +231,36 @@ describe("Validator - Core", () => {
 
 //  Extend functionality
 
+    it ('extend functionality should throw if not provided anything', () => {
+        expect(function () {
+            Validator.extend();
+        }).to.throw;
+    });
+
+    it ('extend functionality should throw if not provided a string name', () => {
+        for (const el of str_tests) {
+            expect(function () {
+                Validator.extend(el, val => true);
+            }).to.throw;
+        }
+    });
+
+    it ('extend functionality should throw if provided a empty (or empty after trimming) string name', () => {
+        for (const el of ['', ' ', '    ']) {
+            expect(function () {
+                Validator.extend(el, val => true);
+            }).to.throw;
+        }
+    });
+
+    it ('extend functionality should throw if not provided a function', () => {
+        for (const el of fn_tests) {
+            expect(function () {
+                Validator.extend('rule', el);
+            }).to.throw;
+        }
+    });
+
     it ('extend functionality should work', () => {
         Validator.extend('trick', function (val, p1) {
             return p1 === 'treat' ? (val === 'trick') : (p1 === 'trick' ? val === 'treat' : false);
@@ -270,6 +312,118 @@ describe("Validator - Core", () => {
         const evaluation2 = (new Validator({ name: 'ismyname' })).validate({ name: 'peter' });
         expect(evaluation2.is_valid).to.eql(false);
         expect(evaluation2.errors.name).to.deep.equal([{msg:'ismyname', params: []}]);
+    });
+
+//  Extend Multi functionality
+
+    it ('extendMulti functionality should throw if not provided anything', () => {
+        expect(function () {
+            Validator.extend();
+        }).to.throw;
+    });
+
+    it ('extendMulti functionality should throw if not provided an object', () => {
+        for (const el of obj_tests) {
+            expect(function () {
+                Validator.extendMulti(el);
+            }).to.throw;
+        }
+    });
+
+    it ('extendMulti functionality should not throw if provided an empty object', () => {
+        expect(function () {
+            Validator.extendMulti({});
+        }).to.not.throw;
+    });
+
+    it ('extendMulti functionality should throw if provided an object where certain values do not have a function', () => {
+        for (const el of fn_tests) {
+            expect(function () {
+                Validator.extendMulti({
+                    rule_1: el,
+                });
+            }).to.throw;
+        }
+    });
+
+    it ('extendMulti functionality should work', () => {
+        Validator.extendMulti({
+            trick: function (val, p1) {
+                return p1 === 'treat' ? (val === 'trick') : (p1 === 'trick' ? val === 'treat' : false);
+            },
+        });
+
+        const evaluation = (new Validator({a: 'trick:<b>'})).validate({a: 'trick', b: 'treat'});
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+    });
+
+    it ('extendMulti functionality should work with multiple parameters', () => {
+        Validator.extendMulti({
+            sum: function (val, p1, p2) {
+                return val === (p1 + p2);
+            },
+        });
+
+        const evaluation = (new Validator({a: 'sum:<b>,<c>'})).validate({a: 4, b: 1, c: 3});
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+    });
+
+    it ('extendMulti functionality should work across multiple instances', () => {
+        Validator.extendMulti({
+            double: function (val, p1, p2) {
+                return val === (p1 * 2);
+            },
+        });
+
+        //  Evaluation
+        const evaluation = (new Validator({a: 'double:<b>'})).validate({a: 4, b: 2});
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+
+        //  Second evaluation
+        const evaluation2 = (new Validator({a: 'double:<b>'})).validate({a: 4, b: 2});
+        expect(evaluation2.is_valid).to.eql(true);
+        expect(evaluation2.errors.a).to.deep.equal([]);
+    });
+
+    it ('extendMulti functionality should allow redefining the same validity function', () => {
+        Validator.extendMulti({
+            ismyname: function (val, p1, p2) {return val === 'peter';},
+        });
+
+        //  Evaluation
+        const evaluation = (new Validator({name: 'ismyname'})).validate({name: 'peter'});
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.name).to.deep.equal([]);
+
+        //  Redefine
+        Validator.extendMulti({
+            ismyname: function (val, p1, p2) {return val === 'josh';},
+        });
+
+        //  Second evaluation
+        const evaluation2 = (new Validator({name: 'ismyname'})).validate({name: 'peter'});
+        expect(evaluation2.is_valid).to.eql(false);
+        expect(evaluation2.errors.name).to.deep.equal([{msg:'ismyname', params: []}]);
+    });
+
+    it ('extendMulti functionality should allow defining multiple rules at the same time', () => {
+        Validator.extendMulti({
+            ismyname: function (val, p1, p2) {return val === 'peter';},
+            ismyothername: function (val, p1, p2) {return val === 'josh';},
+        });
+
+        //  Evaluation
+        const evaluation = (new Validator({name: 'ismyname'})).validate({name: 'peter'});
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.name).to.deep.equal([]);
+
+        //  Second evaluation
+        const evaluation2 = (new Validator({name: 'ismyothername'})).validate({name: 'peter'});
+        expect(evaluation2.is_valid).to.eql(false);
+        expect(evaluation2.errors.name).to.deep.equal([{msg:'ismyothername', params: []}]);
     });
 
 //  Complex validations

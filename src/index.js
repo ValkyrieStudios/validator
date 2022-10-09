@@ -195,12 +195,31 @@ export default class Validator {
         return Object.assign({}, this.evaluation);
     }
 
+    //  Extend validator rule set
+    //
+    //  @param string   name    Name of the rule
+    //  @param Function fn      Validation function
     static extend (name, fn) {
+        if (!Is.NotEmptyString(name) || !Is.Function(fn)) {
+            throw new Error(`Invalid extension: ${name}, please ensure a valid function/name is passed`);
+        }
+
         //  If prop already exists, delete it
         if (validateFn[name]) delete validateFn[name];
 
         //  Define property with a configurable flag to allow reconfiguration
-        Object.defineProperty(validateFn, name, {configurable: true, get : () => fn});
+        Object.defineProperty(validateFn, name.trim(), {configurable: true, get : () => fn});
+    }
+
+    //  Run multiple validator extensions in one go by passing an object
+    //
+    //  @param object   obj     Object in the format of {rule_1: Function, rule_2: Function, ...}
+    static extendMulti (obj) {
+        //  Check if passed variable is an object
+        if (!Is.Object(obj)) return;
+
+        //  For each key in object, check if its value is a function
+        for (const name of Object.keys(obj)) Validator.extend(name, obj[name]);
     }
 
 }
