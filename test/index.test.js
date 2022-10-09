@@ -72,7 +72,7 @@ describe("Validator - Core", () => {
 //  Validate that the returned value from validate(...) has the correct format
 
     it ('should return a properly formatted evaluation object', () => {
-        const evaluation = (new Validator({ a : 'number' })).validate(subject);
+        const evaluation = (new Validator({a : 'number'})).validate(subject);
 
         //  Evaluate object
         assert.typeOf(evaluation, 'Object');
@@ -89,7 +89,7 @@ describe("Validator - Core", () => {
     });
 
     it ('should have errors where the object contains a msg and a params property', () => {
-        const evaluation = (new Validator({ c : 'number' })).validate(subject);
+        const evaluation = (new Validator({c : 'number'})).validate(subject);
 
         expect(evaluation.errors).to.deep.equal({
             c: [{msg: 'number', params: []}],
@@ -97,17 +97,17 @@ describe("Validator - Core", () => {
     });
 
     it ('should have errors where the key is the rule that failed', () => {
-        const evaluation = (new Validator({ c : 'number' })).validate(subject);
+        const evaluation = (new Validator({c : 'number'})).validate(subject);
         expect(evaluation.errors.c[0].msg).to.eql('number');
     });
 
     it ('should have errors where the params object is empty if no param was passed', () => {
-        const evaluation = (new Validator({ c : 'number' })).validate(subject);
+        const evaluation = (new Validator({c : 'number'})).validate(subject);
         expect(evaluation.errors.c[0].params).to.deep.equal([]);
     });
 
     it ('should have errors where the params object contains the passed param if passed', () => {
-        const evaluation = (new Validator({ a : 'greater_than:150' })).validate(subject);
+        const evaluation = (new Validator({a : 'greater_than:150'})).validate(subject);
         expect(evaluation.errors.a[0].params).to.deep.equal(['150']);
     });
 
@@ -120,16 +120,16 @@ describe("Validator - Core", () => {
     });
 
     it ('should remember the validity of the last validation run', () => {
-        const validator = new Validator({ a : 'number' });
+        const validator = new Validator({a : 'number' });
 
-        validator.validate({ a: 'foo' });
+        validator.validate({a: 'foo' });
 
         expect(validator.is_valid).to.eql(false);
         expect(validator.errors).to.deep.equal({
             a: [{msg: 'number', params: []}],
         });
 
-        validator.validate({ a: 10 });
+        validator.validate({a: 10 });
 
         expect(validator.is_valid).to.eql(true);
         expect(validator.errors).to.deep.equal({
@@ -147,7 +147,7 @@ describe("Validator - Core", () => {
         }).to.throw();
 
         expect(function () {
-            const v = new Validator([{ hello: 'world' }, 5, true]);
+            const v = new Validator([{hello: 'world'}, 5, true]);
         }).to.throw();
 
         expect(function () {
@@ -159,31 +159,31 @@ describe("Validator - Core", () => {
         }).not.to.throw();
 
         expect(function () {
-            const v = new Validator({ foo: 'string' });
+            const v = new Validator({foo: 'string'});
         }).not.to.throw();
 
         expect(function () {
-            const v = new Validator({ foo: 'number', a : { b: 'string', params: [] }});
+            const v = new Validator({foo: 'number', a: {b: 'string', params: []}});
         }).to.throw();
 
         expect(function () {
-            const v = new Validator({ foo: 5, a : { b: 'string', params: [] }});
+            const v = new Validator({foo: 5, a: {b: 'string', params: []}});
         }).to.throw();
     });
 
-//  Flag : Sometimes
+//  Flag: Sometimes
 
     it ('sometimes flag(?) should validate correctly if set and no value is passed', () => {
-        const evaluation = (new Validator({ a : '?number' })).validate({});
+        const evaluation = (new Validator({a: '?number'})).validate({});
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('sometimes flag (?) should not interfere with other validation rules', () => {
         const evaluation = (new Validator({
-            a : '?number',
-            b : 'number|less_than:20',
-        })).validate({});
+            a: '?number',
+            b: 'number|less_than:20',
+       })).validate({});
 
         expect(evaluation.is_valid).to.eql(false);
         expect(evaluation.errors).to.deep.equal({
@@ -195,38 +195,412 @@ describe("Validator - Core", () => {
         });
     });
 
-//  Flag : Parameter
+//  Flag: Parameter
 
     it ('parameter flag (<...>) should allow link to passed parameter', () => {
-        const evaluation = (new Validator({ a: 'equal_to:<foo>'})).validate({ a: 'hello', foo: 'hello' });
+        const evaluation = (new Validator({a: 'equal_to:<foo>'})).validate({a: 'hello', foo: 'hello'});
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('parameter flag (<...>) should fail if parameter is not passed', () => {
-        const evaluation = (new Validator({ a: 'equal_to:<foo>'})).validate({ a: 'hello', foobar: 'hello' });
+        const evaluation = (new Validator({a: 'equal_to:<foo>'})).validate({a: 'hello', foobar: 'hello'});
         expect(evaluation.is_valid).to.eql(false);
         expect(evaluation.errors.a).to.deep.equal([{msg:'equal_to', params: [undefined]}]);
     });
 
     it ('parameter flag (<...>) should allow multiple parameters inside the same ruleset', () => {
-        const evaluation = (new Validator({ a: 'between:<min>,<max>'})).validate({ a: 5, min: 3, max: 7 });
+        const evaluation = (new Validator({a: 'between:<min>,<max>'})).validate({a: 5, min: 3, max: 7});
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
     });
 
     it ('parameter flag (<...>) should allow multiple parameters inside the same config', () => {
-        const evaluation = (new Validator({ a: 'in:<arr1>', b: 'in:<arr2>'})).validate({ a: 1, b: 2, arr1: [1, 3, 5], arr2: [2, 4, 6] });
+        const evaluation = (new Validator({a: 'in:<arr1>', b: 'in:<arr2>'})).validate({a: 1, b: 2, arr1: [1, 3, 5], arr2: [2, 4, 6]});
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
         expect(evaluation.errors.b).to.deep.equal([]);
     });
 
     it ('parameter flag (<...>) should allow the same parameter on multiple rules inside the same config', () => {
-        const evaluation = (new Validator({ a: 'in:<arr1>', b: 'in:<arr1>'})).validate({a: 1, b: 2, arr1: [1, 2, 3]});
+        const evaluation = (new Validator({a: 'in:<arr1>', b: 'in:<arr1>'})).validate({a: 1, b: 2, arr1: [1, 2, 3]});
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
         expect(evaluation.errors.b).to.deep.equal([]);
+    });
+
+//  Flag: Not
+
+    it ('not flag (!) should validate correct if set and no value is passed', () => {
+        const evaluation = (new Validator({a: '!number'})).validate({});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'not_number', params: []}]);
+    });
+
+    it ('not flag (!) should validate correct if set and value is passed when using standard rule', () => {
+        const evaluation = (new Validator({a: '!number'})).validate({a: 'hello'});
+        expect(evaluation.is_valid).to.eql(true);
+        expect(evaluation.errors.a).to.deep.equal([]);
+
+        const evaluation2 = (new Validator({a: '!number'})).validate({a: 4});
+        expect(evaluation2.is_valid).to.eql(false);
+        expect(evaluation2.errors.a).to.deep.equal([{msg: 'not_number', params: []}]);
+
+        const evaluation3 = (new Validator({a: '!between:5,10'})).validate({a: 4});
+        expect(evaluation3.is_valid).to.eql(true);
+        expect(evaluation3.errors.a).to.deep.equal([]);
+
+        const evaluation4 = (new Validator({a: '!between:5,10'})).validate({a: 6});
+        expect(evaluation4.is_valid).to.eql(false);
+        expect(evaluation4.errors.a).to.deep.equal([{msg: 'not_between', params: ["5", "10"]}]);
+    });
+
+    it ('not flag (!) should validate correct if set and value is passed when using parameter flag', () => {
+        const evaluation = (new Validator({a: '!equal_to:<foo>'})).validate({a: 'hello', foo: 'hello'});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'not_equal_to', params: ['hello']}]);
+    });
+
+    it ('not flag (!) should validate correct if set and value is passed when using multiple validation rules', () => {
+        const evaluation = (new Validator({a: '!string|!equal_to:<foo>'})).validate({a: 'foo', foo: 'hello'});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([
+            {msg: 'not_string', params: []},
+        ]);
+
+        const evaluation2 = (new Validator({a: '!string|!equal_to:<foo>'})).validate({a: 'foo', foo: 'foo'});
+        expect(evaluation2.is_valid).to.eql(false);
+        expect(evaluation2.errors.a).to.deep.equal([
+            {msg: 'not_string', params: []},
+            {msg: 'not_equal_to', params: ['foo']}
+        ]);
+    });
+
+//  Iterable
+
+    it ('iterable config: Should throw if passed an invalid iterable config during rule creation', () => {
+        expect(function () {
+            new Validator({a: '[string'});
+        }).to.throw;
+
+        expect(function () {
+            new Validator({a: ']string'});
+        }).to.throw;
+
+        expect(function () {
+            new Validator({a: '][string'});
+        }).to.throw;
+    });
+
+    it ('iterable config: Should not throw if passed an iterable config during rule creation', () => {
+        expect(function () {
+            new Validator({a: '[]string'});
+        }).to.not.throw;
+    });
+
+    it ('iterable config: Should return invalid when passing a non-array to an iterable', () => {
+        const validator = new Validator({a: '[]string'});
+        let evaluation = validator.validate({a: 'hello'});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable', params: []}]});
+    });
+
+    it ('iterable config: Should return valid when passing an empty array to an iterable', () => {
+        const validator = new Validator({a: '[]string'});
+        let evaluation = validator.validate({a: []});
+        expect(evaluation.is_valid).to.eql(true);
+    });
+
+    it ('iterable unique config: Should return valid when the passed array is unique', () => {
+        const validator = new Validator({a: '[unique]string'});
+        let evaluation = validator.validate({a: ['a', 'b', 'c']});
+        expect(evaluation.is_valid).to.eql(true);
+    });
+
+    it ('iterable unique config: Should return invalid when the passed array is not unique', () => {
+        const validator = new Validator({a: '[unique]string'});
+        let evaluation = validator.validate({a: ['a', 'b', 'a']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_unique', params: []}]});
+    });
+
+    it ('iterable unique config: Should return invalid when the passed array is not unique when using numbers', () => {
+        const validator = new Validator({a: '[unique]number'});
+        let evaluation = validator.validate({a: [1, 2, 2]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_unique', params: []}]});
+    });
+
+    it ('iterable unique config: Should return invalid when the passed array is not unique when using objects', () => {
+        const validator = new Validator({a: '[unique]object'});
+        let evaluation = validator.validate({a: [{a: 1}, {b: 2}, {b: 2}]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_unique', params: []}]});
+    });
+
+    it ('iterable unique config: Should return invalid when the passed array is both not unique and doesnt match rules', () => {
+        const validator = new Validator({a: '[unique]integer'});
+        let evaluation = validator.validate({a: [1, 2, 'a', 2]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [
+            {msg: 'iterable_unique', params: []},
+            {idx: 2, msg: 'integer', params: []},
+        ]});
+    });
+
+    it ('iterable unique config: Should return invalid when the passed array is both not unique and doesnt match rules, and should only insert uniqueness invalidity once', () => {
+        const validator = new Validator({a: '[unique]integer'});
+        let evaluation = validator.validate({a: [1, 2, 'a', 2, 2, 2.2]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [
+            {msg: 'iterable_unique', params: []},
+            {idx: 2, msg: 'integer', params: []},
+            {idx: 5, msg: 'integer', params: []},
+        ]});
+    });
+
+    it ('iterable max config: Should return valid when within boundaries', () => {
+        const validator = new Validator({a: '[max:5]string'});
+        let evaluation = validator.validate({a: ['hello', 'there']});
+        expect(evaluation.is_valid).to.eql(true);
+    });
+
+    it ('iterable max config: Should return valid when at boundary', () => {
+        const validator = new Validator({a: '[max:5]string'});
+        let evaluation = validator.validate({a: ['1', '2', '3', '4', '5']});
+        expect(evaluation.is_valid).to.eql(true);
+    });
+
+    it ('iterable max config: Should return invalid when above boundary', () => {
+        const validator = new Validator({a: '[max:5]string'});
+        let evaluation = validator.validate({a: ['1', '2', '3', '4', '5', '6']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_max', params: [5]}]});
+    });
+
+    it ('iterable max config: Should only return iterable invalidity and not go into val evaluation when above boundary', () => {
+        const validator = new Validator({a: '[max:5]string'});
+        let evaluation = validator.validate({a: ['1', '2', '3', '4', 5, '6']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_max', params: [5]}]});
+    });
+
+    it ('iterable max config: Should return iterable invalidity and go into val evaluation when at or below boundary', () => {
+        const validator = new Validator({a: '[max:5]string'});
+        let evaluation = validator.validate({a: ['1', false, false, '2', false]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [
+            {idx: 1, msg: 'string', params: []},
+            {idx: 2, msg: 'string', params: []},
+            {idx: 4, msg: 'string', params: []},
+        ]});
+
+        let evaluation2 = validator.validate({a: [false, '1', '2', '3']});
+        expect(evaluation2.is_valid).to.eql(false);
+        expect(evaluation2.errors).to.deep.equal({a: [
+            {idx: 0, msg: 'string', params: []},
+        ]});
+    });
+
+    it ('iterable min config: Should return valid when within boundaries', () => {
+        const validator = new Validator({a: '[min:5]string'});
+        let evaluation = validator.validate({a: ['hello', 'there', 'this', 'is', 'cool', 'right']});
+        expect(evaluation.is_valid).to.eql(true);
+    });
+
+    it ('iterable min config: Should return valid when at boundary', () => {
+        const validator = new Validator({a: '[min:5]string'});
+        let evaluation = validator.validate({a: ['hello', 'there', 'this', 'is', 'cool']});
+        expect(evaluation.is_valid).to.eql(true);
+    });
+
+    it ('iterable min config: Should return invalid when below boundary', () => {
+        const validator = new Validator({a: '[min:3]string'});
+        let evaluation = validator.validate({a: ['1', '2']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_min', params: [3]}]});
+    });
+
+    it ('iterable min config: Should only return iterable invalidity and not go into val evaluation when below boundary', () => {
+        const validator = new Validator({a: '[min:4]string'});
+        let evaluation = validator.validate({a: ['1', false]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_min', params: [4]}]});
+    });
+
+    it ('iterable min config: Should return iterable invalidity and go into val evaluation when at or above boundary', () => {
+        const validator = new Validator({a: '[min:4]string'});
+        let evaluation = validator.validate({a: ['1', false, false, '2']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [
+            {idx: 1, msg: 'string', params: []},
+            {idx: 2, msg: 'string', params: []},
+        ]});
+
+        let evaluation2 = validator.validate({a: ['1', false, '2', '3', false]});
+        expect(evaluation2.is_valid).to.eql(false);
+        expect(evaluation2.errors).to.deep.equal({a: [
+            {idx: 1, msg: 'string', params: []},
+            {idx: 4, msg: 'string', params: []},
+        ]});
+    });
+
+    it ('iterable max+min config: Should return valid when within boundaries', () => {
+        const validator = new Validator({a: '[max:5|min:2]string'});
+        let evaluation = validator.validate({a: ['hello', 'there', 'cool']});
+        expect(evaluation.is_valid).to.eql(true);
+    });
+
+    it ('iterable max+min config: Should return valid when at top boundary', () => {
+        const validator = new Validator({a: '[max:5|min:2]string'});
+        let evaluation = validator.validate({a: ['1', '2', '3', '4', '5']});
+        expect(evaluation.is_valid).to.eql(true);
+    });
+
+    it ('iterable max+min config: Should return invalid when above top boundary', () => {
+        const validator = new Validator({a: '[max:5|min:2]string'});
+        let evaluation = validator.validate({a: ['1', '2', '3', '4', '5', '6']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_max', params: [5]}]});
+    });
+
+    it ('iterable max+min config: Should return valid when at bottom boundary', () => {
+        const validator = new Validator({a: '[max:5|min:2]string'});
+        let evaluation = validator.validate({a: ['1', '2']});
+        expect(evaluation.is_valid).to.eql(true);
+    });
+
+    it ('iterable max+min config: Should return invalid when below bottom boundary', () => {
+        const validator = new Validator({a: '[max:5|min:2]string'});
+        let evaluation = validator.validate({a: ['1']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_min', params: [2]}]});
+    });
+
+    it ('iterable max+min config: Should only return iterable invalidity and not go into val evaluation when above boundary', () => {
+        const validator = new Validator({a: '[max:5|min:2]string'});
+        let evaluation = validator.validate({a: ['1', '2', '3', '4', 5, '6']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_max', params: [5]}]});
+    });
+
+    it ('iterable max+min config: Should only return iterable invalidity and not go into val evaluation when below boundary', () => {
+        const validator = new Validator({a: '[max:5|min:2]string'});
+        let evaluation = validator.validate({a: [5]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [{msg: 'iterable_min', params: [2]}]});
+    });
+
+    it ('iterable max+min config: Should return iterable invalidity and go into val evaluation when at or below boundary', () => {
+        const validator = new Validator({a: '[max:5|min:2]string'});
+        let evaluation = validator.validate({a: ['1', false, false, '2', false]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [
+            {idx: 1, msg: 'string', params: []},
+            {idx: 2, msg: 'string', params: []},
+            {idx: 4, msg: 'string', params: []},
+        ]});
+
+        let evaluation2 = validator.validate({a: [false, '1', '2', '3']});
+        expect(evaluation2.is_valid).to.eql(false);
+        expect(evaluation2.errors).to.deep.equal({a: [
+            {idx: 0, msg: 'string', params: []},
+        ]});
+
+        let evaluation3 = validator.validate({a: ['1', 4]});
+        expect(evaluation3.is_valid).to.eql(false);
+        expect(evaluation3.errors).to.deep.equal({a: [
+            {idx: 1, msg: 'string', params: []},
+        ]});
+    });
+
+    it ('iterable: Should allow validating an array of values', () => {
+        const validator = new Validator({a: '[]string'});
+        let evaluation = validator.validate({a: ['hello', 'there']});
+        expect(evaluation.is_valid).to.eql(true);
+
+        evaluation = validator.validate({a: ['hello', false]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'string', idx: 1, params: []}]);
+
+        evaluation = validator.validate({a: ['hello', false, true]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'string', idx: 1, params: []}, {msg: 'string', idx: 2, params: []}]);
+    });
+
+    it ('iterable: Should allow validating an array of values with a \'?\' sometimes flag', () => {
+        const validator = new Validator({a: '?[]string'});
+        let evaluation = validator.validate({a: ['hello', 'there']});
+        expect(evaluation.is_valid).to.eql(true);
+
+        evaluation = validator.validate({});
+        expect(evaluation.is_valid).to.eql(true);
+
+        evaluation = validator.validate({a: ['hello', false, 'foo', true]});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'string', idx: 1, params: []}, {msg: 'string', idx: 3, params: []}]);
+    });
+
+    it ('iterable: Should allow validating an array of values with a \'?\' sometimes flag and parameter pass', () => {
+        const validator = new Validator({a: '?[]string|in:<genders>'});
+        let evaluation = validator.validate({a: ['male', 'male', 'female', 'male', 'female'], genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(true);
+
+        evaluation = validator.validate({genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(true);
+
+        evaluation = validator.validate({a: ['dog'], genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(false);
+    });
+
+    it ('iterable: Should allow validating an array of values with a \'?\' sometimes flag, uniqueness and parameter pass', () => {
+        const validator = new Validator({a: '?[unique]string|in:<genders>'});
+        let evaluation = validator.validate({a: ['male', 'male', 'female', 'male', 'female'], genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(false);
+        evaluation = validator.validate({a: ['male', 'female'], genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(true);
+    });
+
+    it ('iterable: Should allow validating an array of values with a \'!\' not flag and parameter pass', () => {
+        const validator = new Validator({a: '[]string|!in:<genders>'});
+        let evaluation = validator.validate({a: ['bob', 'bob', 'john', 'bob', 'john'], genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(true);
+
+        evaluation = validator.validate({a: ['male', 'female', 'female'], genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [
+            {idx: 0, msg: 'not_in', params: [['male', 'female', 'other']]},
+            {idx: 1, msg: 'not_in', params: [['male', 'female', 'other']]},
+            {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
+        ]});
+
+        evaluation = validator.validate({a: ['chicken', 'dog', 'female'], genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [
+            {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
+        ]});
+    });
+
+    it ('iterable: Should allow validating an array of values with a \'!\' not flag, uniqueness and parameter pass', () => {
+        const validator = new Validator({a: '[unique]string|!in:<genders>'});
+        let evaluation = validator.validate({a: ['bob', 'john'], genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(true);
+
+        evaluation = validator.validate({a: ['male', 'female', 'female'], genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [
+            {msg: 'iterable_unique', params: []},
+            {idx: 0, msg: 'not_in', params: [['male', 'female', 'other']]},
+            {idx: 1, msg: 'not_in', params: [['male', 'female', 'other']]},
+            {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
+        ]});
+
+        evaluation = validator.validate({a: ['chicken', 'dog', 'female', 'dog'], genders: ['male', 'female', 'other']});
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({a: [
+            {msg: 'iterable_unique', params: []},
+            {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
+        ]});
     });
 
 //  Extend functionality
@@ -266,7 +640,7 @@ describe("Validator - Core", () => {
             return p1 === 'treat' ? (val === 'trick') : (p1 === 'trick' ? val === 'treat' : false);
         });
 
-        const evaluation = (new Validator({ a: 'trick:<b>' })).validate({ a: 'trick', b: 'treat' });
+        const evaluation = (new Validator({a: 'trick:<b>'})).validate({a: 'trick', b: 'treat'});
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
     });
@@ -276,7 +650,7 @@ describe("Validator - Core", () => {
             return val === (p1 + p2);
         });
 
-        const evaluation = (new Validator({ a: 'sum:<b>,<c>' })).validate({ a: 4, b: 1, c: 3 });
+        const evaluation = (new Validator({a: 'sum:<b>,<c>'})).validate({a: 4, b: 1, c: 3});
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
     });
@@ -287,12 +661,12 @@ describe("Validator - Core", () => {
         });
 
         //  Evaluation
-        const evaluation = (new Validator({ a: 'double:<b>' })).validate({ a: 4, b: 2 });
+        const evaluation = (new Validator({a: 'double:<b>'})).validate({a: 4, b: 2});
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
 
         //  Second evaluation
-        const evaluation2 = (new Validator({ a: 'double:<b>' })).validate({ a: 4, b: 2 });
+        const evaluation2 = (new Validator({a: 'double:<b>'})).validate({a: 4, b: 2});
         expect(evaluation2.is_valid).to.eql(true);
         expect(evaluation2.errors.a).to.deep.equal([]);
     });
@@ -301,7 +675,7 @@ describe("Validator - Core", () => {
         Validator.extend('ismyname', function (val, p1, p2) {return val === 'peter';});
 
         //  Evaluation
-        const evaluation = (new Validator({ name: 'ismyname' })).validate({ name: 'peter' });
+        const evaluation = (new Validator({name: 'ismyname'})).validate({name: 'peter'});
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.name).to.deep.equal([]);
 
@@ -309,7 +683,7 @@ describe("Validator - Core", () => {
         Validator.extend('ismyname', function (val, p1, p2) {return val === 'josh';});
 
         //  Second evaluation
-        const evaluation2 = (new Validator({ name: 'ismyname' })).validate({ name: 'peter' });
+        const evaluation2 = (new Validator({name: 'ismyname'})).validate({name: 'peter'});
         expect(evaluation2.is_valid).to.eql(false);
         expect(evaluation2.errors.name).to.deep.equal([{msg:'ismyname', params: []}]);
     });
@@ -430,9 +804,9 @@ describe("Validator - Core", () => {
 
     it ('should be able to validate complex objects [1]', () => {
         const evaluation = (new Validator({
-            password: 'required|string|min:8',
-            password_confirmation: 'required|equal_to:<password>',
-        })).validate({
+            password: 'string|min:8',
+            password_confirmation: 'equal_to:<password>',
+       })).validate({
             password: 'thisIsMy1Little!Secret',
             password_confirmation: 'thisIsMy1Little!Secret',
         });
@@ -444,11 +818,11 @@ describe("Validator - Core", () => {
 
     it ('should be able to validate complex objects [2]', () => {
         const evaluation = (new Validator({
-            first_name: 'required|string|alpha_num_spaces|min:2',
-            last_name: 'required|string|alpha_num_spaces|min:2',
-            age: '?required|integer|between:1,150',
-            gender: 'required|in:<meta.gender_options>',
-        })).validate({
+            first_name: 'string|alpha_num_spaces|min:2',
+            last_name: 'string|alpha_num_spaces|min:2',
+            age: '?integer|between:1,150',
+            gender: 'in:<meta.gender_options>',
+       })).validate({
             first_name: 'Peter',
             last_name: 'Vermeulen',
             gender: 'm',
@@ -466,11 +840,11 @@ describe("Validator - Core", () => {
 
     it ('should be able to validate complex objects [3]', () => {
         const evaluation = (new Validator({
-            first_name: 'required|string|alpha_num_spaces|min:2',
-            last_name: 'required|string|alpha_num_spaces|min:2',
-            age: '?required|integer|between:1,150',
-            gender: 'required|in:<meta.gender_options>',
-        })).validate({
+            first_name: 'string|alpha_num_spaces|min:2',
+            last_name: 'string|alpha_num_spaces|min:2',
+            age: '?integer|between:1,150',
+            gender: 'in:<meta.gender_options>',
+       })).validate({
             first_name: 'Peter',
             last_name: 'Vermeulen',
             gender: 'X',
@@ -490,14 +864,14 @@ describe("Validator - Core", () => {
     it ('should be able to validate complex multidimensional objects [4]', () => {
         const evaluation = (new Validator({
             address: {
-                street: 'required|string|alpha_num_spaces',
-                nr: 'required|integer',
-                zip: 'required|integer|between:1000,9999',
+                street: 'string|alpha_num_spaces',
+                nr: 'integer',
+                zip: 'integer|between:1000,9999',
             },
             contact: {
-                email: 'required|string|email',
+                email: 'string|email',
             }
-        })).validate({
+       })).validate({
             address: {
                 street: 'First avenue',
                 nr: 50,
@@ -513,6 +887,67 @@ describe("Validator - Core", () => {
         expect(evaluation.errors.address.nr).to.deep.equal([]);
         expect(evaluation.errors.address.zip).to.deep.equal([]);
         expect(evaluation.errors.contact.email).to.deep.equal([{msg: 'email', params: []}]);
+    });
+
+    it ('should be able to validate complex multidimensional objects [5]', () => {
+        Validator.extend('is_type', val => ['type1', 'type2', 'type4'].indexOf(val) >= 0);
+
+        const validator = new Validator({
+            filters: {
+                ids: '[unique]integer|greater_than:0',
+                types: '[unique|max:3]is_type',
+            },
+            contact: {
+                email: 'string|email',
+            }
+        });
+
+        let evaluation = validator.validate({
+            filters: {
+                ids: [2, 3, 4, 1.5],
+                types: ['type1', 'type2', 'type2', 'type3'],
+            },
+            contact: {
+                email: 'contact.valkyriestudios.be'
+            },
+        });
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({
+            filters: {
+                ids: [
+                    {idx: 3, msg: 'integer', params: []}
+                ],
+                types: [
+                    {msg: 'iterable_max', params: [3]}
+                ],
+            },
+            contact: {email: [{msg: 'email', params: []}]},
+        });
+
+        evaluation = validator.validate({
+            filters: {
+                ids: [2, 3, 4, 1.5, 4],
+                types: ['type1', 'type2', 'type3'],
+            },
+            contact: {
+                email: 'contact@valkyriestudios.be'
+            },
+        });
+        expect(evaluation.is_valid).to.eql(false);
+        expect(evaluation.errors).to.deep.equal({
+            filters: {
+                ids: [
+                    {msg: 'iterable_unique', params: []},
+                    {idx: 3, msg: 'integer', params: []}
+                ],
+                types: [
+                    {idx: 2, msg: 'is_type', params: []},
+                ],
+            },
+            contact: {
+                email: [],
+            },
+        });
     });
 
 })
