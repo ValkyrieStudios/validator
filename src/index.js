@@ -3,6 +3,7 @@
 import Is       from '@valkyriestudios/utils/is';
 import deepGet  from '@valkyriestudios/utils/deep/get';
 import deepSet  from '@valkyriestudios/utils/deep/set';
+import fnv1A    from '@valkyriestudios/utils/hash/fnv1A';
 
 import vAlphaNumSpaces          from './functions/vAlphaNumSpaces';
 import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline';
@@ -25,7 +26,6 @@ import vMin                     from './functions/vMin';
 import vNumber                  from './functions/vNumber';
 import vObject                  from './functions/vObject';
 import vObjectNe                from './functions/vObjectNe';
-import vRequired                from './functions/vRequired';
 import vSize                    from './functions/vSize';
 import vString                  from './functions/vString';
 import vStringNe                from './functions/vStringNe';
@@ -54,13 +54,23 @@ const validateFn = {
     number                      : vNumber,
     object                      : vObject,
     object_ne                   : vObjectNe,
-    required                    : vRequired,
     size                        : vSize,
     string                      : vString,
     string_ne                   : vStringNe,
     url                         : vUrl,
     url_noquery                 : vUrlNoQuery,
 };
+
+//  Get the config for an iterable validation
+//
+//  @param string   val     Value to determine config from, eg: 'unique|min:1|max:5'
+function getIterableConfig (val) {
+    return {
+        unique  : val.indexOf('unique') >= 0,
+        max     : val.match(/max:\d{1,}(\||$)/) ? parseInt(`${val}`.split('max:')[1].split('|').shift()) : false,
+        min     : val.match(/min:\d{1,}(\||$)/) ? parseInt(`${val}`.split('min:')[1].split('|').shift()) : false,
+    };
+}
 
 export default class Validator {
 
@@ -77,11 +87,35 @@ export default class Validator {
                 Object.keys(cursor).map(cursor_key => `${key}.${cursor_key}`).reduce(parse, acc);
             } else if (Is.NotEmptyString(cursor)) {
                 //  If the cursor is a string, we've hit a rule
-                const sometimes = !!(cursor.substr(0, 1) === '?');
 
-                deepSet(acc, key, (sometimes ? cursor.substr(1) : cursor).split('|').reduce((rule_acc, rule_string) => {
+                let startix     = 0;        // Adjust to determine start of config rule
+                let iterable    = false;    //  Iterable flag (false or an object, see iterable config)
+                let sometimes   = false;    //  Sometimes flag
+                if (cursor.substring(0, 2) === '?[') {
+                    const iterable_endix = cursor.indexOf(']');
+                    if (iterable_endix < 0) throw new TypeError(`Iterable end not found, please verify rule config for ${cursor}`);
+
+                    iterable    = getIterableConfig(cursor.substring(2, iterable_endix));
+                    sometimes   = true;
+                    startix     = iterable_endix + 1;
+                } else if (cursor.substring(0, 1) === '[') {
+                    const iterable_endix = cursor.indexOf(']');
+                    if (iterable_endix < 0) throw new TypeError(`Iterable end not found, please verify rule config for ${cursor}`);
+
+                    iterable    = getIterableConfig(cursor.substring(1, iterable_endix));
+                    startix     = iterable_endix + 1;
+                } else if (cursor.substring(0, 1) === '?') {
+                    sometimes = true;
+                    startix = 1;
+                }
+
+                deepSet(acc, key, cursor.substring(startix).split('|').reduce((rule_acc, rule_string) => {
                     let params = rule_string.split(':');
-                    const type = params.shift();
+                    let type = params.shift().trim();
+
+                    //  Get 'not' flag
+                    const not = type.startsWith('!');
+                    if (not) type = type.replace(/!/g, '');
 
                     //  Get parameters
                     params = params.length > 0 ? params[0].split(',') : [];
@@ -103,7 +137,7 @@ export default class Validator {
                         return params_acc;
                     }, []);
 
-                    rule_acc.push({type, params, sometimes});
+                    rule_acc.push({type, params, not, sometimes, iterable});
                     return rule_acc;
                 }, []));
             } else {
@@ -160,36 +194,105 @@ export default class Validator {
                     deepSet(this.evaluation.errors, key, []);
                 }
 
+                //  Get value
+                const val = deepGet(data, key);
+
+                //  Iterable error flags
+                let iterable_unique     = true;
+                let iterable_err        = false;
+                let iterable_min_err    = false;
+                let iterable_max_err    = false;
+
                 //  Validate array of rules for this property
                 if (!Is.NotEmptyArray(cursor)) return;
-                cursor.forEach(rule => {
-                    const val = deepGet(data, key);
-
-                    //  If no value is provided and rule.sometimes is set to true, simply return
-                    if (!val && rule.sometimes) return;
+                for (const rule of cursor) {
+                    //  Check if rule exists
+                    if (!validateFn[rule.type]) throw new Error(`Rule: ${rule.type} was not found`);
 
                     //  Each param rule is a cb function that should be executed on each run, retrieving
                     //  the value inside of the dataset
-                    const params = rule.params.reduce((acc, param_rule) => {
-                        acc.push(param_rule(data));
-                        return acc;
-                    }, []);
+                    const params = [];
+                    for (const rule_param of rule.params) params.push(rule_param(data));
 
-                    if (!validateFn[rule.type].call(this, val, ...params)) {
-                        deepGet(this.evaluation.errors, key).push({
-                            msg: rule.type,
-                            params,
-                        });
-                        this.evaluation.is_valid = false;
+                    //  If rule.sometimes is set and val is not provided, break
+                    if (val === undefined) {
+                        if (!rule.sometimes) {
+                            deepGet(this.evaluation.errors, key).push({msg: `${rule.not ? 'not_' : ''}${rule.type}`, params});
+                            this.evaluation.is_valid = false;
+                        }
+                        continue;
                     }
-                });
+
+                    //  If this is an iterable
+                    if (Is.Object(rule.iterable)) {
+                        //  If not an array -> invalid
+                        if (!Is.Array(val)) {
+                            iterable_err = true;
+                            break;
+                        }
+
+                        //  rule.iterable.min is set and val length is below the min -> invalid
+                        if (Is.Number(rule.iterable.min) && val.length < rule.iterable.min) {
+                            iterable_min_err = rule.iterable.min;
+                            break;
+                        }
+
+                        //  rule.iterable.min is set and val length is below the min -> invalid
+                        if (Is.Number(rule.iterable.max) && val.length > rule.iterable.max) {
+                            iterable_max_err = rule.iterable.max;
+                            break;
+                        }
+
+                        const unique_map = iterable_unique && rule.iterable.unique ? new Map() : false;
+                        for (let i = 0; i < val.length; i++) {
+                            //  Run validation
+                            const rule_valid = validateFn[rule.type].call(this, val[i], ...params);
+
+                            //  If check fails (not valid && not not | not && valid)
+                            if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) {
+                                deepGet(this.evaluation.errors, key).push({msg: `${rule.not ? 'not_' : ''}${rule.type}`, params, idx: i});
+                                this.evaluation.is_valid = false;
+                            }
+
+                            //  Uniqueness checks for iterable
+                            if (unique_map && iterable_unique) {
+                                unique_map.set(fnv1A(val[i]), true);
+                                if (unique_map.size !== (i + 1)) iterable_unique = false;
+                            }
+                        }
+                    } else {
+                        //  Run validation
+                        const rule_valid = validateFn[rule.type].call(this, val, ...params);
+
+                        //  If check fails (not valid && not not | not && valid)
+                        if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) {
+                            deepGet(this.evaluation.errors, key).push({msg: `${rule.not ? 'not_' : ''}${rule.type}`, params});
+                            this.evaluation.is_valid = false;
+                        }
+                    }
+                }
+
+                //  Inject iterable errors
+                if (iterable_err === true) {
+                    deepGet(this.evaluation.errors, key).push({msg: 'iterable', params: []});
+                    this.evaluation.is_valid = false;
+                } else if (Is.Number(iterable_min_err)) {
+                    deepGet(this.evaluation.errors, key).push({msg: 'iterable_min', params: [iterable_min_err]});
+                    this.evaluation.is_valid = false;
+                } else if (Is.Number(iterable_max_err)) {
+                    deepGet(this.evaluation.errors, key).push({msg: 'iterable_max', params: [iterable_max_err]});
+                    this.evaluation.is_valid = false;
+                } else if (!iterable_unique) {
+                    deepGet(this.evaluation.errors, key).unshift({msg: 'iterable_unique', params: []});
+                    this.evaluation.is_valid = false;
+                }
             };
 
             //  Prep the evaluation for the keys in the rules
-            keys.forEach(key => {
+            for (const key of keys) {
                 deepSet(this.evaluation.errors, key, Object.create(null));
                 run(key);
-            });
+            }
         }
 
         return Object.assign({}, this.evaluation);
