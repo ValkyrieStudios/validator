@@ -5,9 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0] - 2022-10-09
 ### Added
 - Validator@extendMulti: Extend the validator by passing an object, each key should have a function as its value
+- Validator Not Flag (!): allow reverse validating, eg: !equal_to:foo would validate false if value is passed as foo. Can be applied on all rules (including custom ones) 
+- Validator Iterable Flag: Allow validating an array of values against a set of rules, eg: {a: '[]integer|between:5,10'} would validate 'a' as an array of integers between 5 and 10. (also works with parameterization, custom rules and new not flag).
 
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 5.2.0
@@ -15,6 +17,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Dep: Upgrade @babel/preset-env to 7.19.3
 - Dep: Upgrade eslint to 8.24.0
 - Validator@extend: Will now throw if the name passed is not a string and the value passed is not a function
+- Validator@validate: Will now throw a proper error if a rule does not exist, instead of throwing a non-descriptive error
+
+### Removed
+- Rule: 'required'
 
 ## [2.3.0] - 2022-08-21
 ### Added
