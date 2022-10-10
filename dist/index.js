@@ -55,6 +55,8 @@ var _vObject = _interopRequireDefault(require("./functions/vObject"));
 
 var _vObjectNe = _interopRequireDefault(require("./functions/vObjectNe"));
 
+var _vRequired = _interopRequireDefault(require("./functions/vRequired"));
+
 var _vSize = _interopRequireDefault(require("./functions/vSize"));
 
 var _vString = _interopRequireDefault(require("./functions/vString"));
@@ -101,6 +103,7 @@ var validateFn = {
   number: _vNumber["default"],
   object: _vObject["default"],
   object_ne: _vObjectNe["default"],
+  required: _vRequired["default"],
   size: _vSize["default"],
   string: _vString["default"],
   string_ne: _vStringNe["default"],

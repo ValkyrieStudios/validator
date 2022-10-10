@@ -26,6 +26,7 @@ import vMin                     from './functions/vMin';
 import vNumber                  from './functions/vNumber';
 import vObject                  from './functions/vObject';
 import vObjectNe                from './functions/vObjectNe';
+import vRequired                from './functions/vRequired';
 import vSize                    from './functions/vSize';
 import vString                  from './functions/vString';
 import vStringNe                from './functions/vStringNe';
@@ -54,6 +55,7 @@ const validateFn = {
     number                      : vNumber,
     object                      : vObject,
     object_ne                   : vObjectNe,
+    required                    : vRequired,
     size                        : vSize,
     string                      : vString,
     string_ne                   : vStringNe,
