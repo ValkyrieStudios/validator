@@ -287,6 +287,7 @@ The following list shows you all the default rules that are provided by this lib
 | number | Validate that a provided value is a number, this will see NaN as invalid |
 | object | Validate that a provided value is an object, arrays will not be seen as objects by this rule |
 | object_ne | Same behavior as `object`, with the additional check that empty objects will not be seen as valid |
+| required | Validate that a provided value is not empty, arrays will be seen as valid if at least 1 element is present, strings will be seen as empty if when trimmed the length is bigger than 0, null and undefined will not be valid and a NaN will also be rejected |
 | size | Validate that a provided value has a specific size, this only applies to strings and arrays and checks on length |
 | string | Validate that a provided value is a string |
 | string_ne | Same behavior as `string`, with the additional check that empty strings (after trimming) will not be seen as valid |
