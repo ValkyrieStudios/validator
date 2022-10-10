@@ -130,18 +130,18 @@ Parameterization happens through the following syntax `<myparam>` where myparam 
 Example of a parameterized equal to rule:
 
 ```js
-const v = new Validator({ a: 'equal_to:<b>' });
+const v = new Validator({a: 'equal_to:<b>'});
 
-v.validate({ a: 'hello', b: 'world' }); // is_valid = false
-v.validate({ a: 'foo', b: 'foo' }); // is_valid = true
+v.validate({a: 'hello', b: 'world'}); // is_valid = false
+v.validate({a: 'foo', b: 'foo'}); // is_valid = true
 ```
 
 Example of a parameterized greater_than rule:
 ```js
-const v = new Validator({ a: 'greater_than:<b>' });
+const v = new Validator({a: 'greater_than:<b>'});
 
-v.validate({ a: 50, b: 40 }); // is_valid = true
-v.validate({ a: 10, b: 20 }); // is_valid = false
+v.validate({a: 50, b: 40}); // is_valid = true
+v.validate({a: 10, b: 20}); // is_valid = false
 ```
 
 Take note: Custom rules (see below) do not need any special definition for this to work.
@@ -154,10 +154,10 @@ To make use of the `?` flag, place it at the very start of the defined rule.
 
 Example of an optional rule:
 ```js
-const v = new Validator({ gender: '?string|in:<genders>'});
+const v = new Validator({gender: '?string|in:<genders>'});
 
-v.validate({ genders: ['m', 'f', 'o']}); // is_valid = true
-v.validate({ gender: 'X', genders: ['m', 'f', 'o']}); // is_valid = false
+v.validate({genders: ['m', 'f', 'o']}); // is_valid = true
+v.validate({gender: 'X', genders: ['m', 'f', 'o']}); // is_valid = false
 ```
 
 ### Opposite rules
@@ -196,9 +196,9 @@ We understand that array validation requires just a tad more control, as such yo
 
 | Key | Meaning | Example |
 |-----|---------|---------|
-| unique | Validate that the passed array is unique | `[unique]integer|greater_than:0` |
-| max:val | Validate that they passed array can at max contain X elements | `[max:5]integer|greater_than:0` |
-| min:val | Validate that they passed array needs to contain at least X elements | `[min:5]integer|greater_than:0` |
+| unique | Validate that the passed array is unique | \[unique\]integer\|greater_than\:0 |
+| max:val | Validate that they passed array can at max contain X elements | \[max\:5\]integer\|greater\_than\:0 |
+| min:val | Validate that they passed array needs to contain at least X elements | \[min\:5\]integer\|greater\_than\:0 |
 
 These options can be combined as well. For example the following rule will ensure that only a unique array with minimum 1 and maximum 4 elements can be passed, and that each element passes a custom rule (see extending) called is\_fruit:
 
@@ -244,8 +244,8 @@ Validator.extend('is_double', function (val, param) {
 example usage
 const v = new Validator({a: 'is_double:<meta.b>'});
 
-v.validate({ a: 6, meta: { b: 4 }}); // is_valid = false
-v.validate({ a: 8, meta: { b: 4 }}); // is_valid = true
+v.validate({a: 6, meta: {b: 4}}); // is_valid = false
+v.validate({a: 8, meta: {b: 4}}); // is_valid = true
 ```
 
 ##### Multiple rules at once?
