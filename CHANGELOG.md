@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Improved
+- Dep: Upgrade @valkyriestudios/utils to 5.3.0
+- Dep: Upgrade @babel/core to 7.20.2
+- Dep: Upgrade @babel/preset-env to 7.20.2
+- Dep: Upgrade chai to 4.3.7
+- Dep: Upgrade eslint to 8.28.0
+- Dep: Upgrade mocha to 10.1.0
+
 ### Fixed
 - Fixed an issue where url validation was not properly applying checks on query strings when slashes for tld did not exist
 
