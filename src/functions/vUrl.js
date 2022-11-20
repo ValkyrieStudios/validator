@@ -4,14 +4,14 @@ import Is from '@valkyriestudios/utils/is';
 
 function isValidURL (data) {
     let url;
-    try { 
-        url = new URL(data); 
+    try {
+        url = new URL(data);
     } catch (err) {  // eslint-disable-line
-        return false; 
+        return false;
     }
 
-    if (url.protocol === "http:" || url.protocol === "https:") {
-        return /^(http(s):\/\/.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/.test(data);
+    if (url.protocol === 'http:' || url.protocol === 'https:') {
+        return /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/.test(data);
     } else {
         return false;
     }
