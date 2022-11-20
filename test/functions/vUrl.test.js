@@ -105,6 +105,16 @@ describe("vUrl", () => {
         "http://1337.net",
         "http://a.b-c.de",
         "http://223.255.255.254",
+        "https://www.valkyriestudios.be",
+        "https://www.valkyriestudios.be/?q=test",
+        "https://www.valkyriestudios.be?q=test",
+        "https://www.valkyriestudios.be?q=test&hi=true",
+        "https://www.valkyriestudios.com/?a=1&b=2",
+        "https://www.valkyriestudios.com/#4802394",
+        "https://www.valkyriestudios.com/#inbox?a=2",
+        "https://valkyriestudios.com/#floo_bar?a=2&c=foo",
+        "https://www.valkyriestudios.co.uk/eweqweeqwe/ewqeeqweqe",
+        "https://valkyriestudios.com/?a=1&b=2#eweqweqwewqeqweweqweqweqweqwewopqieqwoeqweipqwoeiqweiqwpoeiqwieqwopeiqwpooeqwieiqwoeiqwoeiqweiqwopeiqwpeiqweiqweoiwqopepwoqiepqwoieoiwqeipqwoeiowqieoipoeiwqoiepowiqoieqw&ewquie",
     ];
 
     it ('should validate a url string correctly', () => {

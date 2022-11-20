@@ -2,10 +2,28 @@
 
 import Is from '@valkyriestudios/utils/is';
 
+function isValidURL (data) {
+    let url;
+    try { 
+        url = new URL(data); 
+    } catch (err) {  // eslint-disable-line
+        return false; 
+    }
+
+    if (url.protocol === "http:" || url.protocol === "https:") {
+        return /^(http(s):\/\/.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/.test(data);
+    } else {
+        return false;
+    }
+}
+
 export default function vUrl (data) {
     if (!Is.NotEmptyString(data)) return false;
 
-    return new RegExp(
+    //  Check with URL
+    if (isValidURL(data)) return true;
+
+    return !!new RegExp(
         '^' +
         // protocol identifier
         '(?:(?:https?|ftp)://)' +
@@ -39,6 +57,7 @@ export default function vUrl (data) {
         '(?::\\d{2,5})?' +
         // resource path
         '(?:/[^\\s]*)?' +
-        '$', 'i'
+        '$',
+        'i' //  Options
     ).test(data.trim());
 }
