@@ -2,6 +2,6 @@
 
 import Is from '@valkyriestudios/utils/is';
 
-export default function vString (data) {
-    return Is.String(data);
+export default function vString (val) {
+    return Is.String(val);
 }

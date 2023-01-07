@@ -2,14 +2,14 @@
 
 import Is from '@valkyriestudios/utils/is';
 
-export default function vUrl (data) {
-    if (!Is.NotEmptyString(data)) return false;
+export default function vUrl (val) {
+    if (!Is.NotEmptyString(val)) return false;
 
     //  Check for query string identifier
-    if (data.indexOf('?') > -1) return false;
+    if (val.indexOf('?') > -1) return false;
 
     //  Check for ampersand identifier
-    if (data.indexOf('&') > -1) return false;
+    if (val.indexOf('&') > -1) return false;
 
     return new RegExp(
         '^' +
@@ -46,5 +46,5 @@ export default function vUrl (data) {
         // resource path
         '(?:/[^\\s]*)?' +
         '$', 'i'
-    ).test(data.trim());
+    ).test(val.trim());
 }

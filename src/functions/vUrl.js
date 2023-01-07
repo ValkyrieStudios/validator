@@ -2,26 +2,26 @@
 
 import Is from '@valkyriestudios/utils/is';
 
-function isValidURL (data) {
+function isValidURL (val) {
     let url;
     try {
-        url = new URL(data);
+        url = new URL(val);
     } catch (err) {  // eslint-disable-line
         return false;
     }
 
     if (url.protocol === 'http:' || url.protocol === 'https:') {
-        return /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/.test(data);
+        return /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/.test(val);
     } else {
         return false;
     }
 }
 
-export default function vUrl (data) {
-    if (!Is.NotEmptyString(data)) return false;
+export default function vUrl (val) {
+    if (!Is.NotEmptyString(val)) return false;
 
     //  Check with URL
-    if (isValidURL(data)) return true;
+    if (isValidURL(val)) return true;
 
     return !!new RegExp(
         '^' +
@@ -59,5 +59,5 @@ export default function vUrl (data) {
         '(?:/[^\\s]*)?' +
         '$',
         'i' //  Options
-    ).test(data.trim());
+    ).test(val.trim());
 }
