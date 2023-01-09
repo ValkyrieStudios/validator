@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- rule: between_inc
+- rule: date_string
+- rule: geo_latitude
+- rule: geo_longitude
+- rule: guid
+- rule: phone
+- rule: sys_mac
+- rule: sys_ipv4
+- rule: sys_ipv6
+- rule: sys_ipv4_or_v6
+- rule: gt (alias of 'greater_than' rule)
+- rule: gte (alias of 'greater_than_or_equal' rule)
+- rule: lt (alias of 'less_than' rule)
+- rule: lte (alias of 'less_than_or_equal' rule)
+- rule: eq (alias of 'equal_to' rule)
+
 ## [3.2.0] - 2022-11-20
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 5.3.0

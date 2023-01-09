@@ -271,26 +271,41 @@ The following list shows you all the default rules that are provided by this lib
 | array | Validate that a provided value is an array |
 | array_ne | Same behavior as `array`, with the additional check that empty arrays will not be seen as valid |
 | between | Validate that a provided value is between two numbers, if passed a string or array this will validate on length |
+| between_inc | Validate that a provided value is between or equal to two numbers, if passed a string or array this will validate on length |
 | boolean | Validate that a provided value is a boolean |
 | color_hex | Validate that a provided value is a hex color (with the # included) |
 | date | Validate that a provided value is a date object |
+| date_string | Validate that a provided value is a valid date string, take note: this will not validate strings representing dates before the start of the unix epoch |
 | email | Validate that a provided value is an email, take note: this only structurally tests if an email is good, it doesn't test whether an email actually exists |
+| eq | Alias of equal_to |
 | equal_to | Validate that a provided value is equal to another value, this can be used on primitives (string, number, boolean) but also on non-primitives (objects, arrays, dates). Equality checks for non-primitives are done through FNV1A hashing |
+| geo_latitude | Validate that a provided value is a valid latitude value |
+| geo_longitude | Validate that a provided value is a valid longitude value |
 | greater_than | Validate that a provided value is greater than a provided number, if passed a string or array this will validate on length |
 | greater_than_or_equal | Validate that a provided value is greater than or equal than a provided number, if passed a string or array this will validate on length |
+| gt | Alias of greater_than |
+| gte | Alias of greater_than_or_equal |
+| guid | Validate that a provided value is a valid guid according to rfc 4122 |
 | in | Validate that a provided value is in a set of values, this requires parameterization (see above) |
 | integer | Validate that a provided value is an integer, this will see NaN as invalid |
 | less_than | Validate that a provided value is less than a provided number, if passed a string or array this will validate on length |
 | less_than_or_equal | Validate that a provided value is less than or equal to a provided number, if passed a string or array this will validate on length |
+| lt | Alias of less_than |
+| lte | Alias of less_than_or_equal |
 | max | Alias of less_than_or_equal |
 | min | Alias of greater_than_or_equal |
 | number | Validate that a provided value is a number, this will see NaN as invalid |
 | object | Validate that a provided value is an object, arrays will not be seen as objects by this rule |
 | object_ne | Same behavior as `object`, with the additional check that empty objects will not be seen as valid |
+| phone | Validate that a string is a valid phone number (will match phone numbers entered with delimiters such as spaces, dots, brackets, etc, and supports international phone numbers), take note: this does not check whether or not the phone number is in use, merely that a valid format is provided |
 | required | Validate that a provided value is not empty, arrays will be seen as valid if at least 1 element is present, strings will be seen as empty if when trimmed the length is bigger than 0, null and undefined will not be valid and a NaN will also be rejected |
 | size | Validate that a provided value has a specific size, this only applies to strings and arrays and checks on length |
 | string | Validate that a provided value is a string |
 | string_ne | Same behavior as `string`, with the additional check that empty strings (after trimming) will not be seen as valid |
+| sys_mac | Validate that a provided value is a valid MAC address |
+| sys_ipv4 | Validate that a provided value is a valid IPv4 address |
+| sys_ipv6 | Validate that a provided value is a valid IPv6 address | 
+| sys_ipv4_or_v6 | Validate that a provided value is either a valid IPv4 or a valid IPv6 address | 
 | url | Validate that a provided value is a url, this allows for query string values as well |
 | url_noquery | Validate that a provided value is a url without any query string values |
 

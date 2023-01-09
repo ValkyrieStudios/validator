@@ -10,13 +10,18 @@ import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline';
 import vArray                   from './functions/vArray';
 import vArrayNe                 from './functions/vArrayNe';
 import vBetween                 from './functions/vBetween';
+import vBetweenInclusive        from './functions/vBetweenInclusive';
 import vBoolean                 from './functions/vBoolean';
 import vColorHex                from './functions/vColorHex';
 import vDate                    from './functions/vDate';
+import vDateString              from './functions/vDateString';
 import vEmail                   from './functions/vEmail';
 import vEqualTo                 from './functions/vEqualTo';
+import vGeoLatitude             from './functions/vGeoLatitude';
+import vGeoLongitude            from './functions/vGeoLongitude';
 import vGreaterThan             from './functions/vGreaterThan';
 import vGreaterThanOrEqual      from './functions/vGreaterThanOrEqual';
+import vGuid                    from './functions/vGuid';
 import vIn                      from './functions/vIn';
 import vInteger                 from './functions/vInteger';
 import vLessThan                from './functions/vLessThan';
@@ -26,10 +31,15 @@ import vMin                     from './functions/vMin';
 import vNumber                  from './functions/vNumber';
 import vObject                  from './functions/vObject';
 import vObjectNe                from './functions/vObjectNe';
+import vPhone                   from './functions/vPhone';
 import vRequired                from './functions/vRequired';
 import vSize                    from './functions/vSize';
 import vString                  from './functions/vString';
 import vStringNe                from './functions/vStringNe';
+import vSysMac                  from './functions/vSysMac';
+import vSysIPv4                 from './functions/vSysIPv4';
+import vSysIPv6                 from './functions/vSysIPv6';
+import vSysIPv4_or_v6           from './functions/vSysIPv4_or_v6';
 import vUrl                     from './functions/vUrl';
 import vUrlNoQuery              from './functions/vUrlNoQuery';
 
@@ -39,13 +49,18 @@ const validateFn = {
     array                       : vArray,
     array_ne                    : vArrayNe,
     between                     : vBetween,
+    between_inc                 : vBetweenInclusive,
     boolean                     : vBoolean,
     color_hex                   : vColorHex,
     date                        : vDate,
+    date_string                 : vDateString,
     email                       : vEmail,
     equal_to                    : vEqualTo,
+    geo_latitude                : vGeoLatitude,
+    geo_longitude               : vGeoLongitude,
     greater_than                : vGreaterThan,
     greater_than_or_equal       : vGreaterThanOrEqual,
+    guid                        : vGuid,
     in                          : vIn,
     integer                     : vInteger,
     less_than                   : vLessThan,
@@ -55,12 +70,23 @@ const validateFn = {
     number                      : vNumber,
     object                      : vObject,
     object_ne                   : vObjectNe,
+    phone                       : vPhone,
     required                    : vRequired,
     size                        : vSize,
     string                      : vString,
     string_ne                   : vStringNe,
+    sys_mac                     : vSysMac,
+    sys_ipv4                    : vSysIPv4,
+    sys_ipv6                    : vSysIPv6,
+    sys_ipv4_or_v6              : vSysIPv4_or_v6,
     url                         : vUrl,
     url_noquery                 : vUrlNoQuery,
+    //  Aliases
+    gt                          : vGreaterThan,
+    gte                         : vGreaterThanOrEqual,
+    lt                          : vLessThan,
+    lte                         : vLessThanOrEqual,
+    eq                          : vEqualTo,
 };
 
 //  Get the config for an iterable validation
