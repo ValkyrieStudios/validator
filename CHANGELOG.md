@@ -7,6 +7,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Added
+- Validator@rules: A static getter on the main Validator class that returns an object containing the configured ruleset (immutable and dereferenced)
 - rule: between_inc
 - rule: date_string
 - rule: geo_latitude

@@ -326,6 +326,11 @@ export default class Validator {
         return Object.assign({}, this.evaluation);
     }
 
+    //  Returns the rule set currently on the validator, will return it as an immutable dereferenced object
+    static get rules () {
+        return Object.freeze(Object.assign({}, validateFn));
+    }
+
     //  Extend validator rule set
     //
     //  @param string   name    Name of the rule
@@ -339,7 +344,7 @@ export default class Validator {
         if (validateFn[name]) delete validateFn[name];
 
         //  Define property with a configurable flag to allow reconfiguration
-        Object.defineProperty(validateFn, name.trim(), {configurable: true, get : () => fn});
+        Object.defineProperty(validateFn, name.trim(), {configurable: true, enumerable: true, get : () => fn});
     }
 
     //  Run multiple validator extensions in one go by passing an object
