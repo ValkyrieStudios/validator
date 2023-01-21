@@ -52,7 +52,7 @@ describe("vSysMac", () => {
         }
     });
 
-    it ('Shoul be valid when passed a valid mac address (sample list in different formats)', () => {
+    it ('Should be valid when passed a valid mac address (sample list in different formats)', () => {
         const lst = [
             '24:db:96:83:af:cd',
             '8c:85:11:33:e6:e6',
