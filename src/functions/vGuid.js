@@ -9,4 +9,3 @@ export default function vGuid (val) {
     //  Verify according to the rfc4122 spec
     return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/g.test(val);
 }
-
