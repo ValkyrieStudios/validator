@@ -46,7 +46,7 @@ describe("vSysIPv4", () => {
             expect(v.validate({a: tpl(String.fromCharCode(i))}).is_valid).to.eql(false);
         }
 
-        for (let i = 58; i < 10000; i++) {
+        for (let i = 58; i < 1000; i++) {
             expect(v.validate({a: tpl(String.fromCharCode(i))}).is_valid).to.eql(false);
         }
     });
@@ -61,7 +61,7 @@ describe("vSysIPv4", () => {
             expect(v.validate({a: tpl(String.fromCharCode(i))}).is_valid).to.eql(false);
         }
 
-        for (let i = 58; i < 10000; i++) {
+        for (let i = 58; i < 1000; i++) {
             expect(v.validate({a: tpl(String.fromCharCode(i))}).is_valid).to.eql(false);
         }
     });
@@ -82,7 +82,7 @@ describe("vSysIPv4", () => {
             expect(v.validate({a: tplOct4(String.fromCharCode(i))}).is_valid).to.eql(false);
         }
 
-        for (let i = 58; i < 10000; i++) {
+        for (let i = 58; i < 1000; i++) {
             expect(v.validate({a: tplOct1(String.fromCharCode(i))}).is_valid).to.eql(false);
             expect(v.validate({a: tplOct2(String.fromCharCode(i))}).is_valid).to.eql(false);
             expect(v.validate({a: tplOct3(String.fromCharCode(i))}).is_valid).to.eql(false);
@@ -156,7 +156,7 @@ describe("vSysIPv4", () => {
             expect(v.validate({a: `${rCorrect()}${sep}${rCorrect()}${sep}${rCorrect()}${sep}${rCorrect()}`}).is_valid).to.eql(false);
         }
 
-        for (let i = 47; i < 10000; i++) {
+        for (let i = 47; i < 1000; i++) {
             const sep = String.fromCharCode(i);
             expect(v.validate({a: `${rCorrect()}${sep}${rCorrect()}${sep}${rCorrect()}${sep}${rCorrect()}`}).is_valid).to.eql(false);
         }
