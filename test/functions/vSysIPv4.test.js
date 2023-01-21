@@ -11,6 +11,9 @@ const assert = chai.assert;
 const should = chai.should();
 const spy = chai.spy;
 
+const rCorrect = () => Math.floor(Math.random() * 256);
+const rIncorrect = () => Math.floor(Math.random() * 256) + 256;
+
 describe("vSysIPv4", () => {
 
     const str_tests = [{a:1}, [0,1,2], true, new Date(), /1/g, false, 123, 0.123];
@@ -90,56 +93,56 @@ describe("vSysIPv4", () => {
     it ('Should be invalid when passed ipv4 addresses with only 1 octet', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            expect(v.validate({a: `${Math.floor(Math.random() * 256)}`}).is_valid).to.eql(false);
+            expect(v.validate({a: `${rCorrect()}`}).is_valid).to.eql(false);
         }
     });
 
     it ('Should be invalid when passed ipv4 addresses with only 2 octets', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            expect(v.validate({a: `${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`}).is_valid).to.eql(false);
+            expect(v.validate({a: `${rCorrect()}.${rCorrect()}`}).is_valid).to.eql(false);
         }
     });
 
     it ('Should be invalid when passed ipv4 addresses with only 3 octets', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            expect(v.validate({a: `${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`}).is_valid).to.eql(false);
+            expect(v.validate({a: `${rCorrect()}.${rCorrect()}.${rCorrect()}`}).is_valid).to.eql(false);
         }
     });
 
     it ('Should be invalid when passed ipv4 addresses where a single octet goes beyond the upper bound of a byte (255)', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            expect(v.validate({a: `${Math.floor(Math.random() * 256) + 256}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`}).is_valid).to.eql(false);
-        }
-        
-        for (let i = 0; i < 500; i++) {
-            expect(v.validate({a: `${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256) + 256}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`}).is_valid).to.eql(false);
-        }
-        
-        for (let i = 0; i < 500; i++) {
-            expect(v.validate({a: `${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256) + 256}.${Math.floor(Math.random() * 256)}`}).is_valid).to.eql(false);
+            expect(v.validate({a: `${rIncorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}`}).is_valid).to.eql(false);
         }
 
         for (let i = 0; i < 500; i++) {
-            expect(v.validate({a: `${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256) + 256}`}).is_valid).to.eql(false);
+            expect(v.validate({a: `${rCorrect()}.${rIncorrect()}.${rCorrect()}.${rCorrect()}`}).is_valid).to.eql(false);
+        }
+
+        for (let i = 0; i < 500; i++) {
+            expect(v.validate({a: `${rCorrect()}.${rCorrect()}.${rIncorrect()}.${rCorrect()}`}).is_valid).to.eql(false);
+        }
+
+        for (let i = 0; i < 500; i++) {
+            expect(v.validate({a: `${rCorrect()}.${rCorrect()}.${rCorrect()}.${rIncorrect()}`}).is_valid).to.eql(false);
         }
     });
 
     it ('Should be invalid when passed ipv4 addresses where all octets go beyond the upper bound of a byte (255)', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            expect(v.validate({a: `${Math.floor(Math.random() * 256) + 256}.${Math.floor(Math.random() * 256) + 256}.${Math.floor(Math.random() * 256) + 256}.${Math.floor(Math.random() * 256) + 256}`}).is_valid).to.eql(false);
+            expect(v.validate({a: `${rIncorrect()}.${rIncorrect()}.${rIncorrect()}.${rIncorrect()}`}).is_valid).to.eql(false);
         }
     });
 
     it ('Should be invalid when passed ipv4 addresses where all octets are correct but where the string contains spaces', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            expect(v.validate({a: `  ${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`}).is_valid).to.eql(false);
-            expect(v.validate({a: `${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}   `}).is_valid).to.eql(false);
-            expect(v.validate({a: `  ${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}    `}).is_valid).to.eql(false);
+            expect(v.validate({a: `  ${rCorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}`}).is_valid).to.eql(false);
+            expect(v.validate({a: `${rCorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}   `}).is_valid).to.eql(false);
+            expect(v.validate({a: `  ${rCorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}    `}).is_valid).to.eql(false);
         }
     });
 
@@ -150,12 +153,12 @@ describe("vSysIPv4", () => {
 
         for (let i = 0; i < 46; i++) {
             const sep = String.fromCharCode(i);
-            expect(v.validate({a: `${Math.floor(Math.random() * 256)}${sep}${Math.floor(Math.random() * 256)}${sep}${Math.floor(Math.random() * 256)}${sep}${Math.floor(Math.random() * 256)}`}).is_valid).to.eql(false);
+            expect(v.validate({a: `${rCorrect()}${sep}${rCorrect()}${sep}${rCorrect()}${sep}${rCorrect()}`}).is_valid).to.eql(false);
         }
 
         for (let i = 47; i < 10000; i++) {
             const sep = String.fromCharCode(i);
-            expect(v.validate({a: `${Math.floor(Math.random() * 256)}${sep}${Math.floor(Math.random() * 256)}${sep}${Math.floor(Math.random() * 256)}${sep}${Math.floor(Math.random() * 256)}`}).is_valid).to.eql(false);
+            expect(v.validate({a: `${rCorrect()}${sep}${rCorrect()}${sep}${rCorrect()}${sep}${rCorrect()}`}).is_valid).to.eql(false);
         }
     });
 
