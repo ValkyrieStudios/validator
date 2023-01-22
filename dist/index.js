@@ -13,13 +13,18 @@ var _vAlphaNumSpacesMultiline = _interopRequireDefault(require("./functions/vAlp
 var _vArray = _interopRequireDefault(require("./functions/vArray"));
 var _vArrayNe = _interopRequireDefault(require("./functions/vArrayNe"));
 var _vBetween = _interopRequireDefault(require("./functions/vBetween"));
+var _vBetweenInclusive = _interopRequireDefault(require("./functions/vBetweenInclusive"));
 var _vBoolean = _interopRequireDefault(require("./functions/vBoolean"));
 var _vColorHex = _interopRequireDefault(require("./functions/vColorHex"));
 var _vDate = _interopRequireDefault(require("./functions/vDate"));
+var _vDateString = _interopRequireDefault(require("./functions/vDateString"));
 var _vEmail = _interopRequireDefault(require("./functions/vEmail"));
 var _vEqualTo = _interopRequireDefault(require("./functions/vEqualTo"));
+var _vGeoLatitude = _interopRequireDefault(require("./functions/vGeoLatitude"));
+var _vGeoLongitude = _interopRequireDefault(require("./functions/vGeoLongitude"));
 var _vGreaterThan = _interopRequireDefault(require("./functions/vGreaterThan"));
 var _vGreaterThanOrEqual = _interopRequireDefault(require("./functions/vGreaterThanOrEqual"));
+var _vGuid = _interopRequireDefault(require("./functions/vGuid"));
 var _vIn = _interopRequireDefault(require("./functions/vIn"));
 var _vInteger = _interopRequireDefault(require("./functions/vInteger"));
 var _vLessThan = _interopRequireDefault(require("./functions/vLessThan"));
@@ -29,32 +34,45 @@ var _vMin = _interopRequireDefault(require("./functions/vMin"));
 var _vNumber = _interopRequireDefault(require("./functions/vNumber"));
 var _vObject = _interopRequireDefault(require("./functions/vObject"));
 var _vObjectNe = _interopRequireDefault(require("./functions/vObjectNe"));
+var _vPhone = _interopRequireDefault(require("./functions/vPhone"));
 var _vRequired = _interopRequireDefault(require("./functions/vRequired"));
 var _vSize = _interopRequireDefault(require("./functions/vSize"));
 var _vString = _interopRequireDefault(require("./functions/vString"));
 var _vStringNe = _interopRequireDefault(require("./functions/vStringNe"));
+var _vSysMac = _interopRequireDefault(require("./functions/vSysMac"));
+var _vSysIPv = _interopRequireDefault(require("./functions/vSysIPv4"));
+var _vSysIPv2 = _interopRequireDefault(require("./functions/vSysIPv6"));
+var _vSysIPv4_or_v = _interopRequireDefault(require("./functions/vSysIPv4_or_v6"));
 var _vUrl = _interopRequireDefault(require("./functions/vUrl"));
 var _vUrlNoQuery = _interopRequireDefault(require("./functions/vUrlNoQuery"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var validateFn = {
   alpha_num_spaces: _vAlphaNumSpaces["default"],
   alpha_num_spaces_multiline: _vAlphaNumSpacesMultiline["default"],
   array: _vArray["default"],
   array_ne: _vArrayNe["default"],
   between: _vBetween["default"],
+  between_inc: _vBetweenInclusive["default"],
   "boolean": _vBoolean["default"],
   color_hex: _vColorHex["default"],
   date: _vDate["default"],
+  date_string: _vDateString["default"],
   email: _vEmail["default"],
   equal_to: _vEqualTo["default"],
+  geo_latitude: _vGeoLatitude["default"],
+  geo_longitude: _vGeoLongitude["default"],
   greater_than: _vGreaterThan["default"],
   greater_than_or_equal: _vGreaterThanOrEqual["default"],
+  guid: _vGuid["default"],
   "in": _vIn["default"],
   integer: _vInteger["default"],
   less_than: _vLessThan["default"],
@@ -64,12 +82,23 @@ var validateFn = {
   number: _vNumber["default"],
   object: _vObject["default"],
   object_ne: _vObjectNe["default"],
+  phone: _vPhone["default"],
   required: _vRequired["default"],
   size: _vSize["default"],
   string: _vString["default"],
   string_ne: _vStringNe["default"],
+  sys_mac: _vSysMac["default"],
+  sys_ipv4: _vSysIPv["default"],
+  sys_ipv6: _vSysIPv2["default"],
+  sys_ipv4_or_v6: _vSysIPv4_or_v["default"],
   url: _vUrl["default"],
-  url_noquery: _vUrlNoQuery["default"]
+  url_noquery: _vUrlNoQuery["default"],
+  //  Aliases
+  gt: _vGreaterThan["default"],
+  gte: _vGreaterThanOrEqual["default"],
+  lt: _vLessThan["default"],
+  lte: _vLessThanOrEqual["default"],
+  eq: _vEqualTo["default"]
 };
 
 //  Get the config for an iterable validation
@@ -372,11 +401,18 @@ var Validator = /*#__PURE__*/function () {
       return Object.assign({}, this.evaluation);
     }
 
+    //  Returns the rule set currently on the validator, will return it as an immutable dereferenced object
+  }], [{
+    key: "rules",
+    get: function get() {
+      return Object.freeze(Object.assign({}, validateFn));
+    }
+
     //  Extend validator rule set
     //
     //  @param string   name    Name of the rule
     //  @param Function fn      Validation function
-  }], [{
+  }, {
     key: "extend",
     value: function extend(name, fn) {
       if (!_is["default"].NotEmptyString(name) || !_is["default"].Function(fn)) {
@@ -389,6 +425,7 @@ var Validator = /*#__PURE__*/function () {
       //  Define property with a configurable flag to allow reconfiguration
       Object.defineProperty(validateFn, name.trim(), {
         configurable: true,
+        enumerable: true,
         get: function get() {
           return fn;
         }

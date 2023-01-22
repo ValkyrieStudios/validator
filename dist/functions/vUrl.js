@@ -6,25 +6,25 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = vUrl;
 var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-function isValidURL(data) {
+function isValidURL(val) {
   var url;
   try {
-    url = new URL(data);
+    url = new URL(val);
   } catch (err) {
     // eslint-disable-line
     return false;
   }
   if (url.protocol === 'http:' || url.protocol === 'https:') {
-    return /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/.test(data);
+    return /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/.test(val);
   } else {
     return false;
   }
 }
-function vUrl(data) {
-  if (!_is["default"].NotEmptyString(data)) return false;
+function vUrl(val) {
+  if (!_is["default"].NotEmptyString(val)) return false;
 
   //  Check with URL
-  if (isValidURL(data)) return true;
+  if (isValidURL(val)) return true;
   return !!new RegExp('^' +
   // protocol identifier
   '(?:(?:https?|ftp)://)' +
@@ -49,5 +49,5 @@ function vUrl(data) {
   '(?::\\d{2,5})?' +
   // resource path
   '(?:/[^\\s]*)?' + '$', 'i' //  Options
-  ).test(data.trim());
+  ).test(val.trim());
 }

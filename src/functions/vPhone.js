@@ -11,8 +11,8 @@ export default function vPhone (val) {
     //	Check parts
     const sparts = `${val}`.replace(/\./g, ' ').replace(/-/g, ' ').split(' ').map(el => el.trim());
     for (const el of sparts) {
-    	if (el.startsWith('(') && !el.endsWith(')')) return false;
-    	if (el.endsWith(')') && !el.startsWith('(')) return false;
+        if (el.startsWith('(') && !el.endsWith(')')) return false;
+        if (el.endsWith(')') && !el.startsWith('(')) return false;
     }
 
     //	Will match phone numbers entered with delimiters (spaces, dots, brackets and dashes)

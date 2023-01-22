@@ -6,14 +6,14 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = vUrl;
 var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-function vUrl(data) {
-  if (!_is["default"].NotEmptyString(data)) return false;
+function vUrl(val) {
+  if (!_is["default"].NotEmptyString(val)) return false;
 
   //  Check for query string identifier
-  if (data.indexOf('?') > -1) return false;
+  if (val.indexOf('?') > -1) return false;
 
   //  Check for ampersand identifier
-  if (data.indexOf('&') > -1) return false;
+  if (val.indexOf('&') > -1) return false;
   return new RegExp('^' +
   // protocol identifier
   '(?:(?:https?|ftp)://)' +
@@ -37,5 +37,5 @@ function vUrl(data) {
   // port number
   '(?::\\d{2,5})?' +
   // resource path
-  '(?:/[^\\s]*)?' + '$', 'i').test(data.trim());
+  '(?:/[^\\s]*)?' + '$', 'i').test(val.trim());
 }

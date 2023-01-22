@@ -3,9 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = vDate;
+exports["default"] = vGeoLatitude;
 var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-function vDate(val) {
-  return _is["default"].Date(val);
+function vGeoLatitude(val) {
+  return _is["default"].Number(val) && val >= -90 && val <= 90;
 }

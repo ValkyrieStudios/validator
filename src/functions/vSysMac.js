@@ -4,8 +4,8 @@ import Is from '@valkyriestudios/utils/is';
 
 //  M stands for manufacturer digits
 //  S stands for device digits
-//  When 48-bit addresses get converted to 64-bit addresses a hardcoded 16-bit value (FFFE) gets inserted between the manufacturer and device
-//  digits.
+//  When 48-bit addresses get converted to 64-bit addresses a hardcoded 16-bit value (FFFE)
+//  gets inserted between the manufacturer and device digits.
 
 export default function vSysMac (val) {
     if (!Is.NotEmptyString(val)) return false;
