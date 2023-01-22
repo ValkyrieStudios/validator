@@ -261,6 +261,14 @@ Validator.extendMulti({
 });
 ```
 
+##### Want to use the validation rules directly without a validator?
+If you see the need to directly use the validation rule functions without a validator instance, or want to check internal state you can use the `Validator.rules` static.
+
+```
+Validator.rules.phone('+32 487 61 59 82'); // true
+Validator.rules.email('contact@valkyriestudios.be'); // true
+```
+
 ## Available rules
 The following list shows you all the default rules that are provided by this library, feel free to write your own or open a PR to extend on this set!
 
