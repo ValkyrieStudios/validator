@@ -24,6 +24,11 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - rule: lte (alias of 'less_than_or_equal' rule)
 - rule: eq (alias of 'equal_to' rule)
 
+### Improved
+- Dep: Upgrade @babel/core to 7.20.12
+- Dep: Upgrade eslint to 8.32.0
+- Dep: Upgrade mocha to 10.2.0
+
 ## [3.2.0] - 2022-11-20
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 5.3.0
