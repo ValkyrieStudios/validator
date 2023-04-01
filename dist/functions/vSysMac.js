@@ -10,7 +10,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 //  S stands for device digits
 //  When 48-bit addresses get converted to 64-bit addresses a hardcoded 16-bit value (FFFE)
 //  gets inserted between the manufacturer and device digits.
-
 function vSysMac(val) {
   if (!_is["default"].NotEmptyString(val)) return false;
 
