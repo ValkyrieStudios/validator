@@ -3918,7 +3918,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         ]) {
             expect(v.validate({a: el}).is_valid).to.eql(true);
         }
-    });    
+    });
 
     it ('[mexico] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});

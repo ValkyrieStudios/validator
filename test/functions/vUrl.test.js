@@ -113,8 +113,10 @@ describe("vUrl", () => {
         "https://www.valkyriestudios.com/#4802394",
         "https://www.valkyriestudios.com/#inbox?a=2",
         "https://valkyriestudios.com/#floo_bar?a=2&c=foo",
+        "https://www.valkyriestudios.co.uk:3000/eweqweeqwe/ewqeeqweqe",
         "https://www.valkyriestudios.co.uk/eweqweeqwe/ewqeeqweqe",
         "https://valkyriestudios.com/?a=1&b=2#eweqweqwewqeqweweqweqweqweqwewopqieqwoeqweipqwoeiqweiqwpoeiqwieqwopeiqwpooeqwieiqwoeiqwoeiqweiqwopeiqwpeiqweiqweoiwqopepwoqiepqwoieoiwqeipqwoeiowqieoipoeiwqoiepowiqoieqw&ewquie",
+        "https://valkyriestudios.com:3000/?a=1&b=2#eweqweqwewqeqweweqweqweqweqwewopqieqwoeqweipqwoeiqweiqwpoeiqwieqwopeiqwpooeqwieiqwoeiqwoeiqweiqwopeiqwpeiqweiqweoiwqopepwoqiepqwoieoiwqeipqwoeiowqieoipoeiwqoiepowiqoieqw&ewquie",
     ];
 
     it ('should validate a url string correctly', () => {

@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- vEmail: Fix issue where emails ending in dash for the local part of the email are treated as invalid
+
 ## [3.4.0] - 2023-04-01
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 5.3.1

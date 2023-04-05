@@ -145,6 +145,15 @@ describe("vEmail", () => {
         expect(evaluation.is_valid).to.eql(true);
     });
 
+    it ('should validate specific email addresses as correct', () => {
+        for (const el of [
+            'frasca-@4srg.com',
+        ]) {
+            const evaluation = (new Validator({a: 'email'})).validate({a: el});
+            expect(evaluation.is_valid).to.eql(true);
+        }
+    });
+
 //  Invalid email tests
 
     it ('should validate a string with a missing @sign and domain as invalid', () => {
