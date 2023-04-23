@@ -10,35 +10,25 @@ var _set = _interopRequireDefault(require("@valkyriestudios/utils/deep/set"));
 var _fnv1A = _interopRequireDefault(require("@valkyriestudios/utils/hash/fnv1A"));
 var _vAlphaNumSpaces = _interopRequireDefault(require("./functions/vAlphaNumSpaces"));
 var _vAlphaNumSpacesMultiline = _interopRequireDefault(require("./functions/vAlphaNumSpacesMultiline"));
-var _vArray = _interopRequireDefault(require("./functions/vArray"));
-var _vArrayNe = _interopRequireDefault(require("./functions/vArrayNe"));
 var _vBetween = _interopRequireDefault(require("./functions/vBetween"));
 var _vBetweenInclusive = _interopRequireDefault(require("./functions/vBetweenInclusive"));
 var _vBoolean = _interopRequireDefault(require("./functions/vBoolean"));
 var _vColorHex = _interopRequireDefault(require("./functions/vColorHex"));
-var _vDate = _interopRequireDefault(require("./functions/vDate"));
 var _vDateString = _interopRequireDefault(require("./functions/vDateString"));
 var _vEmail = _interopRequireDefault(require("./functions/vEmail"));
-var _vEqualTo = _interopRequireDefault(require("./functions/vEqualTo"));
 var _vGeoLatitude = _interopRequireDefault(require("./functions/vGeoLatitude"));
 var _vGeoLongitude = _interopRequireDefault(require("./functions/vGeoLongitude"));
 var _vGreaterThan = _interopRequireDefault(require("./functions/vGreaterThan"));
 var _vGreaterThanOrEqual = _interopRequireDefault(require("./functions/vGreaterThanOrEqual"));
 var _vGuid = _interopRequireDefault(require("./functions/vGuid"));
 var _vIn = _interopRequireDefault(require("./functions/vIn"));
-var _vInteger = _interopRequireDefault(require("./functions/vInteger"));
 var _vLessThan = _interopRequireDefault(require("./functions/vLessThan"));
 var _vLessThanOrEqual = _interopRequireDefault(require("./functions/vLessThanOrEqual"));
 var _vMax = _interopRequireDefault(require("./functions/vMax"));
 var _vMin = _interopRequireDefault(require("./functions/vMin"));
-var _vNumber = _interopRequireDefault(require("./functions/vNumber"));
-var _vObject = _interopRequireDefault(require("./functions/vObject"));
-var _vObjectNe = _interopRequireDefault(require("./functions/vObjectNe"));
 var _vPhone = _interopRequireDefault(require("./functions/vPhone"));
 var _vRequired = _interopRequireDefault(require("./functions/vRequired"));
 var _vSize = _interopRequireDefault(require("./functions/vSize"));
-var _vString = _interopRequireDefault(require("./functions/vString"));
-var _vStringNe = _interopRequireDefault(require("./functions/vStringNe"));
 var _vSysMac = _interopRequireDefault(require("./functions/vSysMac"));
 var _vSysIPv = _interopRequireDefault(require("./functions/vSysIPv4"));
 var _vSysIPv2 = _interopRequireDefault(require("./functions/vSysIPv6"));
@@ -58,35 +48,35 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 var validateFn = {
   alpha_num_spaces: _vAlphaNumSpaces["default"],
   alpha_num_spaces_multiline: _vAlphaNumSpacesMultiline["default"],
-  array: _vArray["default"],
-  array_ne: _vArrayNe["default"],
+  array: _is["default"].Array,
+  array_ne: _is["default"].NeArray,
   between: _vBetween["default"],
   between_inc: _vBetweenInclusive["default"],
   "boolean": _vBoolean["default"],
   color_hex: _vColorHex["default"],
-  date: _vDate["default"],
+  date: _is["default"].Date,
   date_string: _vDateString["default"],
   email: _vEmail["default"],
-  equal_to: _vEqualTo["default"],
+  equal_to: _is["default"].Eq,
   geo_latitude: _vGeoLatitude["default"],
   geo_longitude: _vGeoLongitude["default"],
   greater_than: _vGreaterThan["default"],
   greater_than_or_equal: _vGreaterThanOrEqual["default"],
   guid: _vGuid["default"],
   "in": _vIn["default"],
-  integer: _vInteger["default"],
+  integer: _is["default"].Int,
   less_than: _vLessThan["default"],
   less_than_or_equal: _vLessThanOrEqual["default"],
   max: _vMax["default"],
   min: _vMin["default"],
-  number: _vNumber["default"],
-  object: _vObject["default"],
-  object_ne: _vObjectNe["default"],
+  number: _is["default"].Number,
+  object: _is["default"].Object,
+  object_ne: _is["default"].NeObject,
   phone: _vPhone["default"],
   required: _vRequired["default"],
   size: _vSize["default"],
-  string: _vString["default"],
-  string_ne: _vStringNe["default"],
+  string: _is["default"].String,
+  string_ne: _is["default"].NeString,
   sys_mac: _vSysMac["default"],
   sys_ipv4: _vSysIPv["default"],
   sys_ipv6: _vSysIPv2["default"],
@@ -98,7 +88,7 @@ var validateFn = {
   gte: _vGreaterThanOrEqual["default"],
   lt: _vLessThan["default"],
   lte: _vLessThanOrEqual["default"],
-  eq: _vEqualTo["default"]
+  eq: _is["default"].Eq
 };
 
 //  Get the config for an iterable validation
