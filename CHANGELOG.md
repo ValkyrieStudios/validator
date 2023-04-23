@@ -9,6 +9,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 6.1.0
 - Dep: Upgrade eslint to 8.39.0
+- Minor performance improvement due to internal direct-link rather than wrap link to utils lib functions
 
 ## [3.4.1] - 2023-04-05
 ### Fixed

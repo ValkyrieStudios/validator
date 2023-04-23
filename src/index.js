@@ -7,35 +7,25 @@ import fnv1A    from '@valkyriestudios/utils/hash/fnv1A';
 
 import vAlphaNumSpaces          from './functions/vAlphaNumSpaces';
 import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline';
-import vArray                   from './functions/vArray';
-import vArrayNe                 from './functions/vArrayNe';
 import vBetween                 from './functions/vBetween';
 import vBetweenInclusive        from './functions/vBetweenInclusive';
 import vBoolean                 from './functions/vBoolean';
 import vColorHex                from './functions/vColorHex';
-import vDate                    from './functions/vDate';
 import vDateString              from './functions/vDateString';
 import vEmail                   from './functions/vEmail';
-import vEqualTo                 from './functions/vEqualTo';
 import vGeoLatitude             from './functions/vGeoLatitude';
 import vGeoLongitude            from './functions/vGeoLongitude';
 import vGreaterThan             from './functions/vGreaterThan';
 import vGreaterThanOrEqual      from './functions/vGreaterThanOrEqual';
 import vGuid                    from './functions/vGuid';
 import vIn                      from './functions/vIn';
-import vInteger                 from './functions/vInteger';
 import vLessThan                from './functions/vLessThan';
 import vLessThanOrEqual         from './functions/vLessThanOrEqual';
 import vMax                     from './functions/vMax';
 import vMin                     from './functions/vMin';
-import vNumber                  from './functions/vNumber';
-import vObject                  from './functions/vObject';
-import vObjectNe                from './functions/vObjectNe';
 import vPhone                   from './functions/vPhone';
 import vRequired                from './functions/vRequired';
 import vSize                    from './functions/vSize';
-import vString                  from './functions/vString';
-import vStringNe                from './functions/vStringNe';
 import vSysMac                  from './functions/vSysMac';
 import vSysIPv4                 from './functions/vSysIPv4';
 import vSysIPv6                 from './functions/vSysIPv6';
@@ -46,35 +36,35 @@ import vUrlNoQuery              from './functions/vUrlNoQuery';
 const validateFn = {
     alpha_num_spaces            : vAlphaNumSpaces,
     alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
-    array                       : vArray,
-    array_ne                    : vArrayNe,
+    array                       : Is.Array,
+    array_ne                    : Is.NeArray,
     between                     : vBetween,
     between_inc                 : vBetweenInclusive,
     boolean                     : vBoolean,
     color_hex                   : vColorHex,
-    date                        : vDate,
+    date                        : Is.Date,
     date_string                 : vDateString,
     email                       : vEmail,
-    equal_to                    : vEqualTo,
+    equal_to                    : Is.Eq,
     geo_latitude                : vGeoLatitude,
     geo_longitude               : vGeoLongitude,
     greater_than                : vGreaterThan,
     greater_than_or_equal       : vGreaterThanOrEqual,
     guid                        : vGuid,
     in                          : vIn,
-    integer                     : vInteger,
+    integer                     : Is.Int,
     less_than                   : vLessThan,
     less_than_or_equal          : vLessThanOrEqual,
     max                         : vMax,
     min                         : vMin,
-    number                      : vNumber,
-    object                      : vObject,
-    object_ne                   : vObjectNe,
+    number                      : Is.Number,
+    object                      : Is.Object,
+    object_ne                   : Is.NeObject,
     phone                       : vPhone,
     required                    : vRequired,
     size                        : vSize,
-    string                      : vString,
-    string_ne                   : vStringNe,
+    string                      : Is.String,
+    string_ne                   : Is.NeString,
     sys_mac                     : vSysMac,
     sys_ipv4                    : vSysIPv4,
     sys_ipv6                    : vSysIPv6,
@@ -86,7 +76,7 @@ const validateFn = {
     gte                         : vGreaterThanOrEqual,
     lt                          : vLessThan,
     lte                         : vLessThanOrEqual,
-    eq                          : vEqualTo,
+    eq                          : Is.Eq,
 };
 
 //  Get the config for an iterable validation
