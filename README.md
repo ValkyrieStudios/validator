@@ -318,4 +318,4 @@ The following list shows you all the default rules that are provided by this lib
 | url_noquery | Validate that a provided value is a url without any query string values |
 
 ## Contributors
-- Peter Vermeulen : [Valkyrie Studios](www.valkyriestudios.be)
+- [Peter Vermeulen](mailto:contact@valkyriestudios.be)
