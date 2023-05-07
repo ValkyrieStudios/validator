@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Dep: @babel/cli
+- Dep: babel-plugin-check-es2015-constants
+- Dep: babel-plugin-transform-member-expression-literals
+- Dep: babel-plugin-transform-minify-booleans
+- Dep: babel-plugin-transform-property-literals
+- Dep: babel-plugin-transform-remove-console
+- .babelrc
+- Switch to using babel-cli for transpiling build
+
+### Improved
+- Dep: Upgrade @valkyriestudios/utils to 7.0.0
+- Dep: Upgrade @babel/core to 7.21.8
+- Dep: Upgrade eslint to 8.40.0
+
+### Removed
+- Dep: gulp
+- Dep: gulp-babel
+- gulpfile
+
 ## [3.6.0] - 2023-04-29
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 6.2.0

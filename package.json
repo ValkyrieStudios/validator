@@ -22,7 +22,7 @@
     "test": "nyc --reporter=lcov --reporter=text-summary mocha --colors --require @babel/register --recursive ./test",
     "test_ci": "nyc --reporter=lcov mocha --colors --require @babel/register --recursive ./test",
     "lint": "./node_modules/.bin/eslint ./src",
-    "build": "gulp && npm run lint",
+    "build": "npx babel src --out-dir ./dist && npm run lint",
     "codecov": "codecov"
   },
   "repository": {
@@ -34,18 +34,22 @@
   },
   "homepage": "https://github.com/ValkyrieStudios/validator#readme",
   "dependencies": {
-    "@valkyriestudios/utils": "^6.2.0"
+    "@valkyriestudios/utils": "^7.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.5",
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.21.8",
     "@babel/preset-env": "^7.21.5",
     "@babel/register": "^7.21.0",
+    "babel-plugin-check-es2015-constants": "^6.22.0",
+    "babel-plugin-transform-member-expression-literals": "^6.9.4",
+    "babel-plugin-transform-minify-booleans": "^6.9.4",
+    "babel-plugin-transform-property-literals": "^6.9.4",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^1.0.0",
-    "eslint": "^8.39.0",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
+    "eslint": "^8.40.0",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0"
   }
