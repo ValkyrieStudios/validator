@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+  value: !0
 });
 exports["default"] = void 0;
 var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
@@ -37,12 +37,12 @@ var _vUrl = _interopRequireDefault(require("./functions/vUrl"));
 var _vUrlNoQuery = _interopRequireDefault(require("./functions/vUrlNoQuery"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: !0 }; return { done: !1, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = !0, didErr = !1, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = !0; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || !1; descriptor.configurable = !0; if ("value" in descriptor) descriptor.writable = !0; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: !1 }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var validateFn = {
@@ -83,51 +83,39 @@ var validateFn = {
   sys_ipv4_or_v6: _vSysIPv4_or_v["default"],
   url: _vUrl["default"],
   url_noquery: _vUrlNoQuery["default"],
-  //  Aliases
   gt: _vGreaterThan["default"],
   gte: _vGreaterThanOrEqual["default"],
   lt: _vLessThan["default"],
   lte: _vLessThanOrEqual["default"],
   eq: _is["default"].Eq
 };
-
-//  Get the config for an iterable validation
-//
-//  @param string   val     Value to determine config from, eg: 'unique|min:1|max:5'
 function getIterableConfig(val) {
   return {
     unique: val.indexOf('unique') >= 0,
-    max: val.match(/max:\d{1,}(\||$)/) ? parseInt("".concat(val).split('max:')[1].split('|').shift()) : false,
-    min: val.match(/min:\d{1,}(\||$)/) ? parseInt("".concat(val).split('min:')[1].split('|').shift()) : false
+    max: val.match(/max:\d{1,}(\||$)/) ? parseInt("".concat(val).split('max:')[1].split('|').shift()) : !1,
+    min: val.match(/min:\d{1,}(\||$)/) ? parseInt("".concat(val).split('min:')[1].split('|').shift()) : !1
   };
 }
-var Validator = /*#__PURE__*/function () {
+var Validator = function () {
   function Validator() {
     var rules = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
     _classCallCheck(this, Validator);
-    //  Check for rules
     if (!_is["default"].Object(rules)) throw new TypeError('Please provide an object to define the rules of this validator');
-
-    //  Recursively parse our validation rules, to allow for deeply nested validation to be done
     function parse(acc, key) {
       var cursor = (0, _get["default"])(rules, key);
-
-      //  If the cursor is an object, go deeper into the object
       if (_is["default"].Object(cursor)) {
         Object.keys(cursor).map(function (cursor_key) {
           return "".concat(key, ".").concat(cursor_key);
         }).reduce(parse, acc);
       } else if (_is["default"].NotEmptyString(cursor)) {
-        //  If the cursor is a string, we've hit a rule
-
-        var startix = 0; // Adjust to determine start of config rule
-        var iterable = false; //  Iterable flag (false or an object, see iterable config)
-        var sometimes = false; //  Sometimes flag
+        var startix = 0;
+        var iterable = !1;
+        var sometimes = !1;
         if (cursor.substring(0, 2) === '?[') {
           var iterable_endix = cursor.indexOf(']');
           if (iterable_endix < 0) throw new TypeError("Iterable end not found, please verify rule config for ".concat(cursor));
           iterable = getIterableConfig(cursor.substring(2, iterable_endix));
-          sometimes = true;
+          sometimes = !0;
           startix = iterable_endix + 1;
         } else if (cursor.substring(0, 1) === '[') {
           var _iterable_endix = cursor.indexOf(']');
@@ -135,21 +123,15 @@ var Validator = /*#__PURE__*/function () {
           iterable = getIterableConfig(cursor.substring(1, _iterable_endix));
           startix = _iterable_endix + 1;
         } else if (cursor.substring(0, 1) === '?') {
-          sometimes = true;
+          sometimes = !0;
           startix = 1;
         }
         (0, _set["default"])(acc, key, cursor.substring(startix).split('|').reduce(function (rule_acc, rule_string) {
           var params = rule_string.split(':');
           var type = params.shift().trim();
-
-          //  Get 'not' flag
           var not = type.startsWith('!');
           if (not) type = type.replace(/!/g, '');
-
-          //  Get parameters
           params = params.length > 0 ? params[0].split(',') : [];
-
-          //  Parse parameters into callback functions
           params = params.reduce(function (params_acc, param) {
             if (/^<([A-z]|[0-9]|_|\.)+>$/g.test(param)) {
               param = param.substr(1, param.length - 2);
@@ -177,21 +159,15 @@ var Validator = /*#__PURE__*/function () {
           return rule_acc;
         }, []));
       } else {
-        //  Throw a type error if neither a string nor an object
         throw new TypeError('The rule for a key needs to a string value');
       }
       return acc;
     }
     var parsed_rules = Object.keys(rules).reduce(parse, Object.create(null));
-
-    //  Set is_valid as a property on the validator, this will reflect the
-    //  validity even if evaluation results are not caught
     this.evaluation = Object.seal({
-      is_valid: false,
+      is_valid: !1,
       errors: {}
     });
-
-    //  Set the parsed rules as a get property on our validation instance
     Object.defineProperty(this, 'rules', {
       get: function get() {
         return parsed_rules;
@@ -213,19 +189,13 @@ var Validator = /*#__PURE__*/function () {
     value: function validate(data) {
       var _this = this;
       var keys = Object.keys(this.rules);
-
-      //  Reset evaluation
-      this.evaluation.is_valid = true;
+      this.evaluation.is_valid = !0;
       this.evaluation.errors = Object.create(null);
-
-      //  No data passed? Check if rules were set up
       if (!data) {
         this.evaluation.is_valid = !!(keys.length === 0);
       } else {
         var run = function run(key) {
           var cursor = (0, _get["default"])(_this.rules, key);
-
-          //  Recursively validate
           if (_is["default"].NotEmptyObject(cursor)) {
             return Object.keys(cursor).map(function (cursor_key) {
               cursor_key = "".concat(key, ".").concat(cursor_key);
@@ -235,28 +205,18 @@ var Validator = /*#__PURE__*/function () {
           } else {
             (0, _set["default"])(_this.evaluation.errors, key, []);
           }
-
-          //  Get value
           var val = (0, _get["default"])(data, key);
-
-          //  Iterable error flags
-          var iterable_unique = true;
-          var iterable_err = false;
-          var iterable_min_err = false;
-          var iterable_max_err = false;
-
-          //  Validate array of rules for this property
+          var iterable_unique = !0;
+          var iterable_err = !1;
+          var iterable_min_err = !1;
+          var iterable_max_err = !1;
           if (!_is["default"].NotEmptyArray(cursor)) return;
           var _iterator = _createForOfIteratorHelper(cursor),
             _step;
           try {
             for (_iterator.s(); !(_step = _iterator.n()).done;) {
               var rule = _step.value;
-              //  Check if rule exists
               if (!validateFn[rule.type]) throw new Error("Rule: ".concat(rule.type, " was not found"));
-
-              //  Each param rule is a cb function that should be executed on each run, retrieving
-              //  the value inside of the dataset
               var params = [];
               var _iterator2 = _createForOfIteratorHelper(rule.params),
                 _step2;
@@ -265,8 +225,6 @@ var Validator = /*#__PURE__*/function () {
                   var rule_param = _step2.value;
                   params.push(rule_param(data));
                 }
-
-                //  If rule.sometimes is set and val is not provided, break
               } catch (err) {
                 _iterator2.e(err);
               } finally {
@@ -278,102 +236,83 @@ var Validator = /*#__PURE__*/function () {
                     msg: "".concat(rule.not ? 'not_' : '').concat(rule.type),
                     params: params
                   });
-                  _this.evaluation.is_valid = false;
+                  _this.evaluation.is_valid = !1;
                 }
                 continue;
               }
-
-              //  If this is an iterable
               if (_is["default"].Object(rule.iterable)) {
-                //  If not an array -> invalid
                 if (!_is["default"].Array(val)) {
-                  iterable_err = true;
+                  iterable_err = !0;
                   break;
                 }
-
-                //  rule.iterable.min is set and val length is below the min -> invalid
                 if (_is["default"].Number(rule.iterable.min) && val.length < rule.iterable.min) {
                   iterable_min_err = rule.iterable.min;
                   break;
                 }
-
-                //  rule.iterable.min is set and val length is below the min -> invalid
                 if (_is["default"].Number(rule.iterable.max) && val.length > rule.iterable.max) {
                   iterable_max_err = rule.iterable.max;
                   break;
                 }
-                var unique_map = iterable_unique && rule.iterable.unique ? new Map() : false;
+                var unique_map = iterable_unique && rule.iterable.unique ? new Map() : !1;
                 for (var i = 0; i < val.length; i++) {
                   var _validateFn$rule$type;
-                  //  Run validation
                   var rule_valid = (_validateFn$rule$type = validateFn[rule.type]).call.apply(_validateFn$rule$type, [_this, val[i]].concat(params));
-
-                  //  If check fails (not valid && not not | not && valid)
                   if (!rule_valid && !rule.not || rule_valid && rule.not) {
                     (0, _get["default"])(_this.evaluation.errors, key).push({
                       msg: "".concat(rule.not ? 'not_' : '').concat(rule.type),
                       params: params,
                       idx: i
                     });
-                    _this.evaluation.is_valid = false;
+                    _this.evaluation.is_valid = !1;
                   }
-
-                  //  Uniqueness checks for iterable
                   if (unique_map && iterable_unique) {
-                    unique_map.set((0, _fnv1A["default"])(val[i]), true);
-                    if (unique_map.size !== i + 1) iterable_unique = false;
+                    unique_map.set((0, _fnv1A["default"])(val[i]), !0);
+                    if (unique_map.size !== i + 1) iterable_unique = !1;
                   }
                 }
               } else {
                 var _validateFn$rule$type2;
-                //  Run validation
                 var _rule_valid = (_validateFn$rule$type2 = validateFn[rule.type]).call.apply(_validateFn$rule$type2, [_this, val].concat(params));
-
-                //  If check fails (not valid && not not | not && valid)
                 if (!_rule_valid && !rule.not || _rule_valid && rule.not) {
                   (0, _get["default"])(_this.evaluation.errors, key).push({
                     msg: "".concat(rule.not ? 'not_' : '').concat(rule.type),
                     params: params
                   });
-                  _this.evaluation.is_valid = false;
+                  _this.evaluation.is_valid = !1;
                 }
               }
             }
-
-            //  Inject iterable errors
           } catch (err) {
             _iterator.e(err);
           } finally {
             _iterator.f();
           }
-          if (iterable_err === true) {
+          if (iterable_err === !0) {
             (0, _get["default"])(_this.evaluation.errors, key).push({
               msg: 'iterable',
               params: []
             });
-            _this.evaluation.is_valid = false;
+            _this.evaluation.is_valid = !1;
           } else if (_is["default"].Number(iterable_min_err)) {
             (0, _get["default"])(_this.evaluation.errors, key).push({
               msg: 'iterable_min',
               params: [iterable_min_err]
             });
-            _this.evaluation.is_valid = false;
+            _this.evaluation.is_valid = !1;
           } else if (_is["default"].Number(iterable_max_err)) {
             (0, _get["default"])(_this.evaluation.errors, key).push({
               msg: 'iterable_max',
               params: [iterable_max_err]
             });
-            _this.evaluation.is_valid = false;
+            _this.evaluation.is_valid = !1;
           } else if (!iterable_unique) {
             (0, _get["default"])(_this.evaluation.errors, key).unshift({
               msg: 'iterable_unique',
               params: []
             });
-            _this.evaluation.is_valid = false;
+            _this.evaluation.is_valid = !1;
           }
         };
-
-        //  Prep the evaluation for the keys in the rules
         var _iterator3 = _createForOfIteratorHelper(keys),
           _step3;
         try {
@@ -390,48 +329,30 @@ var Validator = /*#__PURE__*/function () {
       }
       return Object.assign({}, this.evaluation);
     }
-
-    //  Returns the rule set currently on the validator, will return it as an immutable dereferenced object
   }], [{
     key: "rules",
     get: function get() {
       return Object.freeze(Object.assign({}, validateFn));
     }
-
-    //  Extend validator rule set
-    //
-    //  @param string   name    Name of the rule
-    //  @param Function fn      Validation function
   }, {
     key: "extend",
     value: function extend(name, fn) {
       if (!_is["default"].NotEmptyString(name) || !_is["default"].Function(fn)) {
         throw new Error("Invalid extension: ".concat(name, ", please ensure a valid function/name is passed"));
       }
-
-      //  If prop already exists, delete it
       if (validateFn[name]) delete validateFn[name];
-
-      //  Define property with a configurable flag to allow reconfiguration
       Object.defineProperty(validateFn, name.trim(), {
-        configurable: true,
-        enumerable: true,
+        configurable: !0,
+        enumerable: !0,
         get: function get() {
           return fn;
         }
       });
     }
-
-    //  Run multiple validator extensions in one go by passing an object
-    //
-    //  @param object   obj     Object in the format of {rule_1: Function, rule_2: Function, ...}
   }, {
     key: "extendMulti",
     value: function extendMulti(obj) {
-      //  Check if passed variable is an object
       if (!_is["default"].Object(obj)) return;
-
-      //  For each key in object, check if its value is a function
       for (var _i = 0, _Object$keys = Object.keys(obj); _i < _Object$keys.length; _i++) {
         var name = _Object$keys[_i];
         Validator.extend(name, obj[name]);

@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+  value: !0
 });
 exports["default"] = vMin;
 var _vGreaterThanOrEqual = _interopRequireDefault(require("./vGreaterThanOrEqual"));

@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+  value: !0
 });
 exports["default"] = vIn;
 var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
@@ -15,7 +15,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function vIn(val) {
   var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
-  if (!_is["default"].NotEmptyArray(params) && !_is["default"].NotEmptyString(params)) return false;
+  if (!_is["default"].NotEmptyArray(params) && !_is["default"].NotEmptyString(params)) return !1;
   if (_is["default"].String(val) || _is["default"].Number(val) || _is["default"].Boolean(val)) {
     return params.indexOf(val) > -1;
   }

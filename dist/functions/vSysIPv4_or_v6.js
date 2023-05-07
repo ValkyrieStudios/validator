@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+  value: !0
 });
 exports["default"] = vSysIPv4_or_v6;
 var _vSysIPv = _interopRequireDefault(require("./vSysIPv4"));
