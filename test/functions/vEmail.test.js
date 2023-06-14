@@ -147,7 +147,8 @@ describe("vEmail", () => {
 
     it ('should validate specific email addresses as correct', () => {
         for (const el of [
-            'frasca-@4srg.com',
+            'peter-@4cooks.com',
+            'c&lent@myoffices.com',
         ]) {
             const evaluation = (new Validator({a: 'email'})).validate({a: el});
             expect(evaluation.is_valid).to.eql(true);

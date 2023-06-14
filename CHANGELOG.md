@@ -14,6 +14,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Dep: Upgrade @babel/register to 7.22.5
 - Dep: Upgrade eslint to 8.42.0
 
+### Fixed
+- vEmail: Fixed an issue where ampersand characters in the username part of an email where seen as invalid (eg: 'me&you@mydomain.com')
+
 ## [3.7.0] - 2023-05-07
 ### Added
 - Dep: @babel/cli

@@ -14,7 +14,7 @@ export default function vEmail (val) {
     if (parts[0].length > 64) return false;
 
     //  Baseline validation for username
-    if (/^(")?[A-Z0-9._%+-]+(")?$/gi.test(parts[0]) === false) return false;
+    if (/^(")?[A-Z0-9&._%+-]+(")?$/gi.test(parts[0]) === false) return false;
 
     //  Username Special case: can not start with dot (.)
     if (parts[0].substring(0, 1) === '.') return false;

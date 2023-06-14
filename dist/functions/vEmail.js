@@ -11,7 +11,7 @@ function vEmail(val) {
   var parts = val.split('@');
   if (parts.length !== 2) return !1;
   if (parts[0].length > 64) return !1;
-  if (/^(")?[A-Z0-9._%+-]+(")?$/gi.test(parts[0]) === !1) return !1;
+  if (/^(")?[A-Z0-9&._%+-]+(")?$/gi.test(parts[0]) === !1) return !1;
   if (parts[0].substring(0, 1) === '.') return !1;
   if (parts[0].substring(parts[0].length - 1, parts[1].length) === '.') return !1;
   if (/[.]{2,}/.test(parts[0]) === !0) return !1;
