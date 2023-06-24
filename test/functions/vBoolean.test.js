@@ -2,16 +2,9 @@
 
 import Validator from '../../src/index';
 
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
+const expect = require('chai').expect;
 
-const expect = chai.expect;
-const assert = chai.assert;
-const should = chai.should();
-const spy = chai.spy;
-
-describe("vBoolean", () => {
+describe('vBoolean', () => {
     const subject = {
         a : 100,
         b : 200,
@@ -28,7 +21,7 @@ describe("vBoolean", () => {
         n : Object.create(null),
     };
 
-    it ('should validate a boolean correctly', () => {
+    it('should validate a boolean correctly', () => {
         const validator = new Validator({
             d : 'boolean',
             e : 'boolean',
@@ -41,7 +34,7 @@ describe("vBoolean", () => {
         expect(evaluation.errors.e).to.deep.equal([]);
     });
 
-    it ('should not validate other types as valid booleans', () => {
+    it('should not validate other types as valid booleans', () => {
         const keys = Object.keys(subject);
         const validator = new Validator([...keys].reduce((acc, key) => {
             acc[key] = 'boolean';
@@ -68,7 +61,7 @@ describe("vBoolean", () => {
         });
     });
 
-    it ('should return a correct error message when invalid', () => {
+    it('should return a correct error message when invalid', () => {
         const valid_keys    = ['d', 'e'];
         const invalid_keys  = ['a', 'b', 'c', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'n'];
 
@@ -84,5 +77,4 @@ describe("vBoolean", () => {
         valid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([]));
         invalid_keys.forEach(key => expect(evaluation.errors[key]).to.deep.equal([{msg:'boolean', params: []}]));
     });
-
 });

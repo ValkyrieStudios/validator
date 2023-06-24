@@ -2,14 +2,7 @@
 
 import Validator from '../../src/index';
 
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
-
-const expect = chai.expect;
-const assert = chai.assert;
-const should = chai.should();
-const spy = chai.spy;
+const expect = require('chai').expect;
 
 const validChars = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f'];
 
@@ -17,31 +10,30 @@ const rVal = () => validChars[Math.floor(Math.random() * 16)];
 
 const rChunk = () => `${rVal()}${rVal()}${rVal()}${rVal()}`;
 
-describe("vSysIPv6", () => {
-
+describe('vSysIPv6', () => {
     const str_tests = [{a:1}, [0,1,2], true, new Date(), /1/g, false, 123, 0.123];
 
-    it ('Should be invalid if not passed a string', () => {
+    it('Should be invalid if not passed a string', () => {
         for (const el of str_tests) {
             expect(new Validator({a: 'sys_ipv6'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid if passed an empty string (or empty after trimming)', () => {
+    it('Should be invalid if passed an empty string (or empty after trimming)', () => {
         for (const el of ['', ' ', '   ']) {
             expect(new Validator({a: 'sys_ipv6'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed random strings', () => {
+    it('Should be invalid when passed random strings', () => {
         for (const el of ['foo', 'bar', 'hello world', 'hello.world', 'ewueioqw wqe uqwioeuowqeqw']) {
             expect(new Validator({a: 'sys_ipv6'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed a ipv6 address containing only invalid characters and no separator', () => {
+    it('Should be invalid when passed a ipv6 address containing only invalid characters and no separator', () => {
         const v = new Validator({a: 'sys_ipv6'});
-        const tpl = c => `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`.replace(/x/g, c);
+        const tpl = c => 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
@@ -59,9 +51,9 @@ describe("vSysIPv6", () => {
         }
     });
 
-    it ('Should be invalid when passed a ipv6 address containing only invalid characters and with separator', () => {
+    it('Should be invalid when passed a ipv6 address containing only invalid characters and with separator', () => {
         const v = new Validator({a: 'sys_ipv6'});
-        const tpl = c => `xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx`.replace(/x/g, c);
+        const tpl = c => 'xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
@@ -79,16 +71,16 @@ describe("vSysIPv6", () => {
         }
     });
 
-    it ('Should be invalid when passed a ipv6 address containing a single chunk with invalid characters and with separator', () => {
+    it('Should be invalid when passed a ipv6 address containing a single chunk with invalid characters and with separator', () => {
         const v = new Validator({a: 'sys_ipv6'});
-        const tpl1 = c => `xxxx:d2ec:568b:39ad:d5bc:8548:d23b:6f92`.replace(/x/g, c);
-        const tpl2 = c => `9325:xxxx:568b:39ad:d5bc:8548:d23b:6f92`.replace(/x/g, c);
-        const tpl3 = c => `9325:d2ec:xxxx:39ad:d5bc:8548:d23b:6f92`.replace(/x/g, c);
-        const tpl4 = c => `9325:d2ec:568b:xxxx:d5bc:8548:d23b:6f92`.replace(/x/g, c);
-        const tpl5 = c => `9325:d2ec:568b:39ad:xxxx:8548:d23b:6f92`.replace(/x/g, c);
-        const tpl6 = c => `9325:d2ec:568b:39ad:d5bc:xxxx:d23b:6f92`.replace(/x/g, c);
-        const tpl7 = c => `9325:d2ec:568b:39ad:d5bc:8548:xxxx:6f92`.replace(/x/g, c);
-        const tpl8 = c => `9325:d2ec:568b:39ad:d5bc:8548:d23b:xxxx`.replace(/x/g, c);
+        const tpl1 = c => 'xxxx:d2ec:568b:39ad:d5bc:8548:d23b:6f92'.replace(/x/g, c);
+        const tpl2 = c => '9325:xxxx:568b:39ad:d5bc:8548:d23b:6f92'.replace(/x/g, c);
+        const tpl3 = c => '9325:d2ec:xxxx:39ad:d5bc:8548:d23b:6f92'.replace(/x/g, c);
+        const tpl4 = c => '9325:d2ec:568b:xxxx:d5bc:8548:d23b:6f92'.replace(/x/g, c);
+        const tpl5 = c => '9325:d2ec:568b:39ad:xxxx:8548:d23b:6f92'.replace(/x/g, c);
+        const tpl6 = c => '9325:d2ec:568b:39ad:d5bc:xxxx:d23b:6f92'.replace(/x/g, c);
+        const tpl7 = c => '9325:d2ec:568b:39ad:d5bc:8548:xxxx:6f92'.replace(/x/g, c);
+        const tpl8 = c => '9325:d2ec:568b:39ad:d5bc:8548:d23b:xxxx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
@@ -127,40 +119,40 @@ describe("vSysIPv6", () => {
         }
     });
 
-    it ('Should be invalid when passed a ipv6 address containing a single invalid character and with separator', () => {
+    it('Should be invalid when passed a ipv6 address containing a single invalid character and with separator', () => {
         const v = new Validator({a: 'sys_ipv6'});
-        const tpl1 = c => `xc55:897f:e0f5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl2 = c => `6x55:897f:e0f5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl3 = c => `6cx5:897f:e0f5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl4 = c => `6c5x:897f:e0f5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl5 = c => `6c55:x97f:e0f5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl6 = c => `6c55:8x7f:e0f5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl7 = c => `6c55:89xf:e0f5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl8 = c => `6c55:897x:e0f5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl9 = c => `6c55:897f:x0f5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl10 = c => `6c55:897f:exf5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl11 = c => `6c55:897f:e0x5:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl12 = c => `6c55:897f:e0fx:c12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl13 = c => `6c55:897f:e0f5:x12c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl14 = c => `6c55:897f:e0f5:cx2c:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl15 = c => `6c55:897f:e0f5:c1xc:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl16 = c => `6c55:897f:e0f5:c12x:109a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl17 = c => `6c55:897f:e0f5:c12c:x09a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl18 = c => `6c55:897f:e0f5:c12c:1x9a:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl19 = c => `6c55:897f:e0f5:c12c:10xa:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl20 = c => `6c55:897f:e0f5:c12c:109x:4d8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl21 = c => `6c55:897f:e0f5:c12c:109a:xd8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl22 = c => `6c55:897f:e0f5:c12c:109a:4x8b:f2a5:bbd1`.replace(/x/g, c);
-        const tpl23 = c => `6c55:897f:e0f5:c12c:109a:4dxb:f2a5:bbd1`.replace(/x/g, c);
-        const tpl24 = c => `6c55:897f:e0f5:c12c:109a:4d8x:f2a5:bbd1`.replace(/x/g, c);
-        const tpl25 = c => `6c55:897f:e0f5:c12c:109a:4d8b:x2a5:bbd1`.replace(/x/g, c);
-        const tpl26 = c => `6c55:897f:e0f5:c12c:109a:4d8b:fxa5:bbd1`.replace(/x/g, c);
-        const tpl27 = c => `6c55:897f:e0f5:c12c:109a:4d8b:f2x5:bbd1`.replace(/x/g, c);
-        const tpl28 = c => `6c55:897f:e0f5:c12c:109a:4d8b:f2ax:bbd1`.replace(/x/g, c);
-        const tpl29 = c => `6c55:897f:e0f5:c12c:109a:4d8b:f2a5:xbd1`.replace(/x/g, c);
-        const tpl30 = c => `6c55:897f:e0f5:c12c:109a:4d8b:f2a5:bxd1`.replace(/x/g, c);
-        const tpl31 = c => `6c55:897f:e0f5:c12c:109a:4d8b:f2a5:bbx1`.replace(/x/g, c);
-        const tpl32 = c => `6c55:897f:e0f5:c12c:109a:4d8b:f2a5:bbdx`.replace(/x/g, c);
+        const tpl1 = c => 'xc55:897f:e0f5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl2 = c => '6x55:897f:e0f5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl3 = c => '6cx5:897f:e0f5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl4 = c => '6c5x:897f:e0f5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl5 = c => '6c55:x97f:e0f5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl6 = c => '6c55:8x7f:e0f5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl7 = c => '6c55:89xf:e0f5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl8 = c => '6c55:897x:e0f5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl9 = c => '6c55:897f:x0f5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl10 = c => '6c55:897f:exf5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl11 = c => '6c55:897f:e0x5:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl12 = c => '6c55:897f:e0fx:c12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl13 = c => '6c55:897f:e0f5:x12c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl14 = c => '6c55:897f:e0f5:cx2c:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl15 = c => '6c55:897f:e0f5:c1xc:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl16 = c => '6c55:897f:e0f5:c12x:109a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl17 = c => '6c55:897f:e0f5:c12c:x09a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl18 = c => '6c55:897f:e0f5:c12c:1x9a:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl19 = c => '6c55:897f:e0f5:c12c:10xa:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl20 = c => '6c55:897f:e0f5:c12c:109x:4d8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl21 = c => '6c55:897f:e0f5:c12c:109a:xd8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl22 = c => '6c55:897f:e0f5:c12c:109a:4x8b:f2a5:bbd1'.replace(/x/g, c);
+        const tpl23 = c => '6c55:897f:e0f5:c12c:109a:4dxb:f2a5:bbd1'.replace(/x/g, c);
+        const tpl24 = c => '6c55:897f:e0f5:c12c:109a:4d8x:f2a5:bbd1'.replace(/x/g, c);
+        const tpl25 = c => '6c55:897f:e0f5:c12c:109a:4d8b:x2a5:bbd1'.replace(/x/g, c);
+        const tpl26 = c => '6c55:897f:e0f5:c12c:109a:4d8b:fxa5:bbd1'.replace(/x/g, c);
+        const tpl27 = c => '6c55:897f:e0f5:c12c:109a:4d8b:f2x5:bbd1'.replace(/x/g, c);
+        const tpl28 = c => '6c55:897f:e0f5:c12c:109a:4d8b:f2ax:bbd1'.replace(/x/g, c);
+        const tpl29 = c => '6c55:897f:e0f5:c12c:109a:4d8b:f2a5:xbd1'.replace(/x/g, c);
+        const tpl30 = c => '6c55:897f:e0f5:c12c:109a:4d8b:f2a5:bxd1'.replace(/x/g, c);
+        const tpl31 = c => '6c55:897f:e0f5:c12c:109a:4d8b:f2a5:bbx1'.replace(/x/g, c);
+        const tpl32 = c => '6c55:897f:e0f5:c12c:109a:4d8b:f2a5:bbdx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
@@ -271,56 +263,56 @@ describe("vSysIPv6", () => {
         }
     });
 
-    it ('Should be invalid when passed ipv6 addresses with only 1 chunk', () => {
+    it('Should be invalid when passed ipv6 addresses with only 1 chunk', () => {
         const v = new Validator({a: 'sys_ipv6'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rChunk()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv6 addresses with only 2 chunks', () => {
+    it('Should be invalid when passed ipv6 addresses with only 2 chunks', () => {
         const v = new Validator({a: 'sys_ipv6'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rChunk()}:${rChunk()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv6 addresses with only 3 chunks', () => {
+    it('Should be invalid when passed ipv6 addresses with only 3 chunks', () => {
         const v = new Validator({a: 'sys_ipv6'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rChunk()}:${rChunk()}:${rChunk()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv6 addresses with only 4 chunks', () => {
+    it('Should be invalid when passed ipv6 addresses with only 4 chunks', () => {
         const v = new Validator({a: 'sys_ipv6'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rChunk()}:${rChunk()}:${rChunk()}:${rChunk()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv6 addresses with only 5 chunks', () => {
+    it('Should be invalid when passed ipv6 addresses with only 5 chunks', () => {
         const v = new Validator({a: 'sys_ipv6'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rChunk()}:${rChunk()}:${rChunk()}:${rChunk()}:${rChunk()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv6 addresses with only 6 chunks', () => {
+    it('Should be invalid when passed ipv6 addresses with only 6 chunks', () => {
         const v = new Validator({a: 'sys_ipv6'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rChunk()}:${rChunk()}:${rChunk()}:${rChunk()}:${rChunk()}:${rChunk()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv6 addresses with only 7 chunks', () => {
+    it('Should be invalid when passed ipv6 addresses with only 7 chunks', () => {
         const v = new Validator({a: 'sys_ipv6'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rChunk()}:${rChunk()}:${rChunk()}:${rChunk()}:${rChunk()}:${rChunk()}:${rChunk()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv6 addresses where all chunks are correct but where the string contains spaces', () => {
+    it('Should be invalid when passed ipv6 addresses where all chunks are correct but where the string contains spaces', () => {
         const v = new Validator({a: 'sys_ipv6'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `  ${rChunk()}.${rChunk()}.${rChunk()}.${rChunk()}${rChunk()}.${rChunk()}.${rChunk()}.${rChunk()}`}).is_valid).to.eql(false);
@@ -329,7 +321,7 @@ describe("vSysIPv6", () => {
         }
     });
 
-    it ('Should be invalid when passed ipv6 addresses where all chunks are correct but where the string contains a non-dot separator', () => {
+    it('Should be invalid when passed ipv6 addresses where all chunks are correct but where the string contains a non-dot separator', () => {
         const v = new Validator({a: 'sys_ipv6'});
 
         //  Character code of a colon is 58
@@ -345,7 +337,7 @@ describe("vSysIPv6", () => {
         }
     });
 
-    it ('Should be valid when passed a list of valid ipv6 addresses (sample list)', () => {
+    it('Should be valid when passed a list of valid ipv6 addresses (sample list)', () => {
         const lst = [
             '0e89:d118:a944:d817:4548:95ed:3081:c98f',
             'ec9c:eb71:7c56:8e8e:cd82:f1a0:b597:5da0',
@@ -552,7 +544,7 @@ describe("vSysIPv6", () => {
         for (const a of lst) expect(v.validate({a}).is_valid).to.eql(true);
     });
 
-    it ('Should be valid when passing ipv6 addresses in shortened format (sample list)', () => {
+    it('Should be valid when passing ipv6 addresses in shortened format (sample list)', () => {
         const lst = [
             'e89:d118:a944:d817:4548:95ed:3081:c98f',
             '2123:ec9b:ef92:6982:1852:21b2:afac:ee8',
@@ -576,5 +568,4 @@ describe("vSysIPv6", () => {
         const v = new Validator({a: 'sys_ipv6'});
         for (const a of lst) expect(v.validate({a}).is_valid).to.eql(true);
     });
-
 });

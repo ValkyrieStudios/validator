@@ -2,34 +2,26 @@
 
 import Validator from '../../src/index';
 
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
+const expect = require('chai').expect;
 
-const expect = chai.expect;
-const assert = chai.assert;
-const should = chai.should();
-const spy = chai.spy;
-
-describe("vSysMac", () => {
-
+describe('vSysMac', () => {
     const str_tests = [{a:1}, [0,1,2], true, new Date(), /1/g, false, 123, 0.123];
 
-    it ('Should be invalid if not passed a string', () => {
+    it('Should be invalid if not passed a string', () => {
         for (const el of str_tests) {
             expect(new Validator({a: 'sys_mac'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid if passed an empty string (or empty after trimming)', () => {
+    it('Should be invalid if passed an empty string (or empty after trimming)', () => {
         for (const el of ['', ' ', '   ']) {
             expect(new Validator({a: 'sys_mac'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed a mac address containing only non-hexadecimal characters and no separator', () => {
+    it('Should be invalid when passed a mac address containing only non-hexadecimal characters and no separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `xxxxxxxxxxxx`.replace(/x/g, c);
+        const tpl = c => 'xxxxxxxxxxxx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -52,7 +44,7 @@ describe("vSysMac", () => {
         }
     });
 
-    it ('Should be valid when passed a valid mac address (sample list in different formats)', () => {
+    it('Should be valid when passed a valid mac address (sample list in different formats)', () => {
         const lst = [
             '24:db:96:83:af:cd',
             '8c:85:11:33:e6:e6',
@@ -359,23 +351,23 @@ describe("vSysMac", () => {
         for (const a of lst) expect(v.validate({a}).is_valid).to.eql(true);
     });
 
-    it ('Should be invalid when passed a mac address using a mixture of separators (: and -)', () => {
+    it('Should be invalid when passed a mac address using a mixture of separators (: and -)', () => {
         expect(new Validator({a: 'sys_mac'}).validate({a: '01:23-45:67-89:AB'}).is_valid).to.eql(false);
     });
 
-    it ('Should be invalid when passed a mac address using a mixture of separators (: and .)', () => {
+    it('Should be invalid when passed a mac address using a mixture of separators (: and .)', () => {
         expect(new Validator({a: 'sys_mac'}).validate({a: '012:345.678:9AB'}).is_valid).to.eql(false);
     });
 
-    it ('Should be invalid when passed a mac address using a mixture of separators (- and .)', () => {
+    it('Should be invalid when passed a mac address using a mixture of separators (- and .)', () => {
         expect(new Validator({a: 'sys_mac'}).validate({a: '012-345.678-9AB'}).is_valid).to.eql(false);
     });
 
-    it ('Should be invalid when passed a 64-bit mac address using 2 digit grouping and a mixture of separators (: and -)', () => {
+    it('Should be invalid when passed a 64-bit mac address using 2 digit grouping and a mixture of separators (: and -)', () => {
         expect(new Validator({a: 'sys_mac'}).validate({a: '01:23-45:FF-FE:67-89:AB'}).is_valid).to.eql(false);
     });
 
-    it ('Should be invalid when passed a 64-bit mac address using 4 digit grouping and a mixture of separators (: and -)', () => {
+    it('Should be invalid when passed a 64-bit mac address using 4 digit grouping and a mixture of separators (: and -)', () => {
         expect(new Validator({a: 'sys_mac'}).validate({a: '0123-45FF:FE67-89AB'}).is_valid).to.eql(false);
     });
 
@@ -383,13 +375,13 @@ describe("vSysMac", () => {
 //  MM:MM:MM:SS:SS:SS Format
 //
 
-    it ('Should be valid when passed a valid mac address using a dash (-) as separator', () => {
+    it('Should be valid when passed a valid mac address using a dash (-) as separator', () => {
         expect(new Validator({a: 'sys_mac'}).validate({a: '01-23-45-67-89-AB'}).is_valid).to.eql(true);
     });
 
-    it ('Should be invalid when passed a mac address containing only non-hexadecimal characters and a dash as a separator', () => {
+    it('Should be invalid when passed a mac address containing only non-hexadecimal characters and a dash as a separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `xx-xx-xx-xx-xx-xx`.replace(/x/g, c);
+        const tpl = c => 'xx-xx-xx-xx-xx-xx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -412,9 +404,9 @@ describe("vSysMac", () => {
         }
     });
 
-    it ('Should be invalid when passed a mac address containing a single non-hexadecimal characters and a dash as a separator', () => {
+    it('Should be invalid when passed a mac address containing a single non-hexadecimal characters and a dash as a separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `01-23-45-x7-89-AB`.replace(/x/g, c);
+        const tpl = c => '01-23-45-x7-89-AB'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -441,13 +433,13 @@ describe("vSysMac", () => {
 //  MM-MM-MM-SS-SS-SS Format
 //
 
-    it ('Should be valid when passed a valid mac address using a colon (:) as separator', () => {
+    it('Should be valid when passed a valid mac address using a colon (:) as separator', () => {
         expect(new Validator({a: 'sys_mac'}).validate({a: '01:23:45:67:89:AB'}).is_valid).to.eql(true);
     });
 
-    it ('Should be invalid when passed a mac address containing only non-hexadecimal characters and a colon as a separator', () => {
+    it('Should be invalid when passed a mac address containing only non-hexadecimal characters and a colon as a separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `xx:xx:xx:xx:xx:xx`.replace(/x/g, c);
+        const tpl = c => 'xx:xx:xx:xx:xx:xx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -470,9 +462,9 @@ describe("vSysMac", () => {
         }
     });
 
-    it ('Should be invalid when passed a mac address containing a single non-hexadecimal characters and a colon as a separator', () => {
+    it('Should be invalid when passed a mac address containing a single non-hexadecimal characters and a colon as a separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `01:23:45:x7:89:AB`.replace(/x/g, c);
+        const tpl = c => '01:23:45:x7:89:AB'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -499,13 +491,13 @@ describe("vSysMac", () => {
 //  MMM.MMM.SSS.SSS Format
 //
 
-    it ('Should be valid when passed a valid mac address using a 3 char format and dot (.) as separator', () => {
+    it('Should be valid when passed a valid mac address using a 3 char format and dot (.) as separator', () => {
         expect(new Validator({a: 'sys_mac'}).validate({a: '012.345.678.9AB'}).is_valid).to.eql(true);
     });
 
-    it ('Should be invalid when passed a mac address containing only non-hexadecimal characters and a 3 char format and a dot as a separator', () => {
+    it('Should be invalid when passed a mac address containing only non-hexadecimal characters and a 3 char format and a dot as a separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `xxx.xxx.xxx.xxx`.replace(/x/g, c);
+        const tpl = c => 'xxx.xxx.xxx.xxx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -528,9 +520,9 @@ describe("vSysMac", () => {
         }
     });
 
-    it ('Should be invalid when passed a mac address containing a single non-hexadecimal characters and a dot as a separator', () => {
+    it('Should be invalid when passed a mac address containing a single non-hexadecimal characters and a dot as a separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `012.345.x78.9AB`.replace(/x/g, c);
+        const tpl = c => '012.345.x78.9AB'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -557,29 +549,29 @@ describe("vSysMac", () => {
 //  Special case 48-bit mac address converted to a 64-bit address (ipv6)
 //
 
-    it ('Should be valid when passed a mac address that was originally a 48-bit address but was converted using correct FFFE hardocded val with 2 digit grouping and a colon as separator', () => {
+    it('Should be valid when passed a mac address that was originally a 48-bit address but was converted using correct FFFE hardocded val with 2 digit grouping and a colon as separator', () => {
         const v = new Validator({a: 'sys_mac'});
         expect(v.validate({a: '00:25:96:FF:FE:12:34:56'}).is_valid).to.eql(true);
     });
 
-    it ('Should be valid when passed a mac address that was originally a 48-bit address but was converted using correct FFFE hardocded val with 4 digit grouping and a colon as separator', () => {
+    it('Should be valid when passed a mac address that was originally a 48-bit address but was converted using correct FFFE hardocded val with 4 digit grouping and a colon as separator', () => {
         const v = new Validator({a: 'sys_mac'});
         expect(v.validate({a: '0025:96FF:FE12:3456'}).is_valid).to.eql(true);
     });
 
-    it ('Should be invalid when passed a mac address that was originally a 48-bit address but does not have a correct FFFE hardocded val with 2 digit grouping and a colon as separator', () => {
+    it('Should be invalid when passed a mac address that was originally a 48-bit address but does not have a correct FFFE hardocded val with 2 digit grouping and a colon as separator', () => {
         const v = new Validator({a: 'sys_mac'});
         expect(v.validate({a: '00:25:96:FA:FE:12:34:56'}).is_valid).to.eql(false);
     });
 
-    it ('Should be valid when passed a mac address that was originally a 48-bit address but does not have a correct FFFE hardocded val with 4 digit grouping and a colon as separator', () => {
+    it('Should be valid when passed a mac address that was originally a 48-bit address but does not have a correct FFFE hardocded val with 4 digit grouping and a colon as separator', () => {
         const v = new Validator({a: 'sys_mac'});
         expect(v.validate({a: '0025:96FF:BE12:3456'}).is_valid).to.eql(false);
     });
 
-    it ('Should be invalid when passed a mac address in 64-bit format containing a single non-hexadecimal character with 2 digit grouping and a colon as separator', () => {
+    it('Should be invalid when passed a mac address in 64-bit format containing a single non-hexadecimal character with 2 digit grouping and a colon as separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `01:23:45:FF:FE:x7:89:AB`.replace(/x/g, c);
+        const tpl = c => '01:23:45:FF:FE:x7:89:AB'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -602,9 +594,9 @@ describe("vSysMac", () => {
         }
     });
 
-    it ('Should be invalid when passed a mac address in 64-bit format containing only non-hexadecimal characters with 4 digit grouping and a colon as separator', () => {
+    it('Should be invalid when passed a mac address in 64-bit format containing only non-hexadecimal characters with 4 digit grouping and a colon as separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `xxxx:xxFF:FExx:xxxx`.replace(/x/g, c);
+        const tpl = c => 'xxxx:xxFF:FExx:xxxx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -627,29 +619,29 @@ describe("vSysMac", () => {
         }
     });
 
-    it ('Should be valid when passed a mac address that was originally a 48-bit address but was converted using correct FFFE hardocded val with 2 digit grouping and a dash as separator', () => {
+    it('Should be valid when passed a mac address that was originally a 48-bit address but was converted using correct FFFE hardocded val with 2 digit grouping and a dash as separator', () => {
         const v = new Validator({a: 'sys_mac'});
         expect(v.validate({a: '00-25-96-FF-FE-12-34-56'}).is_valid).to.eql(true);
     });
 
-    it ('Should be valid when passed a mac address that was originally a 48-bit address but was converted using correct FFFE hardocded val with 4 digit grouping and a dash as separator', () => {
+    it('Should be valid when passed a mac address that was originally a 48-bit address but was converted using correct FFFE hardocded val with 4 digit grouping and a dash as separator', () => {
         const v = new Validator({a: 'sys_mac'});
         expect(v.validate({a: '0025-96FF-FE12-3456'}).is_valid).to.eql(true);
     });
 
-    it ('Should be invalid when passed a mac address that was originally a 48-bit address but does not have a correct FFFE hardocded val with 2 digit grouping and a dash as separator', () => {
+    it('Should be invalid when passed a mac address that was originally a 48-bit address but does not have a correct FFFE hardocded val with 2 digit grouping and a dash as separator', () => {
         const v = new Validator({a: 'sys_mac'});
         expect(v.validate({a: '00-25-96-FA-FE-12-34-56'}).is_valid).to.eql(false);
     });
 
-    it ('Should be valid when passed a mac address that was originally a 48-bit address but does not have a correct FFFE hardocded val with 4 digit grouping and a dash as separator', () => {
+    it('Should be valid when passed a mac address that was originally a 48-bit address but does not have a correct FFFE hardocded val with 4 digit grouping and a dash as separator', () => {
         const v = new Validator({a: 'sys_mac'});
         expect(v.validate({a: '0025-96FF-BE12-3456'}).is_valid).to.eql(false);
     });
 
-    it ('Should be invalid when passed a mac address in 64-bit format containing a single non-hexadecimal character with 2 digit grouping and a dash as separator', () => {
+    it('Should be invalid when passed a mac address in 64-bit format containing a single non-hexadecimal character with 2 digit grouping and a dash as separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `01-23-45-FF-FE-x7-89-AB`.replace(/x/g, c);
+        const tpl = c => '01-23-45-FF-FE-x7-89-AB'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -672,9 +664,9 @@ describe("vSysMac", () => {
         }
     });
 
-    it ('Should be invalid when passed a mac address in 64-bit format containing only non-hexadecimal characters with 4 digit grouping and a dash as separator', () => {
+    it('Should be invalid when passed a mac address in 64-bit format containing only non-hexadecimal characters with 4 digit grouping and a dash as separator', () => {
         const v = new Validator({a: 'sys_mac'});
-        const tpl = c => `xxxx-xxFF-FExx-xxxx`.replace(/x/g, c);
+        const tpl = c => 'xxxx-xxFF-FExx-xxxx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
         //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
@@ -696,5 +688,4 @@ describe("vSysMac", () => {
             expect(v.validate({a: tpl(String.fromCharCode(i))}).is_valid).to.eql(false);
         }
     });
-
 });

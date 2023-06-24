@@ -150,6 +150,8 @@
         "template-curly-spacing": ["error", "never"],
         "template-tag-spacing": ["error", "always"],
         "wrap-iife": ["error", "inside"],
-        "yield-star-spacing": ["error", "before"]
+        "yield-star-spacing": ["error", "before"],
+        "mocha/no-mocha-arrows": "off",
+        "mocha/no-setup-in-describe": "off"
     }
 }

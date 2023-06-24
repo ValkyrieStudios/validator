@@ -2,43 +2,35 @@
 
 import Validator from '../../src/index';
 
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
-
-const expect = chai.expect;
-const assert = chai.assert;
-const should = chai.should();
-const spy = chai.spy;
+const expect = require('chai').expect;
 
 const rCorrect = () => Math.floor(Math.random() * 256);
 const rIncorrect = () => Math.floor(Math.random() * 256) + 256;
 
-describe("vSysIPv4", () => {
-
+describe('vSysIPv4', () => {
     const str_tests = [{a:1}, [0,1,2], true, new Date(), /1/g, false, 123, 0.123];
 
-    it ('Should be invalid if not passed a string', () => {
+    it('Should be invalid if not passed a string', () => {
         for (const el of str_tests) {
             expect(new Validator({a: 'sys_ipv4'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid if passed an empty string (or empty after trimming)', () => {
+    it('Should be invalid if passed an empty string (or empty after trimming)', () => {
         for (const el of ['', ' ', '   ']) {
             expect(new Validator({a: 'sys_ipv4'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed random strings', () => {
+    it('Should be invalid when passed random strings', () => {
         for (const el of ['foo', 'bar', 'hello world', 'hello.world', 'ewueioqw wqe uqwioeuowqeqw']) {
             expect(new Validator({a: 'sys_ipv4'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed a ipv4 address containing only non-numeric characters and no separator', () => {
+    it('Should be invalid when passed a ipv4 address containing only non-numeric characters and no separator', () => {
         const v = new Validator({a: 'sys_ipv4'});
-        const tpl = c => `xxxxxxxxxxxx`.replace(/x/g, c);
+        const tpl = c => 'xxxxxxxxxxxx'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
 
@@ -51,9 +43,9 @@ describe("vSysIPv4", () => {
         }
     });
 
-    it ('Should be invalid when passed a ipv4 address containing only non-numeric characters and with separator', () => {
+    it('Should be invalid when passed a ipv4 address containing only non-numeric characters and with separator', () => {
         const v = new Validator({a: 'sys_ipv4'});
-        const tpl = c => `x.x.x.x`.replace(/x/g, c);
+        const tpl = c => 'x.x.x.x'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
 
@@ -66,12 +58,12 @@ describe("vSysIPv4", () => {
         }
     });
 
-    it ('Should be invalid when passed a ipv4 address containing a single octet with non-numeric characters', () => {
+    it('Should be invalid when passed a ipv4 address containing a single octet with non-numeric characters', () => {
         const v = new Validator({a: 'sys_ipv4'});
-        const tplOct1 = c => `x.10.5.42`.replace(/x/g, c);
-        const tplOct2 = c => `192.x.5.42`.replace(/x/g, c);
-        const tplOct3 = c => `192.10.x.42`.replace(/x/g, c);
-        const tplOct4 = c => `192.10.5.x`.replace(/x/g, c);
+        const tplOct1 = c => 'x.10.5.42'.replace(/x/g, c);
+        const tplOct2 = c => '192.x.5.42'.replace(/x/g, c);
+        const tplOct3 = c => '192.10.x.42'.replace(/x/g, c);
+        const tplOct4 = c => '192.10.5.x'.replace(/x/g, c);
 
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
 
@@ -90,28 +82,28 @@ describe("vSysIPv4", () => {
         }
     });
 
-    it ('Should be invalid when passed ipv4 addresses with only 1 octet', () => {
+    it('Should be invalid when passed ipv4 addresses with only 1 octet', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rCorrect()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv4 addresses with only 2 octets', () => {
+    it('Should be invalid when passed ipv4 addresses with only 2 octets', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rCorrect()}.${rCorrect()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv4 addresses with only 3 octets', () => {
+    it('Should be invalid when passed ipv4 addresses with only 3 octets', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rCorrect()}.${rCorrect()}.${rCorrect()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv4 addresses where a single octet goes beyond the upper bound of a byte (255)', () => {
+    it('Should be invalid when passed ipv4 addresses where a single octet goes beyond the upper bound of a byte (255)', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rIncorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}`}).is_valid).to.eql(false);
@@ -130,14 +122,14 @@ describe("vSysIPv4", () => {
         }
     });
 
-    it ('Should be invalid when passed ipv4 addresses where all octets go beyond the upper bound of a byte (255)', () => {
+    it('Should be invalid when passed ipv4 addresses where all octets go beyond the upper bound of a byte (255)', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `${rIncorrect()}.${rIncorrect()}.${rIncorrect()}.${rIncorrect()}`}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid when passed ipv4 addresses where all octets are correct but where the string contains spaces', () => {
+    it('Should be invalid when passed ipv4 addresses where all octets are correct but where the string contains spaces', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
             expect(v.validate({a: `  ${rCorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}`}).is_valid).to.eql(false);
@@ -146,7 +138,7 @@ describe("vSysIPv4", () => {
         }
     });
 
-    it ('Should be invalid when passed ipv4 addresses where all octets are correct but where the string contains a non-dot separator', () => {
+    it('Should be invalid when passed ipv4 addresses where all octets are correct but where the string contains a non-dot separator', () => {
         const v = new Validator({a: 'sys_ipv4'});
 
         //  Character code of a dot is 46
@@ -162,7 +154,7 @@ describe("vSysIPv4", () => {
         }
     });
 
-    it ('Should be valid when passed a list of valid ipv4 addresses (sample list)', () => {
+    it('Should be valid when passed a list of valid ipv4 addresses (sample list)', () => {
         const lst = [
             '80.172.79.93',
             '69.7.134.15',
@@ -268,5 +260,4 @@ describe("vSysIPv4", () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (const a of lst) expect(v.validate({a}).is_valid).to.eql(true);
     });
-
 });

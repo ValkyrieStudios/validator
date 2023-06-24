@@ -2,56 +2,48 @@
 
 import Validator from '../../src/index';
 
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
+const expect = require('chai').expect;
 
-const expect = chai.expect;
-const assert = chai.assert;
-const should = chai.should();
-const spy = chai.spy;
-
-describe("vMax", () => {
-
-    it ('should be invalid when no params are passed', () => {
-        const evaluation = (new Validator({ a: 'max:<meta.params>' })).validate({ a: 10 });
+describe('vMax', () => {
+    it('should be invalid when no params are passed', () => {
+        const evaluation = new Validator({a: 'max:<meta.params>'}).validate({a: 10});
 
         expect(evaluation.is_valid).to.eql(false);
-        expect(evaluation.errors.a).to.deep.equal([{msg: 'max', params: [undefined] }]);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'max', params: [undefined]}]);
     });
 
-    it ('should return a correct error message when invalid', () => {
-        const evaluation = (new Validator({ a: 'max:10' })).validate({ a: 11 });
+    it('should return a correct error message when invalid', () => {
+        const evaluation = new Validator({a: 'max:10'}).validate({a: 11});
         expect(evaluation.is_valid).to.eql(false);
         expect(evaluation.errors.a).to.deep.equal([{msg: 'max', params: ['10']}]);
     });
 
-    it ('should allow a string as an acceptable value', () => {
-        const evaluation = (new Validator({ a: 'max:10' })).validate({ a: 'hello' });
+    it('should allow a string as an acceptable value', () => {
+        const evaluation = new Validator({a: 'max:10'}).validate({a: 'hello'});
         expect(evaluation.is_valid).to.eql(true);
     });
 
-    it ('should allow an array as an acceptable value', () => {
-        const evaluation = (new Validator({ a: 'max:5' })).validate({ a: ['foo', 'bar'] });
+    it('should allow an array as an acceptable value', () => {
+        const evaluation = new Validator({a: 'max:5'}).validate({a: ['foo', 'bar']});
         expect(evaluation.is_valid).to.eql(true);
     });
 
-    it ('should allow a numerical value as an acceptable value', () => {
-        const evaluation = (new Validator({ a: 'max:10' })).validate({ a: 5 });
+    it('should allow a numerical value as an acceptable value', () => {
+        const evaluation = new Validator({a: 'max:10'}).validate({a: 5});
         expect(evaluation.is_valid).to.eql(true);
     });
 
-    it ('should disallow NaN values', () => {
-        const evaluation = (new Validator({ a: 'max:10' })).validate({ a: Number.NaN });
+    it('should disallow NaN values', () => {
+        const evaluation = new Validator({a: 'max:10'}).validate({a: Number.NaN});
         expect(evaluation.is_valid).to.eql(false);
     });
 
-    it ('should only allow numerical values as parameter in the rule', () => {
-        const evaluation = (new Validator({ a: 'max:foo' })).validate({ a: 5 });
+    it('should only allow numerical values as parameter in the rule', () => {
+        const evaluation = new Validator({a: 'max:foo'}).validate({a: 5});
         expect(evaluation.is_valid).to.eql(false);
     });
 
-    it ('should not allow other types as values', () => {
+    it('should not allow other types as values', () => {
         const typechecks = {
             a : 100,
             b : 200,
@@ -75,7 +67,7 @@ describe("vMax", () => {
             return acc;
         }, {});
 
-        const evaluation = (new Validator(rules)).validate(typechecks);
+        const evaluation = new Validator(rules).validate(typechecks);
 
         expect(evaluation.is_valid).to.eql(false);
 
@@ -85,69 +77,67 @@ describe("vMax", () => {
 
 //  String
 
-    it ('should validate a string whose length is smaller than the provided parameter as valid', () => {
-        const evaluation = (new Validator({ a: 'max:10' })).validate({ a: 'hello' });
+    it('should validate a string whose length is smaller than the provided parameter as valid', () => {
+        const evaluation = new Validator({a: 'max:10'}).validate({a: 'hello'});
         expect(evaluation.is_valid).to.eql(true);
     });
 
-    it ('should validate a string whose length is equal to the provided parameter as valid', () => {
-        const evaluation = (new Validator({ a: 'max:11' })).validate({ a: 'hello world' });
+    it('should validate a string whose length is equal to the provided parameter as valid', () => {
+        const evaluation = new Validator({a: 'max:11'}).validate({a: 'hello world'});
         expect(evaluation.is_valid).to.eql(true);
     });
 
-    it ('should validate a string whose length is larger than the provided parameter as invalid', () => {
-        const evaluation = (new Validator({ a: 'max:8' })).validate({ a: 'hello world' });
+    it('should validate a string whose length is larger than the provided parameter as invalid', () => {
+        const evaluation = new Validator({a: 'max:8'}).validate({a: 'hello world'});
         expect(evaluation.is_valid).to.eql(false);
     });
 
 //  Array
 
-    it ('should validate an array whose length is smaller than the provided parameter as valid', () => {
-        const evaluation = (new Validator({ a: 'max:10' })).validate({ a: [1,2,3] });
+    it('should validate an array whose length is smaller than the provided parameter as valid', () => {
+        const evaluation = new Validator({a: 'max:10'}).validate({a: [1,2,3]});
         expect(evaluation.is_valid).to.eql(true);
     });
 
-    it ('should validate an array whose length is equal to the provided parameter as valid', () => {
-        const evaluation = (new Validator({ a: 'max:6' })).validate({ a: [1,2,3,4,5,6] });
+    it('should validate an array whose length is equal to the provided parameter as valid', () => {
+        const evaluation = new Validator({a: 'max:6'}).validate({a: [1,2,3,4,5,6]});
         expect(evaluation.is_valid).to.eql(true);
     });
 
-    it ('should validate an array whose length is larger than the provided parameter as invalid', () => {
-        const evaluation = (new Validator({ a: 'max:4' })).validate({ a: ['apple', 'fear', 'mango', 'grape', 'orange']});
+    it('should validate an array whose length is larger than the provided parameter as invalid', () => {
+        const evaluation = new Validator({a: 'max:4'}).validate({a: ['apple', 'fear', 'mango', 'grape', 'orange']});
         expect(evaluation.is_valid).to.eql(false);
     });
 
 //  Number
 
-    it ('should validate a number smaller than the provided parameter as valid', () => {
-        const evaluation = (new Validator({ a: 'max:1000' })).validate({ a: 950 });
+    it('should validate a number smaller than the provided parameter as valid', () => {
+        const evaluation = new Validator({a: 'max:1000'}).validate({a: 950});
         expect(evaluation.is_valid).to.eql(true);
     });
 
-    it ('should validate a number equal to the provided parameter as valid', () => {
-        const evaluation = (new Validator({ a: 'max:42' })).validate({ a: 42 });
+    it('should validate a number equal to the provided parameter as valid', () => {
+        const evaluation = new Validator({a: 'max:42'}).validate({a: 42});
         expect(evaluation.is_valid).to.eql(true);
     });
 
-    it ('should validate a number larger than the provided parameter as invalid', () => {
-        const evaluation = (new Validator({ a: 'max:9000' })).validate({ a: 9999 });
+    it('should validate a number larger than the provided parameter as invalid', () => {
+        const evaluation = new Validator({a: 'max:9000'}).validate({a: 9999});
         expect(evaluation.is_valid).to.eql(false);
     });
 
-    it ('should validate negative number ranges that are below the provided parameter as valid', () => {
-        const evaluation = (new Validator({ a: 'max:-500' })).validate({ a: -501 });
+    it('should validate negative number ranges that are below the provided parameter as valid', () => {
+        const evaluation = new Validator({a: 'max:-500'}).validate({a: -501});
         expect(evaluation.is_valid).to.eql(true);
     });
 
-    it ('should validate negative number ranges that are above the provided parameter as invalid', () => {
-        const evaluation = (new Validator({ a: 'max:-20' })).validate({ a: -18 });
+    it('should validate negative number ranges that are above the provided parameter as invalid', () => {
+        const evaluation = new Validator({a: 'max:-20'}).validate({a: -18});
         expect(evaluation.is_valid).to.eql(false);
     });
 
-    it ('should validate negative number ranges that are equal to the provided parameter as valid', () => {
-        const evaluation = (new Validator({ a: 'max:-999' })).validate({ a: -999 });
+    it('should validate negative number ranges that are equal to the provided parameter as valid', () => {
+        const evaluation = new Validator({a: 'max:-999'}).validate({a: -999});
         expect(evaluation.is_valid).to.eql(true);
     });
-
-
 });

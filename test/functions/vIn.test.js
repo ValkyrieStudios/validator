@@ -2,22 +2,14 @@
 
 import Validator from '../../src/index';
 
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
+const expect = require('chai').expect;
 
-const expect = chai.expect;
-const assert = chai.assert;
-const should = chai.should();
-const spy = chai.spy;
-
-describe("vIn", () => {
-
-    it ('should validate correctly', () => {
-        const evaluation = (new Validator({
+describe('vIn', () => {
+    it('should validate correctly', () => {
+        const evaluation = new Validator({
             a: 'in:<meta.a_params>',
             b: 'in:<meta.b_params>',
-        })).validate({
+        }).validate({
             a: 'foo',
             b: 'Hello',
             meta: {
@@ -31,27 +23,27 @@ describe("vIn", () => {
         expect(evaluation.errors.b).to.deep.equal([]);
     });
 
-    it ('should be invalid when no params are passed', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({ a: 'hello' });
+    it('should be invalid when no params are passed', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>'}).validate({a: 'hello'});
 
         expect(evaluation.is_valid).to.eql(false);
-        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: [undefined] }]);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: [undefined]}]);
     });
 
-    it ('should return a correct error message when invalid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({ a: 'hello', meta: { params: ['foo', 'bar']} });
+    it('should return a correct error message when invalid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>'}).validate({a: 'hello', meta: {params: ['foo', 'bar']}});
 
         expect(evaluation.is_valid).to.eql(false);
-        expect(evaluation.errors.a).to.deep.equal([{ msg: 'in', params: [['foo', 'bar']] }]);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: [['foo', 'bar']]}]);
     });
 
 //  Primitive string
 
-    it ('should validate a correct primitive string check as valid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>', b: 'in:<meta.params>' })).validate({
+    it('should validate a correct primitive string check as valid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>'}).validate({
             a: 'el',
             b: 'lo',
-            meta: { params: 'Hello' },
+            meta: {params: 'Hello'},
         });
 
         expect(evaluation.is_valid).to.eql(true);
@@ -59,11 +51,11 @@ describe("vIn", () => {
         expect(evaluation.errors.b).to.deep.equal([]);
     });
 
-    it ('should validate a wrong primitive string check as invalid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>', b: 'in:<meta.params>' })).validate({
+    it('should validate a wrong primitive string check as invalid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>'}).validate({
             a: 'ol',
             b: 'le',
-            meta: { params: 'Hello' },
+            meta: {params: 'Hello'},
         });
 
         expect(evaluation.is_valid).to.eql(false);
@@ -71,11 +63,11 @@ describe("vIn", () => {
         expect(evaluation.errors.b).to.deep.equal([{msg: 'in', params: ['Hello']}]);
     });
 
-    it ('should take case sensitivity into account for primitive string checks', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>', b: 'in:<meta.params>' })).validate({
+    it('should take case sensitivity into account for primitive string checks', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>'}).validate({
             a: 'H',
             b: 'h',
-            meta: { params: 'Hello' },
+            meta: {params: 'Hello'},
         });
 
         expect(evaluation.is_valid).to.eql(false);
@@ -85,11 +77,11 @@ describe("vIn", () => {
 
 //  Primitive integer
 
-    it ('should validate a correct primitive integer check as valid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>', b: 'in:<meta.params>' })).validate({
+    it('should validate a correct primitive integer check as valid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>'}).validate({
             a: 50,
             b: 250,
-            meta: { params: [50, 60, 70, 80, 90, 100, 250] },
+            meta: {params: [50, 60, 70, 80, 90, 100, 250]},
         });
 
         expect(evaluation.is_valid).to.eql(true);
@@ -97,12 +89,12 @@ describe("vIn", () => {
         expect(evaluation.errors.b).to.deep.equal([]);
     });
 
-    it ('should validate a wrong primitive integer check as invalid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>', b: 'in:<meta.params>', c: 'in:<meta.params>'})).validate({
+    it('should validate a wrong primitive integer check as invalid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>', c: 'in:<meta.params>'}).validate({
             a: 50.2,
             b: 247,
             c: 250,
-            meta: { params: [50, 60, 70, 80, 90, 100, 250] },
+            meta: {params: [50, 60, 70, 80, 90, 100, 250]},
         });
 
         expect(evaluation.is_valid).to.eql(false);
@@ -113,11 +105,11 @@ describe("vIn", () => {
 
 //  Boolean check
 
-    it ('should validate a correct boolean check as valid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>', b: 'in:<meta.params>' })).validate({
+    it('should validate a correct boolean check as valid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>'}).validate({
             a: true,
             b: false,
-            meta: { params: [true, false, false] },
+            meta: {params: [true, false, false]},
         });
 
         expect(evaluation.is_valid).to.eql(true);
@@ -125,11 +117,11 @@ describe("vIn", () => {
         expect(evaluation.errors.b).to.deep.equal([]);
     });
 
-    it ('should validate an incorrect boolean check as invalid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.a_params>', b: 'in:<meta.b_params>' })).validate({
+    it('should validate an incorrect boolean check as invalid', () => {
+        const evaluation = new Validator({a: 'in:<meta.a_params>', b: 'in:<meta.b_params>'}).validate({
             a: false,
             b: true,
-            meta: { a_params: [true, true, true], b_params: [false, false, false]},
+            meta: {a_params: [true, true, true], b_params: [false, false, false]},
         });
 
         expect(evaluation.is_valid).to.eql(false);
@@ -139,20 +131,20 @@ describe("vIn", () => {
 
 //  Date check
 
-    it ('should validate a correct date check as valid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({
+    it('should validate a correct date check as valid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>'}).validate({
             a: new Date('1990-02-07'),
-            meta: { params: [new Date('1990-02-07'), new Date('2019-02-07')] },
+            meta: {params: [new Date('1990-02-07'), new Date('2019-02-07')]},
         });
 
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
     });
 
-    it ('should validate an incorrect date check as invalid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({
+    it('should validate an incorrect date check as invalid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>'}).validate({
             a: new Date('1995-02-07'),
-            meta: { params: [new Date('1990-02-07'), new Date('2019-02-07')] },
+            meta: {params: [new Date('1990-02-07'), new Date('2019-02-07')]},
         });
 
         expect(evaluation.is_valid).to.eql(false);
@@ -161,42 +153,42 @@ describe("vIn", () => {
 
 //  Object check
 
-    it ('should validate a correct object check as valid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({
+    it('should validate a correct object check as valid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>'}).validate({
             a: {a:10, b:2},
-            meta: { params: [{a: 10, b: 2}, {c: 3, d:4 }] },
+            meta: {params: [{a: 10, b: 2}, {c: 3, d:4}]},
         });
 
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
     });
 
-    it ('should validate a wrong object check as invalid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({
+    it('should validate a wrong object check as invalid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>'}).validate({
             a: {a:10, b:1},
-            meta: { params: [{a: 10, b: 2}, {c: 3, d:4 }] },
+            meta: {params: [{a: 10, b: 2}, {c: 3, d:4}]},
         });
 
         expect(evaluation.is_valid).to.eql(false);
-        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: [[{a: 10, b: 2}, {c: 3, d:4 }]]}]);
+        expect(evaluation.errors.a).to.deep.equal([{msg: 'in', params: [[{a: 10, b: 2}, {c: 3, d:4}]]}]);
     });
 
 //  Array check
 
-    it ('should validate a correct array check as valid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({
+    it('should validate a correct array check as valid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>'}).validate({
             a: [1, 'hello', 2, 'world'],
-            meta: { params: [[1, 'hello', 2, 'world'], ['foo'], ['bar']] },
+            meta: {params: [[1, 'hello', 2, 'world'], ['foo'], ['bar']]},
         });
 
         expect(evaluation.is_valid).to.eql(true);
         expect(evaluation.errors.a).to.deep.equal([]);
     });
 
-    it ('should validate a wrong array check as invalid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>' })).validate({
+    it('should validate a wrong array check as invalid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>'}).validate({
             a: [2, 'hello', 2, 'world'],
-            meta: { params: [[1, 'hello', 2, 'world'], ['foo'], ['bar']] },
+            meta: {params: [[1, 'hello', 2, 'world'], ['foo'], ['bar']]},
         });
 
         expect(evaluation.is_valid).to.eql(false);
@@ -205,11 +197,11 @@ describe("vIn", () => {
 
 //  Mix
 
-    it ('should validate a correct check with mixed params as valid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>', b: 'in:<meta.params>'})).validate({
+    it('should validate a correct check with mixed params as valid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>'}).validate({
             a: 'Foo',
             b: true,
-            meta: { params: [new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}] },
+            meta: {params: [new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}]},
         });
 
         expect(evaluation.is_valid).to.eql(true);
@@ -217,16 +209,15 @@ describe("vIn", () => {
         expect(evaluation.errors.b).to.deep.equal([]);
     });
 
-    it ('should validate a wrong check with mixed params as invalid', () => {
-        const evaluation = (new Validator({ a: 'in:<meta.params>', b: 'in:<meta.params>'})).validate({
+    it('should validate a wrong check with mixed params as invalid', () => {
+        const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>'}).validate({
             a: 'Foo',
             b: {b: 2},
-            meta: { params: [new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}] },
+            meta: {params: [new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}]},
         });
 
         expect(evaluation.is_valid).to.eql(false);
         expect(evaluation.errors.a).to.deep.equal([]);
         expect(evaluation.errors.b).to.deep.equal([{msg: 'in', params: [[new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}]]}]);
     });
-
 });

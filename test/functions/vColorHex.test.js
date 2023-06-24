@@ -2,16 +2,9 @@
 
 import Validator from '../../src/index';
 
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
+const expect = require('chai').expect;
 
-const expect = chai.expect;
-const assert = chai.assert;
-const should = chai.should();
-const spy = chai.spy;
-
-describe("vColorHex", () => {
+describe('vColorHex', () => {
     const invalids = [
         100,
         200,
@@ -65,34 +58,33 @@ describe("vColorHex", () => {
         '#FFFFFF',
     ];
 
-    it ('should validate a hex color string correctly', () => {
+    it('should validate a hex color string correctly', () => {
         const v = new Validator({a: 'color_hex'});
 
-        for (let el of valids) {
+        for (const el of valids) {
             const evaluation = v.validate({a: el});
             expect(evaluation.is_valid).to.eql(true);
             expect(evaluation.errors.a).to.deep.equal([]);
         }
     });
 
-    it ('should not validate other types as valid hex colors', () => {
+    it('should not validate other types as valid hex colors', () => {
         const v = new Validator({a: 'color_hex'});
 
-        for (let el of invalids) {
+        for (const el of invalids) {
             const evaluation = v.validate({a: el});
             expect(evaluation.is_valid).to.eql(false);
             expect(evaluation.errors.a).to.deep.equal([{msg:'color_hex', params: []}]);
         }
     });
 
-    it ('should not validate improper strings as valid hex colors', () => {
+    it('should not validate improper strings as valid hex colors', () => {
         const v = new Validator({a: 'color_hex'});
 
-        for (let el of invalid_hex) {
+        for (const el of invalid_hex) {
             const evaluation = v.validate({a: el});
             expect(evaluation.is_valid).to.eql(false);
             expect(evaluation.errors.a).to.deep.equal([{msg:'color_hex', params: []}]);
         }
     });
-
 });

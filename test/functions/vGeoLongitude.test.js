@@ -2,38 +2,30 @@
 
 import Validator from '../../src/index';
 
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
+const expect = require('chai').expect;
 
-const expect = chai.expect;
-const assert = chai.assert;
-const should = chai.should();
-const spy = chai.spy;
-
-describe("vGeoLongitude", () => {
-
+describe('vGeoLongitude', () => {
     const num_tests = [{a:1}, [0,1,2], true, new Date(), /1/g, false, 'hello', 'abc'];
 
-    it ('Should be invalid if not passed a number', () => {
+    it('Should be invalid if not passed a number', () => {
         for (const el of num_tests) {
             expect(new Validator({a: 'geo_longitude'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid if passed a number below -180', () => {
+    it('Should be invalid if passed a number below -180', () => {
         for (const el of [-180.000001, -200, -100000]) {
             expect(new Validator({a: 'geo_longitude'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid if passed a number above 180', () => {
+    it('Should be invalid if passed a number above 180', () => {
         for (const el of [180.000001, 200, 100000]) {
             expect(new Validator({a: 'geo_longitude'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be valid if passed a number between -180 and 180', () => {
+    it('Should be valid if passed a number between -180 and 180', () => {
         for (let i = -179; i < 179; i++) {
             expect(new Validator({a: 'geo_longitude'}).validate({a: i}).is_valid).to.eql(true);
         }
@@ -43,12 +35,11 @@ describe("vGeoLongitude", () => {
         }
     });
 
-    it ('Should be valid if passed a number equal to -180', () => {
+    it('Should be valid if passed a number equal to -180', () => {
         expect(new Validator({a: 'geo_longitude'}).validate({a: -90}).is_valid).to.eql(true);
     });
 
-    it ('Should be valid if passed a number equal to 180', () => {
+    it('Should be valid if passed a number equal to 180', () => {
         expect(new Validator({a: 'geo_longitude'}).validate({a: 90}).is_valid).to.eql(true);
     });
-
 });

@@ -3,32 +3,24 @@
 import guid from '@valkyriestudios/utils/hash/guid';
 import Validator from '../../src/index';
 
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
+const expect = require('chai').expect;
 
-const expect = chai.expect;
-const assert = chai.assert;
-const should = chai.should();
-const spy = chai.spy;
-
-describe("vPhone", () => {
-
+describe('vPhone', () => {
     const str_tests = [{a:1}, [0,1,2], true, new Date(), /1/g, false, 123, 0.123];
 
-    it ('Should be invalid if not passed a string', () => {
+    it('Should be invalid if not passed a string', () => {
         for (const el of str_tests) {
             expect(new Validator({a: 'phone'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be invalid if passed an empty string (or empty after trimming)', () => {
+    it('Should be invalid if passed an empty string (or empty after trimming)', () => {
         for (const el of ['', ' ', '   ']) {
             expect(new Validator({a: 'phone'}).validate({a: el}).is_valid).to.eql(false);
         }
     });
 
-    it ('Should be valid when passed a correct phone number (sample list)', () => {
+    it('Should be valid when passed a correct phone number (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+919367788755',
@@ -40,7 +32,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('Should be invalid when passed an incorrect phone number (sample list)', () => {
+    it('Should be invalid when passed an incorrect phone number (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '789',
@@ -55,9 +47,9 @@ describe("vPhone", () => {
         }
     });
 
-    it ('Should be invalid when passed a phone number containing non-valid characters', () => {
+    it('Should be invalid when passed a phone number containing non-valid characters', () => {
         const v = new Validator({a: 'phone'});
-        const tpl = c => `+32 487 6x 59 82`.replace(/x/g, c);
+        const tpl = c => '+32 487 6x 59 82'.replace(/x/g, c);
         const validchars = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '+', ' ', '(', ')', '-', '.'].reduce((acc, c) => {
             acc[c] = c;
             return acc;
@@ -69,7 +61,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('Should be valid when passed a phone number containing (xxx) format for area code', () => {
+    it('Should be valid when passed a phone number containing (xxx) format for area code', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '(03) 9739 1203',
@@ -81,7 +73,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('Should be invalid when passed a phone number containing a (xxx) format for area code that is either not started ( or not closed )', () => {
+    it('Should be invalid when passed a phone number containing a (xxx) format for area code that is either not started ( or not closed )', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '03) 9739 1203',
@@ -93,7 +85,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('Should be invalid when passed a phone number containing a mixed multiple separator format', () => {
+    it('Should be invalid when passed a phone number containing a mixed multiple separator format', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '(03)  9739 1203',
@@ -106,7 +98,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('Should be valid when passed a phone number containing dashes (-) for separator format', () => {
+    it('Should be valid when passed a phone number containing dashes (-) for separator format', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '(905) 495-1317',
@@ -117,7 +109,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('Should be valid when passed a phone number containing dots (.) for separator format', () => {
+    it('Should be valid when passed a phone number containing dots (.) for separator format', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '(905) 495.1317',
@@ -128,7 +120,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('Should be valid when passed a phone number containing spaces ( ) for separator format', () => {
+    it('Should be valid when passed a phone number containing spaces ( ) for separator format', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '(905) 495 1317',
@@ -139,7 +131,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[afhanistan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[afhanistan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '077184 1042',
@@ -154,7 +146,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[afhanistan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[afhanistan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '0093 077 148 6108',
@@ -168,7 +160,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[aland_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[aland_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '457 868 1707',
@@ -182,7 +174,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[aland_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[aland_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+385 457 868 1707',
@@ -196,7 +188,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[albania] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[albania] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '69 561 4643',
@@ -210,7 +202,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[albania] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[albania] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+355 69 561 4643',
@@ -224,7 +216,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[algeria] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[algeria] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '5 479 8816',
@@ -238,7 +230,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[algeria] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[algeria] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+213 5 479 8816',
@@ -252,7 +244,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[american_samoa] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[american_samoa] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '684 327 7985',
@@ -266,7 +258,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[american_samoa] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[american_samoa] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 684 327 7985',
@@ -280,7 +272,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[andora] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[andora] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '355 100 7602',
@@ -294,7 +286,7 @@ describe("vPhone", () => {
         }
     });
 
-    it ('[andora] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[andora] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+376 355 100 7602',
@@ -308,7 +300,7 @@ describe("vPhone", () => {
         }
     });
 
-it ('[angola] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[angola] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '0915 711 7388',
@@ -322,7 +314,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[angola] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[angola] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+244 0915 711 7388',
@@ -336,7 +328,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[anguilla] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[anguilla] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '264 850 9190',
@@ -350,7 +342,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[anguilla] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[anguilla] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 264 850 9190',
@@ -364,7 +356,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[antigua] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[antigua] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '268 554 6303',
@@ -378,7 +370,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[antigua] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[antigua] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 268 554 6303',
@@ -392,7 +384,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[argentina] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[argentina] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '9 578 6327',
@@ -406,7 +398,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[argentina] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[argentina] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+54 9 578 6327',
@@ -420,7 +412,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[armenia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[armenia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '094 240 3930',
@@ -434,7 +426,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[armenia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[armenia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+374 094 240 3930',
@@ -448,7 +440,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[aruba] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[aruba] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '58 454 5857',
@@ -462,7 +454,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[aruba] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[aruba] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+297 58 454 5857',
@@ -476,7 +468,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ascension_island] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[ascension_island] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '555 698 1982',
@@ -490,7 +482,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ascension_island] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[ascension_island] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+247 555 698 1982',
@@ -504,7 +496,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[australia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[australia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '004 875 8376',
@@ -518,7 +510,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[australia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[australia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+61 004 875 8376',
@@ -532,7 +524,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[australian_antarctic_territory] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[australian_antarctic_territory] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '001 883 5178',
@@ -546,7 +538,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[australian_antarctic_territory] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[australian_antarctic_territory] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+672 001 883 5178',
@@ -560,7 +552,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[austria] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[austria] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '660 594 0302',
@@ -574,7 +566,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[austria] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[austria] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+43 660 594 0302',
@@ -588,7 +580,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[azerbaijan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[azerbaijan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '055 550 6340',
@@ -602,7 +594,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[azerbaijan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[azerbaijan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+994 055 550 6340',
@@ -616,7 +608,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bahamas] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[bahamas] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '788 137 3711',
@@ -630,7 +622,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bahamas] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[bahamas] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 788 137 3711',
@@ -644,7 +636,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bahrain] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[bahrain] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '344 863 0469',
@@ -658,7 +650,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bahrain] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[bahrain] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+973 344 863 0469',
@@ -672,7 +664,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bangladesh] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[bangladesh] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '115 857 8485',
@@ -686,7 +678,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bangladesh] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[bangladesh] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+880 115 857 8485',
@@ -700,7 +692,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[barbados] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[barbados] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '246 783 9025',
@@ -714,7 +706,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[barbados] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[barbados] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 246 783 9025',
@@ -728,7 +720,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[belarus] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[belarus] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '154 143 6654',
@@ -742,7 +734,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[belarus] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[belarus] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+375 154 143 6654',
@@ -756,7 +748,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[belgium] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[belgium] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '456 961 2018',
@@ -770,7 +762,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[belgium] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[belgium] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+32 456 961 2018',
@@ -784,7 +776,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[belize] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[belize] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '208 4428',
@@ -798,7 +790,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[belize] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[belize] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+501 208 4428',
@@ -812,7 +804,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[benin] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[benin] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '955 381 0298',
@@ -826,7 +818,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[benin] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[benin] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+229 955 381 0298',
@@ -840,7 +832,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bermuda] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[bermuda] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '441 075 6893',
@@ -854,7 +846,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bermuda] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[bermuda] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 441 075 6893',
@@ -868,7 +860,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bhutan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[bhutan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '17 612 9555',
@@ -882,7 +874,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bhutan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[bhutan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+975 17 612 9555',
@@ -896,7 +888,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bolivia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[bolivia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '755 571 4862',
@@ -910,7 +902,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bolivia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[bolivia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+591 755 571 4862',
@@ -924,7 +916,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bonaire] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[bonaire] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '127 1901',
@@ -938,7 +930,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bonaire] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[bonaire] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+599 127 1901',
@@ -952,7 +944,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bosnia_herzegovina] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[bosnia_herzegovina] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '665 184 0789',
@@ -966,7 +958,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bosnia_herzegovina] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[bosnia_herzegovina] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+387 665 184 0789',
@@ -980,7 +972,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[botswana] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[botswana] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '401 9285',
@@ -994,7 +986,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[botswana] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[botswana] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+267 401 9285',
@@ -1008,7 +1000,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[brazil] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[brazil] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '955 807 4494',
@@ -1022,7 +1014,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[brazil] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[brazil] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+55 955 807 4494',
@@ -1036,7 +1028,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[british_virgin_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[british_virgin_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '809 221 4883',
@@ -1050,7 +1042,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[british_virgin_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[british_virgin_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 809 221 4883',
@@ -1064,7 +1056,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[brunei] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[brunei] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '716 4257',
@@ -1078,7 +1070,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[brunei] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[brunei] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+673 716 4257',
@@ -1092,7 +1084,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bulgaria] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[bulgaria] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2 198 3012',
@@ -1106,7 +1098,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[bulgaria] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[bulgaria] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+359 2 198 3012',
@@ -1120,7 +1112,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[burkina_faso] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[burkina_faso] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '7 129 6176',
@@ -1134,7 +1126,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[burkina_faso] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[burkina_faso] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+226 7 129 6176',
@@ -1148,7 +1140,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[burma] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[burma] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '02 869 6362',
@@ -1162,7 +1154,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[burma] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[burma] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+95 02 869 6362',
@@ -1176,7 +1168,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[burundi] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[burundi] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '556 7858',
@@ -1190,7 +1182,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[burundi] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[burundi] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+257 556 7858',
@@ -1204,7 +1196,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cambodia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[cambodia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '09 034 8646',
@@ -1218,7 +1210,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cambodia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[cambodia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+855 09 034 8646',
@@ -1232,7 +1224,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cameroon] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[cameroon] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '9 372 8970',
@@ -1246,7 +1238,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cameroon] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[cameroon] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+237 9 372 8970',
@@ -1260,7 +1252,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[canada] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[canada] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '613-555-0122',
@@ -1274,7 +1266,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[canada] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[canada] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1-613-555-0122',
@@ -1288,7 +1280,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cape_verde] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[cape_verde] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '658 5558',
@@ -1302,7 +1294,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cape_verde] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[cape_verde] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+238 658 5558',
@@ -1316,7 +1308,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cayman_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[cayman_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '345 667 4378',
@@ -1330,7 +1322,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cayman_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[cayman_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 345 667 4378',
@@ -1344,7 +1336,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[central_african_republic] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[central_african_republic] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2 258 8495',
@@ -1358,7 +1350,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[central_african_republic] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[central_african_republic] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+236 2 258 8495',
@@ -1372,7 +1364,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[chad] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[chad] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '6 322 5282',
@@ -1386,7 +1378,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[chad] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[chad] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+235 6 322 5282',
@@ -1400,7 +1392,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[chile] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[chile] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '61 980 4699',
@@ -1414,7 +1406,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[chile] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[chile] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+56 61 980 4699',
@@ -1428,7 +1420,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[china] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[china] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '591 102 9175',
@@ -1442,7 +1434,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[china] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[china] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+86 591 102 9175',
@@ -1456,7 +1448,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[colombia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[colombia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '350 312 6126',
@@ -1470,7 +1462,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[colombia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[colombia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+57 350 312 6126',
@@ -1484,7 +1476,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[comoros] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[comoros] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '243 3021',
@@ -1498,7 +1490,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[comoros] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[comoros] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+269 243 3021',
@@ -1512,7 +1504,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[congo_brazaville] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[congo_brazaville] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '22 245 1049',
@@ -1526,7 +1518,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[congo_brazaville] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[congo_brazaville] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+242 22 245 1049',
@@ -1540,7 +1532,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[congo_kinshasa] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[congo_kinshasa] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '80 368 2308',
@@ -1554,7 +1546,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[congo_kinshasa] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[congo_kinshasa] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+243 80 368 2308',
@@ -1568,7 +1560,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[costa_rica] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[costa_rica] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2 838 7883',
@@ -1582,7 +1574,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[costa_rica] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[costa_rica] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+506 2 838 7883',
@@ -1596,7 +1588,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cote_divoire] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[cote_divoire] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2 253 1698',
@@ -1610,7 +1602,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cote_divoire] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[cote_divoire] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+225 2 253 1698',
@@ -1624,7 +1616,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[croatia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[croatia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '99 022 1530',
@@ -1638,7 +1630,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[croatia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[croatia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+385 99 022 1530',
@@ -1652,7 +1644,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cuba] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[cuba] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '555 978 4397',
@@ -1666,7 +1658,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cuba] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[cuba] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+53 555 978 4397',
@@ -1680,7 +1672,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[curacao] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[curacao] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '9 165 7419',
@@ -1694,7 +1686,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[curacao] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[curacao] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+599 9 165 7419',
@@ -1708,7 +1700,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cyprus] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[cyprus] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '9 745 8811',
@@ -1722,7 +1714,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[cyprus] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[cyprus] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+357 9 745 8811',
@@ -1736,7 +1728,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[czech_republic] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[czech_republic] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '77 125 7001',
@@ -1750,7 +1742,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[czech_republic] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[czech_republic] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+420 77 125 7001',
@@ -1764,7 +1756,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[denmark] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[denmark] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '7 109 5691',
@@ -1778,7 +1770,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[denmark] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[denmark] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+42 7 109 5691',
@@ -1792,7 +1784,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[diego_garcia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[diego_garcia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '772 4743',
@@ -1806,7 +1798,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[diego_garcia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[diego_garcia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+246 772 4743',
@@ -1820,7 +1812,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[djibouti] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[djibouti] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2 507 3877',
@@ -1834,7 +1826,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[djibouti] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[djibouti] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+253 2 507 3877',
@@ -1848,7 +1840,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[dominica] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[dominica] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '864 1618',
@@ -1862,7 +1854,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[dominica] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[dominica] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1767 864 1618',
@@ -1876,7 +1868,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[dominican_republic] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[dominican_republic] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '044 5634',
@@ -1890,7 +1882,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[dominican_republic] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[dominican_republic] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1829 044 5634',
@@ -1904,7 +1896,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[east_timor] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[east_timor] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '111 4288',
@@ -1918,7 +1910,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[east_timor] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[east_timor] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+670 111 4288',
@@ -1932,7 +1924,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ecuador] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[ecuador] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '96 723 3098',
@@ -1946,7 +1938,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ecuador] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[ecuador] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+593 96 723 3098',
@@ -1960,7 +1952,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[egypt] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[egypt] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '117 812 4841',
@@ -1974,7 +1966,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[egypt] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[egypt] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+20 117 812 4841',
@@ -1988,7 +1980,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[el_salvador] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[el_salvador] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '77 4557 5075',
@@ -2002,7 +1994,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[el_salvador] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[el_salvador] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+503 77 4557 5075',
@@ -2016,7 +2008,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[eritrea] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[eritrea] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '594 9552',
@@ -2030,7 +2022,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[eritrea] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[eritrea] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+291 594 9552',
@@ -2044,7 +2036,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[estonia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[estonia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '294 6941',
@@ -2058,7 +2050,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[estonia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[estonia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+372 294 6941',
@@ -2072,7 +2064,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ethiopia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[ethiopia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '11 049 4688',
@@ -2086,7 +2078,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ethiopia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[ethiopia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+251 11 049 4688',
@@ -2100,7 +2092,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[falkland_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[falkland_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '95500',
@@ -2114,7 +2106,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[falkland_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[falkland_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+500 95500',
@@ -2128,7 +2120,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[faroe_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[faroe_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '918332',
@@ -2142,7 +2134,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[faroe_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[faroe_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+298 918332',
@@ -2156,7 +2148,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[fiji] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[fiji] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '698 5817',
@@ -2170,7 +2162,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[fiji] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[fiji] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+679 698 5817',
@@ -2184,7 +2176,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[finland] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[finland] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '40 789 0209',
@@ -2198,7 +2190,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[finland] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[finland] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+358 40 789 0209',
@@ -2212,7 +2204,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[france] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[france] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '93 487 2643',
@@ -2226,7 +2218,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[france] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[france] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+33 93 487 2643',
@@ -2240,7 +2232,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[french_antilles] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[french_antilles] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '1086 1203',
@@ -2254,7 +2246,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[french_antilles] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[french_antilles] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+596 1086 1203',
@@ -2268,7 +2260,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[french_guiana] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[french_guiana] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '59 0753 0867',
@@ -2282,7 +2274,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[french_guiana] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[french_guiana] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+594 59 0753 0867',
@@ -2296,7 +2288,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[french_polynesia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[french_polynesia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '725976',
@@ -2310,7 +2302,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[french_polynesia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[french_polynesia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+689 725976',
@@ -2324,7 +2316,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[gabon] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[gabon] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '211643',
@@ -2338,7 +2330,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[gabon] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[gabon] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+241 211643',
@@ -2352,7 +2344,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[gambia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[gambia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '531 4329',
@@ -2366,7 +2358,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[gambia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[gambia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+220 531 4329',
@@ -2380,7 +2372,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[georgia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[georgia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '555 110222',
@@ -2394,7 +2386,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[georgia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[georgia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+995 555 110222',
@@ -2408,7 +2400,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[germany] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[germany] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '30 897053596',
@@ -2422,7 +2414,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[germany] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[germany] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+49 30 897053596',
@@ -2436,7 +2428,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ghana] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[ghana] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '30 058 4171',
@@ -2450,7 +2442,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ghana] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[ghana] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+233 30 058 4171',
@@ -2464,7 +2456,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[gibraltar] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[gibraltar] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '14576',
@@ -2478,7 +2470,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[gibraltar] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[gibraltar] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+350 14576',
@@ -2492,7 +2484,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[greece] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[greece] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '21 6993 1001',
@@ -2506,7 +2498,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[greece] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[greece] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+350 21 6993 1001',
@@ -2520,7 +2512,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[greenland] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[greenland] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '110948',
@@ -2534,7 +2526,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[greenland] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[greenland] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+299 110948',
@@ -2548,7 +2540,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[grenada] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[grenada] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '473 240 3871',
@@ -2562,7 +2554,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[grenada] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[grenada] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 473 240 3871',
@@ -2576,7 +2568,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guadeloupe] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[guadeloupe] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '590 760598',
@@ -2590,7 +2582,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guadeloupe] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[guadeloupe] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+590 590 760598',
@@ -2604,7 +2596,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guam] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[guam] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '671 955 3730',
@@ -2618,7 +2610,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guam] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[guam] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 671 955 3730',
@@ -2632,7 +2624,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guatemala] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[guatemala] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '013 6758',
@@ -2646,7 +2638,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guatemala] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[guatemala] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+502 013 6758',
@@ -2660,7 +2652,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guinea] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[guinea] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '624 379363',
@@ -2674,7 +2666,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guinea] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[guinea] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+224 624 379363',
@@ -2688,7 +2680,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guinea_bissau] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[guinea_bissau] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '231 7959',
@@ -2702,7 +2694,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guinea_bissau] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[guinea_bissau] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+245 231 7959',
@@ -2716,7 +2708,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guyana] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[guyana] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '557 6875',
@@ -2730,7 +2722,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[guyana] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[guyana] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+592 557 6875',
@@ -2744,7 +2736,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[haiti] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[haiti] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '502 5700',
@@ -2758,7 +2750,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[haiti] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[haiti] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+509 502 5700',
@@ -2772,7 +2764,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[honduras] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[honduras] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '786 3770',
@@ -2786,7 +2778,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[honduras] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[honduras] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+504 786 3770',
@@ -2800,7 +2792,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[hong_kong] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[hong_kong] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '1599 0372',
@@ -2814,7 +2806,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[hong_kong] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[hong_kong] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+852 1599 0372',
@@ -2828,7 +2820,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[hungary] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[hungary] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '06 55 993 456',
@@ -2842,7 +2834,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[hungary] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[hungary] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+36 55 993 456',
@@ -2856,7 +2848,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[iceland] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[iceland] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '138 5675',
@@ -2870,7 +2862,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[iceland] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[iceland] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+354 138 5675',
@@ -2884,7 +2876,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[india] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[india] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '385 280 2707',
@@ -2898,7 +2890,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[india] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[india] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+91 385 280 2707',
@@ -2912,7 +2904,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[indonesia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[indonesia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '77 9514 0010',
@@ -2926,7 +2918,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[indonesia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[indonesia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+62 77 9514 0010',
@@ -2940,7 +2932,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[iran] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[iran] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '920 395 5072',
@@ -2954,7 +2946,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[iran] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[iran] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+98 920 395 5072',
@@ -2968,7 +2960,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[iraq] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[iraq] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '72 587 6783',
@@ -2982,7 +2974,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[iraq] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[iraq] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+964 72 587 6783',
@@ -2996,7 +2988,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ireland] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[ireland] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '020 919 3784',
@@ -3010,7 +3002,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ireland] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[ireland] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+353 20 919 3784',
@@ -3024,7 +3016,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[israel] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[israel] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '55 783 1786',
@@ -3038,7 +3030,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[israel] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[israel] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+972 55 783 1786',
@@ -3052,7 +3044,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[italy] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[italy] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '06 995 0140',
@@ -3066,7 +3058,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[italy] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[italy] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+39 06 995 0140',
@@ -3080,7 +3072,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[jaimaica] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[jaimaica] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '879 013 4479',
@@ -3094,7 +3086,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[jaimaica] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[jaimaica] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 879 013 4479',
@@ -3108,7 +3100,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[japan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[japan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '75 366 7077',
@@ -3122,7 +3114,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[japan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[japan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+81 75 366 7077',
@@ -3136,7 +3128,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[jordan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[jordan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '7 446 9217',
@@ -3150,7 +3142,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[jordan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[jordan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+962 7 446 9217',
@@ -3164,7 +3156,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[kazakhstan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[kazakhstan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '711 794 5714',
@@ -3178,7 +3170,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[kazakhstan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[kazakhstan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+7 711 794 5714',
@@ -3192,7 +3184,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[kenya] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[kenya] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '732 809686',
@@ -3206,7 +3198,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[kenya] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[kenya] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+7 732 809686',
@@ -3220,7 +3212,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[kiribati] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[kiribati] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '71744',
@@ -3234,7 +3226,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[kiribati] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[kiribati] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+686 71744',
@@ -3248,7 +3240,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[kuwait] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[kuwait] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2003 8127',
@@ -3262,7 +3254,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[kuwait] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[kuwait] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+965 2003 8127',
@@ -3276,7 +3268,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[kyrgyz_republic] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[kyrgyz_republic] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '312 688199',
@@ -3290,7 +3282,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[kyrgyz_republic] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[kyrgyz_republic] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+996 312 688199',
@@ -3304,7 +3296,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[laos] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[laos] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '20 6280 5325',
@@ -3318,7 +3310,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[laos] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[laos] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+856 20 6280 5325',
@@ -3332,7 +3324,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[latvia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[latvia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '3551 7975',
@@ -3346,7 +3338,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[latvia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[latvia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+371 3551 7975',
@@ -3360,7 +3352,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[lebanon] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[lebanon] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '76 521 898',
@@ -3374,7 +3366,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[lebanon] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[lebanon] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+961 76 521 898',
@@ -3388,7 +3380,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[lesotho] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[lesotho] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '5640 6067',
@@ -3402,7 +3394,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[lesotho] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[lesotho] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+266 5640 6067',
@@ -3416,7 +3408,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[liberia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[liberia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '88 366 7200',
@@ -3430,7 +3422,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[liberia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[liberia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+231 88 366 7200',
@@ -3444,7 +3436,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[libya] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[libya] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '91 537 1539',
@@ -3458,7 +3450,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[libya] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[libya] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+218 91 537 1539',
@@ -3472,7 +3464,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[liechtenstein] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[liechtenstein] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '353 4289',
@@ -3486,7 +3478,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[liechtenstein] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[liechtenstein] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+423 353 4289',
@@ -3500,7 +3492,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[lithuania] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[lithuania] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '686 24540',
@@ -3514,7 +3506,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[lithuania] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[lithuania] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+370 686 24540',
@@ -3528,7 +3520,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[luxembourg] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[luxembourg] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '493312',
@@ -3542,7 +3534,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[luxembourg] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[luxembourg] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+370 493312',
@@ -3556,7 +3548,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[macao] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[macao] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '5226 1572',
@@ -3570,7 +3562,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[macao] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[macao] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+853 5226 1572',
@@ -3584,7 +3576,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[macedonia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[macedonia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2 762 7958',
@@ -3598,7 +3590,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[macedonia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[macedonia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+389 2 762 7958',
@@ -3612,7 +3604,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[madagascar] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[madagascar] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '824 7492',
@@ -3626,7 +3618,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[madagascar] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[madagascar] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+261 824 7492',
@@ -3640,7 +3632,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[malawi] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[malawi] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '406503269',
@@ -3654,7 +3646,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[malawi] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[malawi] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+265 406503269',
@@ -3668,7 +3660,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[malaysia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[malaysia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2 578 4281',
@@ -3682,7 +3674,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[malaysia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[malaysia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+60 2 578 4281',
@@ -3696,7 +3688,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[maldives] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[maldives] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '786 2595',
@@ -3710,7 +3702,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[maldives] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[maldives] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+960 786 2595',
@@ -3724,7 +3716,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mali] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[mali] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '6135 2598',
@@ -3738,7 +3730,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mali] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[mali] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+223 6135 2598',
@@ -3752,7 +3744,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[malta] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[malta] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '4761 0604',
@@ -3766,7 +3758,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[malta] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[malta] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+356 4761 0604',
@@ -3780,7 +3772,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[marshall_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[marshall_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '637 1475',
@@ -3794,7 +3786,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[marshall_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[marshall_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+692 637 1475',
@@ -3808,7 +3800,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[martinique] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[martinique] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '596 842 6601',
@@ -3822,7 +3814,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[martinique] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[martinique] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+596 596 842 6601',
@@ -3836,7 +3828,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mauritania] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[mauritania] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '559 7799',
@@ -3850,7 +3842,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mauritania] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[mauritania] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+222 559 7799',
@@ -3864,7 +3856,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mauritius] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[mauritius] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '567 0585',
@@ -3878,7 +3870,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mauritius] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[mauritius] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+230 567 0585',
@@ -3892,7 +3884,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mayotte_and_reunion] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[mayotte_and_reunion] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '639 249559',
@@ -3906,7 +3898,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mayotte_and_reunion] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[mayotte_and_reunion] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+262 639 249559',
@@ -3920,7 +3912,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mexico] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[mexico] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '888 296 3645',
@@ -3934,7 +3926,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mexico] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[mexico] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+52 888 296 3645',
@@ -3948,7 +3940,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[micronesia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[micronesia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '866 0575',
@@ -3962,7 +3954,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[micronesia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[micronesia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+691 866 0575',
@@ -3976,7 +3968,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[moldova] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[moldova] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '777 16890',
@@ -3990,7 +3982,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[moldova] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[moldova] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+373 777 16890',
@@ -4004,7 +3996,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[monaco] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[monaco] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '0102 4157',
@@ -4018,7 +4010,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[monaco] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[monaco] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+377 0102 4157',
@@ -4032,7 +4024,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mongolia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[mongolia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '99 246179',
@@ -4046,7 +4038,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mongolia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[mongolia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+976 99 246179',
@@ -4060,7 +4052,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[montenegro] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[montenegro] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '63 938188',
@@ -4074,7 +4066,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[montenegro] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[montenegro] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+382 63 938188',
@@ -4088,7 +4080,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[montserrat] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[montserrat] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '664 746 6751',
@@ -4102,7 +4094,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[montserrat] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[montserrat] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 664 746 6751',
@@ -4116,7 +4108,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[morocco] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[morocco] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '61 377 8577',
@@ -4130,7 +4122,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[morocco] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[morocco] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+212 61 377 8577',
@@ -4144,7 +4136,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mozambique] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[mozambique] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '84 287 0756',
@@ -4158,7 +4150,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[mozambique] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[mozambique] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+27 84 287 0756',
@@ -4172,7 +4164,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[myanmar] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[myanmar] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '99 06021',
@@ -4186,7 +4178,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[myanmar] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[myanmar] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+95 99 06021',
@@ -4200,7 +4192,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[namibia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[namibia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '63 503724',
@@ -4214,7 +4206,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[namibia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[namibia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+264 63 503724',
@@ -4228,7 +4220,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[nauru] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[nauru] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '981 2592',
@@ -4242,7 +4234,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[nauru] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[nauru] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+674 981 2592',
@@ -4256,7 +4248,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[nepal] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[nepal] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '985 447 4919',
@@ -4270,7 +4262,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[nepal] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[nepal] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+977 985 447 4919',
@@ -4284,7 +4276,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[netherlands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[netherlands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '71 903 6450',
@@ -4298,7 +4290,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[netherlands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[netherlands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+31 71 903 6450',
@@ -4312,7 +4304,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[new_caledonia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[new_caledonia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '514486',
@@ -4326,7 +4318,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[new_caledonia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[new_caledonia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+687 514486',
@@ -4340,7 +4332,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[new_zealand] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[new_zealand] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '3 158 0694',
@@ -4354,7 +4346,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[new_zealand] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[new_zealand] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+64 3 158 0694',
@@ -4368,7 +4360,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[nicaragua] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[nicaragua] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '0053 0893',
@@ -4382,7 +4374,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[nicaragua] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[nicaragua] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+505 0053 0893',
@@ -4396,7 +4388,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[niger] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[niger] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '20 182148',
@@ -4410,7 +4402,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[niger] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[niger] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+227 20 182148',
@@ -4424,7 +4416,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[nigeria] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[nigeria] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '706 707 3799',
@@ -4438,7 +4430,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[nigeria] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[nigeria] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+234 706 707 3799',
@@ -4452,7 +4444,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[north_korea] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[north_korea] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '401 0291',
@@ -4466,7 +4458,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[north_korea] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[north_korea] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '401 0291',
@@ -4480,7 +4472,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[northern_mariana_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[northern_mariana_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '670 150 3929',
@@ -4494,7 +4486,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[northern_mariana_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[northern_mariana_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 670 150 3929',
@@ -4508,7 +4500,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[norway] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[norway] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '0533 3076',
@@ -4522,7 +4514,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[norway] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[norway] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+47 0533 3076',
@@ -4536,7 +4528,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[oman] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[oman] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '9009 1283',
@@ -4550,7 +4542,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[oman] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[oman] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+968 9009 1283',
@@ -4564,7 +4556,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[pakistan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[pakistan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '7081318',
@@ -4578,7 +4570,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[pakistan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[pakistan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+92 7081318',
@@ -4592,7 +4584,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[palau] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[palau] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '469 1911',
@@ -4606,7 +4598,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[palau] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[palau] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+680 469 1911',
@@ -4620,7 +4612,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[palestine] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[palestine] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '8 641 0764',
@@ -4634,7 +4626,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[palestine] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[palestine] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+970 8 641 0764',
@@ -4648,7 +4640,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[panama] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[panama] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '087 9433',
@@ -4662,7 +4654,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[panama] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[panama] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+507 087 9433',
@@ -4676,7 +4668,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[papua_new_guinea] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[papua_new_guinea] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '701 6954',
@@ -4690,7 +4682,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[papua_new_guinea] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[papua_new_guinea] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+675 701 6954',
@@ -4704,7 +4696,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[paraguay] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[paraguay] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '985 206836',
@@ -4718,7 +4710,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[paraguay] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[paraguay] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+595 985 206836',
@@ -4732,7 +4724,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[peru] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[peru] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '41 096086020',
@@ -4746,7 +4738,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[peru] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[peru] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+51 41 096086020',
@@ -4760,7 +4752,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[philippines] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[philippines] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '45 775 3952',
@@ -4774,7 +4766,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[philippines] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[philippines] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+63 45 775 3952',
@@ -4788,7 +4780,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[poland] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[poland] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '69 188 4984',
@@ -4802,7 +4794,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[poland] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[poland] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+48 69 188 4984',
@@ -4816,7 +4808,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[portugal] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[portugal] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '289 364 630',
@@ -4830,7 +4822,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[portugal] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[portugal] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+351 289 364 630',
@@ -4844,7 +4836,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[puerto_rico] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[puerto_rico] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '958 4540',
@@ -4858,7 +4850,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[puerto_rico] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[puerto_rico] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1787 958 4540',
@@ -4872,7 +4864,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[quatar] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[quatar] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '9942 6845',
@@ -4886,7 +4878,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[quatar] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[quatar] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+974 9942 6845',
@@ -4900,7 +4892,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[romania] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[romania] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '257 241 926',
@@ -4914,7 +4906,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[romania] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[romania] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+40 257 241 926',
@@ -4928,7 +4920,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[russia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[russia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '401 960 7109',
@@ -4942,7 +4934,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[russia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[russia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+7 401 960 7109',
@@ -4956,7 +4948,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[rwanda] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[rwanda] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '724 272 493',
@@ -4970,7 +4962,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[rwanda] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[rwanda] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+7 724 272 493',
@@ -4984,7 +4976,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saba] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[saba] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '329 9916',
@@ -4998,7 +4990,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saba] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[saba] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+599 329 9916',
@@ -5012,7 +5004,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saint_helena] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[saint_helena] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '59634',
@@ -5026,7 +5018,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saint_helena] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[saint_helena] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+290 59634',
@@ -5040,7 +5032,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saint_kitts_and_nevis] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[saint_kitts_and_nevis] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '869 422 4379',
@@ -5054,7 +5046,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saint_kitts_and_nevis] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[saint_kitts_and_nevis] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 869 422 4379',
@@ -5068,7 +5060,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saint_pierre] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[saint_pierre] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '129035',
@@ -5082,7 +5074,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saint_pierre] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[saint_pierre] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+508 129035',
@@ -5096,7 +5088,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saint_vincent_and_grenadines] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[saint_vincent_and_grenadines] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '784 499 7493',
@@ -5110,7 +5102,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saint_vincent_and_grenadines] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[saint_vincent_and_grenadines] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 784 499 7493',
@@ -5124,7 +5116,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[samoa] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[samoa] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '807 4779',
@@ -5138,7 +5130,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[samoa] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[samoa] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+685 807 4779',
@@ -5152,7 +5144,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[san_marino] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[san_marino] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '0549 037498',
@@ -5166,7 +5158,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[san_marino] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[san_marino] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+378 0549 037498',
@@ -5180,7 +5172,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saotome_principe] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[saotome_principe] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '236 4922',
@@ -5194,7 +5186,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saotome_principe] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[saotome_principe] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+239 236 4922',
@@ -5208,7 +5200,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saudi_arabia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[saudi_arabia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '56 503 9685',
@@ -5222,7 +5214,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saudi_arabia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[saudi_arabia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+966 56 503 9685',
@@ -5236,7 +5228,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[senegal] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[senegal] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '76 935 5067',
@@ -5250,7 +5242,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[senegal] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[senegal] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+221 76 935 5067',
@@ -5264,7 +5256,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[serbia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[serbia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '61 597 0931',
@@ -5278,7 +5270,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[serbia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[serbia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+381 61 597 0931',
@@ -5292,7 +5284,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[seychelles] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[seychelles] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '158 9551',
@@ -5306,7 +5298,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[seychelles] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[seychelles] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+248 158 9551',
@@ -5320,7 +5312,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[sierra_leone] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[sierra_leone] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '21 052225',
@@ -5334,7 +5326,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[sierra_leone] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[sierra_leone] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+232 21 052225',
@@ -5348,7 +5340,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[singapore] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[singapore] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '5900 8494',
@@ -5362,7 +5354,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[singapore] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[singapore] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+65 5900 8494',
@@ -5376,7 +5368,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saint_eustatius] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[saint_eustatius] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '332 0866',
@@ -5390,7 +5382,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[saint_eustatius] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[saint_eustatius] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+599 332 0866',
@@ -5404,7 +5396,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[sint_maarten] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[sint_maarten] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '721 314 9505',
@@ -5418,7 +5410,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[sint_maarten] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[sint_maarten] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 721 314 9505',
@@ -5432,7 +5424,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[slovakia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[slovakia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '90 106 0318',
@@ -5446,7 +5438,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[slovakia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[slovakia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+421 90 106 0318',
@@ -5460,7 +5452,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[solomon_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[solomon_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '11904',
@@ -5474,7 +5466,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[solomon_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[solomon_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+677 11904',
@@ -5488,7 +5480,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[somalia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[somalia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '61 563 8174',
@@ -5502,7 +5494,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[somalia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[somalia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+252 61 563 8174',
@@ -5516,7 +5508,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[south_africa] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[south_africa] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '81 296 0146',
@@ -5530,7 +5522,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[south_africa] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[south_africa] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+27 81 296 0146',
@@ -5544,7 +5536,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[south_korea] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[south_korea] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2 650 9669',
@@ -5558,7 +5550,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[south_korea] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[south_korea] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+82 2 650 9669',
@@ -5572,7 +5564,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[south_sudan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[south_sudan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '910 589294',
@@ -5586,7 +5578,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[south_sudan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[south_sudan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+211 910 589294',
@@ -5600,7 +5592,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[spain] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[spain] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '793 682 147',
@@ -5614,7 +5606,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[spain] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[spain] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+34 793 682 147',
@@ -5628,7 +5620,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[srilanka] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[srilanka] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '47 716 0886',
@@ -5642,7 +5634,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[srilanka] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[srilanka] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+94 47 716 0886',
@@ -5656,7 +5648,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[sudan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[sudan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '12 190 6880',
@@ -5670,7 +5662,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[sudan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[sudan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+249 12 190 6880',
@@ -5684,7 +5676,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[suriname] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[suriname] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '890613',
@@ -5698,7 +5690,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[suriname] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[suriname] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+597 890613',
@@ -5712,7 +5704,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[swaziland] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[swaziland] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2 918 6058',
@@ -5726,7 +5718,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[swaziland] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[swaziland] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+268 2 918 6058',
@@ -5740,7 +5732,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[sweden] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[sweden] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '16 159 4226',
@@ -5754,7 +5746,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[sweden] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[sweden] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+46 16 159 4226',
@@ -5768,7 +5760,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[switzerland] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[switzerland] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '33 785 5018',
@@ -5782,7 +5774,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[switzerland] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[switzerland] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+41 33 785 5018',
@@ -5796,7 +5788,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[syria] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[syria] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '33 677 3492',
@@ -5810,7 +5802,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[syria] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[syria] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+963 33 677 3492',
@@ -5824,7 +5816,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[taiwan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[taiwan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '4 7716 2752',
@@ -5838,7 +5830,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[taiwan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[taiwan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+886 4 7716 2752',
@@ -5852,7 +5844,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[tajikistan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[tajikistan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '32 615 7946',
@@ -5866,7 +5858,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[tajikistan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[tajikistan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+992 32 615 7946',
@@ -5880,7 +5872,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[tanzania] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[tanzania] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '75 317 3863',
@@ -5894,7 +5886,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[tanzania] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[tanzania] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+255 75 317 3863',
@@ -5908,7 +5900,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[thailand] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[thailand] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '2 669 2803',
@@ -5922,7 +5914,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[thailand] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[thailand] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+66 2 669 2803',
@@ -5936,7 +5928,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[togolese_republic] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[togolese_republic] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '9 572 7326',
@@ -5950,7 +5942,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[togolese_republic] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[togolese_republic] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+228 9 572 7326',
@@ -5964,7 +5956,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[tonga] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[tonga] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '577 7896',
@@ -5978,7 +5970,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[tonga] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[tonga] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+676 577 7896',
@@ -5992,7 +5984,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[trinidad_and_tobago] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[trinidad_and_tobago] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '868 836 9919',
@@ -6006,7 +5998,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[trinidad_and_tobago] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[trinidad_and_tobago] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 868 836 9919',
@@ -6020,7 +6012,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[tunisia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[tunisia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '0328 3880',
@@ -6034,7 +6026,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[tunisia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[tunisia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+216 0328 3880',
@@ -6048,7 +6040,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[turkey] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[turkey] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '242 202 9038',
@@ -6062,7 +6054,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[turkey] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[turkey] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+90 242 202 9038',
@@ -6076,7 +6068,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[turkmenistan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[turkmenistan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '12 456433',
@@ -6090,7 +6082,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[turkmenistan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[turkmenistan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+993 12 456433',
@@ -6104,7 +6096,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[turks_and_caicos_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[turks_and_caicos_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '649 260 4597',
@@ -6118,7 +6110,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[turks_and_caicos_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[turks_and_caicos_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 649 260 4597',
@@ -6132,7 +6124,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[tuvalu] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[tuvalu] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '33335',
@@ -6146,7 +6138,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[tuvalu] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[tuvalu] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+688 33335',
@@ -6160,7 +6152,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[uganda] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[uganda] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '751 832673',
@@ -6174,7 +6166,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[uganda] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[uganda] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+256 751 832673',
@@ -6188,7 +6180,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ukraine] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[ukraine] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '44 967 9091',
@@ -6202,7 +6194,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[ukraine] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[ukraine] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+380 44 967 9091',
@@ -6216,7 +6208,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[united_arab_emirates] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[united_arab_emirates] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '55 312 1304',
@@ -6230,7 +6222,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[united_arab_emirates] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[united_arab_emirates] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+971 55 312 1304',
@@ -6244,7 +6236,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[united_kingdom] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[united_kingdom] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '01632 960262',
@@ -6258,7 +6250,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[united_kingdom] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[united_kingdom] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+44 1632 960262',
@@ -6272,7 +6264,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[united_states] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[united_states] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '202-555-0157',
@@ -6286,7 +6278,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[united_states] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[united_states] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1-202-555-0157',
@@ -6300,7 +6292,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[us_virgin_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[us_virgin_islands] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '340 290 8688',
@@ -6314,7 +6306,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[us_virgin_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[us_virgin_islands] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+1 340 290 8688',
@@ -6328,7 +6320,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[uruguay] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[uruguay] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '9911 1109',
@@ -6342,7 +6334,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[uruguay] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[uruguay] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+598 9911 1109',
@@ -6356,7 +6348,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[uzbekistan] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[uzbekistan] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '99 876 0439',
@@ -6370,7 +6362,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[uzbekistan] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[uzbekistan] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+998 99 876 0439',
@@ -6384,7 +6376,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[vanuatu] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[vanuatu] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '07889',
@@ -6398,7 +6390,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[vanuatu] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[vanuatu] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+678 07889',
@@ -6412,7 +6404,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[venezuela] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[venezuela] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '212 464 7306',
@@ -6426,7 +6418,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[venezuela] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[venezuela] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+58 212 464 7306',
@@ -6440,7 +6432,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[vietnam] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[vietnam] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '121 186 0025',
@@ -6454,7 +6446,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[vietnam] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[vietnam] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+84 121 186 0025',
@@ -6468,7 +6460,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[wallis_and_futuna] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[wallis_and_futuna] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '198 8397',
@@ -6482,7 +6474,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[wallis_and_futuna] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[wallis_and_futuna] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+681 198 8397',
@@ -6496,7 +6488,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[yemen] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[yemen] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '5 543851',
@@ -6510,7 +6502,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[yemen] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[yemen] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+967 5 543851',
@@ -6524,7 +6516,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[zambia] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[zambia] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '95 400 3954',
@@ -6538,7 +6530,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[zambia] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[zambia] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+260 95 400 3954',
@@ -6552,7 +6544,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[zimbabwe] Should be valid when passed a list of local phone numbers (sample list)', () => {
+    it('[zimbabwe] Should be valid when passed a list of local phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '78 512 3645',
@@ -6566,7 +6558,7 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
         }
     });
 
-    it ('[zimbabwe] Should be valid when passed a list of international phone numbers (sample list)', () => {
+    it('[zimbabwe] Should be valid when passed a list of international phone numbers (sample list)', () => {
         const v = new Validator({a: 'phone'});
         for (const el of [
             '+263 78 512 3645',
@@ -6579,5 +6571,4 @@ it ('[angola] Should be valid when passed a list of local phone numbers (sample 
             expect(v.validate({a: el}).is_valid).to.eql(true);
         }
     });
-
 });
