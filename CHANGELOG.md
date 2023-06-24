@@ -12,6 +12,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Add .eslintrc.json for test
 - Add lint_tests script
 
+### Removed
+- Dep: chai-spies as no longer in use
+
 ## [3.8.0] - 2023-06-14
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 7.2.0
