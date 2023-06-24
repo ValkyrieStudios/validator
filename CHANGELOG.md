@@ -13,6 +13,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Add lint_tests script
 - Validation Rule: time_zone
 
+### Improved
+- Dep: Upgrade eslint to 8.43.0
+
 ### Removed
 - Dep: chai-spies as no longer in use
 
