@@ -22,6 +22,7 @@
     "test": "nyc --reporter=lcov --reporter=text-summary mocha --colors --require @babel/register --recursive ./test",
     "test_ci": "nyc --reporter=lcov mocha --colors --require @babel/register --recursive ./test",
     "lint": "./node_modules/.bin/eslint ./src",
+    "lint_tests": "./node_modules/.bin/eslint ./test",
     "build": "npx babel src --out-dir ./dist && npm run lint",
     "codecov": "codecov"
   },
@@ -50,6 +51,7 @@
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^1.0.0",
     "eslint": "^8.42.0",
+    "eslint-plugin-mocha": "^10.1.0",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0"
   }
