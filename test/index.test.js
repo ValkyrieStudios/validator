@@ -27,6 +27,7 @@ import vSysMac                  from '../src/functions/vSysMac';
 import vSysIPv4                 from '../src/functions/vSysIPv4';
 import vSysIPv6                 from '../src/functions/vSysIPv6';
 import vSysIPv4_or_v6           from '../src/functions/vSysIPv4_or_v6';
+import vTimeZone                from '../src/functions/vTimeZone';
 import vUrl                     from '../src/functions/vUrl';
 import vUrlNoQuery              from '../src/functions/vUrlNoQuery';
 
@@ -668,6 +669,7 @@ describe('Validator - Core', () => {
             sys_ipv4                    : vSysIPv4,
             sys_ipv6                    : vSysIPv6,
             sys_ipv4_or_v6              : vSysIPv4_or_v6,
+            time_zone                   : vTimeZone,
             url                         : vUrl,
             url_noquery                 : vUrlNoQuery,
             gt                          : vGreaterThan,

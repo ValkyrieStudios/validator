@@ -24,6 +24,7 @@ import vLessThanOrEqual         from './functions/vLessThanOrEqual';
 import vMax                     from './functions/vMax';
 import vMin                     from './functions/vMin';
 import vPhone                   from './functions/vPhone';
+import vTimeZone                from './functions/vTimeZone';
 import vRequired                from './functions/vRequired';
 import vSize                    from './functions/vSize';
 import vSysMac                  from './functions/vSysMac';
@@ -69,6 +70,7 @@ const validateFn = {
     sys_ipv4                    : vSysIPv4,
     sys_ipv6                    : vSysIPv6,
     sys_ipv4_or_v6              : vSysIPv4_or_v6,
+    time_zone                   : vTimeZone,
     url                         : vUrl,
     url_noquery                 : vUrlNoQuery,
     //  Aliases

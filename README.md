@@ -314,6 +314,7 @@ The following list shows you all the default rules that are provided by this lib
 | sys_ipv4 | Validate that a provided value is a valid IPv4 address |
 | sys_ipv6 | Validate that a provided value is a valid IPv6 address | 
 | sys_ipv4_or_v6 | Validate that a provided value is either a valid IPv4 or a valid IPv6 address | 
+| time_zone | Validate that a provided value is a time_zone string (Take Note: this uses Intl.DateTimeFormat) |
 | url | Validate that a provided value is a url, this allows for query string values as well |
 | url_noquery | Validate that a provided value is a url without any query string values |
 

@@ -11,6 +11,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Move .eslintrc.json into src
 - Add .eslintrc.json for test
 - Add lint_tests script
+- Validation Rule: time_zone
 
 ### Removed
 - Dep: chai-spies as no longer in use
