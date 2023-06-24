@@ -27,6 +27,7 @@ var _vLessThanOrEqual = _interopRequireDefault(require("./functions/vLessThanOrE
 var _vMax = _interopRequireDefault(require("./functions/vMax"));
 var _vMin = _interopRequireDefault(require("./functions/vMin"));
 var _vPhone = _interopRequireDefault(require("./functions/vPhone"));
+var _vTimeZone = _interopRequireDefault(require("./functions/vTimeZone"));
 var _vRequired = _interopRequireDefault(require("./functions/vRequired"));
 var _vSize = _interopRequireDefault(require("./functions/vSize"));
 var _vSysMac = _interopRequireDefault(require("./functions/vSysMac"));
@@ -81,6 +82,7 @@ var validateFn = {
   sys_ipv4: _vSysIPv["default"],
   sys_ipv6: _vSysIPv2["default"],
   sys_ipv4_or_v6: _vSysIPv4_or_v["default"],
+  time_zone: _vTimeZone["default"],
   url: _vUrl["default"],
   url_noquery: _vUrlNoQuery["default"],
   gt: _vGreaterThan["default"],
