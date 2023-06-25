@@ -9,6 +9,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - Validation Rule: continent
 - Validation Rule: country
+- Validation Rule: country_alpha3
 
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 7.3.0
