@@ -14,6 +14,9 @@ var _vBetween = _interopRequireDefault(require("./functions/vBetween"));
 var _vBetweenInclusive = _interopRequireDefault(require("./functions/vBetweenInclusive"));
 var _vBoolean = _interopRequireDefault(require("./functions/vBoolean"));
 var _vColorHex = _interopRequireDefault(require("./functions/vColorHex"));
+var _vContinent = _interopRequireDefault(require("./functions/vContinent.js"));
+var _vCountry = _interopRequireDefault(require("./functions/vCountry.js"));
+var _vCountryAlpha = _interopRequireDefault(require("./functions/vCountryAlpha3.js"));
 var _vDateString = _interopRequireDefault(require("./functions/vDateString"));
 var _vEmail = _interopRequireDefault(require("./functions/vEmail"));
 var _vGeoLatitude = _interopRequireDefault(require("./functions/vGeoLatitude"));
@@ -55,6 +58,9 @@ var validateFn = {
   between_inc: _vBetweenInclusive["default"],
   "boolean": _vBoolean["default"],
   color_hex: _vColorHex["default"],
+  continent: _vContinent["default"],
+  country: _vCountry["default"],
+  country_alpha3: _vCountryAlpha["default"],
   date: _is["default"].Date,
   date_string: _vDateString["default"],
   email: _vEmail["default"],
