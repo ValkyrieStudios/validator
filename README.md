@@ -282,6 +282,7 @@ The following list shows you all the default rules that are provided by this lib
 | between_inc | Validate that a provided value is between or equal to two numbers, if passed a string or array this will validate on length |
 | boolean | Validate that a provided value is a boolean |
 | color_hex | Validate that a provided value is a hex color (with the # included) |
+| continent | Validate that a provided value is a continent code |
 | date | Validate that a provided value is a date object |
 | date_string | Validate that a provided value is a valid date string, take note: this will not validate strings representing dates before the start of the unix epoch |
 | email | Validate that a provided value is an email, take note: this only structurally tests if an email is good, it doesn't test whether an email actually exists |

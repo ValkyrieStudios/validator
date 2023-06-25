@@ -8,6 +8,7 @@ import vBetween                 from '../src/functions/vBetween';
 import vBetweenInclusive        from '../src/functions/vBetweenInclusive';
 import vBoolean                 from '../src/functions/vBoolean';
 import vColorHex                from '../src/functions/vColorHex';
+import vContinent               from '../src/functions/vContinent';
 import vDateString              from '../src/functions/vDateString';
 import vEmail                   from '../src/functions/vEmail';
 import vGeoLatitude             from '../src/functions/vGeoLatitude';
@@ -642,6 +643,7 @@ describe('Validator - Core', () => {
             between_inc                 : vBetweenInclusive,
             boolean                     : vBoolean,
             color_hex                   : vColorHex,
+            continent                   : vContinent,
             date                        : Is.Date,
             date_string                 : vDateString,
             email                       : vEmail,
