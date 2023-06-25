@@ -12,6 +12,7 @@ import vBetweenInclusive        from './functions/vBetweenInclusive';
 import vBoolean                 from './functions/vBoolean';
 import vColorHex                from './functions/vColorHex';
 import vContinent               from './functions/vContinent.js';
+import vCountry                 from './functions/vCountry.js';
 import vDateString              from './functions/vDateString';
 import vEmail                   from './functions/vEmail';
 import vGeoLatitude             from './functions/vGeoLatitude';
@@ -45,6 +46,7 @@ const validateFn = {
     boolean                     : vBoolean,
     color_hex                   : vColorHex,
     continent                   : vContinent,
+    country                     : vCountry,
     date                        : Is.Date,
     date_string                 : vDateString,
     email                       : vEmail,
