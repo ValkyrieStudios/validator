@@ -7,10 +7,14 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
-- Dep: Upgrade @babel/cli to 7.22.9
-- Dep: Upgrade @babel/core to 7.22.9
-- Dep: Upgrade @babel/preset-env to 7.22.9
-- Dep: Upgrade eslint to 8.46.0
+- Dep: Upgrade @valkyriestudios/utils to 7.5.0
+- Dep: Upgrade @babel/cli to 7.23.0
+- Dep: Upgrade @babel/core to 7.23.2
+- Dep: Upgrade @babel/preset-env to 7.23.2
+- Dep: Upgrade @babel/register to 7.22.15
+- Dep: Upgrade chai to 4.3.10
+- Dep: Upgrade eslint to 8.52.0
+- Dep: Upgrade eslint-plugin-mocha to 10.2.0
 
 ## [3.10.0] - 2023-06-25
 ### Added
