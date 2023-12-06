@@ -2,6 +2,7 @@
 
 import {describe, it}   from 'node:test';
 import assert           from 'node:assert/strict';
+import CONSTANTS        from '../constants.mjs';
 import Validator        from '../../src/index.mjs';
 
 describe('vMin', () => {
@@ -10,6 +11,22 @@ describe('vMin', () => {
 
         assert.equal(evaluation.is_valid, false);
         assert.deepEqual(evaluation.errors.a, [{msg: 'min', params: [undefined]}]);
+    });
+
+    it('Should be invalid when non-numeric params are passed as part of params', () => {
+        for (const el of CONSTANTS.NOT_NUMERIC) {
+            const evaluation = new Validator({a: 'min:<meta>'}).validate({a: 10, meta: el});
+            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation.errors.a, [{msg: 'min', params: [undefined]}]);
+        }
+    });
+
+    it('Should be invalid when non-numeric params are passed as part of rule', () => {
+        for (const el of CONSTANTS.NOT_NUMERIC) {
+            const evaluation = new Validator({a: `min:${el}`}).validate({a: 10});
+            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation.errors.a, [{msg: 'min', params: [undefined]}]);
+        }
     });
 
     it('Should return a correct error message when invalid', () => {
