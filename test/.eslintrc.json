@@ -3,10 +3,7 @@
         "es2020": true,
         "node": true
     },
-    "extends": [
-        "eslint:recommended",
-        "plugin:mocha/recommended"
-    ],
+    "extends": "eslint:recommended",
     "parserOptions": {
         "ecmaVersion": 8,
         "ecmaFeatures": {
@@ -50,7 +47,6 @@
         "no-confusing-arrow": "error",
         "no-console": ["error", {"allow": ["warn", "error"]}],
         "no-div-regex": "error",
-        "no-empty-function": "error",
         "no-eq-null": "error",
         "no-eval": "error",
         "no-extend-native": "error",
@@ -150,8 +146,6 @@
         "template-curly-spacing": ["error", "never"],
         "template-tag-spacing": ["error", "always"],
         "wrap-iife": ["error", "inside"],
-        "yield-star-spacing": ["error", "before"],
-        "mocha/no-mocha-arrows": "off",
-        "mocha/no-setup-in-describe": "off"
+        "yield-star-spacing": ["error", "before"]
     }
 }
