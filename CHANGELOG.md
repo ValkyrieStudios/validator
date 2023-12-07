@@ -26,7 +26,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Reduce total bundle size when importing all of validator by not importing full country/continent data packs from @valkyriestudios/utils (still verifying correctness against the packs through tests)
 - Published package will now also include original mjs src files which can be imported through @valkyriestudios/validator/src/\*
 - Performance boost across the board thanks to @valkyriestudios/utils:8.x
-- Performance boost across the board due to swapping out internal behaviors supporting pre-2016 browsers for more widely sypported primordials (eg Number.isFinite/Number.isInteger/Array.isArray)
+- Performance boost across the board due to swapping out internal behaviors supporting pre-2016 browsers for more widely supported primordials (eg Number.isFinite/Number.isInteger/Array.isArray)
 - Rule: vEmail ~5% performance improvement on valid email checks thanks to regex capture group improvements 
 - Rule: vEmail now allows up to 6 characters in TLD (adding support for eg: .coffee as a domain) (@SpekkoRice)
 - Rule: vTimeZone 7217% performance improvement due to ditching usage of Intl spec for verifying whether or not a zone exists in favor of embedded timezone/alias names (still being verified through tests with @valkyriestudios/data-timezones)
