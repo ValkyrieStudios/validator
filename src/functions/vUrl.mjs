@@ -1,7 +1,5 @@
 'use strict';
 
-import Is from '@valkyriestudios/utils/is.js';
-
 function isValidURL (val) {
     let url;
     try {
@@ -18,7 +16,7 @@ function isValidURL (val) {
 }
 
 export default function vUrl (val) {
-    if (!Is.NotEmptyString(val)) return false;
+    if (typeof val !== 'string') return false;
 
     //  Check with URL
     if (isValidURL(val)) return true;
@@ -59,5 +57,5 @@ export default function vUrl (val) {
         '(?:/[^\\s]*)?' +
         '$',
         'i' //  Options
-    ).test(val.trim());
+    ).test(val);
 }

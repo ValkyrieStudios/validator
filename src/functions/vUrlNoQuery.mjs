@@ -1,9 +1,7 @@
 'use strict';
 
-import Is from '@valkyriestudios/utils/is.js';
-
 export default function vUrl (val) {
-    if (!Is.NotEmptyString(val)) return false;
+    if (typeof val !== 'string') return false;
 
     //  Check for query string identifier
     if (val.indexOf('?') > -1) return false;
@@ -46,5 +44,5 @@ export default function vUrl (val) {
         // resource path
         '(?:/[^\\s]*)?' +
         '$', 'i'
-    ).test(val.trim());
+    ).test(val);
 }

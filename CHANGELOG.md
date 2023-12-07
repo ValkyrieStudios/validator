@@ -21,6 +21,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Switch internals to .mjs format
 - Reduce total bundle size when importing all of validator by not importing full country/continent data packs from @valkyriestudios/utils (still verifying correctness against the packs through tests)
 
+### Breaking
+- Rule 'url': Will no longer see a string that is a url after trimming as valid
+- Rule 'url_noquery': Will no longer see a string that is a url after trimming as valid
+
 ### Removed
 - Dev Dep: chai (in favor of native node test runner)
 - Dev Dep: chai-as-promised (in favor of native node test runner)
