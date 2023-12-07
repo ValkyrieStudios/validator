@@ -17,10 +17,10 @@ export default function vEmail (val) {
     if (/^(")?[A-Z0-9&._%+-]+(")?$/gi.test(parts[0]) === false) return false;
 
     //  Username Special case: can not start with dot (.)
-    if (parts[0].substring(0, 1) === '.') return false;
+    if (parts[0].charAt(0) === '.') return false;
 
     //  Username Special case: can not end with dot (.)
-    if (parts[0].substring(parts[0].length - 1, parts[1].length) === '.') return false;
+    if (parts[0].charAt(parts[0].length - 1) === '.') return false;
 
     //  Username Special case: can not contain consecutive dot chars (.)
     if (/[.]{2,}/.test(parts[0]) === true) return false;
