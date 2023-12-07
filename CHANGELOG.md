@@ -24,6 +24,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Published package will now also include original mjs src files which can be imported through @valkyriestudios/validator/src/\*
 - Performance boost across the board thanks to @valkyriestudios/utils:8.x
 - Performance boost across the board due to swapping out internal behaviors supporting pre-2016 browsers for more widely sypported primordials (eg Number.isFinite/Number.isInteger/Array.isArray)
+- Rule: vEmail ~5% performance improvement on valid email checks thanks to regex capture group improvements 
 
 ### Breaking
 - Rule 'url': Will no longer see a string that is a url after trimming as valid
@@ -32,6 +33,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Any string-based rules no longer support incoming values created via `new String(...)`
 - Any number-based rules no longer support incoming values created via `new Number(...)`
 - Any boolean-based rules no longer support incoming values created via `new Boolean(...)`
+
+### Fixed
+- Rule: vEmail edge-case redos issue in regex behavior (found by CodeQL)
 
 ### Removed
 - Dev Dep: chai (in favor of native node test runner)

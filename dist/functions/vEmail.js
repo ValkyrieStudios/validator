@@ -14,6 +14,6 @@ function vEmail(val) {
   if (/[.]{2,}/.test(parts[0]) === !0) return !1;
   if (parts[1].length > 253) return !1;
   if (/^(?:(?=[a-z0-9-]{1,63}\.)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?=[a-z0-9-]{1,63}z)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/ig.test(parts[1]) !== !1) return !0;
-  if (/^\w+([.-]?\w+)*(\.\w{2,5})+$/.test(parts[1]) === !1) return !1;
+  if (/^(\w{1,})([.-]?\w)*(\.\w{2,5})+$/.test(parts[1]) === !1) return !1;
   return !0;
 }
