@@ -108,8 +108,8 @@ var validateFn = {
 function getIterableConfig(val) {
   return {
     unique: val.indexOf('unique') >= 0,
-    max: val.match(/max:\d{1,}(\||$)/) ? parseInt("".concat(val).split('max:')[1].split('|').shift()) : !1,
-    min: val.match(/min:\d{1,}(\||$)/) ? parseInt("".concat(val).split('min:')[1].split('|').shift()) : !1
+    max: val.match(/max:\d{1,}(\||$)/) ? parseInt("".concat(val).split('max:', 2)[1].split('|', 1)[0]) : !1,
+    min: val.match(/min:\d{1,}(\||$)/) ? parseInt("".concat(val).split('min:', 2)[1].split('|', 1)[0]) : !1
   };
 }
 var Validator = exports["default"] = function () {

@@ -42,6 +42,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Rule 'url_noquery': Improved performance of validity checks for valid urls by ~2.5x
 - Rule 'url_noquery': Improved performance of validity checks for invalid urls by ~87x
 - Rule 'url_noquery': Now adheres to RFC 2396 in that double slashes are valid and trailing dots in tlds are considered valid
+- Minor performance improvement of ~.02x in creation and coldstart validation due to split limiting on iterable rule checks
 
 ### Fixed
 - Fixed possible redos issue in regex behavior during main validator construction and parameterization (found by CodeQL)
