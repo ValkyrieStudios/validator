@@ -4,10 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: !0
 });
 exports["default"] = vTimeZone;
-var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 function vTimeZone(val) {
-  if (!_is["default"].NotEmptyString(val)) return !1;
+  if (typeof val !== 'string' || val.trim().length === 0) return !1;
   try {
     if (!Intl || !Intl.DateTimeFormat().resolvedOptions().timeZone) {
       return !1;

@@ -4,12 +4,11 @@ Object.defineProperty(exports, "__esModule", {
   value: !0
 });
 exports["default"] = vContinent;
-var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
-var _mapKey = _interopRequireDefault(require("@valkyriestudios/utils/array/mapKey"));
-var _continents = _interopRequireDefault(require("@valkyriestudios/utils/data/continents.json"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-var MAP = (0, _mapKey["default"])(_continents["default"], 'code');
+var MAP = new Map();
+for (var _i = 0, _arr = ['AF', 'AN', 'AS', 'EU', 'NA', 'OC', 'SA']; _i < _arr.length; _i++) {
+  var el = _arr[_i];
+  MAP.set(el, !0);
+}
 function vContinent(val) {
-  if (!_is["default"].NeString(val)) return !1;
-  return MAP.hasOwnProperty(val);
+  return typeof val === 'string' && MAP.has(val);
 }

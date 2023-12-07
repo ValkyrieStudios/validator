@@ -1,13 +1,10 @@
 'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: !0
 });
 exports["default"] = vEmail;
-var _is = _interopRequireDefault(require("@valkyriestudios/utils/is"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 function vEmail(val) {
-  if (!_is["default"].NotEmptyString(val) || val.trim().length !== val.length) return !1;
+  if (typeof val !== 'string' || val.trim().length !== val.length || val.length === 0) return !1;
   var parts = val.split('@');
   if (parts.length !== 2) return !1;
   if (parts[0].length > 64) return !1;
