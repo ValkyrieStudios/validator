@@ -323,3 +323,4 @@ The following list shows you all the default rules that are provided by this lib
 
 ## Contributors
 - [Peter Vermeulen](mailto:contact@valkyriestudios.be)
+- [SpekkoRice](https://github.com/SpekkoRice)

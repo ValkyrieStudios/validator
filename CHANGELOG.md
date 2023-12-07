@@ -25,6 +25,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Performance boost across the board thanks to @valkyriestudios/utils:8.x
 - Performance boost across the board due to swapping out internal behaviors supporting pre-2016 browsers for more widely sypported primordials (eg Number.isFinite/Number.isInteger/Array.isArray)
 - Rule: vEmail ~5% performance improvement on valid email checks thanks to regex capture group improvements 
+- Rule: vEmail now allows up to 6 characters in TLD (adding support for eg: .coffee as a domain) (@SpekkoRice)
 
 ### Breaking
 - Rule 'url': Will no longer see a string that is a url after trimming as valid
