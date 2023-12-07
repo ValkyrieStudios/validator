@@ -6,13 +6,13 @@ export default function vPhone (val) {
     //  If number of digits is less than 5, return false
     if ((val.match(/\d/g) || []).length < 5) return false;
 
-    //	Check parts
-    const sparts = `${val}`.replace(/\./g, ' ').replace(/-/g, ' ').split(' ').map(el => el.trim());
+    //  Check parts
+    const sparts = `${val}`.replace(/(\.|-)/g, ' ').split(' ').map(el => el.trim());
     for (const el of sparts) {
-        if (el.startsWith('(') && !el.endsWith(')')) return false;
-        if (el.endsWith(')') && !el.startsWith('(')) return false;
+        if (el.charAt(0) === '(' && el.charAt(el.length - 1) !== ')') return false;
+        if (el.charAt(el.length - 1) === ')' && el.charAt(0) !== '(') return false;
     }
 
-    //	Will match phone numbers entered with delimiters (spaces, dots, brackets and dashes)
+    //  Will match phone numbers entered with delimiters (spaces, dots, brackets and dashes)
     return /^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(val);
 }

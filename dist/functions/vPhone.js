@@ -10,7 +10,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function vPhone(val) {
   if (typeof val !== 'string' || val.trim().length === 0) return !1;
   if ((val.match(/\d/g) || []).length < 5) return !1;
-  var sparts = "".concat(val).replace(/\./g, ' ').replace(/-/g, ' ').split(' ').map(function (el) {
+  var sparts = "".concat(val).replace(/(\.|-)/g, ' ').split(' ').map(function (el) {
     return el.trim();
   });
   var _iterator = _createForOfIteratorHelper(sparts),
@@ -18,8 +18,8 @@ function vPhone(val) {
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
       var el = _step.value;
-      if (el.startsWith('(') && !el.endsWith(')')) return !1;
-      if (el.endsWith(')') && !el.startsWith('(')) return !1;
+      if (el.charAt(0) === '(' && el.charAt(el.length - 1) !== ')') return !1;
+      if (el.charAt(el.length - 1) === ')' && el.charAt(0) !== '(') return !1;
     }
   } catch (err) {
     _iterator.e(err);
