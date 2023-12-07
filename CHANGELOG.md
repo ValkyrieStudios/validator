@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Dev Dep: c8\@8.0.1
+- Dev Dep: @babel/eslint-parser (used for assert type during import in test files)
+- Dev Dep: @babel/plugin-syntax-import-assertions (used for assert type during import in test files)
+
+### Improved
+- Dep: Upgrade @valkyriestudios/utils to 8.4.0
+- Dep Dep: Upgrade @babel/cli to 7.23.4
+- Dev Dep: Upgrade @babel/core to 7.23.5
+- Dev Dep: Upgrade @babel/preset-env to 7.23.5 
+- Dev Dep: Upgrade eslint to 8.55.0
+- Switch from using chai/mocha to node native test runner
+- Switch internals to .mjs format
+
+### Removed
+- Dev Dep: chai (in favor of native node test runner)
+- Dev Dep: chai-as-promised (in favor of native node test runner)
+- Dev Dep: eslint-plugin-mocha (in favor of native node test runner)
+- Dev Dep: mocha
+- Dev Dep: nyc
+- Dev Dep: babel-plugin-check-es2015-constants (as not needed)
+- Dev Dep: babel-plugin-transform-member-expression-literals (as not needed)
+- Dev Dep: babel-plugin-transform-property-literals (as not needed)
+
 ## [3.11.0] - 2023-10-22
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 7.5.0

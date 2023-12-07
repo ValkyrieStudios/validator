@@ -4,7 +4,14 @@
         "node": true
     },
     "extends": "eslint:recommended",
+    "parser": "@babel/eslint-parser",
     "parserOptions": {
+        "requireConfigFile": false,
+        "babelOptions": {
+            "plugins": [
+                "@babel/plugin-syntax-import-assertions"
+            ]
+        },
         "ecmaVersion": 8,
         "ecmaFeatures": {
           "experimentalObjectRestSpread": true

@@ -24,6 +24,12 @@ describe('vIn', () => {
         assert.deepEqual(evaluation.errors.b, []);
     });
 
+    it('Should validate a string correctly against raw values', () => {
+        const validator = new Validator({a: 'in:foo,hello,bar'});
+        assert.equal(validator.validate({a: 'bar'}).is_valid, false);
+        assert.ok(validator.validate({a: 'foo'}));
+    });
+
     it('Should be invalid when no params are passed', () => {
         const evaluation = new Validator({a: 'in:<meta.params>'}).validate({a: 'hello'});
 

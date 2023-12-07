@@ -19,11 +19,16 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "nyc --reporter=lcov --reporter=text-summary mocha --colors --require @babel/register --recursive ./test",
-    "test_ci": "nyc --reporter=lcov mocha --colors --require @babel/register --recursive ./test",
-    "lint": "./node_modules/.bin/eslint ./src",
-    "lint_tests": "./node_modules/.bin/eslint ./test",
-    "build": "npx babel src --out-dir ./dist && npm run lint",
+    "test": "node --test ./test/src",
+    "test:only": "node --test --test-only ./test/src",
+    "test:coverage": "c8 node --test ./test/src",
+    "lint": "npm run lint:src && npm run lint:test",
+    "lint:src": "./node_modules/.bin/eslint --ext .js,.mjs ./src",
+    "lint:test": "./node_modules/.bin/eslint --ext .js,.mjs ./test",
+    "build": "npm run lint && npm run test:coverage && rm -rf ./dist && mkdir ./dist && npx babel src --out-dir ./dist && npm run build:cleanup",
+    "build:cleanup": "npm run build:cleanup:mjs && npm run build:cleanup:src",
+    "build:cleanup:mjs": "sed -i \"s/\\.mjs/\\.js/g\" ./dist/**/*.js && sed -i \"s/\\.mjs/\\.js/g\" ./dist/*.js",
+    "build:cleanup:src": "sed -i \"s/valkyriestudios\\/utils\\/src/valkyriestudios\\/utils/g\" ./dist/**/*.js && sed -i \"s/valkyriestudios\\/utils\\/src/valkyriestudios\\/utils/g\" ./dist/*.js",
     "codecov": "codecov"
   },
   "repository": {
@@ -35,23 +40,18 @@
   },
   "homepage": "https://github.com/ValkyrieStudios/validator#readme",
   "dependencies": {
-    "@valkyriestudios/utils": "^7.5.0"
+    "@valkyriestudios/utils": "^8.4.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.0",
-    "@babel/core": "^7.23.2",
-    "@babel/preset-env": "^7.23.2",
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.5",
+    "@babel/eslint-parser": "^7.23.3",
+    "@babel/plugin-syntax-import-assertions": "^7.23.3",
+    "@babel/preset-env": "^7.23.5",
     "@babel/register": "^7.22.15",
-    "babel-plugin-check-es2015-constants": "^6.22.0",
-    "babel-plugin-transform-member-expression-literals": "^6.9.4",
     "babel-plugin-transform-minify-booleans": "^6.9.4",
-    "babel-plugin-transform-property-literals": "^6.9.4",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "chai": "^4.3.10",
-    "chai-as-promised": "^7.1.1",
-    "eslint": "^8.52.0",
-    "eslint-plugin-mocha": "^10.2.0",
-    "mocha": "^10.2.0",
-    "nyc": "^15.1.0"
+    "c8": "^8.0.1",
+    "eslint": "^8.55.0"
   }
 }

@@ -70,6 +70,20 @@ describe('vUrlNoQuery', () => {
         }
     });
 
+    it('Should not validate strings that are urls after trimming as valid', () => {
+        const v = new Validator({a: 'url_noquery'});
+
+        for (const el of [
+            'https://www.google.com   ',
+            '    https://www.google.com   ',
+            '    https://www.google.com',
+        ]) {
+            const evaluation = v.validate({a: el});
+            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation.errors.a, [{msg:'url_noquery', params: []}]);
+        }
+    });
+
     it('Should not validate improper strings as valid urls', () => {
         const v = new Validator({a: 'url_noquery'});
 
