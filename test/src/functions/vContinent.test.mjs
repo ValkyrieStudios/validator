@@ -2,7 +2,7 @@
 
 import {describe, it}   from 'node:test';
 import assert           from 'node:assert/strict';
-import CONTINENTS       from '@valkyriestudios/utils/data/continents.json' assert {type: 'json'};
+import CONTINENTS       from '@valkyriestudios/data-continents/raw.json' assert {type: 'json'};
 import CONSTANTS        from '../../constants.mjs';
 import Validator        from '../../../src/index.mjs';
 

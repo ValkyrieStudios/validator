@@ -10,10 +10,12 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Dev Dep: c8@8.0.1
 - Dev Dep: @babel/eslint-parser (used for assert type during import in test files)
 - Dev Dep: @babel/plugin-syntax-import-assertions (used for assert type during import in test files)
+- Dev Dep: @valkyriestudios/data-countries
+- Dev Dep: @valkyriestudios/data-continents
 - Rule 'in': Now supports passing a comma-delimited string of string values (eg: `in:jpeg,jpg,png`) on top of the previous parameter support
 
 ### Improved
-- Dep: Upgrade @valkyriestudios/utils to 8.4.0
+- Dep: Upgrade @valkyriestudios/utils to 9.0.0
 - Dep Dep: Upgrade @babel/cli to 7.23.4
 - Dev Dep: Upgrade @babel/core to 7.23.5
 - Dev Dep: Upgrade @babel/preset-env to 7.23.5 
