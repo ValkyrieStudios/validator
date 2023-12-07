@@ -133,20 +133,20 @@ var Validator = exports["default"] = function () {
             iterable = getIterableConfig(cursor.substring(2, iterable_endix));
             sometimes = !0;
             startix = iterable_endix + 1;
-          } else if (cursor.substring(0, 1) === '[') {
+          } else if (cursor.charAt(0) === '[') {
             iterable = getIterableConfig(cursor.substring(1, iterable_endix));
             startix = iterable_endix + 1;
           } else {
             throw new Error("Invalid iterable found, please verify rule config for ".concat(cursor));
           }
-        } else if (cursor.substring(0, 1) === '?') {
+        } else if (cursor.charAt(0) === '?') {
           sometimes = !0;
           startix = 1;
         }
         (0, _set["default"])(acc, key, cursor.substring(startix).split('|').reduce(function (rule_acc, rule_string) {
           var params = rule_string.split(':');
           var type = params.shift().trim();
-          var not = type.startsWith('!');
+          var not = type.charAt(0) === '!';
           if (not) type = type.replace(/!/g, '');
           params = params.length > 0 ? params[0].split(',') : [];
           params = params.reduce(function (params_acc, param) {
@@ -209,7 +209,7 @@ var Validator = exports["default"] = function () {
       this.evaluation.is_valid = !0;
       this.evaluation.errors = {};
       if (!data) {
-        this.evaluation.is_valid = !!(keys.length === 0);
+        this.evaluation.is_valid = keys.length === 0;
       } else {
         var run = function run(key) {
           var cursor = (0, _get["default"])(_this.rules, key);
