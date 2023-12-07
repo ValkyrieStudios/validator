@@ -21,6 +21,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Switch from using chai/mocha to node native test runner
 - Switch internals to .mjs format
 - Reduce total bundle size when importing all of validator by not importing full country/continent data packs from @valkyriestudios/utils (still verifying correctness against the packs through tests)
+- Published package will now also include original mjs src files which can be imported through @valkyriestudios/validator/src/\*
 - Performance boost across the board thanks to @valkyriestudios/utils:8.x
 - Performance boost across the board due to swapping out internal behaviors supporting pre-2016 browsers for more widely sypported primordials (eg Number.isFinite/Number.isInteger/Array.isArray)
 

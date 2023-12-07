@@ -10,7 +10,6 @@ codecov.sh
 codecov
 node_modules/
 coverage/
-src/
 test/
 gulpfile.js
 yarn.lock
