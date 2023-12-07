@@ -51,6 +51,7 @@
     "@babel/register": "^7.22.15",
     "@valkyriestudios/data-continents": "^0.2.0",
     "@valkyriestudios/data-countries": "^0.2.0",
+    "@valkyriestudios/data-timezones": "^0.4.0",
     "babel-plugin-transform-minify-booleans": "^6.9.4",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "c8": "^8.0.1",

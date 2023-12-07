@@ -12,6 +12,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Dev Dep: @babel/plugin-syntax-import-assertions (used for assert type during import in test files)
 - Dev Dep: @valkyriestudios/data-countries
 - Dev Dep: @valkyriestudios/data-continents
+- Dev Dep: @valkyriestudios/data-timezones
 - Rule 'in': Now supports passing a comma-delimited string of string values (eg: `in:jpeg,jpg,png`) on top of the previous parameter support
 
 ### Improved
@@ -28,6 +29,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Performance boost across the board due to swapping out internal behaviors supporting pre-2016 browsers for more widely sypported primordials (eg Number.isFinite/Number.isInteger/Array.isArray)
 - Rule: vEmail ~5% performance improvement on valid email checks thanks to regex capture group improvements 
 - Rule: vEmail now allows up to 6 characters in TLD (adding support for eg: .coffee as a domain) (@SpekkoRice)
+- Rule: vTimeZone 7217% performance improvement due to ditching usage of Intl spec for verifying whether or not a zone exists in favor of embedded timezone/alias names (still being verified through tests with @valkyriestudios/data-timezones)
 
 ### Breaking
 - Rule 'url': Will no longer see a string that is a url after trimming as valid
