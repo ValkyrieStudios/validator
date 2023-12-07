@@ -6,6 +6,8 @@ export default function vEmail (val) {
     if (typeof val !== 'string' || val.trim().length !== val.length || val.length === 0) return false;
 
     const parts = val.split('@');
+   
+    //  Validate 2 parts exist (a single @ sign needs to be present)
     if (parts.length !== 2) return false;
 
     //  Validate username length (max 64 chars)
@@ -29,7 +31,7 @@ export default function vEmail (val) {
     //  Validate domain content
     //  eslint-disable-next-line max-len
     if (/^(?:(?=[a-z0-9-]{1,63}\.)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?=[a-z0-9-]{1,63}z)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/ig.test(parts[1]) !== false) return true;
-    if (/^\w+([.-]?\w+)*(\.\w{2,5})+$/.test(parts[1]) === false) return false;
+    if (/^(\w{1,})([.-]?\w)*(\.\w{2,5})+$/.test(parts[1]) === false) return false;
 
     return true;
 }
