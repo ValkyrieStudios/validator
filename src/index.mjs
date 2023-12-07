@@ -137,13 +137,13 @@ export default class Validator {
                         iterable  = getIterableConfig(cursor.substring(2, iterable_endix));
                         sometimes = true;
                         startix   = iterable_endix + 1;
-                    } else if (cursor.substring(0, 1) === '[') {
+                    } else if (cursor.charAt(0) === '[') {
                         iterable  = getIterableConfig(cursor.substring(1, iterable_endix));
                         startix   = iterable_endix + 1;
                     } else {
                         throw new Error(`Invalid iterable found, please verify rule config for ${cursor}`);
                     }
-                } else if (cursor.substring(0, 1) === '?') {
+                } else if (cursor.charAt(0) === '?') {
                     sometimes = true;
                     startix = 1;
                 }
@@ -153,7 +153,7 @@ export default class Validator {
                     let type = params.shift().trim();
 
                     //  Get 'not' flag
-                    const not = type.startsWith('!');
+                    const not = type.charAt(0) === '!';
                     if (not) type = type.replace(/!/g, '');
 
                     //  Get parameters
@@ -217,7 +217,7 @@ export default class Validator {
 
         //  No data passed? Check if rules were set up
         if (!data) {
-            this.evaluation.is_valid = !!(keys.length === 0);
+            this.evaluation.is_valid = keys.length === 0;
         } else {
             const run = key => {
                 const cursor = deepGet(this.rules, key);
