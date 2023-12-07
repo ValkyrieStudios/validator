@@ -1,9 +1,7 @@
 'use strict';
 
-import Is from '@valkyriestudios/utils/is.js';
-
 export default function vTimeZone (val) {
-    if (!Is.NotEmptyString(val)) return false;
+    if (typeof val !== 'string' || val.trim().length === 0) return false;
 
     try {
         if (!Intl || !Intl.DateTimeFormat().resolvedOptions().timeZone) {

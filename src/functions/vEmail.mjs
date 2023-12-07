@@ -1,11 +1,9 @@
 'use strict';
 
-import Is from '@valkyriestudios/utils/is.js';
-
 //  Based on RFC3696 (https://datatracker.ietf.org/doc/html/rfc3696)
 
 export default function vEmail (val) {
-    if (!Is.NotEmptyString(val) || val.trim().length !== val.length) return false;
+    if (typeof val !== 'string' || val.trim().length !== val.length || val.length === 0) return false;
 
     const parts = val.split('@');
     if (parts.length !== 2) return false;

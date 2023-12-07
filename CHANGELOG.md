@@ -10,6 +10,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Dev Dep: c8@8.0.1
 - Dev Dep: @babel/eslint-parser (used for assert type during import in test files)
 - Dev Dep: @babel/plugin-syntax-import-assertions (used for assert type during import in test files)
+- Rule 'in': Now supports passing a comma-delimited string of string values (eg: `in:jpeg,jpg,png`) on top of the previous parameter support
 
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 8.4.0
@@ -20,10 +21,16 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Switch from using chai/mocha to node native test runner
 - Switch internals to .mjs format
 - Reduce total bundle size when importing all of validator by not importing full country/continent data packs from @valkyriestudios/utils (still verifying correctness against the packs through tests)
+- Performance boost across the board thanks to @valkyriestudios/utils:8.x
+- Performance boost across the board due to swapping out internal behaviors supporting pre-2016 browsers for more widely sypported primordials (eg Number.isFinite/Number.isInteger/Array.isArray)
 
 ### Breaking
 - Rule 'url': Will no longer see a string that is a url after trimming as valid
 - Rule 'url_noquery': Will no longer see a string that is a url after trimming as valid
+- Validator@extendMulti: Will now throw instead of silently do nothing when passed anything but an object
+- Any string-based rules no longer support incoming values created via `new String(...)`
+- Any number-based rules no longer support incoming values created via `new Number(...)`
+- Any boolean-based rules no longer support incoming values created via `new Boolean(...)`
 
 ### Removed
 - Dev Dep: chai (in favor of native node test runner)

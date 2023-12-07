@@ -1,7 +1,5 @@
 'use strict';
 
-import Is from '@valkyriestudios/utils/is.js';
-
 export default function vSize (val, equals = undefined) {
     if (!val || !equals) return false;
 
@@ -9,9 +7,9 @@ export default function vSize (val, equals = undefined) {
     const check = parseFloat(equals);
 
     //  If equals is not numerical or nan, return false
-    if (!Is.Number(check)) return false;
+    if (!Number.isFinite(check)) return false;
 
-    return Is.String(val) || Is.Array(val)
+    return typeof val === 'string' || Array.isArray(val)
         ? val.length === check
         : false;
 }

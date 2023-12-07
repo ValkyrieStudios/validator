@@ -1,9 +1,15 @@
 'use strict';
 
-import Is       from '@valkyriestudios/utils/is.js';
-import deepGet  from '@valkyriestudios/utils/deep/get.js';
-import deepSet  from '@valkyriestudios/utils/deep/set.js';
-import fnv1A    from '@valkyriestudios/utils/hash/fnv1A.js';
+import isString                 from '@valkyriestudios/utils/src/string/is.mjs';
+import isNeString               from '@valkyriestudios/utils/src/string/isNotEmpty.mjs';
+import isDate                   from '@valkyriestudios/utils/src/date/is.mjs';
+import isNeArray                from '@valkyriestudios/utils/src/array/isNotEmpty.mjs';
+import isObject                 from '@valkyriestudios/utils/src/object/is.mjs';
+import isNeObject               from '@valkyriestudios/utils/src/object/isNotEmpty.mjs';
+import isEqual                  from '@valkyriestudios/utils/src/equal.mjs';
+import deepGet                  from '@valkyriestudios/utils/src/deep/get.mjs';
+import deepSet                  from '@valkyriestudios/utils/src/deep/set.mjs';
+import fnv1A                    from '@valkyriestudios/utils/src/hash/fnv1A.mjs';
 
 import vAlphaNumSpaces          from './functions/vAlphaNumSpaces.mjs';
 import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline.mjs';
@@ -40,8 +46,8 @@ import vUrlNoQuery              from './functions/vUrlNoQuery.mjs';
 const validateFn = {
     alpha_num_spaces            : vAlphaNumSpaces,
     alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
-    array                       : Is.Array,
-    array_ne                    : Is.NeArray,
+    array                       : Array.isArray,
+    array_ne                    : isNeArray,
     between                     : vBetween,
     between_inc                 : vBetweenInclusive,
     boolean                     : vBoolean,
@@ -49,29 +55,29 @@ const validateFn = {
     continent                   : vContinent,
     country                     : vCountry,
     country_alpha3              : vCountryAlpha3,
-    date                        : Is.Date,
+    date                        : isDate,
     date_string                 : vDateString,
     email                       : vEmail,
-    equal_to                    : Is.Eq,
+    equal_to                    : isEqual,
     geo_latitude                : vGeoLatitude,
     geo_longitude               : vGeoLongitude,
     greater_than                : vGreaterThan,
     greater_than_or_equal       : vGreaterThanOrEqual,
     guid                        : vGuid,
     in                          : vIn,
-    integer                     : Is.Int,
+    integer                     : Number.isInteger,
     less_than                   : vLessThan,
     less_than_or_equal          : vLessThanOrEqual,
     max                         : vMax,
     min                         : vMin,
-    number                      : Is.Number,
-    object                      : Is.Object,
-    object_ne                   : Is.NeObject,
+    number                      : Number.isFinite,
+    object                      : isObject,
+    object_ne                   : isNeObject,
     phone                       : vPhone,
     required                    : vRequired,
     size                        : vSize,
-    string                      : Is.String,
-    string_ne                   : Is.NeString,
+    string                      : isString,
+    string_ne                   : isNeString,
     sys_mac                     : vSysMac,
     sys_ipv4                    : vSysIPv4,
     sys_ipv6                    : vSysIPv6,
@@ -84,7 +90,7 @@ const validateFn = {
     gte                         : vGreaterThanOrEqual,
     lt                          : vLessThan,
     lte                         : vLessThanOrEqual,
-    eq                          : Is.Eq,
+    eq                          : isEqual,
 };
 
 //  Get the config for an iterable validation
@@ -102,34 +108,41 @@ export default class Validator {
 
     constructor (rules = undefined) {
         //  Check for rules
-        if (!Is.Object(rules)) throw new TypeError('Please provide an object to define the rules of this validator');
+        if (!isObject(rules)) throw new TypeError('Please provide an object to define the rules of this validator');
 
         //  Recursively parse our validation rules, to allow for deeply nested validation to be done
         function parse (acc, key) {
             const cursor = deepGet(rules, key);
 
             //  If the cursor is an object, go deeper into the object
-            if (Is.Object(cursor)) {
+            if (isObject(cursor)) {
                 Object.keys(cursor).map(cursor_key => `${key}.${cursor_key}`).reduce(parse, acc);
-            } else if (Is.NotEmptyString(cursor)) {
+            } else if (isNeString(cursor)) {
                 //  If the cursor is a string, we've hit a rule
 
-                let startix     = 0;        // Adjust to determine start of config rule
-                let iterable    = false;    //  Iterable flag (false or an object, see iterable config)
-                let sometimes   = false;    //  Sometimes flag
-                if (cursor.substring(0, 2) === '?[') {
-                    const iterable_endix = cursor.indexOf(']');
-                    if (iterable_endix < 0) throw new TypeError(`Iterable end not found, please verify rule config for ${cursor}`);
+                let startix     = 0;                        // Adjust to determine start of config rule
+                let iterable    = /(\[|\])/g.test(cursor);  //  Iterable flag (false or an object, see iterable config)
+                let sometimes   = false;                    //  Sometimes flag
+                if (iterable) {
+                    const iterable_startix  = cursor.indexOf('[');
+                    const iterable_endix    = cursor.indexOf(']');
 
-                    iterable    = getIterableConfig(cursor.substring(2, iterable_endix));
-                    sometimes   = true;
-                    startix     = iterable_endix + 1;
-                } else if (cursor.substring(0, 1) === '[') {
-                    const iterable_endix = cursor.indexOf(']');
-                    if (iterable_endix < 0) throw new TypeError(`Iterable end not found, please verify rule config for ${cursor}`);
+                    if (
+                        iterable_startix < 0 ||
+                        iterable_endix < 0 || 
+                        iterable_startix > iterable_endix
+                    ) throw new TypeError(`Iterable misconfiguration, please verify rule config for ${cursor}`);
 
-                    iterable    = getIterableConfig(cursor.substring(1, iterable_endix));
-                    startix     = iterable_endix + 1;
+                    if (cursor.substring(0, 2) === '?[') {
+                        iterable  = getIterableConfig(cursor.substring(2, iterable_endix));
+                        sometimes = true;
+                        startix   = iterable_endix + 1;
+                    } else if (cursor.substring(0, 1) === '[') {
+                        iterable  = getIterableConfig(cursor.substring(1, iterable_endix));
+                        startix   = iterable_endix + 1;
+                    } else {
+                        throw new Error(`Invalid iterable found, please verify rule config for ${cursor}`);
+                    }
                 } else if (cursor.substring(0, 1) === '?') {
                     sometimes = true;
                     startix = 1;
@@ -168,13 +181,13 @@ export default class Validator {
                 }, []));
             } else {
                 //  Throw a type error if neither a string nor an object
-                throw new TypeError('The rule for a key needs to a string value');
+                throw new TypeError('The rule for a key needs to be a string value');
             }
 
             return acc;
         }
 
-        const parsed_rules = Object.keys(rules).reduce(parse, Object.create(null));
+        const parsed_rules = Object.keys(rules).reduce(parse, {});
 
         //  Set is_valid as a property on the validator, this will reflect the
         //  validity even if evaluation results are not caught
@@ -200,7 +213,7 @@ export default class Validator {
 
         //  Reset evaluation
         this.evaluation.is_valid = true;
-        this.evaluation.errors = Object.create(null);
+        this.evaluation.errors = {};
 
         //  No data passed? Check if rules were set up
         if (!data) {
@@ -210,7 +223,7 @@ export default class Validator {
                 const cursor = deepGet(this.rules, key);
 
                 //  Recursively validate
-                if (Is.NotEmptyObject(cursor)) {
+                if (isNeObject(cursor)) {
                     return Object.keys(cursor).map(cursor_key => {
                         cursor_key = `${key}.${cursor_key}`;
                         deepSet(this.evaluation.errors, cursor_key, []);
@@ -230,7 +243,7 @@ export default class Validator {
                 let iterable_max_err    = false;
 
                 //  Validate array of rules for this property
-                if (!Is.NotEmptyArray(cursor)) return;
+                if (!isNeArray(cursor)) return;
                 for (const rule of cursor) {
                     //  Check if rule exists
                     if (!validateFn[rule.type]) throw new Error(`Rule: ${rule.type} was not found`);
@@ -250,21 +263,21 @@ export default class Validator {
                     }
 
                     //  If this is an iterable
-                    if (Is.Object(rule.iterable)) {
+                    if (isObject(rule.iterable)) {
                         //  If not an array -> invalid
-                        if (!Is.Array(val)) {
+                        if (!Array.isArray(val)) {
                             iterable_err = true;
                             break;
                         }
 
                         //  rule.iterable.min is set and val length is below the min -> invalid
-                        if (Is.Number(rule.iterable.min) && val.length < rule.iterable.min) {
+                        if (Number.isFinite(rule.iterable.min) && val.length < rule.iterable.min) {
                             iterable_min_err = rule.iterable.min;
                             break;
                         }
 
                         //  rule.iterable.min is set and val length is below the min -> invalid
-                        if (Is.Number(rule.iterable.max) && val.length > rule.iterable.max) {
+                        if (Number.isFinite(rule.iterable.max) && val.length > rule.iterable.max) {
                             iterable_max_err = rule.iterable.max;
                             break;
                         }
@@ -302,10 +315,10 @@ export default class Validator {
                 if (iterable_err === true) {
                     deepGet(this.evaluation.errors, key).push({msg: 'iterable', params: []});
                     this.evaluation.is_valid = false;
-                } else if (Is.Number(iterable_min_err)) {
+                } else if (Number.isFinite(iterable_min_err)) {
                     deepGet(this.evaluation.errors, key).push({msg: 'iterable_min', params: [iterable_min_err]});
                     this.evaluation.is_valid = false;
-                } else if (Is.Number(iterable_max_err)) {
+                } else if (Number.isFinite(iterable_max_err)) {
                     deepGet(this.evaluation.errors, key).push({msg: 'iterable_max', params: [iterable_max_err]});
                     this.evaluation.is_valid = false;
                 } else if (!iterable_unique) {
@@ -316,7 +329,7 @@ export default class Validator {
 
             //  Prep the evaluation for the keys in the rules
             for (const key of keys) {
-                deepSet(this.evaluation.errors, key, Object.create(null));
+                deepSet(this.evaluation.errors, key, {});
                 run(key);
             }
         }
@@ -334,15 +347,24 @@ export default class Validator {
     //  @param string   name    Name of the rule
     //  @param Function fn      Validation function
     static extend (name, fn) {
-        if (!Is.NotEmptyString(name) || !Is.Function(fn)) {
-            throw new Error(`Invalid extension: ${name}, please ensure a valid function/name is passed`);
-        }
+        //  Check if a name which is a non-empty string is provided
+        if (
+            typeof name !== 'string' ||
+            name.trim().length === 0
+        ) throw new Error('Invalid extension: please ensure a valid name is passed');
+
+        const sanitized_name = name.trim();
+
+        //  Check if function is provided
+        if (
+            typeof fn !== 'function'
+        ) throw new Error(`Invalid extension: ${sanitized_name}, please ensure a valid function is passed`);
 
         //  If prop already exists, delete it
-        if (validateFn[name]) delete validateFn[name];
+        if (validateFn[sanitized_name]) delete validateFn[sanitized_name];
 
         //  Define property with a configurable flag to allow reconfiguration
-        Object.defineProperty(validateFn, name.trim(), {configurable: true, enumerable: true, get : () => fn});
+        Object.defineProperty(validateFn, sanitized_name, {configurable: true, enumerable: true, get : () => fn});
     }
 
     //  Run multiple validator extensions in one go by passing an object
@@ -350,7 +372,9 @@ export default class Validator {
     //  @param object   obj     Object in the format of {rule_1: Function, rule_2: Function, ...}
     static extendMulti (obj) {
         //  Check if passed variable is an object
-        if (!Is.Object(obj)) return;
+        if (
+            !isObject(obj)
+        ) throw new Error('Please provide an object to extendMulti');
 
         //  For each key in object, check if its value is a function
         for (const name of Object.keys(obj)) Validator.extend(name, obj[name]);

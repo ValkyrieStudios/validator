@@ -1,15 +1,32 @@
 'use strict';
 
-import Is     from '@valkyriestudios/utils/is.js';
-import fnv1A  from '@valkyriestudios/utils/hash/fnv1A.js';
+import fnv1A   from '@valkyriestudios/utils/src/hash/fnv1A.mjs';
+import memoize from '@valkyriestudios/utils/src/caching/memoize.mjs';
+
+const memoizedHashParams = memoize(params => {
+    const hashed = [];
+    if (typeof params === 'string') {
+        for (const el of params.split(',')) hashed.push(fnv1A(el));
+    } else {
+        for (const el of params) hashed.push(fnv1A(el));
+    }
+    return hashed;
+});
 
 export default function vIn (val, params = undefined) {
-    if (!Is.NotEmptyArray(params) && !Is.NotEmptyString(params)) return false;
+    if (
+        !(typeof params === 'string' && params.trim().length > 0) && 
+        !(Array.isArray(params) && params.length > 0)
+    ) return false;
 
-    if (Is.String(val) || Is.Number(val) || Is.Boolean(val)) {
-        return params.indexOf(val) > -1;
-    }
+    //  Primitive check
+    if (
+        typeof val === 'string' ||
+        Number.isFinite(val) ||
+        val === true ||
+        val === false
+    ) return params.indexOf(val) > -1;
 
-    const hashed = [...params].map(el => fnv1A(el));
-    return hashed.indexOf(fnv1A(val)) > -1;
+    //  FNV Hash params
+    return memoizedHashParams(params).indexOf(fnv1A(val)) > -1;
 }

@@ -1,14 +1,12 @@
 'use strict';
 
-import Is from '@valkyriestudios/utils/is.js';
-
 //  M stands for manufacturer digits
 //  S stands for device digits
 //  When 48-bit addresses get converted to 64-bit addresses a hardcoded 16-bit value (FFFE)
 //  gets inserted between the manufacturer and device digits.
 
 export default function vSysMac (val) {
-    if (!Is.NotEmptyString(val)) return false;
+    if (typeof val !== 'string') return false;
 
     //  Check for MM-MM-MM-SS-SS-SS format
     if (/^([0-9A-Fa-f]{2}-){5}([0-9A-Fa-f]{2})$/.test(val)) return true;

@@ -1,9 +1,7 @@
 'use strict';
 
-import Is from '@valkyriestudios/utils/is.js';
-
 export default function vPhone (val) {
-    if (!Is.NotEmptyString(val)) return false;
+    if (typeof val !== 'string' || val.trim().length === 0) return false;
 
     //  If number of digits is less than 5, return false
     if ((val.match(/\d/g) || []).length < 5) return false;
@@ -16,7 +14,5 @@ export default function vPhone (val) {
     }
 
     //	Will match phone numbers entered with delimiters (spaces, dots, brackets and dashes)
-    if (/^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(val)) return true;
-
-    return false;
+    return /^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(val);
 }

@@ -1,19 +1,17 @@
 'use strict';
 
-import Is from '@valkyriestudios/utils/is.js';
-
 export default function vLessThan (val, param = undefined) {
     //  Convert param into float
     const check = parseFloat(param);
 
     //  If param is not numerical or nan, return false
-    if (!Is.Number(check)) return false;
+    if (!Number.isFinite(check)) return false;
 
     //  Is value is string, use length for validation
-    if (Is.String(val) || Is.Array(val)) return val.length < check;
+    if (typeof val === 'string' || Array.isArray(val)) return val.length < check;
 
     //  If value is numerical, use primitive for validation
-    if (Is.Number(val)) return val < check;
+    if (Number.isFinite(val)) return val < check;
 
     return false;
 }
