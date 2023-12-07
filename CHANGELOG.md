@@ -7,7 +7,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Added
-- Dev Dep: c8\@8.0.1
+- Dev Dep: c8@8.0.1
 - Dev Dep: @babel/eslint-parser (used for assert type during import in test files)
 - Dev Dep: @babel/plugin-syntax-import-assertions (used for assert type during import in test files)
 
@@ -19,6 +19,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Dev Dep: Upgrade eslint to 8.55.0
 - Switch from using chai/mocha to node native test runner
 - Switch internals to .mjs format
+- Reduce total bundle size when importing all of validator by not importing full country/continent data packs from @valkyriestudios/utils (still verifying correctness against the packs through tests)
 
 ### Removed
 - Dev Dep: chai (in favor of native node test runner)

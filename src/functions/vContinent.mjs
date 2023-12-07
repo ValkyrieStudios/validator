@@ -1,12 +1,16 @@
 'use strict';
 
-import Is           from '@valkyriestudios/utils/is.js';
-import mapKey       from '@valkyriestudios/utils/array/mapKey.js';
-import continents   from '@valkyriestudios/utils/data/continents.json';
-
-const MAP = mapKey(continents, 'code');
+const MAP = new Map();
+for (const el of [
+    'AF',
+    'AN',
+    'AS',
+    'EU',
+    'NA',
+    'OC',
+    'SA',
+]) MAP.set(el, true);
 
 export default function vContinent (val) {
-    if (!Is.NeString(val)) return false;
-    return MAP.hasOwnProperty(val);
+    return typeof val === 'string' && MAP.has(val);
 }
