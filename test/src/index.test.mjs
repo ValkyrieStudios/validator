@@ -36,6 +36,7 @@ import vSysIPv4_or_v6           from '../../src/functions/vSysIPv4_or_v6.mjs';
 import vTimeZone                from '../../src/functions/vTimeZone.mjs';
 import vUrl                     from '../../src/functions/vUrl.mjs';
 import vUrlNoQuery              from '../../src/functions/vUrlNoQuery.mjs';
+import vUrlImage                from '../../src/functions/vUrlImage.mjs';
 
 describe('Validator - Core', () => {
     it('Should instantiate to a validator object', () => {
@@ -646,6 +647,7 @@ describe('Validator - Core', () => {
                 time_zone                   : vTimeZone,
                 url                         : vUrl,
                 url_noquery                 : vUrlNoQuery,
+                url_img                     : vUrlImage,
                 gt                          : vGreaterThan,
                 gte                         : vGreaterThanOrEqual,
                 lt                          : vLessThan,

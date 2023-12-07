@@ -42,6 +42,7 @@ import vSysIPv6                 from './functions/vSysIPv6.mjs';
 import vSysIPv4_or_v6           from './functions/vSysIPv4_or_v6.mjs';
 import vUrl                     from './functions/vUrl.mjs';
 import vUrlNoQuery              from './functions/vUrlNoQuery.mjs';
+import vUrlImage                from './functions/vUrlImage.mjs';
 
 const validateFn = {
     alpha_num_spaces            : vAlphaNumSpaces,
@@ -85,6 +86,7 @@ const validateFn = {
     time_zone                   : vTimeZone,
     url                         : vUrl,
     url_noquery                 : vUrlNoQuery,
+    url_img                     : vUrlImage,
     //  Aliases
     gt                          : vGreaterThan,
     gte                         : vGreaterThanOrEqual,

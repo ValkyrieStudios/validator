@@ -6,18 +6,48 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Rule 'url_img' to validate if a url is an image url, checks against the following formats:
+-- jpg
+-- jpeg
+-- jpe
+-- jif
+-- jfif
+-- jfi
+-- png
+-- ico
+-- cur
+-- tiff
+-- tif
+-- gif
+-- webp
+-- bmp
+-- dib
+-- svg
+-- svgz
+-- heif
+-- heifs
+-- heic
+-- heics
+-- avci
+-- avcs
+-- avif
+-- hif
+
 ### Improved
 - Dev Dep: Upgrade @valkyriestudios/data-timezones to 0.5.0
 - Rule 'url': Improved performance of validity checks for valid urls by ~2.5x
 - Rule 'url': Improved performance of validity checks for invalid urls by ~87x
+- Rule 'url': Now adheres to RFC 2396 in that double slashes are valid and urls ending in a dot are considered valid
 - Rule 'url_noquery': Improved performance of validity checks for valid urls by ~2.5x
 - Rule 'url_noquery': Improved performance of validity checks for invalid urls by ~87x
+- Rule 'url_noquery': Now adheres to RFC 2396 in that double slashes are valid and trailing dots in tlds are considered valid
 
 ### Fixed
 - Fixed possible redos issue in regex behavior during main validator construction and parameterization (found by CodeQL)
 - Fixed overly permissive regex range during main validator construction and parameterization (found by CodeQL)
-- Fixed possible redos issue in regex behavior during url rule validation
-- Fixed possible redos issue in regex behavior during url_noquery rule validation
+- Fixed possible redos issue in regex behavior during url rule validation (found by CodeQL)
+- Fixed possible redos issue in regex behavior during url_noquery rule validation (found by CodeQL)
 
 ## [4.0.0] - 2023-12-07
 ### Added

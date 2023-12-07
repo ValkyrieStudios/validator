@@ -35,6 +35,7 @@ import vSysMac                  from '../src/functions/vSysMac.mjs';
 import vTimeZone                from '../src/functions/vTimeZone.mjs';
 import vUrl                     from '../src/functions/vUrl.mjs';
 import vUrlNoQuery              from '../src/functions/vUrlNoQuery.mjs';
+import vUrlImage                from '../src/functions/vUrlImage.mjs';
 import Validator                from '../src/index.mjs';
 
 const ROW_TEST_WIDTH    = 50;
@@ -507,6 +508,15 @@ for (const el of [
     {
         lbl: 'functions/vUrlNoQuery - invalid',
         fn: () => vUrlNoQuery('https://www.146.72.38.20.com?aquery=true'),
+    },
+    //  vUrlImage
+    {
+        lbl: 'functions/vUrlImage - valid',
+        fn: () => vUrlImage('https://www.myfancyimage.com/123.jpg'),
+    },
+    {
+        lbl: 'functions/vUrlImage - invalid',
+        fn: () => vUrlImage('https://www.myfancyimage.com/jpg?aquery=true'),
     },
 ]) bench(el, 100000);
 

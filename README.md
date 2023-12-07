@@ -320,6 +320,7 @@ The following list shows you all the default rules that are provided by this lib
 | time_zone | Validate that a provided value is a time_zone string (Take Note: this uses Intl.DateTimeFormat) |
 | url | Validate that a provided value is a url, this allows for query string values as well |
 | url_noquery | Validate that a provided value is a url without any query string values |
+| url_img | Validate that a provided value is a url linking to an image file (eg: https://mywebsite.com/123.jpg) |
 
 ## Contributors
 - [Peter Vermeulen](mailto:contact@valkyriestudios.be)

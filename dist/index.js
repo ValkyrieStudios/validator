@@ -45,6 +45,7 @@ var _vSysIPv2 = _interopRequireDefault(require("./functions/vSysIPv6.js"));
 var _vSysIPv4_or_v = _interopRequireDefault(require("./functions/vSysIPv4_or_v6.js"));
 var _vUrl = _interopRequireDefault(require("./functions/vUrl.js"));
 var _vUrlNoQuery = _interopRequireDefault(require("./functions/vUrlNoQuery.js"));
+var _vUrlImage = _interopRequireDefault(require("./functions/vUrlImage.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: !0 }; return { done: !1, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = !0, didErr = !1, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = !0; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -97,6 +98,7 @@ var validateFn = {
   time_zone: _vTimeZone["default"],
   url: _vUrl["default"],
   url_noquery: _vUrlNoQuery["default"],
+  url_img: _vUrlImage["default"],
   gt: _vGreaterThan["default"],
   gte: _vGreaterThanOrEqual["default"],
   lt: _vLessThan["default"],
