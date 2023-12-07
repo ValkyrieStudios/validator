@@ -91,6 +91,10 @@ describe('vEmail', () => {
                 assert.ok(evaluation.is_valid);
             }
         });
+        it('email with 6 character TLD as correct', () => {
+            const evaluation = new Validator({a: 'email'}).validate({a: 'email@cof.coffee'});
+            assert.ok(evaluation.is_valid);
+        });
     });
 
     describe('Invalid', () => {
