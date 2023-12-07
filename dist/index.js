@@ -150,7 +150,10 @@ var Validator = exports["default"] = function () {
           if (not) type = type.replace(/!/g, '');
           params = params.length > 0 ? params[0].split(',') : [];
           params = params.reduce(function (params_acc, param) {
-            if (/^<([A-z]|[0-9]|_|\.)+>$/g.test(param)) {
+            if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
+              if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
+                throw new TypeError("Parameterization misconfiguration, please verify rule config for ".concat(cursor));
+              }
               param = param.substr(1, param.length - 2);
               params_acc.push(function (data) {
                 try {

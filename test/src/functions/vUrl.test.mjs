@@ -42,6 +42,8 @@ describe('vUrl', () => {
             'http://-.~_!$&\'()*+,;=:%40:80%2f::::::@example.com',
             'http://1337.net',
             'http://a.b-c.de',
+            'http://a.b--c.de',
+            'http://me.com//123', // Double slashes are valid according to RFC 2396
             'http://223.255.255.254',
             'https://www.valkyriestudios.be',
             'https://www.valkyriestudios.be/?q=test',
@@ -55,6 +57,7 @@ describe('vUrl', () => {
             'https://www.valkyriestudios.co.uk/eweqweeqwe/ewqeeqweqe',
             'https://valkyriestudios.com/?a=1&b=2#eweqweqwewqeqweweqweqweqweqwewopqieqwoeqweipqwoeiqweiqwpoeiqwieqwopeiqwpooeqwieiqwoeiqwoeiqweiqwopeiqwpeiqweiqweoiwqopepwoqiepqwoieoiwqeipqwoeiowqieoipoeiwqoiepowiqoieqw&ewquie', // eslint-disable-line max-len
             'https://valkyriestudios.com:3000/?a=1&b=2#eweqweqwewqeqweweqweqweqweqwewopqieqwoeqweipqwoeiqweiqwpoeiqwieqwopeiqwpooeqwieiqwoeiqwoeiqweiqwopeiqwpeiqweiqweoiwqopepwoqiepqwoieoiwqeipqwoeiowqieoipoeiwqoiepowiqoieqw&ewquie', // eslint-disable-line max-len
+            'http://x.comddfsdfsdf.', // Trailing dots in tlds are valid
         ]) {
             const evaluation = v.validate({a: el});
             assert.ok(evaluation.is_valid);
@@ -114,7 +117,6 @@ describe('vUrl', () => {
             'http://foo.bar/foo(bar)baz quux',
             'ftps://foo.bar/',
             'http://-error-.invalid/',
-            'http://a.b--c.de/',
             'http://-a.b.co',
             'http://a.b-.co',
             'http://0.0.0.0',
@@ -125,7 +127,6 @@ describe('vUrl', () => {
             'http://123.123.123',
             'http://3628126748',
             'http://.www.foo.bar/',
-            'http://www.foo.bar./',
             'http://.www.foo.bar./',
             'http://10.1.1.1',
             'http://10.1.1.254',

@@ -36,7 +36,10 @@ describe('vUrlNoQuery', () => {
             'http://例子.测试',
             'http://1337.net',
             'http://a.b-c.de',
+            'http://a.b--c.de',
+            'http://me.com//123', // Double slashes are valid according to RFC 2396
             'http://223.255.255.254',
+            'http://x.comddfsdfsdf.', // Trailing dots in tlds are valid
         ]) {
             const evaluation = v.validate({a: el});
             assert.ok(evaluation.is_valid);
@@ -112,7 +115,6 @@ describe('vUrlNoQuery', () => {
             'http://foo.bar/foo(bar)baz quux',
             'ftps://foo.bar/',
             'http://-error-.invalid/',
-            'http://a.b--c.de/',
             'http://-a.b.co',
             'http://a.b-.co',
             'http://0.0.0.0',
@@ -123,7 +125,6 @@ describe('vUrlNoQuery', () => {
             'http://123.123.123',
             'http://3628126748',
             'http://.www.foo.bar/',
-            'http://www.foo.bar./',
             'http://.www.foo.bar./',
             'http://10.1.1.1',
             'http://10.1.1.254',

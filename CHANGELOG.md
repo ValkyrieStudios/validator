@@ -8,6 +8,16 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 ### Improved
 - Dev Dep: Upgrade @valkyriestudios/data-timezones to 0.5.0
+- Rule 'url': Improved performance of validity checks for valid urls by ~2.5x
+- Rule 'url': Improved performance of validity checks for invalid urls by ~87x
+- Rule 'url_noquery': Improved performance of validity checks for valid urls by ~2.5x
+- Rule 'url_noquery': Improved performance of validity checks for invalid urls by ~87x
+
+### Fixed
+- Fixed possible redos issue in regex behavior during main validator construction and parameterization (found by CodeQL)
+- Fixed overly permissive regex range during main validator construction and parameterization (found by CodeQL)
+- Fixed possible redos issue in regex behavior during url rule validation
+- Fixed possible redos issue in regex behavior during url_noquery rule validation
 
 ## [4.0.0] - 2023-12-07
 ### Added
@@ -31,10 +41,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Published package will now also include original mjs src files which can be imported through @valkyriestudios/validator/src/\*
 - Performance boost across the board thanks to @valkyriestudios/utils:8.x
 - Performance boost across the board due to swapping out internal behaviors supporting pre-2016 browsers for more widely supported primordials (eg Number.isFinite/Number.isInteger/Array.isArray)
-- Rule: vPhone ~5% performance improvement on valid phone checks thanks to regex capture group improvements as well as swapping out of startsWith/endsWith vs charAt for single char checks
-- Rule: vEmail ~10% performance improvement on valid email checks thanks to regex capture group improvements as well as swapping substring checks for charAt for single char checks
+- Rule: vPhone ~.05x performance improvement on valid phone checks thanks to regex capture group improvements as well as swapping out of startsWith/endsWith vs charAt for single char checks
+- Rule: vEmail ~.1x performance improvement on valid email checks thanks to regex capture group improvements as well as swapping substring checks for charAt for single char checks
 - Rule: vEmail now allows up to 6 characters in TLD (adding support for eg: .coffee as a domain) (@SpekkoRice)
-- Rule: vTimeZone 7217% performance improvement due to ditching usage of Intl spec for verifying whether or not a zone exists in favor of embedded timezone/alias names (still being verified through tests with @valkyriestudios/data-timezones)
+- Rule: vTimeZone 72x performance improvement due to ditching usage of Intl spec for verifying whether or not a zone exists in favor of embedded timezone/alias names (still being verified through tests with @valkyriestudios/data-timezones)
 
 ### Breaking
 - Rule 'url': Will no longer see a string that is a url after trimming as valid
