@@ -9,19 +9,16 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - feat: Validator Instance @check: This new method only returns whether or not a data object is valid against the validator and as such is magnitudes faster at spotting invalidity than the @validate function, it is also faster at spotting validity due to less internal overhead, for example:
 ```
-const data = {first_name: 'Peter'};
+const v = new Validator({
+    first_name  : 'string_ne|min:3',
+    last_name   : 'string_ne|min:3',
+});
 
 //  v5: using the faster @check
-const is_valid = new Validator({
-    first_name: 'string_ne|min:3',
-    last_name: 'string_ne|min:3'
-}).check(data);
+const is_valid = v.check({first_name: 'Peter'});
 
 //  Pre v5: using the slower @validate (of course this is still possible in v5)
-const is_valid = new Validator({
-    first_name: 'string_ne|min:3',
-    last_name: 'string_ne|min:3'
-}).validate(data).is_valid;
+const is_valid = v.validate({first_name: 'Peter'}).is_valid;
 ```
 - feat: Validator Instance @validate: Will now also contain a 'count' value containing the count of invalid fields
 
