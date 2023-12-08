@@ -27,7 +27,7 @@ const is_valid = v.validate({first_name: 'Peter'}).is_valid;
 - perf: Creation of Validator instances is now between 1.2 to 1.7 times faster
 - perf: Cold validation (creating a validator and running .validate at same time) is now between 2 to 2.5 times faster
 - perf: Warm validation (pre-existing validator and running .validate repeatedly) is now roughly 3.2 times faster
-- feat: Validator Instance@validate: will now return the fixed 'NO_DATA' as errors instead of an empty object when calling without data. For example:
+- feat: Validator Instance@validate: will now return a fixed `'NO_DATA'` as errors instead of an empty object when calling without data. For example:
 ```
 const v = new Validator({
     first_name  : 'string_ne|min:3',
@@ -57,11 +57,11 @@ new Validator({
 }).validate({
     address: {
         street: 'First avenue',
-        nr: 50,
-        zip: 1500,
+        nr: 23,
+        zip: false,
     },
     contact: {
-        email: 'contact.valkyriestudios.be',
+        email: 'bla',
     },
 });
 
@@ -69,17 +69,34 @@ new Validator({
 {
     is_valid: false,
     errors: {
-        address: {street: [], nr: [], zip: []},
-        contact: {email: [{msg: 'email', params: []}]}
+        address: {
+            street: [],
+            nr: [],
+            zip: [
+                {msg: 'integer', params: []},
+                {msg: 'between', params: ['1000', '9999']}
+            ]
+        },
+        contact: {
+            email: [
+                {msg: 'email', params: []}
+            ]
+        }
     }
 }
 
 // v5 output
 {
     is_valid: false,
-    count: 1,
+    count: 2,
     errors: {
-        'contact.email': [{msg: 'email', params: []}],
+        'street.zip': [
+            {msg: 'integer', params: []},
+            {msg: 'between', params: ['1000', '9999']}
+        ],
+        'contact.email': [
+            {msg: 'email', params: []}
+        ],
     }
 }
 ```
