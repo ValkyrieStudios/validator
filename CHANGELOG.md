@@ -6,8 +6,102 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- feat: Validator Instance @check: This new method only returns whether or not a data object is valid against the validator and as such is magnitudes faster at spotting invalidity than the @validate function, it is also faster at spotting validity due to less internal overhead, for example:
+```
+//  v5: using the faster @check
+const is_valid = new Validator({first_name: 'string_ne|min:3', last_name: 'string_ne|min:3'}).check({first_name: 'Peter'});
+
+//  Pre v5 way using the slower @validate
+const is_valid = new Validator({first_name: 'string_ne|min:3', last_name: 'string_ne|min:3'}).validate({first_name: 'Peter'}).is_valid;
+```
+- feat: Validator Instance @validate: Will now also contain a 'count' value containing the count of invalid fields
+
 ### Improved
-- Add CodeQL badge to readme
+- doc: Add CodeQL badge to readme
+- perf: Creation of Validator instances is now between 1.2 to 1.7 times faster
+- perf: Cold validation (creating a validator and running .validate at same time) is now between 2 to 2.5 times faster
+- perf: Warm validation (pre-existing validator and running .validate repeatedly) is now roughly 3.2 times faster
+
+### Breaking
+- Removed internal storage of past results of a validator inside of the instance as in most real-world use cases this is either not used or not wanted. This reduces memory usage as well as allows for further performance boosts (see improved section)
+- Validator Instance@validate: Error message for multi-Dimensional validators (validators working with deeply nested object) will no longer come back in their deeply nested form but as a single-dimensional object, this makes it easier to understand and process externally
+```
+new Validator({
+    address: {
+        street: 'string|alpha_num_spaces',
+        nr: 'integer',
+        zip: 'integer|between:1000,9999',
+    },
+    contact: {
+        email: 'string|email',
+    },
+}).validate({
+    address: {
+        street: 'First avenue',
+        nr: 50,
+        zip: 1500,
+    },
+    contact: {
+        email: 'contact.valkyriestudios.be',
+    },
+});
+// pre v5 output
+{
+    is_valid: false,
+    errors: {
+        address: {street: [], nr: [], zip: []},
+        contact: {email: [{msg: 'email', params: []}]}
+    }
+}
+// v5 output
+{
+    is_valid: false,
+    count: 1,
+    errors: {
+        'contact.email': [{msg: 'email', params: []}],
+    }
+}
+```
+- Validator Instance@validate: Evaluation error objects will no longer contain a key for every single field but will only contain a key for fields that were invalid, this allows for easier processing, for example:
+```
+new Validator({
+    first_name: 'string_ne|min:2',
+    last_name: 'string_ne|min:2',
+    phone: '?phone',
+    email: 'email',
+}).validate({first_name: 'Peter', last_name: 'Vermeulen'});
+
+// pre v5 output
+{
+    is_valid: false,
+    errors: {
+        first_name: [],
+        last_name: [],
+        phone: [],
+        email: [{msg: 'email', params: []}]
+    }
+}
+
+// v5 output
+{
+    is_valid: false,
+    count: 1,
+    errors: {
+        email: [{msg: 'email', params: []}]
+    }
+}
+```
+- Validator Instance@validate: If a field is invalid because of it not existing a `{msg: 'not_found'}` will now be used instead of the list of all rule types, for example:
+```
+new Validator({myfield: 'string_ne|min:20'}).validate({myotherfield: 'hello'});
+// pre v5 output: {is_valid: false, errors: {myfield: [{msg: 'string_ne', params: []}, {msg: 'min', params: [20]}]}}
+// v5 output: {is_valid: false, count: 1, errors: {myfield: [{msg: 'not_found'}]}}
+```
+
+### Removed
+- Validator Instance@errors getter (see breaking section for reasons why)
+- Validator Instance@is_valid getter (see breaking section for reasons why)
 
 ## [4.1.0] - 2023-12-08
 ### Added
