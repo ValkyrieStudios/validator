@@ -51,6 +51,7 @@ new Validator({
         email: 'contact.valkyriestudios.be',
     },
 });
+
 // pre v5 output
 {
     is_valid: false,
@@ -59,6 +60,7 @@ new Validator({
         contact: {email: [{msg: 'email', params: []}]}
     }
 }
+
 // v5 output
 {
     is_valid: false,
@@ -100,6 +102,7 @@ new Validator({
 - Validator Instance@validate: If a field is invalid because of it not existing a `{msg: 'not_found'}` will now be used instead of the list of all rule types, for example:
 ```
 new Validator({myfield: 'string_ne|min:20'}).validate({myotherfield: 'hello'});
+
 // pre v5 output
 {
     is_valid: false,
@@ -110,6 +113,7 @@ new Validator({myfield: 'string_ne|min:20'}).validate({myotherfield: 'hello'});
         ]
     }
 }
+
 // v5 output
 {
     is_valid: false,
