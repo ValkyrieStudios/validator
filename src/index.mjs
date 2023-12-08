@@ -331,7 +331,14 @@ export default class Validator {
         if (
             !isObject(data) ||
             Object.keys(data).length === 0
-        ) return {is_valid: this.rules.length === 0, errors: []};
+        ) {
+            const is_valid = this.rules.length === 0;
+            return {
+                is_valid,
+                count: this.rules.length,
+                errors: is_valid ? {} : 'NO_DATA',
+            };
+        }
 
         const errors = {};
         for (const rule of this.plan) {
