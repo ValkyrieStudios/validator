@@ -160,32 +160,7 @@ new Validator({myfield: 'string_ne|min:20'}).validate({myotherfield: 'hello'});
 
 ## [4.1.0] - 2023-12-08
 ### Added
-- Rule 'url_img' to validate if a url is an image url, checks against the following formats:
--- jpg
--- jpeg
--- jpe
--- jif
--- jfif
--- jfi
--- png
--- ico
--- cur
--- tiff
--- tif
--- gif
--- webp
--- bmp
--- dib
--- svg
--- svgz
--- heif
--- heifs
--- heic
--- heics
--- avci
--- avcs
--- avif
--- hif
+- Rule 'url_img' to validate if a url is an image url, checks against the following formats: `jpg, jpeg, jpe, jif, jfif, jfi, png, ico, cur, tiff, tif, gif, webp, bmp, dib, svg, svgz, heif, heifs, heic, heics, avci, avcs, avif, hif`
 
 ### Improved
 - Dev Dep: Upgrade @valkyriestudios/data-timezones to 0.5.0
