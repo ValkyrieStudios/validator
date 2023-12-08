@@ -202,6 +202,174 @@ for (const el of [
             meta: {gender_options: ['F', 'M', 'U']},
         }),
     },
+    //  Baseline - check coldstart
+    {
+        lbl: 'Validator@check - coldstart - simple - valid',
+        fn: () => new Validator({a: 'string_ne'}).check({a: 'hello'}),
+    },
+    {
+        lbl: 'Validator@check - coldstart - simple - invalid',
+        fn: () => new Validator({a: 'string_ne'}).check({a: 12345}),
+    },
+    {
+        lbl: 'Validator@check - coldstart - medium - valid',
+        fn: () => new Validator({
+            first_name: 'string|alpha_num_spaces|min:2',
+            last_name: 'string|alpha_num_spaces|min:2',
+            age: '?integer|between:1,150',
+            gender: 'in:<meta.gender_options>',
+        }).check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            age: 33,
+            gender: 'M',
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@check - coldstart - medium - invalid',
+        fn: () => new Validator({
+            first_name: 'string|alpha_num_spaces|min:2',
+            last_name: 'string|alpha_num_spaces|min:2',
+            age: '?integer|between:1,150',
+            gender: 'in:<meta.gender_options>',
+        }).check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            age: 'None of ya business',
+            gender: 'M',
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@check - coldstart - complex - valid',
+        fn: () => new Validator({
+            first_name: 'string|alpha_num_spaces|min:2',
+            last_name: 'string|alpha_num_spaces|min:2',
+            age: '?integer|between:1,150',
+            gender: 'in:<meta.gender_options>',
+            address: {
+                street: 'string|alpha_num_spaces',
+                nr: 'integer',
+                zip: 'integer|between:1000,9999',
+            },
+            contact: {
+                email: 'string|email',
+                phone: '?phone',
+            },
+        }).check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            age: 33,
+            gender: 'M',
+            address: {
+                street: 'Amazing Road',
+                nr: 999,
+                zip: 1250,
+            },
+            contact: {
+                email: 'contact@valkyriestudios.be',
+            },
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@check - coldstart - complex - invalid',
+        fn: () => new Validator({
+            first_name: 'string|alpha_num_spaces|min:2',
+            last_name: 'string|alpha_num_spaces|min:2',
+            age: '?integer|between:1,150',
+            gender: 'in:<meta.gender_options>',
+            address: {
+                street: 'string|alpha_num_spaces',
+                nr: 'integer',
+                zip: 'integer|between:1000,9999',
+            },
+            contact: {
+                email: 'string|email',
+                phone: '?phone',
+            },
+        }).check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            age: 33,
+            gender: 'M',
+            address: {
+                street: 'Amazing Road',
+                nr: 'None of ya business',
+                zip: 1250,
+            },
+            contact: {
+                email: 'contact@valkyriestudios.be',
+            },
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    //  Baseline - check pre-existing
+    {
+        lbl: 'Validator@check - existing - simple - valid',
+        fn: () => vsimple.check({a: 'hello'}),
+    },
+    {
+        lbl: 'Validator@check - existing - simple - invalid',
+        fn: () => vsimple.check({a: 12345}),
+    },
+    {
+        lbl: 'Validator@check - existing - medium - valid',
+        fn: () => vmedium.check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            age: 33,
+            gender: 'M',
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@check - existing - medium - invalid',
+        fn: () => vmedium.check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            age: 'None of ya business',
+            gender: 'M',
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@check - existing - complex - valid',
+        fn: () => vcomplex.check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            age: 33,
+            gender: 'M',
+            address: {
+                street: 'Amazing Road',
+                nr: 999,
+                zip: 1250,
+            },
+            contact: {
+                email: 'contact@valkyriestudios.be',
+            },
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@check - existing - complex - invalid',
+        fn: () => vcomplex.check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            age: 33,
+            gender: 'M',
+            address: {
+                street: 'Amazing Road',
+                nr: 'None of ya business',
+                zip: 1250,
+            },
+            contact: {
+                email: 'contact@valkyriestudios.be',
+            },
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
     //  vAlphaNumSpaces
     {
         lbl: 'functions/vAlphaNumSpaces - 10 chars',
