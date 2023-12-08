@@ -9,11 +9,19 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - feat: Validator Instance @check: This new method only returns whether or not a data object is valid against the validator and as such is magnitudes faster at spotting invalidity than the @validate function, it is also faster at spotting validity due to less internal overhead, for example:
 ```
-//  v5: using the faster @check
-const is_valid = new Validator({first_name: 'string_ne|min:3', last_name: 'string_ne|min:3'}).check({first_name: 'Peter'});
+const data = {first_name: 'Peter'};
 
-//  Pre v5 way using the slower @validate
-const is_valid = new Validator({first_name: 'string_ne|min:3', last_name: 'string_ne|min:3'}).validate({first_name: 'Peter'}).is_valid;
+//  v5: using the faster @check
+const is_valid = new Validator({
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3'
+}).check(data);
+
+//  Pre v5: using the slower @validate (of course this is still possible in v5)
+const is_valid = new Validator({
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3'
+}).validate(data).is_valid;
 ```
 - feat: Validator Instance @validate: Will now also contain a 'count' value containing the count of invalid fields
 
@@ -95,8 +103,24 @@ new Validator({
 - Validator Instance@validate: If a field is invalid because of it not existing a `{msg: 'not_found'}` will now be used instead of the list of all rule types, for example:
 ```
 new Validator({myfield: 'string_ne|min:20'}).validate({myotherfield: 'hello'});
-// pre v5 output: {is_valid: false, errors: {myfield: [{msg: 'string_ne', params: []}, {msg: 'min', params: [20]}]}}
-// v5 output: {is_valid: false, count: 1, errors: {myfield: [{msg: 'not_found'}]}}
+// pre v5 output
+{
+    is_valid: false,
+    errors: {
+        myfield: [
+            {msg: 'string_ne', params: []},
+            {msg: 'min', params: [20]}
+        ]
+    }
+}
+// v5 output
+{
+    is_valid: false,
+    count: 1,
+    errors: {
+        myfield: [{msg: 'not_found'}]
+    }
+}
 ```
 
 ### Removed
