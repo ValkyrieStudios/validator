@@ -12,27 +12,27 @@
         "ops": 67798
     },
     {
-        "lbl": "Validator@go - coldstart - simple",
+        "lbl": "Validator@validate - coldstart - simple",
         "ops": 395454
     },
     {
-        "lbl": "Validator@go - coldstart - medium",
+        "lbl": "Validator@validate - coldstart - medium",
         "ops": 80548
     },
     {
-        "lbl": "Validator@go - coldstart - complex",
+        "lbl": "Validator@validate - coldstart - complex",
         "ops": 30791
     },
     {
-        "lbl": "Validator@go - existing - simple",
+        "lbl": "Validator@validate - existing - simple",
         "ops": 903579
     },
     {
-        "lbl": "Validator@go - existing - medium",
+        "lbl": "Validator@validate - existing - medium",
         "ops": 170106
     },
     {
-        "lbl": "Validator@go - existing - complex",
+        "lbl": "Validator@validate - existing - complex",
         "ops": 59534
     },
     {

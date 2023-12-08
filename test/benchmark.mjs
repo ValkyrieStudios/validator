@@ -119,11 +119,11 @@ for (const el of [
     },
     //  Baseline - validating coldstart
     {
-        lbl: 'Validator@go - coldstart - simple',
+        lbl: 'Validator@validate - coldstart - simple',
         fn: () => new Validator({a: 'string_ne'}).validate({a: 'hello'}),
     },
     {
-        lbl: 'Validator@go - coldstart - medium',
+        lbl: 'Validator@validate - coldstart - medium',
         fn: () => new Validator({
             first_name: 'string|alpha_num_spaces|min:2',
             last_name: 'string|alpha_num_spaces|min:2',
@@ -138,7 +138,7 @@ for (const el of [
         }),
     },
     {
-        lbl: 'Validator@go - coldstart - complex',
+        lbl: 'Validator@validate - coldstart - complex',
         fn: () => new Validator({
             first_name: 'string|alpha_num_spaces|min:2',
             last_name: 'string|alpha_num_spaces|min:2',
@@ -171,11 +171,11 @@ for (const el of [
     },
     //  Baseline - validating pre-existing
     {
-        lbl: 'Validator@go - existing - simple',
+        lbl: 'Validator@validate - existing - simple',
         fn: () => vsimple.validate({a: 'hello'}),
     },
     {
-        lbl: 'Validator@go - existing - medium',
+        lbl: 'Validator@validate - existing - medium',
         fn: () => vmedium.validate({
             first_name: 'Peter',
             last_name: false,
@@ -185,7 +185,7 @@ for (const el of [
         }),
     },
     {
-        lbl: 'Validator@go - existing - complex',
+        lbl: 'Validator@validate - existing - complex',
         fn: () => vcomplex.validate({
             first_name: 'Peter',
             last_name: false,
