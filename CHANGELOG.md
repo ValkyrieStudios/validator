@@ -90,7 +90,7 @@ new Validator({
     is_valid: false,
     count: 2,
     errors: {
-        'street.zip': [
+        'address.zip': [
             {msg: 'integer', params: []},
             {msg: 'between', params: ['1000', '9999']}
         ],
