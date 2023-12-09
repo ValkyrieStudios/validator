@@ -321,10 +321,7 @@ export default class Validator {
 
     validate (data) {
         //  No data passed? Check if rules were set up
-        if (
-            !isObject(data) ||
-            Object.keys(data).length === 0
-        ) {
+        if (!isObject(data) || Object.keys(data).length === 0) {
             const is_valid = this.rules.length === 0;
             return {
                 is_valid,

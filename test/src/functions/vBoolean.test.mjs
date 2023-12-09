@@ -10,8 +10,7 @@ describe('vBoolean', () => {
         for (const el of CONSTANTS.IS_BOOLEAN) {
             const validator = new Validator({a1: 'boolean'});
             const evaluation = validator.validate({a1: el});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a1, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         }
     });
 
@@ -19,8 +18,13 @@ describe('vBoolean', () => {
         for (const el of CONSTANTS.NOT_BOOLEAN) {
             const validator = new Validator({a1: 'boolean'});
             const evaluation = validator.validate({a1: el});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a1, [{msg: 'boolean', params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a1: [{msg: el === undefined ? 'not_found' : 'boolean', params: []}],
+                },
+            });
         }
     });
 });
