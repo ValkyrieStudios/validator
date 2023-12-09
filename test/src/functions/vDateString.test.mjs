@@ -9,7 +9,16 @@ import Validator        from '../../../src/index.mjs';
 describe('vDateString', () => {
     it('Should be invalid if not passed a string or passed a string that is empty after trimming', () => {
         for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
-            assert.equal(new Validator({a: 'date_string'}).validate({a: el}).is_valid, false);
+            assert.deepEqual(
+                new Validator({a: 'date_string'}).validate({a: el}),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        a: [{msg: el === undefined ? 'not_found' : 'date_string', params: []}],
+                    },
+                }
+            );
         }
     });
 
@@ -30,7 +39,10 @@ describe('vDateString', () => {
             '343424823942_',
             '343424823942_ ',
             '343424823942_   ',
-        ]) assert.equal(new Validator({a: 'date_string'}).validate({a: el}).is_valid, false);
+        ]) assert.deepEqual(
+            new Validator({a: 'date_string'}).validate({a: el}),
+            {is_valid: false, count: 1, errors: {a: [{msg: 'date_string', params: []}]}}
+        );
 
         for (const el of [
             ' ',
@@ -65,9 +77,18 @@ describe('vDateString', () => {
             ':',
             '`',
         ]) {
-            assert.equal(new Validator({a: 'date_string'}).validate({a: `43847234${el}234789`}).is_valid, false);
-            assert.equal(new Validator({a: 'date_string'}).validate({a: `${el}43847234234789`}).is_valid, false);
-            assert.equal(new Validator({a: 'date_string'}).validate({a: `43847234234789${el}`}).is_valid, false);
+            assert.deepEqual(
+                new Validator({a: 'date_string'}).validate({a: `43847234${el}234789`}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'date_string', params: []}]}}
+            );
+            assert.deepEqual(
+                new Validator({a: 'date_string'}).validate({a: `${el}43847234234789`}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'date_string', params: []}]}}
+            );
+            assert.deepEqual(
+                new Validator({a: 'date_string'}).validate({a: `43847234234789${el}`}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'date_string', params: []}]}}
+            );
         }
     });
 
@@ -78,6 +99,9 @@ describe('vDateString', () => {
             '2022-11-25T11:08:32+01:00',
             'Friday, November 25, 2022 11:09 AM',
             '2022/03/18 15:31:36',
-        ]) assert.ok(new Validator({a: 'date_string'}).validate({a: el}).is_valid);
+        ]) assert.deepEqual(
+            new Validator({a: 'date_string'}).validate({a: el}),
+            {is_valid: true, count: 0, errors: {}}
+        );
     });
 });
