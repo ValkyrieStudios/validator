@@ -171,9 +171,8 @@ function parseRule (raw) {
             params = params[0].split(',');
 
             //  Parse parameters into callback functions
-            let param;
             for (let i = 0; i < params.length; i++) {
-                param = params[i];
+                let param = params[i];
                 if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
                     //  Ensure we validate that parameterized string value is correct eg: <meta.myval>
                     if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
@@ -181,13 +180,7 @@ function parseRule (raw) {
                     }
                     
                     param = param.substr(1, param.length - 2);
-                    params[i] = data => {
-                        try {
-                            return deepGet(data, param);
-                        } catch (err) {
-                            return undefined;
-                        }
-                    };
+                    params[i] = data => deepGet(data, param);
                 } else {
                     params[i] = param;
                 }
