@@ -169,22 +169,22 @@ describe('vBetween', () => {
 
         it('Should validate a string whose length is equal to the start parameter as invalid', () => {
             const evaluation = new Validator({a: 'between:11,15'}).validate({a: 'hello world'});
-            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation, {is_valid: false, count: 1, errors: {a: [{msg: 'between', params: ['11', '15']}]}});
         });
 
         it('Should validate a string whose length is equal to the end parameter as invalid', () => {
             const evaluation = new Validator({a: 'between:1,11'}).validate({a: 'hello world'});
-            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation, {is_valid: false, count: 1, errors: {a: [{msg: 'between', params: ['1', '11']}]}});
         });
 
         it('Should validate a string whose length is smaller than the start parameter as invalid', () => {
             const evaluation = new Validator({a: 'between:10,20'}).validate({a: 'Frantic'});
-            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation, {is_valid: false, count: 1, errors: {a: [{msg: 'between', params: ['10', '20']}]}});
         });
 
         it('Should validate a string whose length is larger than the end parameter as invalid', () => {
             const evaluation = new Validator({a: 'between:2,5'}).validate({a: 'Frantic'});
-            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation, {is_valid: false, count: 1, errors: {a: [{msg: 'between', params: ['2', '5']}]}});
         });
     });
 
