@@ -4,12 +4,15 @@
 .nycrc
 .nyc_output
 .babelrc
+.c8rc.json
 .eslintrc.json
 .travis.yml
 codecov.sh
 codecov
 node_modules/
 coverage/
+src/.eslintrc.json
 test/
 gulpfile.js
 yarn.lock
+CHANGELOG.md

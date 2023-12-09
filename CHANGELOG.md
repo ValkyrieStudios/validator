@@ -24,6 +24,7 @@ const is_valid = v.validate({first_name: 'Peter'}).is_valid;
 
 ### Improved
 - doc: Add CodeQL badge to readme
+- misc: Add .c8rc.json and CHANGELOG.md to npmignore
 - perf: Creation of Validator instances is now between 1.2 to 1.7 times faster
 - perf: Cold validation (creating a validator and running .validate at same time) is now between 2 to 2.5 times faster
 - perf: Warm validation (pre-existing validator and running .validate repeatedly) is now roughly 3.2 times faster
