@@ -9,7 +9,14 @@ import Validator        from '../../../src/index.mjs';
 describe('vCountry', () => {
     it('Should be invalid if not passed a string or when passed a string that is empty after trimming', () => {
         for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
-            assert.equal(new Validator({a: 'country'}).validate({a: el}).is_valid, false);
+            const evaluation = new Validator({a: 'country'}).validate({a: el});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: el === undefined ? 'not_found' : 'country', params: []}],
+                },
+            });
         }
     });
 
@@ -19,12 +26,22 @@ describe('vCountry', () => {
             'bar',
             'BEL',
             'Belgium',
-        ]) assert.equal(new Validator({a: 'country'}).validate({a: el}).is_valid, false);
+        ]) {
+            const evaluation = new Validator({a: 'country'}).validate({a: el});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'country', params: []}],
+                },
+            });
+        }
     });
 
     it('Should be valid when passing a string that is an alpha2 country code', async () => {
         for (const el of [...COUNTRIES.map(val => val.al2)]) {
-            assert.ok(new Validator({a: 'country'}).validate({a: el}).is_valid);
+            const evaluation = new Validator({a: 'country'}).validate({a: el});
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         }
     });
 });
