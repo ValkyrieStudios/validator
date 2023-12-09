@@ -56,18 +56,6 @@ describe('Validator - Core', () => {
 
         //  It should not have a extendMulti function on its instance
         assert.equal(Object.prototype.hasOwnProperty.call(validator, 'extendMulti'), false);
-
-        //  It should have an 'is_valid' property that is a boolean and by default set to false
-        assert.equal(validator.is_valid, false);
-
-        //  It should have an 'errors' property that is an Object and by default set to an empty object
-        assert.deepEqual(validator.errors, {});
-
-        //  It should not have an 'is_valid' property on the class
-        assert.equal(Object.prototype.hasOwnProperty.call(validator, 'is_valid'), false);
-
-        //  It should not have an 'errors' property on the class
-        assert.equal(Object.prototype.hasOwnProperty.call(validator, 'errors'), false);
     });
 
     it('Should throw a type error when passed wrong configuration options', () => {
@@ -104,65 +92,63 @@ describe('Validator - Core', () => {
 
     describe('@validate FN', () => {
         it('Should return a properly formatted evaluation object', () => {
-            const evaluation = new Validator({a: 'number'}).validate({a: 100});
+            const evaluation = new Validator({a: 'number', b: 'number'}).validate({a: 20, b: false});
 
             //  Evaluate object
             assert(typeof evaluation, 'object');
-            assert.deepEqual(Object.keys(evaluation), ['is_valid', 'errors']);
+            assert.deepEqual(Object.keys(evaluation), ['is_valid', 'count', 'errors']);
 
-            //  Evaluate object structure : is_valid
+            //  Evaluate object structure: is_valid
             assert(typeof evaluation.is_valid, 'Boolean');
 
-            //  Evaluate object structure : errors
+            //  Evaluate object structure: count
+            assert(typeof evaluation.count, 'number');
+            assert.ok(evaluation.count === 1);
+
+            //  Evaluate object structure: errors
             assert(typeof evaluation.errors, 'object');
-            assert.deepEqual(evaluation.errors, {a: []});
+            assert.deepEqual(evaluation.errors, {
+                b: [{msg: 'number', params: []}],
+            });
         });
 
         it('Should have errors where the object contains a msg and a params property', () => {
             const evaluation = new Validator({a: 'number'}).validate({a: 'hello'});
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'number', params: []}]});
-        });
-
-        it('Should have errors where the key is the rule that failed', () => {
-            const evaluation = new Validator({a: 'number'}).validate({a: 'hello'});
-            assert.equal(evaluation.errors.a[0].msg, 'number');
-        });
-
-        it('Should have errors where the params object is empty if no param was passed', () => {
-            const evaluation = new Validator({a: 'number'}).validate({a: 'hello'});
-            assert.deepEqual(evaluation.errors.a[0].params, []);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'number', params: []},
+                    ],
+                },
+            });
         });
 
         it('Should have errors where the params object contains the passed param if passed', () => {
             const evaluation = new Validator({a: 'greater_than:150'}).validate({a: 100});
-            assert.deepEqual(evaluation.errors.a[0].params, ['150']);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'greater_than', params: ['150']},
+                    ],
+                },
+            });
         });
 
         it('Should validate to true if no data was passed and no rules were set up', () => {
             const validator = new Validator({});
             const evaluation = validator.validate();
-            assert.ok(evaluation.is_valid);
-        });
-
-        it('Should remember the validity of the last validation run', () => {
-            const validator = new Validator({a: 'number'});
-            validator.validate({a: 'foo'});
-
-            assert.equal(validator.is_valid, false);
-            assert.deepEqual(validator.errors, {a: [{msg: 'number', params: []}]});
-
-            validator.validate({a: 10});
-
-            assert.ok(validator.is_valid);
-            assert.deepEqual(validator.errors, {a: []});
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
     });
 
     describe('@validate FN - lexer: flag:sometimes (?)', () => {
         it('Should validate correctly if set and no value is passed', () => {
             const evaluation = new Validator({a: '?number'}).validate({});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should not interfere with other validation rules', () => {
@@ -170,14 +156,27 @@ describe('Validator - Core', () => {
                 a: '?number',
                 b: 'number|less_than:20',
             }).validate({});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    b: [{msg: 'not_found', params: []}],
+                },
+            });
 
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {
-                a: [],
-                b: [
-                    {msg: 'number', params: []},
-                    {msg: 'less_than', params: ['20']},
-                ],
+            const evaluation2 = new Validator({
+                a: '?number',
+                b: 'number|less_than:20',
+            }).validate({a: 20, b: false});
+            assert.deepEqual(evaluation2, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    b: [
+                        {msg: 'number', params: []},
+                        {msg: 'less_than', params: ['20']},
+                    ],
+                },
             });
         });
     });
@@ -185,81 +184,106 @@ describe('Validator - Core', () => {
     describe('@validate FN - lexer: flag:parameter (<...>)', () => {
         it('Should allow link to passed parameter', () => {
             const evaluation = new Validator({a: 'equal_to:<foo>'}).validate({a: 'hello', foo: 'hello'});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should fail if parameter is not passed', () => {
             const evaluation = new Validator({a: 'equal_to:<foo>'}).validate({a: 'hello', foobar: 'hello'});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg:'equal_to', params: [undefined]}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'equal_to', params: [undefined]}],
+                },
+            });
         });
 
         it('Should allow multiple parameters inside the same ruleset', () => {
             const evaluation = new Validator({a: 'between:<min>,<max>'}).validate({a: 5, min: 3, max: 7});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should allow multiple parameters inside the same config', () => {
             const evaluation = new Validator({a: 'in:<arr1>', b: 'in:<arr2>'}).validate({a: 1, b: 2, arr1: [1, 3, 5], arr2: [2, 4, 6]});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
-            assert.deepEqual(evaluation.errors.b, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should allow the same parameter on multiple rules inside the same config', () => {
             const evaluation = new Validator({a: 'in:<arr1>', b: 'in:<arr1>'}).validate({a: 1, b: 2, arr1: [1, 2, 3]});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
-            assert.deepEqual(evaluation.errors.b, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
     });
 
     describe('@validate FN - lexer: flag:not (!)', () => {
         it('Should validate correct if set and no value is passed', () => {
             const evaluation = new Validator({a: '!number'}).validate({});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'not_number', params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'not_found', params: []}],
+                },
+            });
         });
 
         it('Should validate correct if set and value is passed when using standard rule', () => {
             const evaluation = new Validator({a: '!number'}).validate({a: 'hello'});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             const evaluation2 = new Validator({a: '!number'}).validate({a: 4});
-            assert.equal(evaluation2.is_valid, false);
-            assert.deepEqual(evaluation2.errors.a, [{msg: 'not_number', params: []}]);
+            assert.deepEqual(evaluation2, {
+                is_valid:  false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'not_number', params: []}],
+                },
+            });
 
             const evaluation3 = new Validator({a: '!between:5,10'}).validate({a: 4});
-            assert.ok(evaluation3.is_valid);
-            assert.deepEqual(evaluation3.errors.a, []);
+            assert.deepEqual(evaluation3, {is_valid: true, count: 0, errors: {}});
 
             const evaluation4 = new Validator({a: '!between:5,10'}).validate({a: 6});
-            assert.equal(evaluation4.is_valid, false);
-            assert.deepEqual(evaluation4.errors.a, [{msg: 'not_between', params: ['5', '10']}]);
+            assert.deepEqual(evaluation4, {
+                is_valid:  false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'not_between', params: ['5', '10']}],
+                },
+            });
         });
 
         it('Should validate correct if set and value is passed when using parameter flag', () => {
             const evaluation = new Validator({a: '!equal_to:<foo>'}).validate({a: 'hello', foo: 'hello'});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'not_equal_to', params: ['hello']}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'not_equal_to', params: ['hello']}],
+                },
+            });
         });
 
         it('Should validate correct if set and value is passed when using multiple validation rules', () => {
             const evaluation = new Validator({a: '!string|!equal_to:<foo>'}).validate({a: 'foo', foo: 'hello'});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [
-                {msg: 'not_string', params: []},
-            ]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'not_string', params: []}],
+                },
+            });
 
             const evaluation2 = new Validator({a: '!string|!equal_to:<foo>'}).validate({a: 'foo', foo: 'foo'});
-            assert.equal(evaluation2.is_valid, false);
-            assert.deepEqual(evaluation2.errors.a, [
-                {msg: 'not_string', params: []},
-                {msg: 'not_equal_to', params: ['foo']},
-            ]);
+            assert.deepEqual(evaluation2, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'not_string', params: []},
+                        {msg: 'not_equal_to', params: ['foo']},
+                    ],
+                },
+            });
         });
     });
 
@@ -288,103 +312,170 @@ describe('Validator - Core', () => {
         it('Should return invalid when passing a non-array to an iterable', () => {
             const validator = new Validator({a: '[]string'});
             const evaluation = validator.validate({a: 'hello'});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable', params: []}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable', params: []},
+                    ],
+                },
+            });
         });
 
         it('Should return valid when passing an empty array to an iterable', () => {
             const validator = new Validator({a: '[]string'});
             const evaluation = validator.validate({a: []});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should allow validating an array of values', () => {
             const validator = new Validator({a: '[]string'});
             let evaluation = validator.validate({a: ['hello', 'there']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             evaluation = validator.validate({a: ['hello', false]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'string', idx: 1, params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'string', idx: 1, params: []},
+                    ],
+                },
+            });
 
             evaluation = validator.validate({a: ['hello', false, true]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'string', idx: 1, params: []}, {msg: 'string', idx: 2, params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'string', idx: 1, params: []},
+                        {msg: 'string', idx: 2, params: []},
+                    ],
+                },
+            });
         });
 
         it('Should allow validating an array of values with a \'?\' sometimes flag', () => {
             const validator = new Validator({a: '?[]string'});
             let evaluation = validator.validate({a: ['hello', 'there']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             evaluation = validator.validate({});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             evaluation = validator.validate({a: ['hello', false, 'foo', true]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'string', idx: 1, params: []}, {msg: 'string', idx: 3, params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'string', idx: 1, params: []},
+                        {msg: 'string', idx: 3, params: []},
+                    ],
+                },
+            });
         });
 
         it('Should allow validating an array of values with a \'?\' sometimes flag and parameter pass', () => {
             const validator = new Validator({a: '?[]string|in:<genders>'});
             let evaluation = validator.validate({a: ['male', 'male', 'female', 'male', 'female'], genders: ['male', 'female', 'other']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             evaluation = validator.validate({genders: ['male', 'female', 'other']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             evaluation = validator.validate({a: ['dog'], genders: ['male', 'female', 'other']});
-            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'in', idx: 0, params: [['male', 'female', 'other']]},
+                    ],
+                },
+            });
         });
 
         it('Should allow validating an array of values with a \'?\' sometimes flag, uniqueness and parameter pass', () => {
             const validator = new Validator({a: '?[unique]string|in:<genders>'});
             let evaluation = validator.validate({a: ['male', 'male', 'female', 'male', 'female'], genders: ['male', 'female', 'other']});
-            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_unique', params: []},
+                    ],
+                },
+            });
+
             evaluation = validator.validate({a: ['male', 'female'], genders: ['male', 'female', 'other']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should allow validating an array of values with a \'!\' not flag and parameter pass', () => {
             const validator = new Validator({a: '[]string|!in:<genders>'});
             let evaluation = validator.validate({a: ['bob', 'bob', 'john', 'bob', 'john'], genders: ['male', 'female', 'other']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             evaluation = validator.validate({a: ['male', 'female', 'female'], genders: ['male', 'female', 'other']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [
-                {idx: 0, msg: 'not_in', params: [['male', 'female', 'other']]},
-                {idx: 1, msg: 'not_in', params: [['male', 'female', 'other']]},
-                {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
-            ]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {idx: 0, msg: 'not_in', params: [['male', 'female', 'other']]},
+                        {idx: 1, msg: 'not_in', params: [['male', 'female', 'other']]},
+                        {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
+                    ],
+                },
+            });
 
             evaluation = validator.validate({a: ['chicken', 'dog', 'female'], genders: ['male', 'female', 'other']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [
-                {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
-            ]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
+                    ],
+                },
+            });
         });
 
         it('Should allow validating an array of values with a \'!\' not flag, uniqueness and parameter pass', () => {
             const validator = new Validator({a: '[unique]string|!in:<genders>'});
             let evaluation = validator.validate({a: ['bob', 'john'], genders: ['male', 'female', 'other']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             evaluation = validator.validate({a: ['male', 'female', 'female'], genders: ['male', 'female', 'other']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [
-                {msg: 'iterable_unique', params: []},
-                {idx: 0, msg: 'not_in', params: [['male', 'female', 'other']]},
-                {idx: 1, msg: 'not_in', params: [['male', 'female', 'other']]},
-                {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
-            ]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_unique', params: []},
+                        {idx: 0, msg: 'not_in', params: [['male', 'female', 'other']]},
+                        {idx: 1, msg: 'not_in', params: [['male', 'female', 'other']]},
+                        {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
+                    ],
+                },
+            });
 
             evaluation = validator.validate({a: ['chicken', 'dog', 'female', 'dog'], genders: ['male', 'female', 'other']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [
-                {msg: 'iterable_unique', params: []},
-                {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
-            ]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_unique', params: []},
+                        {idx: 2, msg: 'not_in', params: [['male', 'female', 'other']]},
+                    ],
+                },
+            });
         });
     });
 
@@ -392,49 +483,80 @@ describe('Validator - Core', () => {
         it('Should return valid when array is unique', () => {
             const validator = new Validator({a: '[unique]string'});
             const evaluation = validator.validate({a: ['a', 'b', 'c']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should return invalid when array is not unique', () => {
             const validator = new Validator({a: '[unique]string'});
             const evaluation = validator.validate({a: ['a', 'b', 'a']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_unique', params: []}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_unique', params: []},
+                    ],
+                },
+            });
         });
 
         it('Should return invalid when array is not unique when using numbers', () => {
             const validator = new Validator({a: '[unique]number'});
             const evaluation = validator.validate({a: [1, 2, 2]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_unique', params: []}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_unique', params: []},
+                    ],
+                },
+            });
         });
 
         it('Should return invalid when array is not unique when using objects', () => {
             const validator = new Validator({a: '[unique]object'});
             const evaluation = validator.validate({a: [{a: 1}, {b: 2}, {b: 2}]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_unique', params: []}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_unique', params: []},
+                    ],
+                },
+            });
         });
 
         it('Should return invalid when array is not unique and doesnt match rules', () => {
             const validator = new Validator({a: '[unique]integer'});
             const evaluation = validator.validate({a: [1, 2, 'a', 2]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [
-                {msg: 'iterable_unique', params: []},
-                {idx: 2, msg: 'integer', params: []},
-            ]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_unique', params: []},
+                        {idx: 2, msg: 'integer', params: []},
+                    ],
+                },
+            });
         });
 
         it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
             const validator = new Validator({a: '[unique]integer'});
             const evaluation = validator.validate({a: [1, 2, 'a', 2, 2, 2.2]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [
-                {msg: 'iterable_unique', params: []},
-                {idx: 2, msg: 'integer', params: []},
-                {idx: 5, msg: 'integer', params: []},
-            ]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_unique', params: []},
+                        {idx: 2, msg: 'integer', params: []},
+                        {idx: 5, msg: 'integer', params: []},
+                    ],
+                },
+            });
         });
     });
 
@@ -442,44 +564,68 @@ describe('Validator - Core', () => {
         it('Should return valid when within boundaries', () => {
             const validator = new Validator({a: '[max:5]string'});
             const evaluation = validator.validate({a: ['hello', 'there']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should return valid when at boundary', () => {
             const validator = new Validator({a: '[max:5]string'});
             const evaluation = validator.validate({a: ['1', '2', '3', '4', '5']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should return invalid when above boundary', () => {
             const validator = new Validator({a: '[max:5]string'});
             const evaluation = validator.validate({a: ['1', '2', '3', '4', '5', '6']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_max', params: [5]}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_max', params: [5]}
+                    ],
+                },
+            });
         });
 
         it('Should only return iterable invalidity and not go into val evaluation when above boundary', () => {
             const validator = new Validator({a: '[max:5]string'});
             const evaluation = validator.validate({a: ['1', '2', '3', '4', 5, '6']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_max', params: [5]}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_max', params: [5]}
+                    ],
+                },
+            });
         });
 
         it('Should return iterable invalidity and go into val evaluation when at or below boundary', () => {
             const validator = new Validator({a: '[max:5]string'});
             const evaluation = validator.validate({a: ['1', false, false, '2', false]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [
-                {idx: 1, msg: 'string', params: []},
-                {idx: 2, msg: 'string', params: []},
-                {idx: 4, msg: 'string', params: []},
-            ]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {idx: 1, msg: 'string', params: []},
+                        {idx: 2, msg: 'string', params: []},
+                        {idx: 4, msg: 'string', params: []},
+                    ],
+                },
+            });
 
             const evaluation2 = validator.validate({a: [false, '1', '2', '3']});
-            assert.equal(evaluation2.is_valid, false);
-            assert.deepEqual(evaluation2.errors, {a: [
-                {idx: 0, msg: 'string', params: []},
-            ]});
+            assert.deepEqual(evaluation2, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {idx: 0, msg: 'string', params: []},
+                    ],
+                },
+            });
         });
     });
 
@@ -487,44 +633,68 @@ describe('Validator - Core', () => {
         it('Should return valid when within boundaries', () => {
             const validator = new Validator({a: '[min:5]string'});
             const evaluation = validator.validate({a: ['hello', 'there', 'this', 'is', 'cool', 'right']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should return valid when at boundary', () => {
             const validator = new Validator({a: '[min:5]string'});
             const evaluation = validator.validate({a: ['hello', 'there', 'this', 'is', 'cool']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should return invalid when below boundary', () => {
             const validator = new Validator({a: '[min:3]string'});
             const evaluation = validator.validate({a: ['1', '2']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_min', params: [3]}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_min', params: [3]}
+                    ],
+                },
+            });
         });
 
         it('Should only return iterable invalidity and not go into val evaluation when below boundary', () => {
             const validator = new Validator({a: '[min:4]string'});
             const evaluation = validator.validate({a: ['1', false]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_min', params: [4]}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_min', params: [4]}
+                    ],
+                },
+            });
         });
 
         it('Should return iterable invalidity and go into val evaluation when at or above boundary', () => {
             const validator = new Validator({a: '[min:4]string'});
             const evaluation = validator.validate({a: ['1', false, false, '2']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [
-                {idx: 1, msg: 'string', params: []},
-                {idx: 2, msg: 'string', params: []},
-            ]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {idx: 1, msg: 'string', params: []},
+                        {idx: 2, msg: 'string', params: []},
+                    ],
+                },
+            });
 
             const evaluation2 = validator.validate({a: ['1', false, '2', '3', false]});
-            assert.equal(evaluation2.is_valid, false);
-            assert.deepEqual(evaluation2.errors, {a: [
-                {idx: 1, msg: 'string', params: []},
-                {idx: 4, msg: 'string', params: []},
-            ]});
+            assert.deepEqual(evaluation2, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {idx: 1, msg: 'string', params: []},
+                        {idx: 4, msg: 'string', params: []},
+                    ],
+                },
+            });
         });
     });
 
@@ -532,70 +702,113 @@ describe('Validator - Core', () => {
         it('Should return valid when within boundaries', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             const evaluation = validator.validate({a: ['hello', 'there', 'cool']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should return valid when at top boundary', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             const evaluation = validator.validate({a: ['1', '2', '3', '4', '5']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should return invalid when above top boundary', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             const evaluation = validator.validate({a: ['1', '2', '3', '4', '5', '6']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_max', params: [5]}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_max', params: [5]}
+                    ],
+                },
+            });
         });
 
         it('Should return valid when at bottom boundary', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             const evaluation = validator.validate({a: ['1', '2']});
-            assert.ok(evaluation.is_valid);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should return invalid when below bottom boundary', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             const evaluation = validator.validate({a: ['1']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_min', params: [2]}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_min', params: [2]}
+                    ],
+                },
+            });
         });
 
         it('Should only return iterable invalidity and not go into val evaluation when above boundary', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             const evaluation = validator.validate({a: ['1', '2', '3', '4', 5, '6']});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_max', params: [5]}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_max', params: [5]}
+                    ],
+                },
+            });
         });
 
         it('Should only return iterable invalidity and not go into val evaluation when below boundary', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             const evaluation = validator.validate({a: [5]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [{msg: 'iterable_min', params: [2]}]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {msg: 'iterable_min', params: [2]}
+                    ],
+                },
+            });
         });
 
         it('Should return iterable invalidity and go into val evaluation when at or below boundary', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             const evaluation = validator.validate({a: ['1', false, false, '2', false]});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {a: [
-                {idx: 1, msg: 'string', params: []},
-                {idx: 2, msg: 'string', params: []},
-                {idx: 4, msg: 'string', params: []},
-            ]});
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {idx: 1, msg: 'string', params: []},
+                        {idx: 2, msg: 'string', params: []},
+                        {idx: 4, msg: 'string', params: []},
+                    ],
+                },
+            });
 
             const evaluation2 = validator.validate({a: [false, '1', '2', '3']});
-            assert.equal(evaluation2.is_valid, false);
-            assert.deepEqual(evaluation2.errors, {a: [
-                {idx: 0, msg: 'string', params: []},
-            ]});
+            assert.deepEqual(evaluation2, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {idx: 0, msg: 'string', params: []},
+                    ],
+                },
+            });
 
             const evaluation3 = validator.validate({a: ['1', 4]});
-            assert.equal(evaluation3.is_valid, false);
-            assert.deepEqual(evaluation3.errors, {a: [
-                {idx: 1, msg: 'string', params: []},
-            ]});
+            assert.deepEqual(evaluation3, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [
+                        {idx: 1, msg: 'string', params: []},
+                    ],
+                },
+            });
         });
     });
 
@@ -702,16 +915,14 @@ describe('Validator - Core', () => {
             });
 
             const evaluation = new Validator({a: 'trick:<b>'}).validate({a: 'trick', b: 'treat'});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should work with multiple parameters', () => {
             Validator.extend('sum', (val, p1, p2) => val === (p1 + p2));
 
             const evaluation = new Validator({a: 'sum:<b>,<c>'}).validate({a: 4, b: 1, c: 3});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should work across multiple instances', () => {
@@ -719,13 +930,11 @@ describe('Validator - Core', () => {
 
             //  Evaluation
             const evaluation = new Validator({a: 'double:<b>'}).validate({a: 4, b: 2});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             //  Second evaluation
             const evaluation2 = new Validator({a: 'double:<b>'}).validate({a: 4, b: 2});
-            assert.ok(evaluation2.is_valid);
-            assert.deepEqual(evaluation2.errors.a, []);
+            assert.deepEqual(evaluation2, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should allow redefining the same validity function', () => {
@@ -733,16 +942,20 @@ describe('Validator - Core', () => {
 
             //  Evaluation
             const evaluation = new Validator({name: 'ismyname'}).validate({name: 'peter'});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.name, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             //  Redefine
             Validator.extend('ismyname', val => val === 'josh');
 
             //  Second evaluation
             const evaluation2 = new Validator({name: 'ismyname'}).validate({name: 'peter'});
-            assert.equal(evaluation2.is_valid, false);
-            assert.deepEqual(evaluation2.errors.name, [{msg:'ismyname', params: []}]);
+            assert.deepEqual(evaluation2, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    name: [{msg: 'ismyname', params: []}],
+                },
+            });
         });
     });
 
@@ -784,8 +997,7 @@ describe('Validator - Core', () => {
             });
 
             const evaluation = new Validator({a: 'trick:<b>'}).validate({a: 'trick', b: 'treat'});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should work with multiple parameters', () => {
@@ -796,8 +1008,7 @@ describe('Validator - Core', () => {
             });
 
             const evaluation = new Validator({a: 'sum:<b>,<c>'}).validate({a: 4, b: 1, c: 3});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should work across multiple instances', () => {
@@ -809,13 +1020,11 @@ describe('Validator - Core', () => {
 
             //  Evaluation
             const evaluation = new Validator({a: 'double:<b>'}).validate({a: 4, b: 2});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             //  Second evaluation
             const evaluation2 = new Validator({a: 'double:<b>'}).validate({a: 4, b: 2});
-            assert.ok(evaluation2.is_valid);
-            assert.deepEqual(evaluation2.errors.a, []);
+            assert.deepEqual(evaluation2, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should allow redefining the same validity function', () => {
@@ -827,8 +1036,7 @@ describe('Validator - Core', () => {
 
             //  Evaluation
             const evaluation = new Validator({name: 'ismyname'}).validate({name: 'peter'});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.name, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             //  Redefine
             Validator.extendMulti({
@@ -839,8 +1047,13 @@ describe('Validator - Core', () => {
 
             //  Second evaluation
             const evaluation2 = new Validator({name: 'ismyname'}).validate({name: 'peter'});
-            assert.equal(evaluation2.is_valid, false);
-            assert.deepEqual(evaluation2.errors.name, [{msg:'ismyname', params: []}]);
+            assert.deepEqual(evaluation2, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    name: [{msg: 'ismyname', params: []}],
+                },
+            });
         });
 
         it('Should allow defining multiple rules at the same time', () => {
@@ -855,13 +1068,17 @@ describe('Validator - Core', () => {
 
             //  Evaluation
             const evaluation = new Validator({name: 'ismyname'}).validate({name: 'peter'});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.name, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             //  Second evaluation
             const evaluation2 = new Validator({name: 'ismyothername'}).validate({name: 'peter'});
-            assert.equal(evaluation2.is_valid, false);
-            assert.deepEqual(evaluation2.errors.name, [{msg:'ismyothername', params: []}]);
+            assert.deepEqual(evaluation2, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    name: [{msg: 'ismyothername', params: []}],
+                },
+            });
         });
     });
 
@@ -875,9 +1092,7 @@ describe('Validator - Core', () => {
                 password_confirmation: 'thisIsMy1Little!Secret',
             });
 
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.password, []);
-            assert.deepEqual(evaluation.errors.password_confirmation, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be able to validate complex objects [2]', () => {
@@ -895,11 +1110,7 @@ describe('Validator - Core', () => {
                 },
             });
 
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.first_name, []);
-            assert.deepEqual(evaluation.errors.last_name, []);
-            assert.deepEqual(evaluation.errors.age, []);
-            assert.deepEqual(evaluation.errors.gender, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be able to validate complex objects [3]', () => {
@@ -918,11 +1129,17 @@ describe('Validator - Core', () => {
                 },
             });
 
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.first_name, []);
-            assert.deepEqual(evaluation.errors.last_name, []);
-            assert.deepEqual(evaluation.errors.age, [{msg: 'integer', params: []}, {msg: 'between', params: ['1', '150']}]);
-            assert.deepEqual(evaluation.errors.gender, [{msg: 'in', params: [['m', 'f', 'o']]}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 2,
+                errors: {
+                    age: [
+                        {msg: 'integer', params: []},
+                        {msg: 'between', params: ['1', '150']},
+                    ],
+                    gender: [{msg: 'in', params: [['m', 'f', 'o']]}],
+                },
+            });
         });
 
         it('Should be able to validate complex multidimensional objects [4]', () => {
@@ -946,11 +1163,13 @@ describe('Validator - Core', () => {
                 },
             });
 
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.address.street, []);
-            assert.deepEqual(evaluation.errors.address.nr, []);
-            assert.deepEqual(evaluation.errors.address.zip, []);
-            assert.deepEqual(evaluation.errors.contact.email, [{msg: 'email', params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    'contact.email': [{msg: 'email', params: []}],
+                },
+            });
         });
 
         it('Should be able to validate complex multidimensional objects [5]', () => {
@@ -975,17 +1194,14 @@ describe('Validator - Core', () => {
                     email: 'contact.valkyriestudios.be',
                 },
             });
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {
-                filters: {
-                    ids: [
-                        {idx: 3, msg: 'integer', params: []},
-                    ],
-                    types: [
-                        {msg: 'iterable_max', params: [3]},
-                    ],
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 3,
+                errors: {
+                    'filters.ids': [{idx: 3, msg: 'integer', params: []}],
+                    'filters.types': [{msg: 'iterable_max', params: [3]}],
+                    'contact.email': [{msg: 'email', params: []}],
                 },
-                contact: {email: [{msg: 'email', params: []}]},
             });
 
             evaluation = validator.validate({
@@ -997,19 +1213,17 @@ describe('Validator - Core', () => {
                     email: 'contact@valkyriestudios.be',
                 },
             });
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors, {
-                filters: {
-                    ids: [
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 2,
+                errors: {
+                    'filters.ids': [
                         {msg: 'iterable_unique', params: []},
                         {idx: 3, msg: 'integer', params: []},
                     ],
-                    types: [
+                    'filters.types': [
                         {idx: 2, msg: 'is_type', params: []},
                     ],
-                },
-                contact: {
-                    email: [],
                 },
             });
         });

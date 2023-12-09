@@ -275,7 +275,7 @@ export default class Validator {
 
     check (data) {
         //  No data passed? Check if rules were set up
-        if (!isObject(data) || Object.keys(data).length === 0) return this.rules.length === 0;
+        if (!isObject(data)) return this.plan.length === 0;
         
         for (const rule of this.plan) {
             //  Retrieve cursor that rule is run against
@@ -321,11 +321,11 @@ export default class Validator {
 
     validate (data) {
         //  No data passed? Check if rules were set up
-        if (!isObject(data) || Object.keys(data).length === 0) {
-            const is_valid = this.rules.length === 0;
+        if (!isObject(data)) {
+            const is_valid = this.plan.length === 0;
             return {
                 is_valid,
-                count: this.rules.length,
+                count: this.plan.length,
                 errors: is_valid ? {} : 'NO_DATA',
             };
         }
@@ -380,6 +380,7 @@ export default class Validator {
                     unique_map.set(fnv1A(cursor[idx]), true);
                     if (unique_map.size !== (idx + 1)) {
                         iterable_unique = false;
+                        if (!errors[rule.key]) errors[rule.key] = [];
                         errors[rule.key].unshift(M_Error('iterable_unique'));
                     }
                 }

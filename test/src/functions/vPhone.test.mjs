@@ -11,7 +11,16 @@ import Validator        from '../../../src/index.mjs';
 describe('vPhone', () => {
     it('Should be invalid if not passed a string or passed a string that is empty after trimming', () => {
         for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
-            assert.equal(new Validator({a: 'phone'}).validate({a: el}).is_valid, false);
+            assert.deepEqual(
+                new Validator({a: 'phone'}).validate({a: el}),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        a: [{msg: el === undefined ? 'not_found' : 'phone', params: []}]
+                    },
+                }
+            );
         }
     });
 
@@ -22,7 +31,7 @@ describe('vPhone', () => {
             '8989829304',
             '+16308520397',
             '786-307-3615',
-        ]) assert.ok(v.validate({a: el}).is_valid);
+        ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
     });
 
     it('Should be invalid with incorrect phone number (sample list)', () => {
@@ -35,7 +44,7 @@ describe('vPhone', () => {
             guid(),
             'foo423789',
             '(abc) def ghi',
-        ]) assert.equal(v.validate({a: el}).is_valid, false);
+        ]) assert.deepEqual(v.validate({a: el}), {is_valid: false, count: 1, errors: {a: [{msg: 'phone', params: []}]}});
     });
 
     it('Should be invalid with a phone number containing non-valid characters', () => {
@@ -48,7 +57,10 @@ describe('vPhone', () => {
 
         for (let i = 0; i < 1000; i++) {
             if (validchars.hasOwnProperty(String.fromCharCode(i))) continue;
-            assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tpl(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'phone', params: []}]}}
+            );
         }
     });
 
@@ -59,7 +71,7 @@ describe('vPhone', () => {
             '(905) 495 1317',
             '+32 (487) 61 59 82',
             '0032 (487) 61 59 82',
-        ]) assert.ok(v.validate({a: el}).is_valid);
+        ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
     });
 
     it('Should be invalid with a phone number containing a (xxx) format for area code that is either not started or not closed', () => {
@@ -69,7 +81,7 @@ describe('vPhone', () => {
             '(905 495 1317',
             '+32 487) 61 59 82',
             '0032 (487 61 59 82',
-        ]) assert.equal(v.validate({a: el}).is_valid, false);
+        ]) assert.deepEqual(v.validate({a: el}), {is_valid: false, count: 1, errors: {a: [{msg: 'phone', params: []}]}});
     });
 
     it('Should be invalid with a phone number containing a mixed multiple separator format', () => {
@@ -89,7 +101,7 @@ describe('vPhone', () => {
             '(905) 495-1317',
             '+32 (487)-61-59-82',
             '(334)-707-0855',
-        ]) assert.ok(v.validate({a: el}).is_valid);
+        ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
     });
 
     it('Should be valid with a phone number containing dots (.) for separator format', () => {
@@ -98,7 +110,7 @@ describe('vPhone', () => {
             '(905) 495.1317',
             '+32 (487).61.59.82',
             '(334).707.0855',
-        ]) assert.ok(v.validate({a: el}).is_valid);
+        ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
     });
 
     it('Should be valid with a phone number containing spaces ( ) for separator format', () => {
@@ -107,7 +119,7 @@ describe('vPhone', () => {
             '(905) 495 1317',
             '+32 (487) 61 59 82',
             '(334) 707 0855',
-        ]) assert.ok(v.validate({a: el}).is_valid);
+        ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
     });
 
     describe('afhanistan', () => {
@@ -121,7 +133,7 @@ describe('vPhone', () => {
                 '077 338 5242',
                 '077623 2634',
                 '077 8682235',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -133,7 +145,7 @@ describe('vPhone', () => {
                 '+93 077623 2634',
                 '+93 077 8682235',
                 '+93 077 311 3596',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -147,7 +159,7 @@ describe('vPhone', () => {
                 '457 570 3310',
                 '457 030 9712',
                 '457 478 9216',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -159,7 +171,7 @@ describe('vPhone', () => {
                 '+385 457 570 3310',
                 '+385 457 030 9712',
                 '+385 457 478 9216',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -173,7 +185,7 @@ describe('vPhone', () => {
                 '69 499 4090',
                 '69 499 9956',
                 '69 723 8790',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -185,7 +197,7 @@ describe('vPhone', () => {
                 '+355 69 499 4090',
                 '+355 69 499 9956',
                 '+355 69 723 8790',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -199,7 +211,7 @@ describe('vPhone', () => {
                 '5 551 3601',
                 '5 810 8288',
                 '5 765 7307',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -211,7 +223,7 @@ describe('vPhone', () => {
                 '+213 5 551 3601',
                 '+213 5 810 8288',
                 '+213 5 765 7307',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -225,7 +237,7 @@ describe('vPhone', () => {
                 '684 056 2069',
                 '684 155 6063',
                 '684 907 0443',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -237,7 +249,7 @@ describe('vPhone', () => {
                 '+1 684 056 2069',
                 '+1 684 155 6063',
                 '+1 684 907 0443',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -251,7 +263,7 @@ describe('vPhone', () => {
                 '355 986 0229',
                 '355 620 0788',
                 '355 824 7464',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -263,7 +275,7 @@ describe('vPhone', () => {
                 '+376 355 986 0229',
                 '+376 355 620 0788',
                 '+376 355 824 7464',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -277,7 +289,7 @@ describe('vPhone', () => {
                 '0915 701 8461',
                 '0915 789 0784',
                 '0915 202 2395',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -289,7 +301,7 @@ describe('vPhone', () => {
                 '+244 0915 701 8461',
                 '+244 0915 789 0784',
                 '+244 0915 202 2395',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -303,7 +315,7 @@ describe('vPhone', () => {
                 '264 733 7033',
                 '264 058 4197',
                 '264 040 3584',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -315,7 +327,7 @@ describe('vPhone', () => {
                 '+1 264 733 7033',
                 '+1 264 058 4197',
                 '+1 264 040 3584',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -329,7 +341,7 @@ describe('vPhone', () => {
                 '268 237 2400',
                 '268 426 4615',
                 '268 151 5176',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -341,7 +353,7 @@ describe('vPhone', () => {
                 '+1 268 237 2400',
                 '+1 268 426 4615',
                 '+1 268 151 5176',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -355,7 +367,7 @@ describe('vPhone', () => {
                 '9 303 6299',
                 '9 453 6683',
                 '9 685 0352',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -367,7 +379,7 @@ describe('vPhone', () => {
                 '+54 9 303 6299',
                 '+54 9 453 6683',
                 '+54 9 685 0352',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -381,7 +393,7 @@ describe('vPhone', () => {
                 '094 208 9305',
                 '094 607 8228',
                 '094 305 2541',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -393,7 +405,7 @@ describe('vPhone', () => {
                 '+374 094 208 9305',
                 '+374 094 607 8228',
                 '+374 094 305 2541',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -407,7 +419,7 @@ describe('vPhone', () => {
                 '58 338 8832',
                 '58 864 2457',
                 '58 733 4970',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -419,7 +431,7 @@ describe('vPhone', () => {
                 '+297 58 338 8832',
                 '+297 58 864 2457',
                 '+297 58 733 4970',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -433,7 +445,7 @@ describe('vPhone', () => {
                 '555 053 9902',
                 '555 837 0874',
                 '555 573 3355',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -445,7 +457,7 @@ describe('vPhone', () => {
                 '+247 555 053 9902',
                 '+247 555 837 0874',
                 '+247 555 573 3355',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -459,7 +471,7 @@ describe('vPhone', () => {
                 '004 080 1118',
                 '004 299 4591',
                 '004 795 1889',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -471,7 +483,7 @@ describe('vPhone', () => {
                 '+61 004 080 1118',
                 '+61 004 299 4591',
                 '+61 004 795 1889',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -485,7 +497,7 @@ describe('vPhone', () => {
                 '001 126 9189',
                 '001 076 4378',
                 '001 477 1437',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -497,7 +509,7 @@ describe('vPhone', () => {
                 '+672 001 126 9189',
                 '+672 001 076 4378',
                 '+672 001 477 1437',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -511,7 +523,7 @@ describe('vPhone', () => {
                 '660 463 2698',
                 '660 818 5505',
                 '660 727 0697',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -523,7 +535,7 @@ describe('vPhone', () => {
                 '+43 660 463 2698',
                 '+43 660 818 5505',
                 '+43 660 727 0697',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -537,7 +549,7 @@ describe('vPhone', () => {
                 '055 541 2943',
                 '055 694 6665',
                 '055 293 6030',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -549,7 +561,7 @@ describe('vPhone', () => {
                 '+994 055 541 2943',
                 '+994 055 694 6665',
                 '+994 055 293 6030',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -563,7 +575,7 @@ describe('vPhone', () => {
                 '788 165 6536',
                 '788 094 8876',
                 '788 405 6658',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -575,7 +587,7 @@ describe('vPhone', () => {
                 '+1 788 165 6536',
                 '+1 788 094 8876',
                 '+1 788 405 6658',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -589,7 +601,7 @@ describe('vPhone', () => {
                 '344 725 8690',
                 '344 009 6571',
                 '344 695 3757',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -601,7 +613,7 @@ describe('vPhone', () => {
                 '+973 344 725 8690',
                 '+973 344 009 6571',
                 '+973 344 695 3757',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -615,7 +627,7 @@ describe('vPhone', () => {
                 '115 095 7904',
                 '115 056 4245',
                 '115 482 8595',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -627,7 +639,7 @@ describe('vPhone', () => {
                 '+880 115 095 7904',
                 '+880 115 056 4245',
                 '+880 115 482 8595',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -641,7 +653,7 @@ describe('vPhone', () => {
                 '246 103 7581',
                 '246 129 7144',
                 '246 552 6727',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -653,7 +665,7 @@ describe('vPhone', () => {
                 '+1 246 103 7581',
                 '+1 246 129 7144',
                 '+1 246 552 6727',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -667,7 +679,7 @@ describe('vPhone', () => {
                 '154 976 3983',
                 '154 652 3968',
                 '154 840 8891',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -679,7 +691,7 @@ describe('vPhone', () => {
                 '+375 154 976 3983',
                 '+375 154 652 3968',
                 '+375 154 840 8891',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -693,7 +705,7 @@ describe('vPhone', () => {
                 '456 458 3069',
                 '456 702 8070',
                 '456 775 8058',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -705,7 +717,7 @@ describe('vPhone', () => {
                 '+32 456 458 3069',
                 '+32 456 702 8070',
                 '+32 456 775 8058',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -719,7 +731,7 @@ describe('vPhone', () => {
                 '293 5541',
                 '056 5131',
                 '084 2654',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -731,7 +743,7 @@ describe('vPhone', () => {
                 '+501 293 5541',
                 '+501 056 5131',
                 '+501 084 2654',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -745,7 +757,7 @@ describe('vPhone', () => {
                 '955 789 0747',
                 '955 682 0476',
                 '955 852 3871',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -757,7 +769,7 @@ describe('vPhone', () => {
                 '+229 955 789 0747',
                 '+229 955 682 0476',
                 '+229 955 852 3871',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -771,7 +783,7 @@ describe('vPhone', () => {
                 '441 744 9259',
                 '441 419 0662',
                 '441 225 8558',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -783,7 +795,7 @@ describe('vPhone', () => {
                 '+1 441 744 9259',
                 '+1 441 419 0662',
                 '+1 441 225 8558',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -797,7 +809,7 @@ describe('vPhone', () => {
                 '17 850 3960',
                 '17 743 2312',
                 '17 113 2340',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -809,7 +821,7 @@ describe('vPhone', () => {
                 '+975 17 850 3960',
                 '+975 17 743 2312',
                 '+975 17 113 2340',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -823,7 +835,7 @@ describe('vPhone', () => {
                 '755 936 5446',
                 '755 742 3314',
                 '755 349 3523',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -835,7 +847,7 @@ describe('vPhone', () => {
                 '+591 755 936 5446',
                 '+591 755 742 3314',
                 '+591 755 349 3523',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -849,7 +861,7 @@ describe('vPhone', () => {
                 '854 3777',
                 '293 4361',
                 '962 8886',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -861,7 +873,7 @@ describe('vPhone', () => {
                 '+599 854 3777',
                 '+599 293 4361',
                 '+599 962 8886',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -875,7 +887,7 @@ describe('vPhone', () => {
                 '665 441 1356',
                 '665 755 9182',
                 '665 632 0125',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -887,7 +899,7 @@ describe('vPhone', () => {
                 '+387 665 441 1356',
                 '+387 665 755 9182',
                 '+387 665 632 0125',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -901,7 +913,7 @@ describe('vPhone', () => {
                 '163 6271',
                 '091 0648',
                 '323 0002',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -913,7 +925,7 @@ describe('vPhone', () => {
                 '+267 163 6271',
                 '+267 091 0648',
                 '+267 323 0002',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -927,7 +939,7 @@ describe('vPhone', () => {
                 '955 187 5734',
                 '955 217 6941',
                 '955 446 8388',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -939,7 +951,7 @@ describe('vPhone', () => {
                 '+55 955 187 5734',
                 '+55 955 217 6941',
                 '+55 955 446 8388',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -953,7 +965,7 @@ describe('vPhone', () => {
                 '809 454 2769',
                 '809 722 1143',
                 '809 259 6034',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -965,7 +977,7 @@ describe('vPhone', () => {
                 '+1 809 454 2769',
                 '+1 809 722 1143',
                 '+1 809 259 6034',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -979,7 +991,7 @@ describe('vPhone', () => {
                 '034 0624',
                 '453 7165',
                 '047 7196',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -991,7 +1003,7 @@ describe('vPhone', () => {
                 '+673 034 0624',
                 '+673 453 7165',
                 '+673 047 7196',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1005,7 +1017,7 @@ describe('vPhone', () => {
                 '2 557 3950',
                 '2 565 4759',
                 '2 248 6466',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1017,7 +1029,7 @@ describe('vPhone', () => {
                 '+359 2 557 3950',
                 '+359 2 565 4759',
                 '+359 2 248 6466',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1031,7 +1043,7 @@ describe('vPhone', () => {
                 '7 870 3582',
                 '7 799 5644',
                 '7 182 1268',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1043,7 +1055,7 @@ describe('vPhone', () => {
                 '+226 7 870 3582',
                 '+226 7 799 5644',
                 '+226 7 182 1268',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1057,7 +1069,7 @@ describe('vPhone', () => {
                 '02 828 1654',
                 '02 624 5561',
                 '02 796 5234',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1069,7 +1081,7 @@ describe('vPhone', () => {
                 '+95 02 828 1654',
                 '+95 02 624 5561',
                 '+95 02 796 5234',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1083,7 +1095,7 @@ describe('vPhone', () => {
                 '842 1029',
                 '491 6853',
                 '605 8298',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1095,7 +1107,7 @@ describe('vPhone', () => {
                 '+257 842 1029',
                 '+257 491 6853',
                 '+257 605 8298',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1109,7 +1121,7 @@ describe('vPhone', () => {
                 '09 668 0390',
                 '09 463 5312',
                 '09 923 5131',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1121,7 +1133,7 @@ describe('vPhone', () => {
                 '+855 09 668 0390',
                 '+855 09 463 5312',
                 '+855 09 923 5131',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1135,7 +1147,7 @@ describe('vPhone', () => {
                 '9 535 4782',
                 '9 234 4679',
                 '9 726 1656',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1147,7 +1159,7 @@ describe('vPhone', () => {
                 '+237 9 535 4782',
                 '+237 9 234 4679',
                 '+237 9 726 1656',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1161,7 +1173,7 @@ describe('vPhone', () => {
                 '613-555-0189',
                 '613-555-0162',
                 '613-555-0172',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1173,7 +1185,7 @@ describe('vPhone', () => {
                 '+1-613-555-0189',
                 '+1-613-555-0162',
                 '+1-613-555-0172',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1187,7 +1199,7 @@ describe('vPhone', () => {
                 '272 0310',
                 '857 6040',
                 '242 0477',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1199,7 +1211,7 @@ describe('vPhone', () => {
                 '+238 272 0310',
                 '+238 857 6040',
                 '+238 242 0477',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1213,7 +1225,7 @@ describe('vPhone', () => {
                 '345 267 4370',
                 '345 607 7620',
                 '345 459 5177',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1225,7 +1237,7 @@ describe('vPhone', () => {
                 '+1 345 267 4370',
                 '+1 345 607 7620',
                 '+1 345 459 5177',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1239,7 +1251,7 @@ describe('vPhone', () => {
                 '2 786 1990',
                 '2 279 8577',
                 '2 491 5371',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1251,7 +1263,7 @@ describe('vPhone', () => {
                 '+236 2 786 1990',
                 '+236 2 279 8577',
                 '+236 2 491 5371',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1265,7 +1277,7 @@ describe('vPhone', () => {
                 '6 564 6419',
                 '6 176 8409',
                 '6 861 6020',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1277,7 +1289,7 @@ describe('vPhone', () => {
                 '+235 6 564 6419',
                 '+235 6 176 8409',
                 '+235 6 861 6020',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1291,7 +1303,7 @@ describe('vPhone', () => {
                 '61 636 8730',
                 '61 697 2759',
                 '61 365 0025',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1303,7 +1315,7 @@ describe('vPhone', () => {
                 '+56 61 636 8730',
                 '+56 61 697 2759',
                 '+56 61 365 0025',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1317,7 +1329,7 @@ describe('vPhone', () => {
                 '591 888 3249',
                 '591 970 3728',
                 '591 560 2958',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1329,7 +1341,7 @@ describe('vPhone', () => {
                 '+86 591 888 3249',
                 '+86 591 970 3728',
                 '+86 591 560 2958',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1343,7 +1355,7 @@ describe('vPhone', () => {
                 '350 227 5115',
                 '350 786 0738',
                 '350 660 3597',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1355,7 +1367,7 @@ describe('vPhone', () => {
                 '+57 350 227 5115',
                 '+57 350 786 0738',
                 '+57 350 660 3597',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1369,7 +1381,7 @@ describe('vPhone', () => {
                 '735 2529',
                 '149 9146',
                 '064 1950',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1381,7 +1393,7 @@ describe('vPhone', () => {
                 '+269 735 2529',
                 '+269 149 9146',
                 '+269 064 1950',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1395,7 +1407,7 @@ describe('vPhone', () => {
                 '22 187 4542',
                 '22 010 2744',
                 '22 502 8828',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1407,7 +1419,7 @@ describe('vPhone', () => {
                 '+242 22 187 4542',
                 '+242 22 010 2744',
                 '+242 22 502 8828',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1421,7 +1433,7 @@ describe('vPhone', () => {
                 '80 605 0614',
                 '80 847 3563',
                 '80 940 5569',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1433,7 +1445,7 @@ describe('vPhone', () => {
                 '+243 80 605 0614',
                 '+243 80 847 3563',
                 '+243 80 940 5569',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1447,7 +1459,7 @@ describe('vPhone', () => {
                 '2 819 9464',
                 '2 686 8122',
                 '2 745 7438',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1459,7 +1471,7 @@ describe('vPhone', () => {
                 '+506 2 819 9464',
                 '+506 2 686 8122',
                 '+506 2 745 7438',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1473,7 +1485,7 @@ describe('vPhone', () => {
                 '2 372 9751',
                 '2 070 5344',
                 '2 443 0657',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1485,7 +1497,7 @@ describe('vPhone', () => {
                 '+225 2 372 9751',
                 '+225 2 070 5344',
                 '+225 2 443 0657',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1499,7 +1511,7 @@ describe('vPhone', () => {
                 '99 638 3988',
                 '99 431 1535',
                 '99 423 7230',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1511,7 +1523,7 @@ describe('vPhone', () => {
                 '+385 99 638 3988',
                 '+385 99 431 1535',
                 '+385 99 423 7230',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1525,7 +1537,7 @@ describe('vPhone', () => {
                 '555 639 8082',
                 '555 841 8699',
                 '555 898 4154',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1537,7 +1549,7 @@ describe('vPhone', () => {
                 '+53 555 639 8082',
                 '+53 555 841 8699',
                 '+53 555 898 4154',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1551,7 +1563,7 @@ describe('vPhone', () => {
                 '9 918 9477',
                 '9 892 3548',
                 '9 977 5327',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1563,7 +1575,7 @@ describe('vPhone', () => {
                 '+599 9 918 9477',
                 '+599 9 892 3548',
                 '+599 9 977 5327',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1577,7 +1589,7 @@ describe('vPhone', () => {
                 '9 751 8367',
                 '9 286 2853',
                 '9 980 1604',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1589,7 +1601,7 @@ describe('vPhone', () => {
                 '+357 9 751 8367',
                 '+357 9 286 2853',
                 '+357 9 980 1604',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1603,7 +1615,7 @@ describe('vPhone', () => {
                 '77 652 9506',
                 '77 572 2588',
                 '77 509 9904',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1615,7 +1627,7 @@ describe('vPhone', () => {
                 '+420 77 652 9506',
                 '+420 77 572 2588',
                 '+420 77 509 9904',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1629,7 +1641,7 @@ describe('vPhone', () => {
                 '7 191 0951',
                 '7 013 3189',
                 '7 660 0503',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1641,7 +1653,7 @@ describe('vPhone', () => {
                 '+42 7 191 0951',
                 '+42 7 013 3189',
                 '+42 7 660 0503',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1655,7 +1667,7 @@ describe('vPhone', () => {
                 '146 2162',
                 '960 4065',
                 '257 7279',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1667,7 +1679,7 @@ describe('vPhone', () => {
                 '+246 146 2162',
                 '+246 960 4065',
                 '+246 257 7279',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1681,7 +1693,7 @@ describe('vPhone', () => {
                 '2 634 8109',
                 '2 769 4763',
                 '2 474 6728',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1693,7 +1705,7 @@ describe('vPhone', () => {
                 '+253 2 634 8109',
                 '+253 2 769 4763',
                 '+253 2 474 6728',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1707,7 +1719,7 @@ describe('vPhone', () => {
                 '042 1453',
                 '588 3953',
                 '790 8330',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1719,7 +1731,7 @@ describe('vPhone', () => {
                 '+1767 042 1453',
                 '+1767 588 3953',
                 '+1767 790 8330',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1733,7 +1745,7 @@ describe('vPhone', () => {
                 '404 3013',
                 '731 1027',
                 '329 7041',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1745,7 +1757,7 @@ describe('vPhone', () => {
                 '+1829 404 3013',
                 '+1829 731 1027',
                 '+1829 329 7041',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1759,7 +1771,7 @@ describe('vPhone', () => {
                 '188 4229',
                 '610 3010',
                 '451 2255',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1771,7 +1783,7 @@ describe('vPhone', () => {
                 '+670 188 4229',
                 '+670 610 3010',
                 '+670 451 2255',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1785,7 +1797,7 @@ describe('vPhone', () => {
                 '96 319 3083',
                 '96 159 1841',
                 '96 879 6350',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1797,7 +1809,7 @@ describe('vPhone', () => {
                 '+593 96 319 3083',
                 '+593 96 159 1841',
                 '+593 96 879 6350',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1811,7 +1823,7 @@ describe('vPhone', () => {
                 '117 548 1025',
                 '117 314 8482',
                 '117 517 1380',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1823,7 +1835,7 @@ describe('vPhone', () => {
                 '+20 117 548 1025',
                 '+20 117 314 8482',
                 '+20 117 517 1380',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1837,7 +1849,7 @@ describe('vPhone', () => {
                 '77 5524 4287',
                 '77 4332 1339',
                 '77 3863 3287',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1849,7 +1861,7 @@ describe('vPhone', () => {
                 '+503 77 5524 4287',
                 '+503 77 4332 1339',
                 '+503 77 3863 3287',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1863,7 +1875,7 @@ describe('vPhone', () => {
                 '089 8313',
                 '128 0532',
                 '303 8049',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1875,7 +1887,7 @@ describe('vPhone', () => {
                 '+291 089 8313',
                 '+291 128 0532',
                 '+291 303 8049',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1889,7 +1901,7 @@ describe('vPhone', () => {
                 '870 8749',
                 '892 0217',
                 '634 3728',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1901,7 +1913,7 @@ describe('vPhone', () => {
                 '+372 870 8749',
                 '+372 892 0217',
                 '+372 634 3728',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1915,7 +1927,7 @@ describe('vPhone', () => {
                 '11 393 6415',
                 '11 815 7263',
                 '11 578 8064',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1927,7 +1939,7 @@ describe('vPhone', () => {
                 '+251 11 393 6415',
                 '+251 11 815 7263',
                 '+251 11 578 8064',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1941,7 +1953,7 @@ describe('vPhone', () => {
                 '71319',
                 '13381',
                 '77653',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1953,7 +1965,7 @@ describe('vPhone', () => {
                 '+500 71319',
                 '+500 13381',
                 '+500 77653',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1967,7 +1979,7 @@ describe('vPhone', () => {
                 '188158',
                 '086834',
                 '629779',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -1979,7 +1991,7 @@ describe('vPhone', () => {
                 '+298 188158',
                 '+298 086834',
                 '+298 629779',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -1993,7 +2005,7 @@ describe('vPhone', () => {
                 '217 6997',
                 '668 0335',
                 '935 0780',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2005,7 +2017,7 @@ describe('vPhone', () => {
                 '+679 217 6997',
                 '+679 668 0335',
                 '+679 935 0780',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2019,7 +2031,7 @@ describe('vPhone', () => {
                 '40 357 1168',
                 '40 677 5740',
                 '40 235 5827',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2031,7 +2043,7 @@ describe('vPhone', () => {
                 '+358 40 357 1168',
                 '+358 40 677 5740',
                 '+358 40 235 5827',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2045,7 +2057,7 @@ describe('vPhone', () => {
                 '93 983 5128',
                 '93 737 9760',
                 '93 235 0609',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2057,7 +2069,7 @@ describe('vPhone', () => {
                 '+33 93 983 5128',
                 '+33 93 737 9760',
                 '+33 93 235 0609',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2071,7 +2083,7 @@ describe('vPhone', () => {
                 '9173 4706',
                 '0505 9102',
                 '0880 4599',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2083,7 +2095,7 @@ describe('vPhone', () => {
                 '+596 9173 4706',
                 '+596 0505 9102',
                 '+596 0880 4599',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2097,7 +2109,7 @@ describe('vPhone', () => {
                 '59 4258 8056',
                 '59 7821 6932',
                 '59 7402 5485',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2109,7 +2121,7 @@ describe('vPhone', () => {
                 '+594 59 4258 8056',
                 '+594 59 7821 6932',
                 '+594 59 7402 5485',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2123,7 +2135,7 @@ describe('vPhone', () => {
                 '179438',
                 '792644',
                 '402940',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2135,7 +2147,7 @@ describe('vPhone', () => {
                 '+689 179438',
                 '+689 792644',
                 '+689 402940',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2149,7 +2161,7 @@ describe('vPhone', () => {
                 '102163',
                 '478129',
                 '770490',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2161,7 +2173,7 @@ describe('vPhone', () => {
                 '+241 102163',
                 '+241 478129',
                 '+241 770490',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2175,7 +2187,7 @@ describe('vPhone', () => {
                 '739 9644',
                 '556 8599',
                 '011 6592',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2187,7 +2199,7 @@ describe('vPhone', () => {
                 '+220 739 9644',
                 '+220 556 8599',
                 '+220 011 6592',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2201,7 +2213,7 @@ describe('vPhone', () => {
                 '555 159681',
                 '555 521440',
                 '555 211312',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2213,7 +2225,7 @@ describe('vPhone', () => {
                 '+995 555 159681',
                 '+995 555 521440',
                 '+995 555 211312',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2227,7 +2239,7 @@ describe('vPhone', () => {
                 '30 674447737',
                 '30 985019346',
                 '30 815307602',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2239,7 +2251,7 @@ describe('vPhone', () => {
                 '+49 30 674447737',
                 '+49 30 985019346',
                 '+49 30 815307602',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2253,7 +2265,7 @@ describe('vPhone', () => {
                 '30 263 6891',
                 '30 032 6420',
                 '30 135 7806',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2265,7 +2277,7 @@ describe('vPhone', () => {
                 '+233 30 263 6891',
                 '+233 30 032 6420',
                 '+233 30 135 7806',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2279,7 +2291,7 @@ describe('vPhone', () => {
                 '92725',
                 '71983',
                 '48213',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2291,7 +2303,7 @@ describe('vPhone', () => {
                 '+350 92725',
                 '+350 71983',
                 '+350 48213',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2305,7 +2317,7 @@ describe('vPhone', () => {
                 '21 1379 2972',
                 '21 1712 8256',
                 '21 4753 4356',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2317,7 +2329,7 @@ describe('vPhone', () => {
                 '+350 21 1379 2972',
                 '+350 21 1712 8256',
                 '+350 21 4753 4356',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2331,7 +2343,7 @@ describe('vPhone', () => {
                 '023252',
                 '326253',
                 '967582',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2343,7 +2355,7 @@ describe('vPhone', () => {
                 '+299 023252',
                 '+299 326253',
                 '+299 967582',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2357,7 +2369,7 @@ describe('vPhone', () => {
                 '473 866 3539',
                 '473 165 5760',
                 '473 284 8858',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2369,7 +2381,7 @@ describe('vPhone', () => {
                 '+1 473 866 3539',
                 '+1 473 165 5760',
                 '+1 473 284 8858',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2383,7 +2395,7 @@ describe('vPhone', () => {
                 '590 477882',
                 '590 800123',
                 '590 767116',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2395,7 +2407,7 @@ describe('vPhone', () => {
                 '+590 590 477882',
                 '+590 590 800123',
                 '+590 590 767116',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2409,7 +2421,7 @@ describe('vPhone', () => {
                 '671 257 2706',
                 '671 572 5472',
                 '671 219 0503',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2421,7 +2433,7 @@ describe('vPhone', () => {
                 '+1 671 257 2706',
                 '+1 671 572 5472',
                 '+1 671 219 0503',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2435,7 +2447,7 @@ describe('vPhone', () => {
                 '193 0425',
                 '572 1935',
                 '161 8170',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2447,7 +2459,7 @@ describe('vPhone', () => {
                 '+502 193 0425',
                 '+502 572 1935',
                 '+502 161 8170',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2461,7 +2473,7 @@ describe('vPhone', () => {
                 '624 617437',
                 '624 416746',
                 '624 028094',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2473,7 +2485,7 @@ describe('vPhone', () => {
                 '+224 624 617437',
                 '+224 624 416746',
                 '+224 624 028094',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2487,7 +2499,7 @@ describe('vPhone', () => {
                 '878 2159',
                 '182 5290',
                 '450 6518',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2499,7 +2511,7 @@ describe('vPhone', () => {
                 '+245 878 2159',
                 '+245 182 5290',
                 '+245 450 6518',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2513,7 +2525,7 @@ describe('vPhone', () => {
                 '420 2777',
                 '854 8999',
                 '785 1257',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2525,7 +2537,7 @@ describe('vPhone', () => {
                 '+592 420 2777',
                 '+592 854 8999',
                 '+592 785 1257',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2539,7 +2551,7 @@ describe('vPhone', () => {
                 '734 8078',
                 '506 6631',
                 '491 8523',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2551,7 +2563,7 @@ describe('vPhone', () => {
                 '+509 734 8078',
                 '+509 506 6631',
                 '+509 491 8523',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2565,7 +2577,7 @@ describe('vPhone', () => {
                 '394 9243',
                 '473 0243',
                 '102 0167',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2577,7 +2589,7 @@ describe('vPhone', () => {
                 '+504 394 9243',
                 '+504 473 0243',
                 '+504 102 0167',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2591,7 +2603,7 @@ describe('vPhone', () => {
                 '8294 0950',
                 '1418 9709',
                 '3871 3259',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2603,7 +2615,7 @@ describe('vPhone', () => {
                 '+852 8294 0950',
                 '+852 1418 9709',
                 '+852 3871 3259',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2617,7 +2629,7 @@ describe('vPhone', () => {
                 '06 55 139 743',
                 '06 55 874 745',
                 '06 55 259 042',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2629,7 +2641,7 @@ describe('vPhone', () => {
                 '+36 55 139 743',
                 '+36 55 874 745',
                 '+36 55 259 042',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2643,7 +2655,7 @@ describe('vPhone', () => {
                 '998 8269',
                 '420 7080',
                 '941 7859',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2655,7 +2667,7 @@ describe('vPhone', () => {
                 '+354 998 8269',
                 '+354 420 7080',
                 '+354 941 7859',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2669,7 +2681,7 @@ describe('vPhone', () => {
                 '385 997 3673',
                 '385 333 6053',
                 '385 553 8630',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2681,7 +2693,7 @@ describe('vPhone', () => {
                 '+91 385 997 3673',
                 '+91 385 333 6053',
                 '+91 385 553 8630',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2695,7 +2707,7 @@ describe('vPhone', () => {
                 '77 8826 4045',
                 '77 5220 7531',
                 '77 8278 9741',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2707,7 +2719,7 @@ describe('vPhone', () => {
                 '+62 77 8826 4045',
                 '+62 77 5220 7531',
                 '+62 77 8278 9741',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2721,7 +2733,7 @@ describe('vPhone', () => {
                 '920 198 8327',
                 '920 958 5751',
                 '920 143 8341',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2733,7 +2745,7 @@ describe('vPhone', () => {
                 '+98 920 198 8327',
                 '+98 920 958 5751',
                 '+98 920 143 8341',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2747,7 +2759,7 @@ describe('vPhone', () => {
                 '72 450 8625',
                 '72 382 7898',
                 '72 337 9314',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2759,7 +2771,7 @@ describe('vPhone', () => {
                 '+964 72 450 8625',
                 '+964 72 382 7898',
                 '+964 72 337 9314',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2773,7 +2785,7 @@ describe('vPhone', () => {
                 '020 918 2349',
                 '020 911 9472',
                 '020 916 6191',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2785,7 +2797,7 @@ describe('vPhone', () => {
                 '+353 20 918 2349',
                 '+353 20 911 9472',
                 '+353 20 916 6191',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2799,7 +2811,7 @@ describe('vPhone', () => {
                 '55 130 6298',
                 '55 491 1394',
                 '55 152 2448',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2811,7 +2823,7 @@ describe('vPhone', () => {
                 '+972 55 130 6298',
                 '+972 55 491 1394',
                 '+972 55 152 2448',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2825,7 +2837,7 @@ describe('vPhone', () => {
                 '06 676 6256',
                 '06 960 1307',
                 '06 192 8160',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2837,7 +2849,7 @@ describe('vPhone', () => {
                 '+39 06 676 6256',
                 '+39 06 960 1307',
                 '+39 06 192 8160',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2851,7 +2863,7 @@ describe('vPhone', () => {
                 '879 618 0700',
                 '879 777 2034',
                 '879 787 7132',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2863,7 +2875,7 @@ describe('vPhone', () => {
                 '+1 879 618 0700',
                 '+1 879 777 2034',
                 '+1 879 787 7132',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2877,7 +2889,7 @@ describe('vPhone', () => {
                 '75 671 1380',
                 '75 073 6627',
                 '75 573 3883',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2889,7 +2901,7 @@ describe('vPhone', () => {
                 '+81 75 671 1380',
                 '+81 75 073 6627',
                 '+81 75 573 3883',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2903,7 +2915,7 @@ describe('vPhone', () => {
                 '7 215 1008',
                 '7 404 6512',
                 '7 016 0368',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2915,7 +2927,7 @@ describe('vPhone', () => {
                 '+962 7 215 1008',
                 '+962 7 404 6512',
                 '+962 7 016 0368',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2929,7 +2941,7 @@ describe('vPhone', () => {
                 '711 582 3155',
                 '711 439 3932',
                 '711 134 7717',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2941,7 +2953,7 @@ describe('vPhone', () => {
                 '+7 711 582 3155',
                 '+7 711 439 3932',
                 '+7 711 134 7717',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2955,7 +2967,7 @@ describe('vPhone', () => {
                 '732 675825',
                 '732 931421',
                 '732 258405',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2967,7 +2979,7 @@ describe('vPhone', () => {
                 '+7 732 675825',
                 '+7 732 931421',
                 '+7 732 258405',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -2981,7 +2993,7 @@ describe('vPhone', () => {
                 '02979',
                 '95711',
                 '09689',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -2993,7 +3005,7 @@ describe('vPhone', () => {
                 '+686 02979',
                 '+686 95711',
                 '+686 09689',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3007,7 +3019,7 @@ describe('vPhone', () => {
                 '2780 6906',
                 '2061 9958',
                 '2909 3444',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3019,7 +3031,7 @@ describe('vPhone', () => {
                 '+965 2780 6906',
                 '+965 2061 9958',
                 '+965 2909 3444',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3033,7 +3045,7 @@ describe('vPhone', () => {
                 '312 656835',
                 '312 184340',
                 '312 032254',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3045,7 +3057,7 @@ describe('vPhone', () => {
                 '+996 312 656835',
                 '+996 312 184340',
                 '+996 312 032254',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3059,7 +3071,7 @@ describe('vPhone', () => {
                 '20 1933 7811',
                 '20 3110 0934',
                 '20 2867 8840',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3071,7 +3083,7 @@ describe('vPhone', () => {
                 '+856 20 1933 7811',
                 '+856 20 3110 0934',
                 '+856 20 2867 8840',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3085,7 +3097,7 @@ describe('vPhone', () => {
                 '1756 6005',
                 '2132 6587',
                 '4313 6059',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3097,7 +3109,7 @@ describe('vPhone', () => {
                 '+371 1756 6005',
                 '+371 2132 6587',
                 '+371 4313 6059',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3111,7 +3123,7 @@ describe('vPhone', () => {
                 '76 919 629',
                 '76 160 250',
                 '76 087 228',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3123,7 +3135,7 @@ describe('vPhone', () => {
                 '+961 76 919 629',
                 '+961 76 160 250',
                 '+961 76 087 228',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3137,7 +3149,7 @@ describe('vPhone', () => {
                 '5228 3478',
                 '3877 1488',
                 '8831 3252',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3149,7 +3161,7 @@ describe('vPhone', () => {
                 '+266 5228 3478',
                 '+266 3877 1488',
                 '+266 8831 3252',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3163,7 +3175,7 @@ describe('vPhone', () => {
                 '88 435 6280',
                 '88 318 8540',
                 '88 272 2969',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3175,7 +3187,7 @@ describe('vPhone', () => {
                 '+231 88 435 6280',
                 '+231 88 318 8540',
                 '+231 88 272 2969',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3189,7 +3201,7 @@ describe('vPhone', () => {
                 '91 506 8938',
                 '91 672 0900',
                 '91 400 2432',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3201,7 +3213,7 @@ describe('vPhone', () => {
                 '+218 91 506 8938',
                 '+218 91 672 0900',
                 '+218 91 400 2432',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3215,7 +3227,7 @@ describe('vPhone', () => {
                 '677 8074',
                 '398 2572',
                 '685 4463',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3227,7 +3239,7 @@ describe('vPhone', () => {
                 '+423 677 8074',
                 '+423 398 2572',
                 '+423 685 4463',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3241,7 +3253,7 @@ describe('vPhone', () => {
                 '686 71623',
                 '686 85525',
                 '686 58641',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3253,7 +3265,7 @@ describe('vPhone', () => {
                 '+370 686 71623',
                 '+370 686 85525',
                 '+370 686 58641',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3267,7 +3279,7 @@ describe('vPhone', () => {
                 '168995',
                 '211884',
                 '808188',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3279,7 +3291,7 @@ describe('vPhone', () => {
                 '+370 168995',
                 '+370 211884',
                 '+370 808188',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3293,7 +3305,7 @@ describe('vPhone', () => {
                 '5628 0082',
                 '7971 8610',
                 '2290 9197',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3305,7 +3317,7 @@ describe('vPhone', () => {
                 '+853 5628 0082',
                 '+853 7971 8610',
                 '+853 2290 9197',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3319,7 +3331,7 @@ describe('vPhone', () => {
                 '2 191 8285',
                 '2 198 9797',
                 '2 935 1125',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3331,7 +3343,7 @@ describe('vPhone', () => {
                 '+389 2 191 8285',
                 '+389 2 198 9797',
                 '+389 2 935 1125',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3345,7 +3357,7 @@ describe('vPhone', () => {
                 '437 3273',
                 '985 4392',
                 '759 6724',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3357,7 +3369,7 @@ describe('vPhone', () => {
                 '+261 437 3273',
                 '+261 985 4392',
                 '+261 759 6724',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3371,7 +3383,7 @@ describe('vPhone', () => {
                 '278461527',
                 '677839623',
                 '713166219',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3383,7 +3395,7 @@ describe('vPhone', () => {
                 '+265 278461527',
                 '+265 677839623',
                 '+265 713166219',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3397,7 +3409,7 @@ describe('vPhone', () => {
                 '2 086 3266',
                 '2 857 5745',
                 '2 052 0106',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3409,7 +3421,7 @@ describe('vPhone', () => {
                 '+60 2 086 3266',
                 '+60 2 857 5745',
                 '+60 2 052 0106',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3423,7 +3435,7 @@ describe('vPhone', () => {
                 '700 8025',
                 '445 3244',
                 '594 9639',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3435,7 +3447,7 @@ describe('vPhone', () => {
                 '+960 700 8025',
                 '+960 445 3244',
                 '+960 594 9639',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3449,7 +3461,7 @@ describe('vPhone', () => {
                 '1173 8270',
                 '7723 0240',
                 '4548 6217',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3461,7 +3473,7 @@ describe('vPhone', () => {
                 '+223 1173 8270',
                 '+223 7723 0240',
                 '+223 4548 6217',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3475,7 +3487,7 @@ describe('vPhone', () => {
                 '1976 3886',
                 '8491 0555',
                 '3237 3930',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3487,7 +3499,7 @@ describe('vPhone', () => {
                 '+356 1976 3886',
                 '+356 8491 0555',
                 '+356 3237 3930',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3501,7 +3513,7 @@ describe('vPhone', () => {
                 '460 3294',
                 '548 0245',
                 '914 4656',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3513,7 +3525,7 @@ describe('vPhone', () => {
                 '+692 460 3294',
                 '+692 548 0245',
                 '+692 914 4656',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3527,7 +3539,7 @@ describe('vPhone', () => {
                 '596 381 4062',
                 '596 329 7892',
                 '596 404 3206',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3539,7 +3551,7 @@ describe('vPhone', () => {
                 '+596 596 381 4062',
                 '+596 596 329 7892',
                 '+596 596 404 3206',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3553,7 +3565,7 @@ describe('vPhone', () => {
                 '451 9158',
                 '386 1606',
                 '228 6703',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3565,7 +3577,7 @@ describe('vPhone', () => {
                 '+222 451 9158',
                 '+222 386 1606',
                 '+222 228 6703',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3579,7 +3591,7 @@ describe('vPhone', () => {
                 '825 5132',
                 '044 7862',
                 '051 8066',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3591,7 +3603,7 @@ describe('vPhone', () => {
                 '+230 825 5132',
                 '+230 044 7862',
                 '+230 051 8066',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3605,7 +3617,7 @@ describe('vPhone', () => {
                 '639 939079',
                 '639 469037',
                 '639 554167',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3617,7 +3629,7 @@ describe('vPhone', () => {
                 '+262 639 939079',
                 '+262 639 469037',
                 '+262 639 554167',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3631,7 +3643,7 @@ describe('vPhone', () => {
                 '888 097 6091',
                 '888 290 0582',
                 '888 846 8170',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3643,7 +3655,7 @@ describe('vPhone', () => {
                 '+52 888 097 6091',
                 '+52 888 290 0582',
                 '+52 888 846 8170',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3657,7 +3669,7 @@ describe('vPhone', () => {
                 '542 2623',
                 '022 6388',
                 '960 8984',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3669,7 +3681,7 @@ describe('vPhone', () => {
                 '+691 542 2623',
                 '+691 022 6388',
                 '+691 960 8984',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3683,7 +3695,7 @@ describe('vPhone', () => {
                 '777 55921',
                 '777 71554',
                 '777 94014',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3695,7 +3707,7 @@ describe('vPhone', () => {
                 '+373 777 55921',
                 '+373 777 71554',
                 '+373 777 94014',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3709,7 +3721,7 @@ describe('vPhone', () => {
                 '3270 9895',
                 '8764 7289',
                 '1684 9878',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3721,7 +3733,7 @@ describe('vPhone', () => {
                 '+377 3270 9895',
                 '+377 8764 7289',
                 '+377 1684 9878',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3735,7 +3747,7 @@ describe('vPhone', () => {
                 '99 881187',
                 '99 257410',
                 '99 011494',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3747,7 +3759,7 @@ describe('vPhone', () => {
                 '+976 99 881187',
                 '+976 99 257410',
                 '+976 99 011494',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3761,7 +3773,7 @@ describe('vPhone', () => {
                 '63 670036',
                 '63 638012',
                 '63 391640',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3773,7 +3785,7 @@ describe('vPhone', () => {
                 '+382 63 670036',
                 '+382 63 638012',
                 '+382 63 391640',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3787,7 +3799,7 @@ describe('vPhone', () => {
                 '664 409 5292',
                 '664 223 5447',
                 '664 860 7146',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3799,7 +3811,7 @@ describe('vPhone', () => {
                 '+1 664 409 5292',
                 '+1 664 223 5447',
                 '+1 664 860 7146',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3813,7 +3825,7 @@ describe('vPhone', () => {
                 '61 728 2467',
                 '61 534 2954',
                 '61 168 0079',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3825,7 +3837,7 @@ describe('vPhone', () => {
                 '+212 61 728 2467',
                 '+212 61 534 2954',
                 '+212 61 168 0079',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3839,7 +3851,7 @@ describe('vPhone', () => {
                 '84 238 6780',
                 '84 736 9895',
                 '84 348 5973',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3851,7 +3863,7 @@ describe('vPhone', () => {
                 '+27 84 238 6780',
                 '+27 84 736 9895',
                 '+27 84 348 5973',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3865,7 +3877,7 @@ describe('vPhone', () => {
                 '99 30220',
                 '99 56693',
                 '99 56028',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3877,7 +3889,7 @@ describe('vPhone', () => {
                 '+95 99 30220',
                 '+95 99 56693',
                 '+95 99 56028',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3891,7 +3903,7 @@ describe('vPhone', () => {
                 '63 577678',
                 '63 589762',
                 '63 957111',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3903,7 +3915,7 @@ describe('vPhone', () => {
                 '+264 63 577678',
                 '+264 63 589762',
                 '+264 63 957111',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3917,7 +3929,7 @@ describe('vPhone', () => {
                 '053 9484',
                 '388 5379',
                 '565 0894',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3929,7 +3941,7 @@ describe('vPhone', () => {
                 '+674 053 9484',
                 '+674 388 5379',
                 '+674 565 0894',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3943,7 +3955,7 @@ describe('vPhone', () => {
                 '985 335 4345',
                 '985 993 3816',
                 '985 956 5938',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3955,7 +3967,7 @@ describe('vPhone', () => {
                 '+977 985 335 4345',
                 '+977 985 993 3816',
                 '+977 985 956 5938',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3969,7 +3981,7 @@ describe('vPhone', () => {
                 '71 306 8478',
                 '71 289 9556',
                 '71 165 9687',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -3981,7 +3993,7 @@ describe('vPhone', () => {
                 '+31 71 306 8478',
                 '+31 71 289 9556',
                 '+31 71 165 9687',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -3995,7 +4007,7 @@ describe('vPhone', () => {
                 '914457',
                 '277234',
                 '052402',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4007,7 +4019,7 @@ describe('vPhone', () => {
                 '+687 914457',
                 '+687 277234',
                 '+687 052402',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4021,7 +4033,7 @@ describe('vPhone', () => {
                 '3 486 6260',
                 '3 100 5192',
                 '3 108 8429',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4033,7 +4045,7 @@ describe('vPhone', () => {
                 '+64 3 486 6260',
                 '+64 3 100 5192',
                 '+64 3 108 8429',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4047,7 +4059,7 @@ describe('vPhone', () => {
                 '0833 2937',
                 '4622 0048',
                 '5603 8623',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4059,7 +4071,7 @@ describe('vPhone', () => {
                 '+505 0833 2937',
                 '+505 4622 0048',
                 '+505 5603 8623',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4073,7 +4085,7 @@ describe('vPhone', () => {
                 '20 268920',
                 '20 687821',
                 '20 384376',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4085,7 +4097,7 @@ describe('vPhone', () => {
                 '+227 20 268920',
                 '+227 20 687821',
                 '+227 20 384376',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4099,7 +4111,7 @@ describe('vPhone', () => {
                 '706 742 9199',
                 '706 311 8658',
                 '706 749 8532',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4111,7 +4123,7 @@ describe('vPhone', () => {
                 '+234 706 742 9199',
                 '+234 706 311 8658',
                 '+234 706 749 8532',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4125,7 +4137,7 @@ describe('vPhone', () => {
                 '376 2137',
                 '286 7927',
                 '257 8729',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4137,7 +4149,7 @@ describe('vPhone', () => {
                 '376 2137',
                 '286 7927',
                 '257 8729',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4151,7 +4163,7 @@ describe('vPhone', () => {
                 '670 512 5577',
                 '670 856 2363',
                 '670 866 8073',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4163,7 +4175,7 @@ describe('vPhone', () => {
                 '+1 670 512 5577',
                 '+1 670 856 2363',
                 '+1 670 866 8073',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4177,7 +4189,7 @@ describe('vPhone', () => {
                 '4292 7739',
                 '1408 0810',
                 '5850 8632',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4189,7 +4201,7 @@ describe('vPhone', () => {
                 '+47 4292 7739',
                 '+47 1408 0810',
                 '+47 5850 8632',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4203,7 +4215,7 @@ describe('vPhone', () => {
                 '6679 0265',
                 '4657 2027',
                 '0434 0205',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4215,7 +4227,7 @@ describe('vPhone', () => {
                 '+968 6679 0265',
                 '+968 4657 2027',
                 '+968 0434 0205',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4229,7 +4241,7 @@ describe('vPhone', () => {
                 '254 5011',
                 '241 8211',
                 '894 0829',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4241,7 +4253,7 @@ describe('vPhone', () => {
                 '+92 254 5011',
                 '+92 241 8211',
                 '+92 894 0829',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4255,7 +4267,7 @@ describe('vPhone', () => {
                 '910 4734',
                 '354 0685',
                 '718 3902',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4267,7 +4279,7 @@ describe('vPhone', () => {
                 '+680 910 4734',
                 '+680 354 0685',
                 '+680 718 3902',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4281,7 +4293,7 @@ describe('vPhone', () => {
                 '8 227 1864',
                 '8 040 8301',
                 '8 346 4658',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4293,7 +4305,7 @@ describe('vPhone', () => {
                 '+970 8 227 1864',
                 '+970 8 040 8301',
                 '+970 8 346 4658',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4307,7 +4319,7 @@ describe('vPhone', () => {
                 '623 7804',
                 '376 5958',
                 '739 7541',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4319,7 +4331,7 @@ describe('vPhone', () => {
                 '+507 623 7804',
                 '+507 376 5958',
                 '+507 739 7541',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4333,7 +4345,7 @@ describe('vPhone', () => {
                 '660 7036',
                 '150 7335',
                 '185 0902',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4345,7 +4357,7 @@ describe('vPhone', () => {
                 '+675 660 7036',
                 '+675 150 7335',
                 '+675 185 0902',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4359,7 +4371,7 @@ describe('vPhone', () => {
                 '985 312492',
                 '985 797548',
                 '985 939390',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4371,7 +4383,7 @@ describe('vPhone', () => {
                 '+595 985 312492',
                 '+595 985 797548',
                 '+595 985 939390',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4385,7 +4397,7 @@ describe('vPhone', () => {
                 '41 644062525',
                 '41 354492331',
                 '41 997007684',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4397,7 +4409,7 @@ describe('vPhone', () => {
                 '+51 41 644062525',
                 '+51 41 354492331',
                 '+51 41 997007684',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4411,7 +4423,7 @@ describe('vPhone', () => {
                 '45 394 0533',
                 '45 862 2674',
                 '45 005 4285',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4423,7 +4435,7 @@ describe('vPhone', () => {
                 '+63 45 394 0533',
                 '+63 45 862 2674',
                 '+63 45 005 4285',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4437,7 +4449,7 @@ describe('vPhone', () => {
                 '69 662 1820',
                 '69 869 3211',
                 '69 882 1499',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4449,7 +4461,7 @@ describe('vPhone', () => {
                 '+48 69 662 1820',
                 '+48 69 869 3211',
                 '+48 69 882 1499',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4463,7 +4475,7 @@ describe('vPhone', () => {
                 '289 712 948',
                 '289 281 063',
                 '289 776 732',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4475,7 +4487,7 @@ describe('vPhone', () => {
                 '+351 289 712 948',
                 '+351 289 281 063',
                 '+351 289 776 732',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4489,7 +4501,7 @@ describe('vPhone', () => {
                 '142 6122',
                 '704 2717',
                 '773 1792',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4501,7 +4513,7 @@ describe('vPhone', () => {
                 '+1787 142 6122',
                 '+1787 704 2717',
                 '+1787 773 1792',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4515,7 +4527,7 @@ describe('vPhone', () => {
                 '6109 5130',
                 '6374 1774',
                 '1888 2635',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4527,7 +4539,7 @@ describe('vPhone', () => {
                 '+974 6109 5130',
                 '+974 6374 1774',
                 '+974 1888 2635',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4541,7 +4553,7 @@ describe('vPhone', () => {
                 '257 010 018',
                 '257 100 364',
                 '257 071 901',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4553,7 +4565,7 @@ describe('vPhone', () => {
                 '+40 257 010 018',
                 '+40 257 100 364',
                 '+40 257 071 901',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4567,7 +4579,7 @@ describe('vPhone', () => {
                 '401 557 5234',
                 '401 316 6309',
                 '401 583 3001',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4579,7 +4591,7 @@ describe('vPhone', () => {
                 '+7 401 557 5234',
                 '+7 401 316 6309',
                 '+7 401 583 3001',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4593,7 +4605,7 @@ describe('vPhone', () => {
                 '025 280 834',
                 '802 255 702',
                 '770 650 769',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4605,7 +4617,7 @@ describe('vPhone', () => {
                 '+7 025 280 834',
                 '+7 802 255 702',
                 '+7 770 650 769',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4619,7 +4631,7 @@ describe('vPhone', () => {
                 '704 2784',
                 '382 4566',
                 '904 2718',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4631,7 +4643,7 @@ describe('vPhone', () => {
                 '+599 704 2784',
                 '+599 382 4566',
                 '+599 904 2718',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4645,7 +4657,7 @@ describe('vPhone', () => {
                 '37093',
                 '20284',
                 '08586',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4657,7 +4669,7 @@ describe('vPhone', () => {
                 '+290 37093',
                 '+290 20284',
                 '+290 08586',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4671,7 +4683,7 @@ describe('vPhone', () => {
                 '869 013 2500',
                 '869 774 3549',
                 '869 229 9685',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4683,7 +4695,7 @@ describe('vPhone', () => {
                 '+1 869 013 2500',
                 '+1 869 774 3549',
                 '+1 869 229 9685',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4697,7 +4709,7 @@ describe('vPhone', () => {
                 '308427',
                 '771295',
                 '194689',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4709,7 +4721,7 @@ describe('vPhone', () => {
                 '+508 308427',
                 '+508 771295',
                 '+508 194689',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4723,7 +4735,7 @@ describe('vPhone', () => {
                 '784 746 0501',
                 '784 832 8591',
                 '784 743 5788',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4735,7 +4747,7 @@ describe('vPhone', () => {
                 '+1 784 746 0501',
                 '+1 784 832 8591',
                 '+1 784 743 5788',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4749,7 +4761,7 @@ describe('vPhone', () => {
                 '729 3325',
                 '604 4970',
                 '022 1178',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4761,7 +4773,7 @@ describe('vPhone', () => {
                 '+685 729 3325',
                 '+685 604 4970',
                 '+685 022 1178',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4775,7 +4787,7 @@ describe('vPhone', () => {
                 '0549 232058',
                 '0549 913889',
                 '0549 399967',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4787,7 +4799,7 @@ describe('vPhone', () => {
                 '+378 0549 232058',
                 '+378 0549 913889',
                 '+378 0549 399967',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4801,7 +4813,7 @@ describe('vPhone', () => {
                 '209 7110',
                 '653 2965',
                 '227 9158',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4813,7 +4825,7 @@ describe('vPhone', () => {
                 '+239 209 7110',
                 '+239 653 2965',
                 '+239 227 9158',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4827,7 +4839,7 @@ describe('vPhone', () => {
                 '56 962 8307',
                 '56 940 0839',
                 '56 580 9988',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4839,7 +4851,7 @@ describe('vPhone', () => {
                 '+966 56 962 8307',
                 '+966 56 940 0839',
                 '+966 56 580 9988',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4853,7 +4865,7 @@ describe('vPhone', () => {
                 '76 157 9039',
                 '76 027 0452',
                 '76 203 4794',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4865,7 +4877,7 @@ describe('vPhone', () => {
                 '+221 76 157 9039',
                 '+221 76 027 0452',
                 '+221 76 203 4794',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4879,7 +4891,7 @@ describe('vPhone', () => {
                 '61 310 7066',
                 '61 053 3943',
                 '61 859 0840',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4891,7 +4903,7 @@ describe('vPhone', () => {
                 '+381 61 310 7066',
                 '+381 61 053 3943',
                 '+381 61 859 0840',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4905,7 +4917,7 @@ describe('vPhone', () => {
                 '438 6269',
                 '495 1840',
                 '318 5373',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4917,7 +4929,7 @@ describe('vPhone', () => {
                 '+248 438 6269',
                 '+248 495 1840',
                 '+248 318 5373',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4931,7 +4943,7 @@ describe('vPhone', () => {
                 '21 850817',
                 '21 404485',
                 '21 392569',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4943,7 +4955,7 @@ describe('vPhone', () => {
                 '+232 21 850817',
                 '+232 21 404485',
                 '+232 21 392569',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4957,7 +4969,7 @@ describe('vPhone', () => {
                 '2335 8815',
                 '8026 1166',
                 '9278 6090',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4969,7 +4981,7 @@ describe('vPhone', () => {
                 '+65 2335 8815',
                 '+65 8026 1166',
                 '+65 9278 6090',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -4983,7 +4995,7 @@ describe('vPhone', () => {
                 '971 8720',
                 '780 4413',
                 '641 8698',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -4995,7 +5007,7 @@ describe('vPhone', () => {
                 '+599 971 8720',
                 '+599 780 4413',
                 '+599 641 8698',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5009,7 +5021,7 @@ describe('vPhone', () => {
                 '721 925 6168',
                 '721 340 9505',
                 '721 335 5608',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5021,7 +5033,7 @@ describe('vPhone', () => {
                 '+1 721 925 6168',
                 '+1 721 340 9505',
                 '+1 721 335 5608',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5035,7 +5047,7 @@ describe('vPhone', () => {
                 '90 537 8714',
                 '90 271 7840',
                 '90 383 7649',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5047,7 +5059,7 @@ describe('vPhone', () => {
                 '+421 90 537 8714',
                 '+421 90 271 7840',
                 '+421 90 383 7649',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5061,7 +5073,7 @@ describe('vPhone', () => {
                 '46771',
                 '69134',
                 '88795',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5073,7 +5085,7 @@ describe('vPhone', () => {
                 '+677 46771',
                 '+677 69134',
                 '+677 88795',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5087,7 +5099,7 @@ describe('vPhone', () => {
                 '61 907 8446',
                 '61 647 9190',
                 '61 992 3501',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5099,7 +5111,7 @@ describe('vPhone', () => {
                 '+252 61 907 8446',
                 '+252 61 647 9190',
                 '+252 61 992 3501',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5113,7 +5125,7 @@ describe('vPhone', () => {
                 '81 633 5220',
                 '81 834 9515',
                 '81 510 2405',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5125,7 +5137,7 @@ describe('vPhone', () => {
                 '+27 81 633 5220',
                 '+27 81 834 9515',
                 '+27 81 510 2405',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5139,7 +5151,7 @@ describe('vPhone', () => {
                 '2 525 0591',
                 '2 213 9726',
                 '2 556 3465',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5151,7 +5163,7 @@ describe('vPhone', () => {
                 '+82 2 525 0591',
                 '+82 2 213 9726',
                 '+82 2 556 3465',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5165,7 +5177,7 @@ describe('vPhone', () => {
                 '910 429996',
                 '910 059085',
                 '910 565484',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5177,7 +5189,7 @@ describe('vPhone', () => {
                 '+211 910 429996',
                 '+211 910 059085',
                 '+211 910 565484',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5191,7 +5203,7 @@ describe('vPhone', () => {
                 '646 517 456',
                 '088 198 557',
                 '994 356 278',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5203,7 +5215,7 @@ describe('vPhone', () => {
                 '+34 646 517 456',
                 '+34 088 198 557',
                 '+34 994 356 278',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5217,7 +5229,7 @@ describe('vPhone', () => {
                 '47 209 9410',
                 '47 489 5292',
                 '47 238 7692',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5229,7 +5241,7 @@ describe('vPhone', () => {
                 '+94 47 209 9410',
                 '+94 47 489 5292',
                 '+94 47 238 7692',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5243,7 +5255,7 @@ describe('vPhone', () => {
                 '12 353 3079',
                 '12 397 0017',
                 '12 150 1623',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5255,7 +5267,7 @@ describe('vPhone', () => {
                 '+249 12 353 3079',
                 '+249 12 397 0017',
                 '+249 12 150 1623',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5269,7 +5281,7 @@ describe('vPhone', () => {
                 '082990',
                 '657786',
                 '104006',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5281,7 +5293,7 @@ describe('vPhone', () => {
                 '+597 082990',
                 '+597 657786',
                 '+597 104006',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5295,7 +5307,7 @@ describe('vPhone', () => {
                 '2 498 2932',
                 '2 712 7215',
                 '2 889 2340',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5307,7 +5319,7 @@ describe('vPhone', () => {
                 '+268 2 498 2932',
                 '+268 2 712 7215',
                 '+268 2 889 2340',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5321,7 +5333,7 @@ describe('vPhone', () => {
                 '16 216 9443',
                 '16 296 0194',
                 '16 392 2549',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5333,7 +5345,7 @@ describe('vPhone', () => {
                 '+46 16 216 9443',
                 '+46 16 296 0194',
                 '+46 16 392 2549',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5347,7 +5359,7 @@ describe('vPhone', () => {
                 '33 510 7345',
                 '33 995 1501',
                 '33 468 9461',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5359,7 +5371,7 @@ describe('vPhone', () => {
                 '+41 33 510 7345',
                 '+41 33 995 1501',
                 '+41 33 468 9461',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5373,7 +5385,7 @@ describe('vPhone', () => {
                 '33 915 2603',
                 '33 641 7078',
                 '33 232 5670',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5385,7 +5397,7 @@ describe('vPhone', () => {
                 '+963 33 915 2603',
                 '+963 33 641 7078',
                 '+963 33 232 5670',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5399,7 +5411,7 @@ describe('vPhone', () => {
                 '4 0904 8027',
                 '4 1046 5587',
                 '4 7086 7466',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5411,7 +5423,7 @@ describe('vPhone', () => {
                 '+886 4 0904 8027',
                 '+886 4 1046 5587',
                 '+886 4 7086 7466',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5425,7 +5437,7 @@ describe('vPhone', () => {
                 '32 623 8336',
                 '32 135 7651',
                 '32 868 7269',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5437,7 +5449,7 @@ describe('vPhone', () => {
                 '+992 32 623 8336',
                 '+992 32 135 7651',
                 '+992 32 868 7269',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5451,7 +5463,7 @@ describe('vPhone', () => {
                 '75 296 1106',
                 '75 875 2582',
                 '75 773 7094',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5463,7 +5475,7 @@ describe('vPhone', () => {
                 '+255 75 296 1106',
                 '+255 75 875 2582',
                 '+255 75 773 7094',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5477,7 +5489,7 @@ describe('vPhone', () => {
                 '2 640 7315',
                 '2 942 6943',
                 '2 593 0213',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5489,7 +5501,7 @@ describe('vPhone', () => {
                 '+66 2 640 7315',
                 '+66 2 942 6943',
                 '+66 2 593 0213',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5503,7 +5515,7 @@ describe('vPhone', () => {
                 '9 299 9889',
                 '9 602 3085',
                 '9 743 3437',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5515,7 +5527,7 @@ describe('vPhone', () => {
                 '+228 9 299 9889',
                 '+228 9 602 3085',
                 '+228 9 743 3437',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5529,7 +5541,7 @@ describe('vPhone', () => {
                 '605 9198',
                 '469 0148',
                 '804 5816',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5541,7 +5553,7 @@ describe('vPhone', () => {
                 '+676 605 9198',
                 '+676 469 0148',
                 '+676 804 5816',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5555,7 +5567,7 @@ describe('vPhone', () => {
                 '868 245 9311',
                 '868 241 3534',
                 '868 740 3512',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5567,7 +5579,7 @@ describe('vPhone', () => {
                 '+1 868 245 9311',
                 '+1 868 241 3534',
                 '+1 868 740 3512',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5581,7 +5593,7 @@ describe('vPhone', () => {
                 '1175 1218',
                 '2869 3277',
                 '4056 9802',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5593,7 +5605,7 @@ describe('vPhone', () => {
                 '+216 1175 1218',
                 '+216 2869 3277',
                 '+216 4056 9802',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5607,7 +5619,7 @@ describe('vPhone', () => {
                 '242 748 0308',
                 '242 637 4182',
                 '242 350 4328',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5619,7 +5631,7 @@ describe('vPhone', () => {
                 '+90 242 748 0308',
                 '+90 242 637 4182',
                 '+90 242 350 4328',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5633,7 +5645,7 @@ describe('vPhone', () => {
                 '12 981722',
                 '12 866188',
                 '12 963383',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5645,7 +5657,7 @@ describe('vPhone', () => {
                 '+993 12 981722',
                 '+993 12 866188',
                 '+993 12 963383',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5659,7 +5671,7 @@ describe('vPhone', () => {
                 '649 702 1780',
                 '649 112 0549',
                 '649 970 3924',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5671,7 +5683,7 @@ describe('vPhone', () => {
                 '+1 649 702 1780',
                 '+1 649 112 0549',
                 '+1 649 970 3924',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5685,7 +5697,7 @@ describe('vPhone', () => {
                 '49163',
                 '06944',
                 '91409',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5697,7 +5709,7 @@ describe('vPhone', () => {
                 '+688 49163',
                 '+688 06944',
                 '+688 91409',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5711,7 +5723,7 @@ describe('vPhone', () => {
                 '751 321833',
                 '751 308802',
                 '751 916647',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5723,7 +5735,7 @@ describe('vPhone', () => {
                 '+256 751 321833',
                 '+256 751 308802',
                 '+256 751 916647',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5737,7 +5749,7 @@ describe('vPhone', () => {
                 '44 602 6592',
                 '44 997 9270',
                 '44 576 2346',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5749,7 +5761,7 @@ describe('vPhone', () => {
                 '+380 44 602 6592',
                 '+380 44 997 9270',
                 '+380 44 576 2346',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5763,7 +5775,7 @@ describe('vPhone', () => {
                 '55 078 7924',
                 '55 492 8342',
                 '55 224 3223',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5775,7 +5787,7 @@ describe('vPhone', () => {
                 '+971 55 078 7924',
                 '+971 55 492 8342',
                 '+971 55 224 3223',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5789,7 +5801,7 @@ describe('vPhone', () => {
                 '01632 960174',
                 '01632 960942',
                 '01632 960966',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5801,7 +5813,7 @@ describe('vPhone', () => {
                 '+44 1632 960174',
                 '+44 1632 960942',
                 '+44 1632 960966',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5815,7 +5827,7 @@ describe('vPhone', () => {
                 '202-555-0150',
                 '202-555-0181',
                 '202-555-0143',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5827,7 +5839,7 @@ describe('vPhone', () => {
                 '+1-202-555-0150',
                 '+1-202-555-0181',
                 '+1-202-555-0143',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5841,7 +5853,7 @@ describe('vPhone', () => {
                 '340 490 8352',
                 '340 759 0208',
                 '340 725 5189',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5853,7 +5865,7 @@ describe('vPhone', () => {
                 '+1 340 490 8352',
                 '+1 340 759 0208',
                 '+1 340 725 5189',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5867,7 +5879,7 @@ describe('vPhone', () => {
                 '8633 5374',
                 '7733 9954',
                 '4480 8162',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5879,7 +5891,7 @@ describe('vPhone', () => {
                 '+598 8633 5374',
                 '+598 7733 9954',
                 '+598 4480 8162',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5893,7 +5905,7 @@ describe('vPhone', () => {
                 '99 935 2571',
                 '99 742 3079',
                 '99 645 0279',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5905,7 +5917,7 @@ describe('vPhone', () => {
                 '+998 99 935 2571',
                 '+998 99 742 3079',
                 '+998 99 645 0279',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5919,7 +5931,7 @@ describe('vPhone', () => {
                 '84429',
                 '73481',
                 '72412',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5931,7 +5943,7 @@ describe('vPhone', () => {
                 '+678 84429',
                 '+678 73481',
                 '+678 72412',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5945,7 +5957,7 @@ describe('vPhone', () => {
                 '212 054 4478',
                 '212 440 0643',
                 '212 255 0882',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5957,7 +5969,7 @@ describe('vPhone', () => {
                 '+58 212 054 4478',
                 '+58 212 440 0643',
                 '+58 212 255 0882',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5971,7 +5983,7 @@ describe('vPhone', () => {
                 '121 473 2166',
                 '121 371 7675',
                 '121 150 5249',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -5983,7 +5995,7 @@ describe('vPhone', () => {
                 '+84 121 473 2166',
                 '+84 121 371 7675',
                 '+84 121 150 5249',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -5997,7 +6009,7 @@ describe('vPhone', () => {
                 '382 2735',
                 '920 4655',
                 '987 6219',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -6009,7 +6021,7 @@ describe('vPhone', () => {
                 '+681 382 2735',
                 '+681 920 4655',
                 '+681 987 6219',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -6023,7 +6035,7 @@ describe('vPhone', () => {
                 '5 814568',
                 '5 481537',
                 '5 038719',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -6035,7 +6047,7 @@ describe('vPhone', () => {
                 '+967 5 814568',
                 '+967 5 481537',
                 '+967 5 038719',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -6049,7 +6061,7 @@ describe('vPhone', () => {
                 '95 732 8299',
                 '95 047 2800',
                 '95 247 9032',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -6061,7 +6073,7 @@ describe('vPhone', () => {
                 '+260 95 732 8299',
                 '+260 95 047 2800',
                 '+260 95 247 9032',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 
@@ -6075,7 +6087,7 @@ describe('vPhone', () => {
                 '78 790 9226',
                 '78 601 1962',
                 '78 876 7423',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should be valid for sample list of international phone numbers', () => {
@@ -6087,7 +6099,7 @@ describe('vPhone', () => {
                 '+263 78 790 9226',
                 '+263 78 601 1962',
                 '+263 78 876 7423',
-            ]) assert.ok(v.validate({a: el}).is_valid);
+            ]) assert.deepEqual(v.validate({a: el}), {is_valid: true, count: 0, errors: {}});
         });
     });
 });
