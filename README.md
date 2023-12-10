@@ -45,7 +45,7 @@ console.log(evaluation.is_valid); // true
 A validator instance is reusable across multiple validation runs, it's instantiated with a set of rules that it needs to validate later down the
 line. These rules can go from single dimensional kv objects to multi-dimensional kv objects.
 
-You can create very small validators `... = new Validator({email: 'string|email'});` to very complex validators using a simple
+You can create very small validators `... = new Validator({email: 'email'});` to very complex validators using a simple
 readable syntax.
 
 ```js
@@ -56,7 +56,7 @@ new Validator({
         zip: 'integer|between:1000,9999',
     },
     contact: {
-        email: 'string|email',
+        email: 'email',
     },
     filters: {
         ids: '[unique]integer|greater_than:0',
@@ -86,11 +86,23 @@ The `!` symbol marks a rule as the opposite, meaning that we should revert the v
 As such the example rule here validates on 3 things, the `integer` rule and `between` rule, where the between rule has 2 parameters
 (1000, 9999) as well as that any value can not be equal to 5.
 
-### Running validations and checking evaluations
+### @validate: Running validations and checking evaluations
 After a validator instance is created, you can run it as many times as you want to validate a data object passed to it. The resultset of this is called an `evaluation` and is returned when calling the `validate` function.
 
 ```js
+const myvalidator = new Validator({name: 'string_ne|min:2', age: 'integer|between:1,150'});
+
 const evaluation = myvalidator.validate({name: 'Peter', age: '250'});
+// evaluation: {
+//    is_valid: false,
+//    count: 1,
+//    errors: {
+//        age: [
+//            {msg: 'integer', params: []},
+//            {msg: 'between', params: ['1','150']}
+//        ],
+//    },
+// }
 ```
 
 The evaluation object consists of two keys that can be used to determine the result of the validation:
@@ -98,28 +110,66 @@ The evaluation object consists of two keys that can be used to determine the res
 - **is_valid**
 A boolean value that tells you whether or not the validation succeeded (true) or not (false)
 
+- **count**
+An integer value defining how many fields were invalid
+
 - **errors**
-An object containing the errors per validated key, each key in the ruleset will be represented here, if a key was correctly validated it will be an
-empty array, otherwise it will be an array containing the specific rules that didn't match.
+An object containing the errors per validated key, each key that had errors will be represented here with an array of the rules that weren't met for the provided value.
 
-example of an evaluation object:
-
+Below is an example of such behavior for a more complex validator:
 ```js
-{
-    is_valid: false,
-    errors: {
-        name: [],
-        age: [
-            {msg: 'integer', params: []},
-            {msg: 'between', params: ['1','150']}
-        ],
+const v = new Validator({
+    first_name: 'string_ne|min:2',
+    last_name: 'string_ne|min:2',
+    address: {
+        street: 'string|alpha_num_spaces',
+        nr: 'integer',
+        zip: 'integer|between:1000,9999',
     },
-}
+    contact: {
+        email: 'email',
+        phone: '?phone',
+        website: '?url',
+    },
+});
+
+v.validate({
+    first_name: 'Peter',
+    address: {street: 'Amazing Rd'},
+    contact: {website: 'www.valkyriestudios.be'},
+});
+// evaluation: {
+//    is_valid: false,
+//    count: 4,
+//    errors: {
+//        'last_name': [
+//            {msg: 'string_ne', params: []},
+//            {msg: 'min', params: ['2']}
+//        ],
+//        'street.zip': [
+//            {msg: 'integer', params: []},
+//        ],
+//        'street.zip': [
+//            {msg: 'integer', params: []},
+//            {msg: 'between', params: ['1000','9999']}
+//        ],
+//        'contact.email': [
+//            {msg: 'email', params: []}
+//        ]
+//    },
+// }
 ```
 
-### Revisiting evaluations
-The validator instance will remember and internally store the last evaluation, you can always link back to it through the `is_valid` property and
-the `errors` property on the validator instance.
+
+### @check: Simple/Speedy validity checks
+In case you don't need an evaluation object and are simply interested in whether or not something is valid you can also choose to work with the faster `check` method available on any validator instance. This method is faster than standard validation through `validate` due to not needing to build up a full resultset and immediately returning the moment it spots something invalid.
+
+```js
+const myvalidator = new Validator({name: 'string_ne|min:2', age: 'integer|between:1,150'});
+
+myvalidator.check({name: 'Peter', age: '250'}); // false
+myvalidator.check({name: 'Peter', age: 20}); // true
+```
 
 ### Linking to other parameters inside of the data object
 Validation sometimes requires context, this context is usually linked to other variables in the data object that is being validated. Think of a
@@ -133,16 +183,16 @@ Example of a parameterized equal to rule:
 ```js
 const v = new Validator({a: 'equal_to:<b>'});
 
-v.validate({a: 'hello', b: 'world'}); // is_valid = false
-v.validate({a: 'foo', b: 'foo'}); // is_valid = true
+v.check({a: 'hello', b: 'world'}); // false
+v.check({a: 'foo', b: 'foo'}); // true
 ```
 
 Example of a parameterized greater_than rule:
 ```js
 const v = new Validator({a: 'greater_than:<b>'});
 
-v.validate({a: 50, b: 40}); // is_valid = true
-v.validate({a: 10, b: 20}); // is_valid = false
+v.check({a: 50, b: 40}); // true
+v.check({a: 10, b: 20}); // false
 ```
 
 Take note: Custom rules (see below) do not need any special definition for this to work.
@@ -157,8 +207,8 @@ Example of an optional rule:
 ```js
 const v = new Validator({gender: '?string|in:<genders>'});
 
-v.validate({genders: ['m', 'f', 'o']}); // is_valid = true
-v.validate({gender: 'X', genders: ['m', 'f', 'o']}); // is_valid = false
+v.check({genders: ['m', 'f', 'o']}); // true
+v.check({gender: 'X', genders: ['m', 'f', 'o']}); // false
 ```
 
 ### Opposite rules
@@ -174,8 +224,8 @@ const v = new Validator({
     password_old: 'string|min:8|!equal_to:<password>',
 });
 
-v.validate({password: 'mysecretpass', password_old: 'mysecretpass'}); // is_valid = false
-v.validate({password: 'mysecretpass', password_old: 'myoldpass'}); // is_valid = true
+v.check({password: 'mysecretpass', password_old: 'mysecretpass'}); // false
+v.check({password: 'mysecretpass', password_old: 'myoldpass'}); // true
 ```
 
 ### Array validation
@@ -188,8 +238,8 @@ const v = new Validator({
     ids: '[]integer|greater_than:0',
 });
 
-v.validate({ids: 5}); // is_valid: false
-v.validate({ids: [5]}); // is_valid: true
+v.check({ids: 5}); // false
+v.check({ids: [5]}); // true
 ```
 
 ##### Options
@@ -210,11 +260,11 @@ const validator = new Validator({
     fruits: `[unique|min:1|max:4]is_fruit`.
 });
 
-validator.validate({fruits: ['apple', 'orange']}); // is_valid: true
-validator.validate({fruits: ['apple', 'apple', 'orange']}); // is_valid: false (not unique)
-validator.validate({fruits: []}); // is_valid: false (min: 1)
-validator.validate({fruits: ['apple', 'dog', 'orange']}); // is_valid: false (is_fruit)
-validator.validate({fruits: ['apple', 'dog', 'orange', 'pear', 'pear']}); // is_valid: false (is_fruit and over max)
+validator.check({fruits: ['apple', 'orange']}); // true
+validator.check({fruits: ['apple', 'apple', 'orange']}); // false (not unique)
+validator.check({fruits: []}); // false (min: 1)
+validator.check({fruits: ['apple', 'dog', 'orange']}); // false (is_fruit)
+validator.check({fruits: ['apple', 'dog', 'orange', 'pear', 'pear']}); // false (is_fruit and over max)
 ```
 
 ### Extending the validator with custom rules
@@ -231,8 +281,8 @@ Validator.extend('user_role', function (val) {
 });
 
 example usage
-(new Validator({a: 'user_role'})).validate({a: 'owner'}); // is_valid = false
-(new Validator({a: 'user_role'})).validate({a: 'admin'}); // is_valid = true
+(new Validator({a: 'user_role'})).check({a: 'owner'}); // false
+(new Validator({a: 'user_role'})).check({a: 'admin'}); // true
 ```
 
 Example of a rule that will validate whether an integer is the double of a provided parameter
@@ -245,8 +295,8 @@ Validator.extend('is_double', function (val, param) {
 example usage
 const v = new Validator({a: 'is_double:<meta.b>'});
 
-v.validate({a: 6, meta: {b: 4}}); // is_valid = false
-v.validate({a: 8, meta: {b: 4}}); // is_valid = true
+v.check({a: 6, meta: {b: 4}}); // false
+v.check({a: 8, meta: {b: 4}}); // true
 ```
 
 ##### Multiple rules at once?
@@ -262,12 +312,63 @@ Validator.extendMulti({
 });
 ```
 
-##### Want to use the validation rules directly without a validator?
+### Extending the validator with enumerations
+In most real-world scenarios we often need to validate whether or not a provided value is in a fixed set. The above extendMulti example is one way of doing so but in many use cases those predefined sets come from somewhere else. To make it easier to define/use them you can make use of the static `Validator.extendEnum` method.
+
+This method expects a kv-map where the `key` is the name we want to validate with and the `value` is an array of strings/numbers that is our set. An example of this behavior can be found below (using the example from extendMulti):
+
+```js
+Validator.extendEnum({
+    is_fruit    : ['apple', 'pear', 'orange'],
+    is_animal   : ['dog', 'cat', 'horse'],
+    is_pet      : ['dog', 'cat'],
+});
+```
+
+Of course the below would also work in case the sets are coming from somewhere else:
+```js
+import FRUITS from '...'; // Eg: FRUITS {APPLE: 'apple', PEAR: 'pear', ORANGE: 'orange'}
+import ANIMALS from '...'; // Eg: ANIMALS {DOG: 'dog', CAT: 'cat', HORSE: 'horse'}
+import PETS from '..'; // Eg: PETS {DOG: 'dog', CAT: 'cat'}
+
+Validator.extendEnum({
+    is_fruit    : Object.values(FRUITS),
+    is_animal   : Object.values(ANIMALS),
+    is_pet      : Object.values(PETS),
+});
+```
+
+**Take Note:** In most real-world use cases enumerations don't tend to change at runtime, in case this does happen you can always re-run the enum extension, for example:
+```js
+Validator.extendEnum({FRUITS: ['apple', 'pear']});
+const v = new Validator({val: 'FRUITS'});
+
+v.check('banana'); // false
+
+Validator.extendEnum({FRUITS: ['apple', 'pear', 'banana']});
+
+v.check('banana'); // true
+```
+
+### Want to use the validation rules directly without a validator?
 If you see the need to directly use the validation rule functions without a validator instance, or want to check internal state you can use the `Validator.rules` static.
 
-```
+```js
 Validator.rules.phone('+32 487 61 59 82'); // true
 Validator.rules.email('contact@valkyriestudios.be'); // true
+```
+
+This also goes for enumeration rules:
+
+```js
+Validator.extendEnum({
+    NAMES: ['Peter', 'John'],
+    fruits: ['apple', 'pear'],
+});
+Validator.rules.NAMES('Peter'); // true
+Validator.rules.NAMES('Jack'); // false
+Validator.rules.fruits('apple'); // true
+Validator.rules.fruits('appl3'); // false
 ```
 
 ## Available rules
