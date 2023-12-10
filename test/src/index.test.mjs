@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable max-lines */
+
 import {describe, it}           from 'node:test';
 import assert                   from 'node:assert/strict';
 import Is                       from '@valkyriestudios/utils/src/is.mjs';
@@ -581,7 +583,7 @@ describe('Validator - Core', () => {
                 count: 1,
                 errors: {
                     a: [
-                        {msg: 'iterable_max', params: [5]}
+                        {msg: 'iterable_max', params: [5]},
                     ],
                 },
             });
@@ -595,7 +597,7 @@ describe('Validator - Core', () => {
                 count: 1,
                 errors: {
                     a: [
-                        {msg: 'iterable_max', params: [5]}
+                        {msg: 'iterable_max', params: [5]},
                     ],
                 },
             });
@@ -650,7 +652,7 @@ describe('Validator - Core', () => {
                 count: 1,
                 errors: {
                     a: [
-                        {msg: 'iterable_min', params: [3]}
+                        {msg: 'iterable_min', params: [3]},
                     ],
                 },
             });
@@ -664,7 +666,7 @@ describe('Validator - Core', () => {
                 count: 1,
                 errors: {
                     a: [
-                        {msg: 'iterable_min', params: [4]}
+                        {msg: 'iterable_min', params: [4]},
                     ],
                 },
             });
@@ -719,7 +721,7 @@ describe('Validator - Core', () => {
                 count: 1,
                 errors: {
                     a: [
-                        {msg: 'iterable_max', params: [5]}
+                        {msg: 'iterable_max', params: [5]},
                     ],
                 },
             });
@@ -739,7 +741,7 @@ describe('Validator - Core', () => {
                 count: 1,
                 errors: {
                     a: [
-                        {msg: 'iterable_min', params: [2]}
+                        {msg: 'iterable_min', params: [2]},
                     ],
                 },
             });
@@ -753,7 +755,7 @@ describe('Validator - Core', () => {
                 count: 1,
                 errors: {
                     a: [
-                        {msg: 'iterable_max', params: [5]}
+                        {msg: 'iterable_max', params: [5]},
                     ],
                 },
             });
@@ -767,7 +769,7 @@ describe('Validator - Core', () => {
                 count: 1,
                 errors: {
                     a: [
-                        {msg: 'iterable_min', params: [2]}
+                        {msg: 'iterable_min', params: [2]},
                     ],
                 },
             });

@@ -60,8 +60,7 @@ describe('vUrl', () => {
             'http://x.comddfsdfsdf.', // Trailing dots in tlds are valid
         ]) {
             const evaluation = v.validate({a: el});
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         }
     });
 
@@ -70,8 +69,13 @@ describe('vUrl', () => {
 
         for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
             const evaluation = v.validate({a: el});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg:'url', params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: el === undefined ? 'not_found' : 'url', params: []}],
+                },
+            });
         }
     });
 
@@ -84,8 +88,13 @@ describe('vUrl', () => {
             '    https://www.google.com',
         ]) {
             const evaluation = v.validate({a: el});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg:'url', params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'url', params: []}],
+                },
+            });
         }
     });
 
@@ -132,8 +141,13 @@ describe('vUrl', () => {
             'http://10.1.1.254',
         ]) {
             const evaluation = v.validate({a: el});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg:'url', params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'url', params: []}],
+                },
+            });
         }
     });
 });

@@ -17,7 +17,7 @@ describe('vPhone', () => {
                     is_valid: false,
                     count: 1,
                     errors: {
-                        a: [{msg: el === undefined ? 'not_found' : 'phone', params: []}]
+                        a: [{msg: el === undefined ? 'not_found' : 'phone', params: []}],
                     },
                 }
             );

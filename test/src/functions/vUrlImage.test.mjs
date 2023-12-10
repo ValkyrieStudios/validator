@@ -46,8 +46,7 @@ describe('vUrlImage', () => {
                 `https://valkyriestudios.com/afile.${ext}?a=1&b=2#eweqweqwewqeqweweqweqweqweqwewopqieqwoeqweipqwoeiqweiqwpoeiqwieqwopeiqwpooeqwieiqwoeiqwoeiqweiqwopeiqwpeiqweiqweoiwqopepwoqiepqwoieoiwqeipqwoeiowqieoipoeiwqoiepowiqoieqw&ewquie`, // eslint-disable-line max-len
             ]) {
                 const evaluation = v.validate({a: el});
-                assert.ok(evaluation.is_valid);
-                assert.deepEqual(evaluation.errors.a, []);
+                assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
             }
         }
     });
@@ -110,8 +109,13 @@ describe('vUrlImage', () => {
             'http://x.comddfsdfsdf.', // Trailing dots in tlds are valid
         ]) {
             const evaluation = v.validate({a: el});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg:'url_img', params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'url_img', params: []}],
+                },
+            });
         }
     });
 
@@ -120,8 +124,13 @@ describe('vUrlImage', () => {
 
         for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
             const evaluation = v.validate({a: el});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg:'url_img', params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: el === undefined ? 'not_found' : 'url_img', params: []}],
+                },
+            });
         }
     });
 
@@ -134,8 +143,13 @@ describe('vUrlImage', () => {
             '    https://www.myfancylink.com/123.jpg',
         ]) {
             const evaluation = v.validate({a: el});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg:'url_img', params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'url_img', params: []}],
+                },
+            });
         }
     });
 
@@ -182,8 +196,13 @@ describe('vUrlImage', () => {
             'http://10.1.1.254',
         ]) {
             const evaluation = v.validate({a: el});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg:'url_img', params: []}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'url_img', params: []}],
+                },
+            });
         }
     });
 });
