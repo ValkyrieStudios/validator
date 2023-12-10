@@ -86,15 +86,20 @@ describe('vEmail', () => {
             for (const el of [
                 'peter-@4cooks.com',
                 'c&lent@myoffices.com',
+                'email@cof.coffee',
             ]) {
                 const evaluation = new Validator({a: 'email'}).validate({a: el});
                 assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
             }
         });
 
-        it('Email with 6 character TLD as correct', () => {
-            const evaluation = new Validator({a: 'email'}).validate({a: 'email@cof.coffee'});
-            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
+        it('Email with between 2 and 63 character TLD as correct', () => {
+            let c = 'c';
+            for (let i = 0; i < 62; i++) {
+                c = `${c}c`;
+                const evaluation = new Validator({a: 'email'}).validate({a: `email@cof.${c}`});
+                assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});    
+            }
         });
     });
 

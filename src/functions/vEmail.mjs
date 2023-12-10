@@ -31,7 +31,7 @@ export default function vEmail (val) {
     //  Validate domain content
     //  eslint-disable-next-line max-len
     if (/^(?:(?=[a-z0-9-]{1,63}\.)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?=[a-z0-9-]{1,63}z)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/ig.test(parts[1])) return true;
-    if (!/^(\w{1,})([.-]?\w)*(\.\w{2,6})+$/.test(parts[1])) return false;
+    if (!/^(\w{1,})([.-]?\w)*(\.\w{2,63})+$/.test(parts[1])) return false;
 
     return true;
 }

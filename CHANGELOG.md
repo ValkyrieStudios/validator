@@ -42,6 +42,7 @@ const is_valid = v.validate({first_name: 'Peter'}).is_valid;
 - perf: Creation of Validator instances is now between 1.2 to 1.7 times faster
 - perf: Cold validation (creating a validator and running .validate at same time) is now between 2 to 2.5 times faster
 - perf: Warm validation (pre-existing validator and running .validate repeatedly) is now roughly 3.2 times faster
+- feat: rule vEmail: Now allows up to 63 octets in tld to allow for for example .coffee, .alfaromeo, etc (RFC 1034)
 - feat: Validator Instance@validate: will now return a fixed `'NO_DATA'` as errors instead of an empty object when calling without data. For example:
 ```
 const v = new Validator({
