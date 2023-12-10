@@ -23,44 +23,72 @@ describe('vRequired', () => {
         }, {});
 
         const evaluation = new Validator(rules).validate(subject);
-        assert.ok(evaluation.is_valid);
-
-        Object.keys(subject).forEach(key => assert.deepEqual(evaluation.errors[key], []));
+        assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
     });
 
     it('Should be invalid if not passed', () => {
         const evaluation = new Validator({a: 'required'}).validate({});
-        assert.equal(evaluation.is_valid, false);
-        assert.deepEqual(evaluation.errors.a, [{msg: 'required', params: []}]);
+        assert.deepEqual(evaluation, {
+            is_valid: false,
+            count: 1,
+            errors: {
+                a: [{msg: 'not_found', params: []}],
+            },
+        });
     });
 
     it('Should be invalid if passed as undefined', () => {
         const evaluation = new Validator({a: 'required'}).validate({a: undefined});
-        assert.equal(evaluation.is_valid, false);
-        assert.deepEqual(evaluation.errors.a, [{msg: 'required', params: []}]);
+        assert.deepEqual(evaluation, {
+            is_valid: false,
+            count: 1,
+            errors: {
+                a: [{msg: 'not_found', params: []}],
+            },
+        });
     });
 
     it('Should be invalid if passed as an empty string', () => {
         const evaluation = new Validator({a: 'required'}).validate({a: ''});
-        assert.equal(evaluation.is_valid, false);
-        assert.deepEqual(evaluation.errors.a, [{msg: 'required', params: []}]);
+        assert.deepEqual(evaluation, {
+            is_valid: false,
+            count: 1,
+            errors: {
+                a: [{msg: 'required', params: []}],
+            },
+        });
     });
 
     it('Should be invalid if passed a string that only contains spaces', () => {
         const evaluation = new Validator({a: 'required'}).validate({a: ''});
-        assert.equal(evaluation.is_valid, false);
-        assert.deepEqual(evaluation.errors.a, [{msg: 'required', params: []}]);
+        assert.deepEqual(evaluation, {
+            is_valid: false,
+            count: 1,
+            errors: {
+                a: [{msg: 'required', params: []}],
+            },
+        });
     });
 
     it('Should be invalid if passed as an empty array', () => {
         const evaluation = new Validator({a: 'required'}).validate({a: []});
-        assert.equal(evaluation.is_valid, false);
-        assert.deepEqual(evaluation.errors.a, [{msg: 'required', params: []}]);
+        assert.deepEqual(evaluation, {
+            is_valid: false,
+            count: 1,
+            errors: {
+                a: [{msg: 'required', params: []}],
+            },
+        });
     });
 
     it('Should be invalid if passed a NaN', () => {
         const evaluation = new Validator({a: 'required'}).validate({a: Number.NaN});
-        assert.equal(evaluation.is_valid, false);
-        assert.deepEqual(evaluation.errors.a, [{msg: 'required', params: []}]);
+        assert.deepEqual(evaluation, {
+            is_valid: false,
+            count: 1,
+            errors: {
+                a: [{msg: 'required', params: []}],
+            },
+        });
     });
 });

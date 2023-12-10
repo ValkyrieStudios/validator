@@ -8,40 +8,58 @@ describe('vSize', () => {
     it('Should be invalid when no params are passed', () => {
         const evaluation = new Validator({a: 'size:<meta.params>'}).validate({a: 'hello'});
 
-        assert.equal(evaluation.is_valid, false);
-        assert.deepEqual(evaluation.errors.a, [{msg: 'size', params: [undefined]}]);
+        assert.deepEqual(evaluation, {
+            is_valid: false,
+            count: 1,
+            errors: {
+                a: [{msg: 'size', params: [undefined]}],
+            },
+        });
     });
 
     it('Should be invalid when non-numeric params are passed as part of params', () => {
         for (const el of ['hello', true, false]) {
             const evaluation = new Validator({a: 'size:<meta>'}).validate({a: 10, meta: el});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'size', params: [el]}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'size', params: [el]}],
+                },
+            });
         }
     });
 
     it('Should be invalid when non-numeric params are passed as part of rule', () => {
         for (const el of ['hello', true, false]) {
             const evaluation = new Validator({a: `size:${el}`}).validate({a: 10});
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'size', params: [`${el}`]}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'size', params: [`${el}`]}],
+                },
+            });
         }
     });
 
     it('Should return a correct error message when invalid', () => {
         const evaluation = new Validator({a: 'size:10'}).validate({a: 'this is a string'});
-        assert.equal(evaluation.is_valid, false);
-        assert.deepEqual(evaluation.errors.a, [{msg: 'size', params: ['10']}]);
+        assert.deepEqual(evaluation, {
+            is_valid: false,
+            count: 1,
+            errors: {
+                a: [{msg: 'size', params: ['10']}],
+            },
+        });
     });
 
     it('Should allow a string as an acceptable value', () => {
-        const evaluation = new Validator({a: 'size:16'}).validate({a: 'this is a string'});
-        assert.ok(evaluation.is_valid);
+        assert.ok(new Validator({a: 'size:16'}).check({a: 'this is a string'}));
     });
 
     it('Should allow an array as an acceptable value', () => {
-        const evaluation = new Validator({a: 'size:5'}).validate({a: ['foo', 'bar', 'hello', 'world', 'sweet']});
-        assert.ok(evaluation.is_valid);
+        assert.ok(new Validator({a: 'size:5'}).check({a: ['foo', 'bar', 'hello', 'world', 'sweet']}));
     });
 
     it('Should only allow numerical values as parameter in the rule', () => {
@@ -74,43 +92,68 @@ describe('vSize', () => {
 
         const evaluation = new Validator(rules).validate(typechecks);
 
-        assert.equal(evaluation.is_valid, false);
-
-        valid_keys.forEach(key => assert.deepEqual(evaluation.errors[key], []));
-        invalid_keys.forEach(key => assert.deepEqual(evaluation.errors[key], [{msg:'size', params: ['5']}]));
+        assert.deepEqual({
+            is_valid: false,
+            count: 9,
+            errors: {
+                a1: [{msg: 'size', params: ['5']}],
+                b1: [{msg: 'size', params: ['5']}],
+                d1: [{msg: 'size', params: ['5']}],
+                e1: [{msg: 'size', params: ['5']}],
+                f1: [{msg: 'size', params: ['5']}],
+                g1: [{msg: 'size', params: ['5']}],
+                h1: [{msg: 'size', params: ['5']}],
+                j1: [{msg: 'size', params: ['5']}],
+                m1: [{msg: 'size', params: ['5']}],
+            },
+        });
     });
 
     describe('String', () => {
         it('Should validate a string whose length is smaller than the provided parameter as invalid', () => {
             const evaluation = new Validator({a: 'size:10'}).validate({a: 'hello'});
-            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {a: [{msg: 'size', params: ['10']}]},
+            });
         });
 
         it('Should validate a string whose length is equal to the provided parameter as valid', () => {
-            const evaluation = new Validator({a: 'size:11'}).validate({a: 'hello world'});
-            assert.ok(evaluation.is_valid);
+            assert.ok(new Validator({a: 'size:11'}).check({a: 'hello world'}));
         });
 
         it('Should validate a string whose length is larger than the provided parameter as invalid', () => {
             const evaluation = new Validator({a: 'size:8'}).validate({a: 'hello world'});
-            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {a: [{msg: 'size', params: ['8']}]},
+            });
         });
     });
 
     describe('Array', () => {
         it('Should validate an array whose length is smaller than the provided parameter as invalid', () => {
             const evaluation = new Validator({a: 'size:10'}).validate({a: ['foo', 'bar']});
-            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {a: [{msg: 'size', params: ['10']}]},
+            });
         });
 
         it('Should validate an array whose length is equal to the provided parameter as valid', () => {
-            const evaluation = new Validator({a: 'size:5'}).validate({a: ['apple', 'pear', 'orange', 'melon', 'grape']});
-            assert.ok(evaluation.is_valid);
+            assert.ok(new Validator({a: 'size:5'}).check({a: ['apple', 'pear', 'orange', 'melon', 'grape']});
         });
 
         it('Should validate an array whose length is larger than the provided parameter as invalid', () => {
             const evaluation = new Validator({a: 'size:4'}).validate({a: ['apple', 'pear', 'orange', 'melon', 'grape']});
-            assert.equal(evaluation.is_valid, false);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {a: [{msg: 'size', params: ['4']}]},
+            });
         });
     });
 });
