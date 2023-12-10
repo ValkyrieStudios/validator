@@ -8,7 +8,16 @@ import Validator        from '../../../src/index.mjs';
 describe('vSysMac', () => {
     it('Should be invalid if not passed a string or passed a string that is empty after trimming', () => {
         for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
-            assert.equal(new Validator({a: 'sys_mac'}).validate({a: el}).is_valid, false);
+            assert.deepEqual(
+                new Validator({a: 'sys_mac'}).validate({a: el}),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        a: [{msg: el === undefined ? 'not_found' : 'sys_mac', params: []}],
+                    },
+                }
+            );
         }
     });
 
@@ -21,19 +30,31 @@ describe('vSysMac', () => {
         //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
         for (let i = 0; i < 48; i++) {
-            assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tpl(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+            );
         }
 
         for (let i = 58; i < 65; i++) {
-            assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tpl(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+            );
         }
 
         for (let i = 91; i < 96; i++) {
-            assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tpl(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+            );
         }
 
         for (let i = 123; i < 10000; i++) {
-            assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tpl(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+            );
         }
     });
 
@@ -341,32 +362,47 @@ describe('vSysMac', () => {
             'cc4.de0.95f.44e',
         ];
         const v = new Validator({a: 'sys_mac'});
-        for (const a of lst) assert.ok(v.validate({a}).is_valid);
+        for (const a of lst) assert.ok(v.check({a}));
     });
 
     it('Should be invalid with mac address using a mixture of separators (: and -)', () => {
-        assert.equal(new Validator({a: 'sys_mac'}).validate({a: '01:23-45:67-89:AB'}).is_valid, false);
+        assert.deepEqual(
+            new Validator({a: 'sys_mac'}).validate({a: '01:23-45:67-89:AB'}),
+            {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+        );
     });
 
     it('Should be invalid with mac address using a mixture of separators (: and .)', () => {
-        assert.equal(new Validator({a: 'sys_mac'}).validate({a: '012:345.678:9AB'}).is_valid, false);
+        assert.deepEqual(
+            new Validator({a: 'sys_mac'}).validate({a: '012:345.678:9AB'}),
+            {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+        );
     });
 
     it('Should be invalid with mac address using a mixture of separators (- and .)', () => {
-        assert.equal(new Validator({a: 'sys_mac'}).validate({a: '012-345.678-9AB'}).is_valid, false);
+        assert.deepEqual(
+            new Validator({a: 'sys_mac'}).validate({a: '012-345.678-9AB'}),
+            {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+        );
     });
 
     it('Should be invalid with 64-bit mac address using 2 digit grouping and a mixture of separators (: and -)', () => {
-        assert.equal(new Validator({a: 'sys_mac'}).validate({a: '01:23-45:FF-FE:67-89:AB'}).is_valid, false);
+        assert.deepEqual(
+            new Validator({a: 'sys_mac'}).validate({a: '01:23-45:FF-FE:67-89:AB'}),
+            {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+        );
     });
 
     it('Should be invalid with 64-bit mac address using 4 digit grouping and a mixture of separators (: and -)', () => {
-        assert.equal(new Validator({a: 'sys_mac'}).validate({a: '0123-45FF:FE67-89AB'}).is_valid, false);
+        assert.deepEqual(
+            new Validator({a: 'sys_mac'}).validate({a: '0123-45FF:FE67-89AB'}),
+            {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+        );
     });
 
     describe('MM:MM:MM:SS:SS:SS Format', () => {
         it('Should be valid with valid mac address using a dash (-) as separator', () => {
-            assert.ok(new Validator({a: 'sys_mac'}).validate({a: '01-23-45-67-89-AB'}).is_valid);
+            assert.ok(new Validator({a: 'sys_mac'}).check({a: '01-23-45-67-89-AB'}));
         });
 
         it('Should be invalid with mac address containing only non-hexadecimal characters and a dash as a separator', () => {
@@ -378,19 +414,31 @@ describe('vSysMac', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 58; i < 65; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 91; i < 96; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 123; i < 10000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
         });
 
@@ -403,26 +451,38 @@ describe('vSysMac', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 58; i < 65; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 91; i < 96; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 123; i < 10000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
         });
     });
 
     describe('MM-MM-MM-SS-SS-SS Format', () => {
         it('Should be valid with valid mac address using a colon (:) as separator', () => {
-            assert.ok(new Validator({a: 'sys_mac'}).validate({a: '01:23:45:67:89:AB'}).is_valid);
+            assert.ok(new Validator({a: 'sys_mac'}).check({a: '01:23:45:67:89:AB'}));
         });
 
         it('Should be invalid with mac address containing only non-hexadecimal characters and a colon as a separator', () => {
@@ -434,19 +494,31 @@ describe('vSysMac', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 58; i < 65; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 91; i < 96; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 123; i < 10000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
         });
 
@@ -459,26 +531,38 @@ describe('vSysMac', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 58; i < 65; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 91; i < 96; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 123; i < 10000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
         });
     });
 
     describe('MMM.MMM.SSS.SSS Format', () => {
         it('Should be valid when passed valid mac address using a 3 char format and dot (.) as separator', () => {
-            assert.ok(new Validator({a: 'sys_mac'}).validate({a: '012.345.678.9AB'}).is_valid);
+            assert.ok(new Validator({a: 'sys_mac'}).check({a: '012.345.678.9AB'}));
         });
 
         it('Should be invalid with mac address containing only non-hexadecimal characters, 3 char format, dot as separator', () => {
@@ -490,19 +574,31 @@ describe('vSysMac', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 58; i < 65; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 91; i < 96; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 123; i < 10000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
         });
 
@@ -515,19 +611,31 @@ describe('vSysMac', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 58; i < 65; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 91; i < 96; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 123; i < 10000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
         });
     });
@@ -535,22 +643,28 @@ describe('vSysMac', () => {
     describe('Special case 48-bit mac address converted to a 64-bit address (ipv6)', () => {
         it('Should be valid with 48-bit address converted using correct FFFE val, 2 digit, : separator', () => {
             const v = new Validator({a: 'sys_mac'});
-            assert.ok(v.validate({a: '00:25:96:FF:FE:12:34:56'}).is_valid);
+            assert.ok(v.check({a: '00:25:96:FF:FE:12:34:56'}));
         });
 
         it('Should be valid with 48-bit address converted using correct FFFE val, 4 digit, : separator', () => {
             const v = new Validator({a: 'sys_mac'});
-            assert.ok(v.validate({a: '0025:96FF:FE12:3456'}).is_valid);
+            assert.ok(v.check({a: '0025:96FF:FE12:3456'}));
         });
 
         it('Should be invalid with 48-bit address that does not have a correct FFFE val, 2 digit, : separator', () => {
             const v = new Validator({a: 'sys_mac'});
-            assert.equal(v.validate({a: '00:25:96:FA:FE:12:34:56'}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: '00:25:96:FA:FE:12:34:56'}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+            );
         });
 
         it('Should be valid with 48-bit address that does not have a correct FFFE val, 4 digit, : separator', () => {
             const v = new Validator({a: 'sys_mac'});
-            assert.equal(v.validate({a: '0025:96FF:BE12:3456'}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: '0025:96FF:BE12:3456'}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+            );
         });
 
         it('Should be invalid with 64-bit address containing a single non-hexadecimal character, 2 digit, : separator', () => {
@@ -562,19 +676,31 @@ describe('vSysMac', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 58; i < 65; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 91; i < 96; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 123; i < 10000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
         });
 
@@ -587,40 +713,58 @@ describe('vSysMac', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 58; i < 65; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 91; i < 96; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 123; i < 10000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
         });
 
         it('Should be valid with 48-bit address converted using correct FFFE val, 2 digit, - separator', () => {
             const v = new Validator({a: 'sys_mac'});
-            assert.ok(v.validate({a: '00-25-96-FF-FE-12-34-56'}).is_valid);
+            assert.ok(v.check({a: '00-25-96-FF-FE-12-34-56'}));
         });
 
         it('Should be valid with 48-bit address converted using correct FFFE val, 4 digit, - separator', () => {
             const v = new Validator({a: 'sys_mac'});
-            assert.ok(v.validate({a: '0025-96FF-FE12-3456'}).is_valid);
+            assert.ok(v.check({a: '0025-96FF-FE12-3456'}));
         });
 
         it('Should be invalid with 48-bit address that does not have a correct FFFE val, 2 digit, - separator', () => {
             const v = new Validator({a: 'sys_mac'});
-            assert.equal(v.validate({a: '00-25-96-FA-FE-12-34-56'}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: '00-25-96-FA-FE-12-34-56'}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+            );
         });
 
         it('Should be valid with 48-bit address that does not have a correct FFFE val, 4 digit, - separator', () => {
             const v = new Validator({a: 'sys_mac'});
-            assert.equal(v.validate({a: '0025-96FF-BE12-3456'}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: '0025-96FF-BE12-3456'}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+            );
         });
 
         it('Should be invalid with 64-bit address containing a single non-hexadecimal character, 2 digit, - separator', () => {
@@ -632,19 +776,31 @@ describe('vSysMac', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 58; i < 65; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 91; i < 96; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 123; i < 10000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
         });
 
@@ -657,19 +813,31 @@ describe('vSysMac', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 58; i < 65; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 91; i < 96; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
 
             for (let i = 123; i < 10000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.deepEqual(
+                    v.validate({a: tpl(String.fromCharCode(i))}),
+                    {is_valid: false, count: 1, errors: {a: [{msg: 'sys_mac', params: []}]}}
+                );
             }
         });
     });
