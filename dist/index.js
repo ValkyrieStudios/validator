@@ -1,5 +1,6 @@
 'use strict';
 
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 Object.defineProperty(exports, "__esModule", {
   value: !0
 });
@@ -11,8 +12,6 @@ var _isNotEmpty2 = _interopRequireDefault(require("@valkyriestudios/utils/array/
 var _is3 = _interopRequireDefault(require("@valkyriestudios/utils/object/is.js"));
 var _isNotEmpty3 = _interopRequireDefault(require("@valkyriestudios/utils/object/isNotEmpty.js"));
 var _equal = _interopRequireDefault(require("@valkyriestudios/utils/equal.js"));
-var _get = _interopRequireDefault(require("@valkyriestudios/utils/deep/get.js"));
-var _set = _interopRequireDefault(require("@valkyriestudios/utils/deep/set.js"));
 var _fnv1A = _interopRequireDefault(require("@valkyriestudios/utils/hash/fnv1A.js"));
 var _vAlphaNumSpaces = _interopRequireDefault(require("./functions/vAlphaNumSpaces.js"));
 var _vAlphaNumSpacesMultiline = _interopRequireDefault(require("./functions/vAlphaNumSpacesMultiline.js"));
@@ -47,16 +46,15 @@ var _vUrl = _interopRequireDefault(require("./functions/vUrl.js"));
 var _vUrlNoQuery = _interopRequireDefault(require("./functions/vUrlNoQuery.js"));
 var _vUrlImage = _interopRequireDefault(require("./functions/vUrlImage.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: !0 }; return { done: !1, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = !0, didErr = !1, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = !0; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || !1; descriptor.configurable = !0; if ("value" in descriptor) descriptor.writable = !0; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: !1 }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-var validateFn = {
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: !0 }; return { done: !1, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = !0, didErr = !1, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = !0; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+var RULE_STORE = {
   alpha_num_spaces: _vAlphaNumSpaces["default"],
   alpha_num_spaces_multiline: _vAlphaNumSpacesMultiline["default"],
   array: Array.isArray,
@@ -105,6 +103,26 @@ var validateFn = {
   lte: _vLessThanOrEqual["default"],
   eq: _equal["default"]
 };
+function M_Error(msg) {
+  var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  return {
+    msg: msg,
+    params: params
+  };
+}
+function deepGet(obj, path) {
+  var parts = path.split('.');
+  var cursor = obj;
+  while (parts.length > 0) {
+    if ((0, _is3["default"])(cursor)) {
+      var key = parts.shift();
+      if (!Object.prototype.hasOwnProperty.call(cursor, key)) return undefined;
+      cursor = cursor[key];
+    }
+    if (parts.length > 0 && !(0, _is3["default"])(cursor)) return undefined;
+  }
+  return cursor;
+}
 function getIterableConfig(val) {
   return {
     unique: val.indexOf('unique') >= 0,
@@ -112,249 +130,274 @@ function getIterableConfig(val) {
     min: val.match(/min:\d{1,}(\||$)/) ? parseInt("".concat(val).split('min:', 2)[1].split('|', 1)[0]) : !1
   };
 }
+function parseRule(raw) {
+  var cursor = "".concat(raw);
+  var sometimes = cursor.charAt(0) === '?';
+  if (sometimes) cursor = cursor.substring(1);
+  var iterable = /(\[|\])/g.test(cursor);
+  if (iterable) {
+    var start_ix = cursor.indexOf('[');
+    var end_ix = cursor.indexOf(']');
+    if (start_ix !== 0 || end_ix < 0) throw new TypeError("Iterable misconfiguration, please verify rule config for ".concat(raw));
+    iterable = getIterableConfig(cursor.substring(0, end_ix));
+    cursor = cursor.substring(end_ix + 1);
+  }
+  var list = cursor.split('|').reduce(function (acc, rule_part) {
+    var params = rule_part.split(':');
+    var type = params.shift().trim();
+    var not = type.charAt(0) === '!';
+    if (not) type = type.substring(1);
+    if (params.length > 0) {
+      if (type === 'in' && params[0].indexOf(',') > 0) {
+        params = [params[0].split(',')];
+      } else {
+        params = params[0].split(',');
+        var _loop = function _loop() {
+          var param = params[i];
+          if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
+            if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
+              throw new TypeError("Parameterization misconfiguration, please verify rule config for ".concat(raw));
+            }
+            param = param.substr(1, param.length - 2);
+            params[i] = function (data) {
+              return deepGet(data, param);
+            };
+          } else {
+            params[i] = param;
+          }
+        };
+        for (var i = 0; i < params.length; i++) {
+          _loop();
+        }
+      }
+    }
+    acc.push({
+      type: type,
+      params: params,
+      not: not
+    });
+    return acc;
+  }, []);
+  return {
+    sometimes: sometimes,
+    iterable: iterable,
+    list: list
+  };
+}
+function validateField(cursor, list, data) {
+  var errors = [];
+  var _iterator = _createForOfIteratorHelper(list),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var rule = _step.value;
+      if (!RULE_STORE[rule.type]) {
+        errors.push(M_Error('rule_not_found', [rule.type]));
+        continue;
+      }
+      var params = [];
+      var _iterator2 = _createForOfIteratorHelper(rule.params),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var p = _step2.value;
+          params.push(typeof p === 'function' ? p(data) : p);
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+      var rule_valid = RULE_STORE[rule.type].apply(RULE_STORE, [cursor].concat(params));
+      if (!rule_valid && !rule.not || rule_valid && rule.not) {
+        errors.push(M_Error("".concat(rule.not ? 'not_' : '').concat(rule.type), params));
+      }
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  return {
+    errors: errors,
+    is_valid: errors.length === 0
+  };
+}
+function checkField(cursor, list, data) {
+  var _iterator3 = _createForOfIteratorHelper(list),
+    _step3;
+  try {
+    for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+      var rule = _step3.value;
+      if (!RULE_STORE[rule.type]) return !1;
+      var params = [];
+      var _iterator4 = _createForOfIteratorHelper(rule.params),
+        _step4;
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var p = _step4.value;
+          params.push(typeof p === 'function' ? p(data) : p);
+        }
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+      var rule_valid = RULE_STORE[rule.type].apply(RULE_STORE, [cursor].concat(params));
+      if (!rule_valid && !rule.not || rule_valid && rule.not) return !1;
+    }
+  } catch (err) {
+    _iterator3.e(err);
+  } finally {
+    _iterator3.f();
+  }
+  return !0;
+}
 var Validator = exports["default"] = function () {
   function Validator() {
     var rules = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
     _classCallCheck(this, Validator);
     if (!(0, _is3["default"])(rules)) throw new TypeError('Please provide an object to define the rules of this validator');
-    function parse(acc, key) {
-      var cursor = (0, _get["default"])(rules, key);
-      if ((0, _is3["default"])(cursor)) {
-        Object.keys(cursor).map(function (cursor_key) {
-          return "".concat(key, ".").concat(cursor_key);
-        }).reduce(parse, acc);
-      } else if ((0, _isNotEmpty["default"])(cursor)) {
-        var startix = 0;
-        var iterable = /(\[|\])/g.test(cursor);
-        var sometimes = !1;
-        if (iterable) {
-          var iterable_startix = cursor.indexOf('[');
-          var iterable_endix = cursor.indexOf(']');
-          if (iterable_startix < 0 || iterable_endix < 0 || iterable_startix > iterable_endix) throw new TypeError("Iterable misconfiguration, please verify rule config for ".concat(cursor));
-          if (cursor.substring(0, 2) === '?[') {
-            iterable = getIterableConfig(cursor.substring(2, iterable_endix));
-            sometimes = !0;
-            startix = iterable_endix + 1;
-          } else if (cursor.charAt(0) === '[') {
-            iterable = getIterableConfig(cursor.substring(1, iterable_endix));
-            startix = iterable_endix + 1;
-          } else {
-            throw new Error("Invalid iterable found, please verify rule config for ".concat(cursor));
-          }
-        } else if (cursor.charAt(0) === '?') {
-          sometimes = !0;
-          startix = 1;
-        }
-        (0, _set["default"])(acc, key, cursor.substring(startix).split('|').reduce(function (rule_acc, rule_string) {
-          var params = rule_string.split(':');
-          var type = params.shift().trim();
-          var not = type.charAt(0) === '!';
-          if (not) type = type.replace(/!/g, '');
-          params = params.length > 0 ? params[0].split(',') : [];
-          params = params.reduce(function (params_acc, param) {
-            if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
-              if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
-                throw new TypeError("Parameterization misconfiguration, please verify rule config for ".concat(cursor));
-              }
-              param = param.substr(1, param.length - 2);
-              params_acc.push(function (data) {
-                try {
-                  return (0, _get["default"])(data, param);
-                } catch (err) {
-                  return undefined;
-                }
-              });
-            } else {
-              params_acc.push(function () {
-                return param;
-              });
-            }
-            return params_acc;
-          }, []);
-          rule_acc.push({
-            type: type,
-            params: params,
-            not: not,
-            sometimes: sometimes,
-            iterable: iterable
-          });
-          return rule_acc;
-        }, []));
+    var plan = [];
+    function parse(val, key) {
+      if ((0, _is3["default"])(val)) {
+        Object.keys(val).forEach(function (val_key) {
+          return parse(val[val_key], key ? "".concat(key, ".").concat(val_key) : val_key);
+        });
+      } else if ((0, _isNotEmpty["default"])(val)) {
+        var rule = parseRule(val);
+        rule.key = key;
+        plan.push(rule);
       } else {
         throw new TypeError('The rule for a key needs to be a string value');
       }
-      return acc;
     }
-    var parsed_rules = Object.keys(rules).reduce(parse, {});
-    this.evaluation = Object.seal({
-      is_valid: !1,
-      errors: {}
-    });
-    Object.defineProperty(this, 'rules', {
+    parse(rules);
+    Object.defineProperty(this, 'plan', {
       get: function get() {
-        return parsed_rules;
+        return plan;
       }
     });
   }
   _createClass(Validator, [{
-    key: "is_valid",
-    get: function get() {
-      return this.evaluation.is_valid;
-    }
-  }, {
-    key: "errors",
-    get: function get() {
-      return this.evaluation.errors;
+    key: "check",
+    value: function check(data) {
+      if (!(0, _is3["default"])(data)) return this.plan.length === 0;
+      var _iterator5 = _createForOfIteratorHelper(this.plan),
+        _step5;
+      try {
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var rule = _step5.value;
+          var cursor = deepGet(data, rule.key);
+          if (cursor === undefined) {
+            if (rule.sometimes) continue;
+            return !1;
+          }
+          if (rule.iterable) {
+            if (!Array.isArray(cursor) || Number.isFinite(rule.iterable.min) && cursor.length < rule.iterable.min || Number.isFinite(rule.iterable.max) && cursor.length > rule.iterable.max) return !1;
+            var unique_map = new Map();
+            for (var idx = 0; idx < cursor.length; idx++) {
+              if (!checkField(cursor[idx], rule.list, data)) return !1;
+              if (!rule.iterable.unique) continue;
+              unique_map.set((0, _fnv1A["default"])(cursor[idx]), !0);
+              if (unique_map.size !== idx + 1) return !1;
+            }
+          } else if (!checkField(cursor, rule.list, data)) {
+            return !1;
+          }
+        }
+      } catch (err) {
+        _iterator5.e(err);
+      } finally {
+        _iterator5.f();
+      }
+      return !0;
     }
   }, {
     key: "validate",
     value: function validate(data) {
-      var _this = this;
-      var keys = Object.keys(this.rules);
-      this.evaluation.is_valid = !0;
-      this.evaluation.errors = {};
-      if (!data) {
-        this.evaluation.is_valid = keys.length === 0;
-      } else {
-        var run = function run(key) {
-          var cursor = (0, _get["default"])(_this.rules, key);
-          if ((0, _isNotEmpty3["default"])(cursor)) {
-            return Object.keys(cursor).map(function (cursor_key) {
-              cursor_key = "".concat(key, ".").concat(cursor_key);
-              (0, _set["default"])(_this.evaluation.errors, cursor_key, []);
-              return cursor_key;
-            }).forEach(run);
-          } else {
-            (0, _set["default"])(_this.evaluation.errors, key, []);
+      if (!(0, _is3["default"])(data)) {
+        var is_valid = this.plan.length === 0;
+        return {
+          is_valid: is_valid,
+          count: this.plan.length,
+          errors: is_valid ? {} : 'NO_DATA'
+        };
+      }
+      var errors = {};
+      var _iterator6 = _createForOfIteratorHelper(this.plan),
+        _step6;
+      try {
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var rule = _step6.value;
+          var cursor = deepGet(data, rule.key);
+          if (cursor === undefined) {
+            if (!rule.sometimes) errors[rule.key] = [M_Error('not_found')];
+            continue;
           }
-          var val = (0, _get["default"])(data, key);
-          var iterable_unique = !0;
-          var iterable_err = !1;
-          var iterable_min_err = !1;
-          var iterable_max_err = !1;
-          if (!(0, _isNotEmpty2["default"])(cursor)) return;
-          var _iterator = _createForOfIteratorHelper(cursor),
-            _step;
-          try {
-            for (_iterator.s(); !(_step = _iterator.n()).done;) {
-              var rule = _step.value;
-              if (!validateFn[rule.type]) throw new Error("Rule: ".concat(rule.type, " was not found"));
-              var params = [];
-              var _iterator2 = _createForOfIteratorHelper(rule.params),
-                _step2;
-              try {
-                for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-                  var rule_param = _step2.value;
-                  params.push(rule_param(data));
-                }
-              } catch (err) {
-                _iterator2.e(err);
-              } finally {
-                _iterator2.f();
-              }
-              if (val === undefined) {
-                if (!rule.sometimes) {
-                  (0, _get["default"])(_this.evaluation.errors, key).push({
-                    msg: "".concat(rule.not ? 'not_' : '').concat(rule.type),
-                    params: params
-                  });
-                  _this.evaluation.is_valid = !1;
-                }
-                continue;
-              }
-              if ((0, _is3["default"])(rule.iterable)) {
-                if (!Array.isArray(val)) {
-                  iterable_err = !0;
-                  break;
-                }
-                if (Number.isFinite(rule.iterable.min) && val.length < rule.iterable.min) {
-                  iterable_min_err = rule.iterable.min;
-                  break;
-                }
-                if (Number.isFinite(rule.iterable.max) && val.length > rule.iterable.max) {
-                  iterable_max_err = rule.iterable.max;
-                  break;
-                }
-                var unique_map = iterable_unique && rule.iterable.unique ? new Map() : !1;
-                for (var i = 0; i < val.length; i++) {
-                  var _validateFn$rule$type;
-                  var rule_valid = (_validateFn$rule$type = validateFn[rule.type]).call.apply(_validateFn$rule$type, [_this, val[i]].concat(params));
-                  if (!rule_valid && !rule.not || rule_valid && rule.not) {
-                    (0, _get["default"])(_this.evaluation.errors, key).push({
-                      msg: "".concat(rule.not ? 'not_' : '').concat(rule.type),
-                      params: params,
-                      idx: i
-                    });
-                    _this.evaluation.is_valid = !1;
+          if (rule.iterable) {
+            if (!Array.isArray(cursor)) {
+              errors[rule.key] = [M_Error('iterable')];
+              continue;
+            }
+            if (Number.isFinite(rule.iterable.min) && cursor.length < rule.iterable.min) {
+              errors[rule.key] = [M_Error('iterable_min', [rule.iterable.min])];
+              continue;
+            }
+            if (Number.isFinite(rule.iterable.max) && cursor.length > rule.iterable.max) {
+              errors[rule.key] = [M_Error('iterable_max', [rule.iterable.max])];
+              continue;
+            }
+            var iterable_unique = !0;
+            var unique_map = iterable_unique && rule.iterable.unique ? new Map() : !1;
+            for (var idx = 0; idx < cursor.length; idx++) {
+              var field_evaluation = validateField(cursor[idx], rule.list, data);
+              if (!field_evaluation.is_valid) {
+                if (!errors[rule.key]) errors[rule.key] = [];
+                var _iterator7 = _createForOfIteratorHelper(field_evaluation.errors),
+                  _step7;
+                try {
+                  for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+                    var obj = _step7.value;
+                    errors[rule.key].push(Object.assign({
+                      idx: idx
+                    }, obj));
                   }
-                  if (unique_map && iterable_unique) {
-                    unique_map.set((0, _fnv1A["default"])(val[i]), !0);
-                    if (unique_map.size !== i + 1) iterable_unique = !1;
-                  }
+                } catch (err) {
+                  _iterator7.e(err);
+                } finally {
+                  _iterator7.f();
                 }
-              } else {
-                var _validateFn$rule$type2;
-                var _rule_valid = (_validateFn$rule$type2 = validateFn[rule.type]).call.apply(_validateFn$rule$type2, [_this, val].concat(params));
-                if (!_rule_valid && !rule.not || _rule_valid && rule.not) {
-                  (0, _get["default"])(_this.evaluation.errors, key).push({
-                    msg: "".concat(rule.not ? 'not_' : '').concat(rule.type),
-                    params: params
-                  });
-                  _this.evaluation.is_valid = !1;
-                }
+              }
+              if (!unique_map || !iterable_unique) continue;
+              unique_map.set((0, _fnv1A["default"])(cursor[idx]), !0);
+              if (unique_map.size !== idx + 1) {
+                iterable_unique = !1;
+                if (!errors[rule.key]) errors[rule.key] = [];
+                errors[rule.key].unshift(M_Error('iterable_unique'));
               }
             }
-          } catch (err) {
-            _iterator.e(err);
-          } finally {
-            _iterator.f();
+          } else {
+            var _field_evaluation = validateField(cursor, rule.list, data);
+            if (!_field_evaluation.is_valid) errors[rule.key] = _field_evaluation.errors;
           }
-          if (iterable_err === !0) {
-            (0, _get["default"])(_this.evaluation.errors, key).push({
-              msg: 'iterable',
-              params: []
-            });
-            _this.evaluation.is_valid = !1;
-          } else if (Number.isFinite(iterable_min_err)) {
-            (0, _get["default"])(_this.evaluation.errors, key).push({
-              msg: 'iterable_min',
-              params: [iterable_min_err]
-            });
-            _this.evaluation.is_valid = !1;
-          } else if (Number.isFinite(iterable_max_err)) {
-            (0, _get["default"])(_this.evaluation.errors, key).push({
-              msg: 'iterable_max',
-              params: [iterable_max_err]
-            });
-            _this.evaluation.is_valid = !1;
-          } else if (!iterable_unique) {
-            (0, _get["default"])(_this.evaluation.errors, key).unshift({
-              msg: 'iterable_unique',
-              params: []
-            });
-            _this.evaluation.is_valid = !1;
-          }
-        };
-        var _iterator3 = _createForOfIteratorHelper(keys),
-          _step3;
-        try {
-          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-            var key = _step3.value;
-            (0, _set["default"])(this.evaluation.errors, key, {});
-            run(key);
-          }
-        } catch (err) {
-          _iterator3.e(err);
-        } finally {
-          _iterator3.f();
         }
+      } catch (err) {
+        _iterator6.e(err);
+      } finally {
+        _iterator6.f();
       }
-      return Object.assign({}, this.evaluation);
+      var count = Object.keys(errors).length;
+      return {
+        is_valid: !count,
+        count: count,
+        errors: errors
+      };
     }
   }], [{
     key: "rules",
     get: function get() {
-      return Object.freeze(Object.assign({}, validateFn));
+      return Object.freeze(Object.assign({}, RULE_STORE));
     }
   }, {
     key: "extend",
@@ -362,8 +405,8 @@ var Validator = exports["default"] = function () {
       if (typeof name !== 'string' || name.trim().length === 0) throw new Error('Invalid extension: please ensure a valid name is passed');
       var sanitized_name = name.trim();
       if (typeof fn !== 'function') throw new Error("Invalid extension: ".concat(sanitized_name, ", please ensure a valid function is passed"));
-      if (validateFn[sanitized_name]) delete validateFn[sanitized_name];
-      Object.defineProperty(validateFn, sanitized_name, {
+      if (RULE_STORE[sanitized_name]) delete RULE_STORE[sanitized_name];
+      Object.defineProperty(RULE_STORE, sanitized_name, {
         configurable: !0,
         enumerable: !0,
         get: function get() {

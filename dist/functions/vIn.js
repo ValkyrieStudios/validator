@@ -12,38 +12,22 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 var memoizedHashParams = (0, _memoize["default"])(function (params) {
   var hashed = [];
-  if (typeof params === 'string') {
-    var _iterator = _createForOfIteratorHelper(params.split(',')),
-      _step;
-    try {
-      for (_iterator.s(); !(_step = _iterator.n()).done;) {
-        var el = _step.value;
-        hashed.push((0, _fnv1A["default"])(el));
-      }
-    } catch (err) {
-      _iterator.e(err);
-    } finally {
-      _iterator.f();
+  var _iterator = _createForOfIteratorHelper(params),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var el = _step.value;
+      hashed.push((0, _fnv1A["default"])(el));
     }
-  } else {
-    var _iterator2 = _createForOfIteratorHelper(params),
-      _step2;
-    try {
-      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-        var _el = _step2.value;
-        hashed.push((0, _fnv1A["default"])(_el));
-      }
-    } catch (err) {
-      _iterator2.e(err);
-    } finally {
-      _iterator2.f();
-    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
   }
   return hashed;
 });
-function vIn(val) {
-  var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
-  if (!(typeof params === 'string' && params.trim().length > 0) && !(Array.isArray(params) && params.length > 0)) return !1;
+function vIn(val, params) {
+  if (!Array.isArray(params) || params.length === 0) return !1;
   if (typeof val === 'string' || Number.isFinite(val) || val === !0 || val === !1) return params.indexOf(val) > -1;
   return memoizedHashParams(params).indexOf((0, _fnv1A["default"])(val)) > -1;
 }
