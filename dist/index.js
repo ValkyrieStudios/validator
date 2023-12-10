@@ -442,6 +442,7 @@ var Validator = exports["default"] = function () {
           _iterator8.f();
         }
         var f = function f(val) {
+          if (typeof val !== 'string' && !Number.isFinite(val)) return !1;
           return ENUM_STORE.get(this.uid).has(val);
         };
         f.uid = name;

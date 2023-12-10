@@ -45,6 +45,7 @@ import vUrlImage                from './functions/vUrlImage.mjs';
 //  Used for enum storage using extendEnum
 const ENUM_STORE = new Map();
 
+//  Used for rule storage of all validation rules
 const RULE_STORE = {
     alpha_num_spaces            : vAlphaNumSpaces,
     alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
@@ -471,6 +472,7 @@ export default class Validator {
 
             //  Create function and transfer name to it
             let f = function (val) {
+                if (typeof val !== 'string' && !Number.isFinite(val)) return false;
                 return ENUM_STORE.get(this.uid).has(val); // eslint-disable-line no-invalid-this
             };
             f.uid = name;
