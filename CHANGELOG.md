@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [5.0.0] - 2023-12-10
 ### Added
 - feat: Validator @extendEnum: This new method allows registering one or more enumerations as validation rules, as with all validator extensions the name of the enum can then be used as part of a validation rule or called directly through Validator.rules. Take note: currently onle arrays of primitive strings/numbers are allowed. For example:
 ```
@@ -39,9 +39,11 @@ const is_valid = v.validate({first_name: 'Peter'}).is_valid;
 ### Improved
 - doc: Add CodeQL badge to readme
 - misc: Add .c8rc.json and CHANGELOG.md to npmignore
-- perf: Creation of Validator instances is now between 1.2 to 1.7 times faster
-- perf: Cold validation (creating a validator and running .validate at same time) is now between 2 to 2.5 times faster
-- perf: Warm validation (pre-existing validator and running .validate repeatedly) is now roughly 3.2 times faster
+- perf: Creation of Validator instances is now between 1.2 to 1.8 times faster
+- perf: Cold validation (creating a validator and running .validate at same time) is now between 2 to 3 times faster
+- perf: Warm validation (pre-existing validator and running .validate repeatedly) is now roughly 4 to 5 times faster
+- perf: Check validation is at minimum the same speed, but can (depending on the validator) be magnitudes faster both in cold and warm validation
+- perf: vIn validation is now ~7% faster than in v 4.1
 - feat: rule vEmail: Now allows up to 63 octets in tld to allow for for example .coffee, .alfaromeo, etc (RFC 1034)
 - feat: Validator Instance@validate: will now return a fixed `'NO_DATA'` as errors instead of an empty object when calling without data. For example:
 ```

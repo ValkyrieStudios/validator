@@ -1,6 +1,6 @@
 {
   "name": "@valkyriestudios/validator",
-  "version": "4.1.0",
+  "version": "5.0.0",
   "description": "A lightweight configurable javascript validator",
   "main": "index.js",
   "author": {
