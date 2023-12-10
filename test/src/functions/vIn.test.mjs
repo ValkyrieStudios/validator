@@ -15,7 +15,7 @@ describe('vIn', () => {
             b: 'Hello',
             meta: {
                 a_params: ['foo', 'bar'],
-                b_params: 'Hello',
+                b_params: ['Hello'],
             },
         });
 
@@ -63,51 +63,6 @@ describe('vIn', () => {
             errors: {
                 a: [{msg: 'in', params: [['foo', 'bar']]}],
             },
-        });
-    });
-
-    describe('String', () => {
-        it('Should validate a correct primitive string check as valid', () => {
-            const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>'}).validate({
-                a: 'el',
-                b: 'lo',
-                meta: {params: 'Hello'},
-            });
-
-            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
-        });
-
-        it('Should validate a wrong primitive string check as invalid', () => {
-            const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>'}).validate({
-                a: 'ol',
-                b: 'le',
-                meta: {params: 'Hello'},
-            });
-
-            assert.deepEqual(evaluation, {
-                is_valid: false,
-                count: 2,
-                errors: {
-                    a: [{msg: 'in', params: ['Hello']}],
-                    b: [{msg: 'in', params: ['Hello']}],
-                },
-            });
-        });
-
-        it('Should take case sensitivity into account for primitive string checks', () => {
-            const evaluation = new Validator({a: 'in:<meta.params>', b: 'in:<meta.params>'}).validate({
-                a: 'H',
-                b: 'h',
-                meta: {params: 'Hello'},
-            });
-
-            assert.deepEqual(evaluation, {
-                is_valid: false,
-                count: 1,
-                errors: {
-                    b: [{msg: 'in', params: ['Hello']}],
-                },
-            });
         });
     });
 

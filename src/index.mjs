@@ -93,10 +93,6 @@ const RULE_STORE = {
     eq                          : isEqual,
 };
 
-//  Rules that should not spread params
-const NO_SPREAD_RULES = new Map();
-NO_SPREAD_RULES.set('in', true);
-
 //  Error model function
 //
 //  @param string   msg     Error message being hit
@@ -172,21 +168,25 @@ function parseRule (raw) {
 
         //  Get parameters
         if (params.length > 0) {
-            params = params[0].split(',');
+            if (type === 'in' && params[0].indexOf(',') > 0) {
+                params = [params[0].split(',')];
+            } else {
+                params = params[0].split(',');
 
-            //  Parse parameters into callback functions
-            for (let i = 0; i < params.length; i++) {
-                let param = params[i];
-                if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
-                    //  Ensure we validate that parameterized string value is correct eg: <meta.myval>
-                    if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
-                        throw new TypeError(`Parameterization misconfiguration, please verify rule config for ${raw}`);
+                //  Parse parameters into callback functions
+                for (let i = 0; i < params.length; i++) {
+                    let param = params[i];
+                    if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
+                        //  Ensure we validate that parameterized string value is correct eg: <meta.myval>
+                        if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
+                            throw new TypeError(`Parameterization misconfiguration, please verify rule config for ${raw}`);
+                        }
+                        
+                        param = param.substr(1, param.length - 2);
+                        params[i] = data => deepGet(data, param);
+                    } else {
+                        params[i] = param;
                     }
-                    
-                    param = param.substr(1, param.length - 2);
-                    params[i] = data => deepGet(data, param);
-                } else {
-                    params[i] = param;
                 }
             }
         }
@@ -241,9 +241,7 @@ function checkField (cursor, list, data) {
         for (const p of rule.params) params.push(typeof p === 'function' ? p(data) : p);
 
         //  Run rule - if check fails (not valid && not not | not && valid)
-        const rule_valid = NO_SPREAD_RULES.has(rule.type)
-            ? RULE_STORE[rule.type](cursor, params)
-            : RULE_STORE[rule.type](cursor, ...params);
+        const rule_valid = RULE_STORE[rule.type](cursor, ...params);
         if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) return false;
     }
 
