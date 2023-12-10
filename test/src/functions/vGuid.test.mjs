@@ -11,20 +11,32 @@ describe('vGuid', () => {
         const v = new Validator({a: 'guid'});
 
         for (let i = 0; i < 10000; i++) {
-            assert.ok(v.validate({a: guid()}).is_valid);
+            assert.ok(v.check({a: guid()}));
         }
     });
 
     it('Should be invalid when passed a non-string or empty after trimming string value', () => {
         for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
-            assert.equal(new Validator({a: 'guid'}).validate({a: el}).is_valid, false);
+            assert.deepEqual(
+                new Validator({a: 'guid'}).validate({a: el}),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        a: [{msg: el === undefined ? 'not_found' : 'guid', params: []}],
+                    },
+                }
+            );
         }
     });
 
     it('Should be invalid when passed a string value below 36 characters', () => {
         const uid = guid();
         for (let i = 1; i < 36; i++) {
-            assert.equal(new Validator({a: 'guid'}).validate({a: uid.substr(0, i)}).is_valid, false);
+            assert.deepEqual(
+                new Validator({a: 'guid'}).validate({a: uid.substr(0, i)}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'guid', params: []}]}}
+            );
         }
     });
 
@@ -32,11 +44,17 @@ describe('vGuid', () => {
         let uid = guid();
         for (let i = 1; i <= 48; i++) {
             uid = `${uid}a`;
-            assert.equal(new Validator({a: 'guid'}).validate({a: uid}).is_valid, false);
+            assert.deepEqual(
+                new Validator({a: 'guid'}).validate({a: uid}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'guid', params: []}]}}
+            );
         }
     });
 
     it('Should be invalid when passed a string that is not a valid guid but has the same length as a guid', () => {
-        assert.equal(new Validator({a: 'guid'}).validate({a: 'xxxxxxxx_xxxx_4xxx_yxxx_xxxxxxxxxxxx'}).is_valid, false);
+        assert.deepEqual(
+            new Validator({a: 'guid'}).validate({a: 'xxxxxxxx_xxxx_4xxx_yxxx_xxxxxxxxxxxx'}),
+            {is_valid: false, count: 1, errors: {a: [{msg: 'guid', params: []}]}}
+        );
     });
 });

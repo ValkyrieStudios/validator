@@ -16,13 +16,25 @@ function rIncorrect () {
 describe('vSysIPv4', () => {
     it('Should be invalid if not passed a string or passed an empty string after trimming', () => {
         for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
-            assert.equal(new Validator({a: 'sys_ipv4'}).validate({a: el}).is_valid, false);
+            assert.deepEqual(
+                new Validator({a: 'sys_ipv4'}).validate({a: el}),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        a: [{msg: el === undefined ? 'not_found' : 'sys_ipv4', params: []}],
+                    },
+                }
+            );
         }
     });
 
     it('Should be invalid when passed random strings', () => {
         for (const el of ['foo', 'bar', 'hello world', 'hello.world', 'ewueioqw wqe uqwioeuowqeqw']) {
-            assert.equal(new Validator({a: 'sys_ipv4'}).validate({a: el}).is_valid, false);
+            assert.deepEqual(
+                new Validator({a: 'sys_ipv4'}).validate({a: el}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
@@ -33,11 +45,17 @@ describe('vSysIPv4', () => {
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
 
         for (let i = 0; i < 48; i++) {
-            assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tpl(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
 
         for (let i = 58; i < 1000; i++) {
-            assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tpl(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
@@ -48,11 +66,17 @@ describe('vSysIPv4', () => {
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
 
         for (let i = 0; i < 48; i++) {
-            assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tpl(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
 
         for (let i = 58; i < 1000; i++) {
-            assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tpl(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
@@ -66,73 +90,130 @@ describe('vSysIPv4', () => {
         //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
 
         for (let i = 0; i < 48; i++) {
-            assert.equal(v.validate({a: tplOct1(String.fromCharCode(i))}).is_valid, false);
-            assert.equal(v.validate({a: tplOct2(String.fromCharCode(i))}).is_valid, false);
-            assert.equal(v.validate({a: tplOct3(String.fromCharCode(i))}).is_valid, false);
-            assert.equal(v.validate({a: tplOct4(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tplOct1(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
+            assert.deepEqual(
+                v.validate({a: tplOct2(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
+            assert.deepEqual(
+                v.validate({a: tplOct3(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
+            assert.deepEqual(
+                v.validate({a: tplOct4(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
 
         for (let i = 58; i < 1000; i++) {
-            assert.equal(v.validate({a: tplOct1(String.fromCharCode(i))}).is_valid, false);
-            assert.equal(v.validate({a: tplOct2(String.fromCharCode(i))}).is_valid, false);
-            assert.equal(v.validate({a: tplOct3(String.fromCharCode(i))}).is_valid, false);
-            assert.equal(v.validate({a: tplOct4(String.fromCharCode(i))}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: tplOct1(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
+            assert.deepEqual(
+                v.validate({a: tplOct2(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
+            assert.deepEqual(
+                v.validate({a: tplOct3(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
+            assert.deepEqual(
+                v.validate({a: tplOct4(String.fromCharCode(i))}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
     it('Should be invalid with addresses with only 1 octet', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            assert.equal(v.validate({a: `${rCorrect()}`}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: `${rCorrect()}`}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
     it('Should be invalid with addresses with only 2 octets', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            assert.equal(v.validate({a: [rCorrect(), rCorrect()].join('.')}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: [rCorrect(), rCorrect()].join('.')}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
     it('Should be invalid with addresses with only 3 octets', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            assert.equal(v.validate({a: [rCorrect(), rCorrect(), rCorrect()].join('.')}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: [rCorrect(), rCorrect(), rCorrect()].join('.')}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
     it('Should be invalid with addresses where a single octet goes beyond the upper bound of a byte (255)', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            assert.equal(v.validate({a: [rIncorrect(), rCorrect(), rCorrect(), rCorrect()].join('.')}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: [rIncorrect(), rCorrect(), rCorrect(), rCorrect()].join('.')}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
 
         for (let i = 0; i < 500; i++) {
-            assert.equal(v.validate({a: [rCorrect(), rIncorrect(), rCorrect(), rCorrect()].join('.')}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: [rCorrect(), rIncorrect(), rCorrect(), rCorrect()].join('.')}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
 
         for (let i = 0; i < 500; i++) {
-            assert.equal(v.validate({a: [rCorrect(), rCorrect(), rIncorrect(), rCorrect()].join('.')}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: [rCorrect(), rCorrect(), rIncorrect(), rCorrect()].join('.')}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
 
         for (let i = 0; i < 500; i++) {
-            assert.equal(v.validate({a: [rCorrect(), rCorrect(), rCorrect(), rIncorrect()].join('.')}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: [rCorrect(), rCorrect(), rCorrect(), rIncorrect()].join('.')}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
     it('Should be invalid with addresses where all octets go beyond the upper bound of a byte (255)', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            assert.equal(v.validate({a: [rIncorrect(), rIncorrect(), rIncorrect(), rIncorrect()].join('.')}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: [rIncorrect(), rIncorrect(), rIncorrect(), rIncorrect()].join('.')}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
     it('Should be invalid with addresses where all octets are correct but where the string contains spaces', () => {
         const v = new Validator({a: 'sys_ipv4'});
         for (let i = 0; i < 500; i++) {
-            assert.equal(v.validate({a: `  ${rCorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}`}).is_valid, false);
-            assert.equal(v.validate({a: `${rCorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}   `}).is_valid, false);
-            assert.equal(v.validate({a: `  ${rCorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}    `}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: `  ${rCorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}`}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
+            assert.deepEqual(
+                v.validate({a: `${rCorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}   `}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
+            assert.deepEqual(
+                v.validate({a: `  ${rCorrect()}.${rCorrect()}.${rCorrect()}.${rCorrect()}    `}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
@@ -143,12 +224,18 @@ describe('vSysIPv4', () => {
 
         for (let i = 0; i < 46; i++) {
             const s = String.fromCharCode(i);
-            assert.equal(v.validate({a: [rCorrect(), s, rCorrect(), s, rCorrect(), s, rCorrect()].join('')}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: [rCorrect(), s, rCorrect(), s, rCorrect(), s, rCorrect()].join('')}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
 
         for (let i = 47; i < 1000; i++) {
             const s = String.fromCharCode(i);
-            assert.equal(v.validate({a: [rCorrect(), s, rCorrect(), s, rCorrect(), s, rCorrect()].join('')}).is_valid, false);
+            assert.deepEqual(
+                v.validate({a: [rCorrect(), s, rCorrect(), s, rCorrect(), s, rCorrect()].join('')}),
+                {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4', params: []}]}}
+            );
         }
     });
 
@@ -255,6 +342,6 @@ describe('vSysIPv4', () => {
             '20.211.112.88',
             '227.64.5.10',
             '142.101.121.75',
-        ]) assert.ok(v.validate({a}).is_valid);
+        ]) assert.ok(v.check({a}));
     });
 });

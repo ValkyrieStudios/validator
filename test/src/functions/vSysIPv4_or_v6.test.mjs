@@ -28,13 +28,25 @@ function IPV4Bad () {
 describe('vSysIPv4orv6', () => {
     it('Should be invalid if not passed a string or passed a string empty after trimming', () => {
         for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
-            assert.equal(new Validator({a: 'sys_ipv4_or_v6'}).validate({a: el}).is_valid, false);
+            assert.deepEqual(new Validator({a: 'sys_ipv4_or_v6'}).validate({a: el}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: el === undefined ? 'not_found' : 'sys_ipv4_or_v6', params: []}],
+                },
+            });
         }
     });
 
     it('Should be invalid when passed random strings', () => {
         for (const el of ['foo', 'bar', 'hello world', 'hello.world', 'ewueioqw wqe uqwioeuowqeqw']) {
-            assert.equal(new Validator({a: 'sys_ipv4_or_v6'}).validate({a: el}).is_valid, false);
+            assert.deepEqual(new Validator({a: 'sys_ipv4_or_v6'}).validate({a: el}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'sys_ipv4_or_v6', params: []}],
+                },
+            });
         }
     });
 
@@ -46,11 +58,11 @@ describe('vSysIPv4orv6', () => {
             //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
             }
 
             for (let i = 58; i < 1000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
             }
         });
 
@@ -61,11 +73,11 @@ describe('vSysIPv4orv6', () => {
             //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
             }
 
             for (let i = 58; i < 1000; i++) {
-                assert.equal(v.validate({a: tpl(String.fromCharCode(i))}).is_valid, false);
+                assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
             }
         });
 
@@ -79,109 +91,73 @@ describe('vSysIPv4orv6', () => {
             //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({a: tplOct1(String.fromCharCode(i))}).is_valid, false);
-                assert.equal(v.validate({a: tplOct2(String.fromCharCode(i))}).is_valid, false);
-                assert.equal(v.validate({a: tplOct3(String.fromCharCode(i))}).is_valid, false);
-                assert.equal(v.validate({a: tplOct4(String.fromCharCode(i))}).is_valid, false);
+                assert.equal(v.check({a: tplOct1(String.fromCharCode(i))}), false);
+                assert.equal(v.check({a: tplOct2(String.fromCharCode(i))}), false);
+                assert.equal(v.check({a: tplOct3(String.fromCharCode(i))}), false);
+                assert.equal(v.check({a: tplOct4(String.fromCharCode(i))}), false);
             }
 
             for (let i = 58; i < 1000; i++) {
-                assert.equal(v.validate({a: tplOct1(String.fromCharCode(i))}).is_valid, false);
-                assert.equal(v.validate({a: tplOct2(String.fromCharCode(i))}).is_valid, false);
-                assert.equal(v.validate({a: tplOct3(String.fromCharCode(i))}).is_valid, false);
-                assert.equal(v.validate({a: tplOct4(String.fromCharCode(i))}).is_valid, false);
+                assert.equal(v.check({a: tplOct1(String.fromCharCode(i))}), false);
+                assert.equal(v.check({a: tplOct2(String.fromCharCode(i))}), false);
+                assert.equal(v.check({a: tplOct3(String.fromCharCode(i))}), false);
+                assert.equal(v.check({a: tplOct4(String.fromCharCode(i))}), false);
             }
         });
 
         it('Should be invalid with addresses with only 1 octet', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({a: `${IPV4Good()}`}).is_valid, false);
+                assert.equal(v.check({a: `${IPV4Good()}`}), false);
             }
         });
 
         it('Should be invalid with addresses with only 2 octets', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({a: `${IPV4Good()}.${IPV4Good()}`}).is_valid, false);
+                assert.equal(v.check({a: `${IPV4Good()}.${IPV4Good()}`}), false);
             }
         });
 
         it('Should be invalid with addresses with only 3 octets', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({a: `${IPV4Good()}.${IPV4Good()}.${IPV4Good()}`}).is_valid, false);
+                assert.equal(v.check({a: `${IPV4Good()}.${IPV4Good()}.${IPV4Good()}`}), false);
             }
         });
 
         it('Should be invalid with addresses where a single octet goes beyond the upper bound of a byte (255)', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
-                    a: [
-                        IPV4Bad(),
-                        IPV4Good(),
-                        IPV4Good(),
-                        IPV4Good(),
-                    ].join('.'),
-                }).is_valid, false);
+                assert.equal(v.check({a: [IPV4Bad(), IPV4Good(), IPV4Good(), IPV4Good()].join('.')}), false);
             }
 
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
-                    a: [
-                        IPV4Good(),
-                        IPV4Bad(),
-                        IPV4Good(),
-                        IPV4Good(),
-                    ].join('.'),
-                }).is_valid, false);
+                assert.equal(v.check({a: [IPV4Good(), IPV4Bad(), IPV4Good(), IPV4Good()].join('.')}), false);
             }
 
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
-                    a: [
-                        IPV4Good(),
-                        IPV4Good(),
-                        IPV4Bad(),
-                        IPV4Good(),
-                    ].join('.'),
-                }).is_valid, false);
+                assert.equal(v.check({a: [IPV4Good(), IPV4Good(), IPV4Bad(), IPV4Good()].join('.')}), false);
             }
 
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
-                    a: [
-                        IPV4Good(),
-                        IPV4Good(),
-                        IPV4Good(),
-                        IPV4Bad(),
-                    ].join('.'),
-                }).is_valid, false);
+                assert.equal(v.check({a: [IPV4Good(), IPV4Good(), IPV4Good(), IPV4Bad()].join('.')}), false);
             }
         });
 
         it('Should be invalid with addresses where all octets go beyond the upper bound of a byte (255)', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
-                    a: [IPV4Bad(), IPV4Bad(), IPV4Bad(), IPV4Bad()].join('.'),
-                }).is_valid, false);
+                assert.equal(v.check({a: [IPV4Bad(), IPV4Bad(), IPV4Bad(), IPV4Bad()].join('.')}), false);
             }
         });
 
         it('Should be invalid with addresses where all octets are correct but where the string contains spaces', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
-                    a: `  ${IPV4Good()}.${IPV4Good()}.${IPV4Good()}.${IPV4Good()}`,
-                }).is_valid, false);
-                assert.equal(v.validate({
-                    a: `${IPV4Good()}.${IPV4Good()}.${IPV4Good()}.${IPV4Good()}   `,
-                }).is_valid, false);
-                assert.equal(v.validate({
-                    a: `  ${IPV4Good()}.${IPV4Good()}.${IPV4Good()}.${IPV4Good()}    `,
-                }).is_valid, false);
+                assert.equal(v.check({a: `  ${IPV4Good()}.${IPV4Good()}.${IPV4Good()}.${IPV4Good()}`}), false);
+                assert.equal(v.check({a: `${IPV4Good()}.${IPV4Good()}.${IPV4Good()}.${IPV4Good()}   `}), false);
+                assert.equal(v.check({a: `  ${IPV4Good()}.${IPV4Good()}.${IPV4Good()}.${IPV4Good()}    `}), false);
             }
         });
 
@@ -192,16 +168,12 @@ describe('vSysIPv4orv6', () => {
 
             for (let i = 0; i < 46; i++) {
                 const sep = String.fromCharCode(i);
-                assert.equal(v.validate({
-                    a: `${IPV4Good()}${sep}${IPV4Good()}${sep}${IPV4Good()}${sep}${IPV4Good()}`,
-                }).is_valid, false);
+                assert.equal(v.check({a: `${IPV4Good()}${sep}${IPV4Good()}${sep}${IPV4Good()}${sep}${IPV4Good()}`}), false);
             }
 
             for (let i = 47; i < 1000; i++) {
                 const sep = String.fromCharCode(i);
-                assert.equal(v.validate({
-                    a: `${IPV4Good()}${sep}${IPV4Good()}${sep}${IPV4Good()}${sep}${IPV4Good()}`,
-                }).is_valid, false);
+                assert.equal(v.check({a: `${IPV4Good()}${sep}${IPV4Good()}${sep}${IPV4Good()}${sep}${IPV4Good()}`}), false);
             }
         });
 
@@ -308,7 +280,7 @@ describe('vSysIPv4orv6', () => {
                 '20.211.112.88',
                 '227.64.5.10',
                 '142.101.121.75',
-            ]) assert.ok(v.validate({a}).is_valid);
+            ]) assert.ok(v.check({a}));
         });
     });
 
@@ -321,21 +293,15 @@ describe('vSysIPv4orv6', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({
-                    a: tpl(String.fromCharCode(i)),
-                }).is_valid, false);
+                assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
             }
 
             for (let i = 58; i < 96; i++) {
-                assert.equal(v.validate({
-                    a: tpl(String.fromCharCode(i)),
-                }).is_valid, false);
+                assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
             }
 
             for (let i = 123; i < 1000; i++) {
-                assert.equal(v.validate({
-                    a: tpl(String.fromCharCode(i)),
-                }).is_valid, false);
+                assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
             }
         });
 
@@ -347,21 +313,15 @@ describe('vSysIPv4orv6', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({
-                    a: tpl(String.fromCharCode(i)),
-                }).is_valid, false);
+                assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
             }
 
             for (let i = 58; i < 96; i++) {
-                assert.equal(v.validate({
-                    a: tpl(String.fromCharCode(i)),
-                }).is_valid, false);
+                assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
             }
 
             for (let i = 123; i < 1000; i++) {
-                assert.equal(v.validate({
-                    a: tpl(String.fromCharCode(i)),
-                }).is_valid, false);
+                assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
             }
         });
 
@@ -380,84 +340,84 @@ describe('vSysIPv4orv6', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: tpl1(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl2(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl3(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl4(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl5(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl6(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl7(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl8(String.fromCharCode(i)),
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
 
             for (let i = 58; i < 96; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: tpl1(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl2(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl3(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl4(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl5(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl6(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl7(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl8(String.fromCharCode(i)),
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
 
             for (let i = 123; i < 1000; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: tpl1(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl2(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl3(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl4(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl5(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl6(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl7(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl8(String.fromCharCode(i)),
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
@@ -500,378 +460,378 @@ describe('vSysIPv4orv6', () => {
             //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
 
             for (let i = 0; i < 48; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: tpl1(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl2(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl3(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl4(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl5(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl6(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl7(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl8(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl9(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl10(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl11(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl12(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl13(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl14(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl15(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl16(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl17(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl18(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl19(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl20(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl21(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl22(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl23(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl24(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl25(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl26(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl27(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl28(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl29(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl30(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl31(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl32(String.fromCharCode(i)),
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
 
             for (let i = 58; i < 96; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: tpl1(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl2(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl3(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl4(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl5(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl6(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl7(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl8(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl9(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl10(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl11(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl12(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl13(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl14(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl15(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl16(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl17(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl18(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl19(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl20(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl21(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl22(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl23(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl24(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl25(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl26(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl27(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl28(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl29(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl30(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl31(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl32(String.fromCharCode(i)),
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
 
             for (let i = 123; i < 1000; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: tpl1(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl2(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl3(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl4(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl5(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl6(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl7(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl8(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl9(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl10(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl11(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl12(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl13(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl14(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl15(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl16(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl17(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl18(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl19(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl20(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl21(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl22(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl23(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl24(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl25(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl26(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl27(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl28(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl29(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl30(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl31(String.fromCharCode(i)),
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: tpl32(String.fromCharCode(i)),
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
         it('Should be invalid with addresses with only 1 chunk', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: `${IPV6C()}`,
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
         it('Should be invalid with addresses with only 2 chunks', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: `${IPV6C()}:${IPV6C()}`,
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
         it('Should be invalid with addresses with only 3 chunks', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: `${IPV6C()}:${IPV6C()}:${IPV6C()}`,
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
         it('Should be invalid with addresses with only 4 chunks', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: `${IPV6C()}:${IPV6C()}:${IPV6C()}:${IPV6C()}`,
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
         it('Should be invalid with addresses with only 5 chunks', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: `${IPV6C()}:${IPV6C()}:${IPV6C()}:${IPV6C()}:${IPV6C()}`,
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
         it('Should be invalid with addresses with only 6 chunks', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: `${IPV6C()}:${IPV6C()}:${IPV6C()}:${IPV6C()}:${IPV6C()}:${IPV6C()}`,
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
         it('Should be invalid with addresses with only 7 chunks', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: `${IPV6C()}:${IPV6C()}:${IPV6C()}:${IPV6C()}:${IPV6C()}:${IPV6C()}:${IPV6C()}`,
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
         it('Should be invalid with addresses where all chunks are correct but where the string contains spaces', () => {
             const v = new Validator({a: 'sys_ipv4_or_v6'});
             for (let i = 0; i < 500; i++) {
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: `  ${IPV6C()}.${IPV6C()}.${IPV6C()}.${IPV6C()}${IPV6C()}.${IPV6C()}.${IPV6C()}.${IPV6C()}`,
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: `${IPV6C()}.${IPV6C()}.${IPV6C()}.${IPV6C()}${IPV6C()}.${IPV6C()}.${IPV6C()}.${IPV6C()}   `,
-                }).is_valid, false);
-                assert.equal(v.validate({
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
+                assert.deepEqual(v.validate({
                     a: `  ${IPV6C()}.${IPV6C()}.${IPV6C()}.${IPV6C()}${IPV6C()}.${IPV6C()}.${IPV6C()}.${IPV6C()}    `,
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
@@ -882,7 +842,7 @@ describe('vSysIPv4orv6', () => {
 
             for (let i = 0; i < 58; i++) {
                 const sep = String.fromCharCode(i);
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: [
                         IPV6C(),
                         IPV6C(),
@@ -893,12 +853,12 @@ describe('vSysIPv4orv6', () => {
                         IPV6C(),
                         IPV6C(),
                     ].join(sep),
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
 
             for (let i = 59; i < 1000; i++) {
                 const sep = String.fromCharCode(i);
-                assert.equal(v.validate({
+                assert.deepEqual(v.validate({
                     a: [
                         IPV6C(),
                         IPV6C(),
@@ -909,7 +869,7 @@ describe('vSysIPv4orv6', () => {
                         IPV6C(),
                         IPV6C(),
                     ].join(sep),
-                }).is_valid, false);
+                }), {is_valid: false, count: 1, errors: {a: [{msg: 'sys_ipv4_or_v6', params: []}]}});
             }
         });
 
@@ -1116,7 +1076,7 @@ describe('vSysIPv4orv6', () => {
                 'eb80:a8f4:de2d:4400:8847:ae62:6c1e:bd1a',
                 '4af0:15f1:39bb:115f:12da:5103:263a:9fcc',
                 'f523:60af:53b4:396b:f9cb:6f85:d40b:dc52',
-            ]) assert.ok(v.validate({a}).is_valid);
+            ]) assert.ok(v.check({a}));
         });
 
         it('Should be valid with addresses in shortened format', () => {
@@ -1140,7 +1100,7 @@ describe('vSysIPv4orv6', () => {
                 '2b03:4f68:12d:31a6:29e7:f985:8f04:c5ab',
                 'b38:012b:76ee:cfe9:5180:cb8f:41da:9c5c',
                 '2001:db8::8a2e:370:7334',
-            ]) assert.ok(v.validate({a}).is_valid);
+            ]) assert.ok(v.check({a}));
         });
     });
 });

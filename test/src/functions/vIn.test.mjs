@@ -19,38 +19,51 @@ describe('vIn', () => {
             },
         });
 
-        assert.ok(evaluation.is_valid);
-        assert.deepEqual(evaluation.errors.a, []);
-        assert.deepEqual(evaluation.errors.b, []);
+        assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
     });
 
     it('Should validate a string correctly against raw values', () => {
         const validator = new Validator({a: 'in:foo,hello,bar'});
-        assert.equal(validator.validate({a: 'bar'}).is_valid, false);
-        assert.ok(validator.validate({a: 'foo'}));
+        assert.ok(validator.check({a: 'bar'}));
+        assert.ok(validator.check({a: 'foo'}));
     });
 
     it('Should be invalid when no params are passed', () => {
         const evaluation = new Validator({a: 'in:<meta.params>'}).validate({a: 'hello'});
 
-        assert.equal(evaluation.is_valid, false);
-        assert.deepEqual(evaluation.errors.a, [{msg: 'in', params: [undefined]}]);
+        assert.deepEqual(evaluation, {
+            is_valid: false,
+            count: 1,
+            errors: {
+                a: [{msg: 'in', params: [undefined]}],
+            },
+        });
     });
 
     it('Should be invalid when a non-array or empty array params are passed', () => {
         for (const el of CONSTANTS.NOT_ARRAY_WITH_EMPTY) {
             const evaluation = new Validator({a: 'in:<params>'}).validate({a: 'hello', params: el});
 
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'in', params: [el]}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'in', params: [el]}],
+                },
+            });
         }
     });
 
     it('Should return a correct error message when invalid', () => {
         const evaluation = new Validator({a: 'in:<meta.params>'}).validate({a: 'hello', meta: {params: ['foo', 'bar']}});
 
-        assert.equal(evaluation.is_valid, false);
-        assert.deepEqual(evaluation.errors.a, [{msg: 'in', params: [['foo', 'bar']]}]);
+        assert.deepEqual(evaluation, {
+            is_valid: false,
+            count: 1,
+            errors: {
+                a: [{msg: 'in', params: [['foo', 'bar']]}],
+            },
+        });
     });
 
     describe('String', () => {
@@ -61,9 +74,7 @@ describe('vIn', () => {
                 meta: {params: 'Hello'},
             });
 
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
-            assert.deepEqual(evaluation.errors.b, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should validate a wrong primitive string check as invalid', () => {
@@ -73,9 +84,14 @@ describe('vIn', () => {
                 meta: {params: 'Hello'},
             });
 
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'in', params: ['Hello']}]);
-            assert.deepEqual(evaluation.errors.b, [{msg: 'in', params: ['Hello']}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 2,
+                errors: {
+                    a: [{msg: 'in', params: ['Hello']}],
+                    b: [{msg: 'in', params: ['Hello']}],
+                },
+            });
         });
 
         it('Should take case sensitivity into account for primitive string checks', () => {
@@ -85,9 +101,13 @@ describe('vIn', () => {
                 meta: {params: 'Hello'},
             });
 
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, []);
-            assert.deepEqual(evaluation.errors.b, [{msg: 'in', params: ['Hello']}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    b: [{msg: 'in', params: ['Hello']}],
+                },
+            });
         });
     });
 
@@ -99,9 +119,7 @@ describe('vIn', () => {
                 meta: {params: [50, 60, 70, 80, 90, 100, 250]},
             });
 
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
-            assert.deepEqual(evaluation.errors.b, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should validate a wrong primitive integer check as invalid', () => {
@@ -112,10 +130,14 @@ describe('vIn', () => {
                 meta: {params: [50, 60, 70, 80, 90, 100, 250]},
             });
 
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'in', params: [[50,60,70,80,90,100,250]]}]);
-            assert.deepEqual(evaluation.errors.b, [{msg: 'in', params: [[50,60,70,80,90,100,250]]}]);
-            assert.deepEqual(evaluation.errors.c, []);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 2,
+                errors: {
+                    a: [{msg: 'in', params: [[50,60,70,80,90,100,250]]}],
+                    b: [{msg: 'in', params: [[50,60,70,80,90,100,250]]}],
+                },
+            });
         });
     });
 
@@ -127,9 +149,7 @@ describe('vIn', () => {
                 meta: {params: [true, false, false]},
             });
 
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
-            assert.deepEqual(evaluation.errors.b, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should validate an incorrect boolean check as invalid', () => {
@@ -139,9 +159,14 @@ describe('vIn', () => {
                 meta: {a_params: [true, true, true], b_params: [false, false, false]},
             });
 
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'in', params: [[true, true, true]]}]);
-            assert.deepEqual(evaluation.errors.b, [{msg: 'in', params: [[false, false, false]]}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 2,
+                errors: {
+                    a: [{msg: 'in', params: [[true, true, true]]}],
+                    b: [{msg: 'in', params: [[false, false, false]]}],
+                },
+            });
         });
     });
 
@@ -152,8 +177,7 @@ describe('vIn', () => {
                 meta: {params: [new Date('1990-02-07'), new Date('2019-02-07')]},
             });
 
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should validate an incorrect date check as invalid', () => {
@@ -161,9 +185,13 @@ describe('vIn', () => {
                 a: new Date('1995-02-07'),
                 meta: {params: [new Date('1990-02-07'), new Date('2019-02-07')]},
             });
-
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'in', params:[[new Date('1990-02-07'), new Date('2019-02-07')]]}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'in', params:[[new Date('1990-02-07'), new Date('2019-02-07')]]}],
+                },
+            });
         });
     });
 
@@ -174,8 +202,7 @@ describe('vIn', () => {
                 meta: {params: [{a: 10, b: 2}, {c: 3, d:4}]},
             });
 
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should validate a wrong object check as invalid', () => {
@@ -183,9 +210,13 @@ describe('vIn', () => {
                 a: {a:10, b:1},
                 meta: {params: [{a: 10, b: 2}, {c: 3, d:4}]},
             });
-
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'in', params: [[{a: 10, b: 2}, {c: 3, d:4}]]}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'in', params: [[{a: 10, b: 2}, {c: 3, d:4}]]}],
+                },
+            });
         });
     });
 
@@ -196,8 +227,7 @@ describe('vIn', () => {
                 meta: {params: [[1, 'hello', 2, 'world'], ['foo'], ['bar']]},
             });
 
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should validate a wrong array check as invalid', () => {
@@ -205,9 +235,13 @@ describe('vIn', () => {
                 a: [2, 'hello', 2, 'world'],
                 meta: {params: [[1, 'hello', 2, 'world'], ['foo'], ['bar']]},
             });
-
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, [{msg: 'in', params: [[[1, 'hello', 2, 'world'], ['foo'], ['bar']]]}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'in', params: [[[1, 'hello', 2, 'world'], ['foo'], ['bar']]]}],
+                },
+            });
         });
     });
 
@@ -219,9 +253,7 @@ describe('vIn', () => {
                 meta: {params: [new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}]},
             });
 
-            assert.ok(evaluation.is_valid);
-            assert.deepEqual(evaluation.errors.a, []);
-            assert.deepEqual(evaluation.errors.b, []);
+            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should validate a wrong check with mixed params as invalid', () => {
@@ -231,9 +263,13 @@ describe('vIn', () => {
                 meta: {params: [new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}]},
             });
 
-            assert.equal(evaluation.is_valid, false);
-            assert.deepEqual(evaluation.errors.a, []);
-            assert.deepEqual(evaluation.errors.b, [{msg: 'in', params: [[new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}]]}]);
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    b: [{msg: 'in', params: [[new Date('2019-02-17'), 'Foo', 1, 2, 3, 'Bar', true, {a: 1}]]}],
+                },
+            });
         });
     });
 });
