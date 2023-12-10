@@ -1393,6 +1393,122 @@ describe('Validator - Core', () => {
         });
     });
 
+    describe('@extendEnum FN', () => {
+        it('Should throw if not provided anything', () => {
+            assert.throws(
+                () => Validator.extendEnum(),
+                new Error('Please provide an object to extendEnum')
+            );
+        });
+
+        it('Should throw if not provided an object', () => {
+            for (const el of CONSTANTS.NOT_OBJECT) {
+                assert.throws(
+                    () => Validator.extendEnum(el),
+                    new Error('Please provide an object to extendEnum')
+                );
+            }
+        });
+
+        it('Should not throw if provided an empty object', () => {
+            assert.doesNotThrow(() => Validator.extendEnum({}));
+        });
+
+        it('Should throw if provided an object where certain values do not have an array with content', () => {
+            for (const el of CONSTANTS.NOT_ARRAY_WITH_EMPTY) {
+                assert.throws(
+                    () => Validator.extendEnum({enum_1: ['foo', 'bar'], enum_2: el}),
+                    new Error('Invalid enum extension: please ensure an extension provides an array with content')
+                );
+            }
+        });
+
+        it('Should work', () => {
+            Validator.extendEnum({
+                enum1: ['foo', 'bar', 'foobar'],
+                ENUM_2: [1, 2, 3],
+            });
+
+            assert.ok(new Validator({a: 'enum1'}).check({a: 'foo'}));
+            assert.ok(new Validator({a: 'ENUM_2', b: 'enum1'}).check({a: 2, b: 'foobar'}));
+            assert.equal(new Validator({a: 'enum1'}).check({a: 'fuo'}), false);
+            assert.equal(new Validator({a: 'ENUM_2', b: 'enum1'}).check({a: 42, b: 'foobar'}), false);
+        });
+
+        it('Extensions should also show up as functions in rules', () => {
+            Validator.extendEnum({
+                enum1: ['foo', 'bar', 'foobar'],
+                ENUM_2: [1, 2, 3],
+            });
+
+            assert.ok(Validator.rules.enum1 instanceof Function);
+            assert.ok(Validator.rules.enum1('foo'));
+            assert.equal(Validator.rules.enum1('fooo'), false);
+
+            assert.ok(Validator.rules.ENUM_2 instanceof Function);
+            assert.ok(Validator.rules.ENUM_2(1));
+            assert.equal(Validator.rules.ENUM_2(42), false);
+        });
+
+        it('Should allow redefining the same enum rule', () => {
+            Validator.extendEnum({
+                enum1: ['foo', 'bar', 'foobar'],
+                ENUM_2: [1, 2, 3],
+            });
+
+            assert.ok(Validator.rules.enum1 instanceof Function);
+            assert.ok(Validator.rules.enum1('foo'));
+            assert.equal(Validator.rules.enum1('fooo'), false);
+
+            assert.ok(Validator.rules.ENUM_2 instanceof Function);
+            assert.ok(Validator.rules.ENUM_2(1));
+            assert.equal(Validator.rules.ENUM_2(42), false);
+
+            Validator.extendEnum({
+                ENUM_2: [2, 3, 42],
+            });
+
+            assert.equal(Validator.rules.ENUM_2(1), false);
+            assert.ok(Validator.rules.ENUM_2(42));
+        });
+
+        it('Should throw if provided an object where certain arrays contain more than just primitive strings or numbers', () => {
+            assert.throws(
+                () => Validator.extendEnum({enum_1: ['foo', false, 'bar']}),
+                new Error('Invalid enum extension for enum_1: only primitive strings/numbers are allowed for now')
+            );
+
+            assert.throws(
+                () => Validator.extendEnum({enum_1: ['foo', {a: 1}, 'bar']}),
+                new Error('Invalid enum extension for enum_1: only primitive strings/numbers are allowed for now')
+            );
+
+            assert.throws(
+                () => Validator.extendEnum({enum_1: ['foo', new Date(), 'bar']}),
+                new Error('Invalid enum extension for enum_1: only primitive strings/numbers are allowed for now')
+            );
+
+            assert.throws(
+                () => Validator.extendEnum({enum_1: ['foo', ['foo'], 'bar']}),
+                new Error('Invalid enum extension for enum_1: only primitive strings/numbers are allowed for now')
+            );
+        });
+
+        it('Should allow working with not/sometimes flags', () => {
+            Validator.extendEnum({
+                FRUITS: ['apple', 'pear', 'banana'],
+                ANIMALS: ['dog', 'cat', 'parrot'],
+                AGE_13_18: [13, 14, 15, 16, 17, 18],
+                AGE_19_25: [19, 20, 21, 22, 23, 24, 25],
+            });
+
+            assert.ok(new Validator({age: 'AGE_13_18'}).check({age: 15}));
+            assert.ok(new Validator({age: '!AGE_13_18'}).check({age: 19}));
+            assert.ok(Validator.rules.AGE_13_18(15));
+            assert.ok(new Validator({age: '?AGE_13_18', pet: 'ANIMALS', fave_fruit: 'FRUITS'}).check({pet: 'dog', fave_fruit: 'banana'}));
+        });
+    });
+
     describe('Complex validation scenarions', () => {
         it('Should be able to validate complex objects [1]', () => {
             const evaluation = new Validator({

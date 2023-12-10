@@ -42,6 +42,9 @@ import vUrl                     from './functions/vUrl.mjs';
 import vUrlNoQuery              from './functions/vUrlNoQuery.mjs';
 import vUrlImage                from './functions/vUrlImage.mjs';
 
+//  Used for enum storage using extendEnum
+const ENUM_STORE = new Map();
+
 const RULE_STORE = {
     alpha_num_spaces            : vAlphaNumSpaces,
     alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
@@ -426,7 +429,7 @@ export default class Validator {
         if (RULE_STORE[sanitized_name]) delete RULE_STORE[sanitized_name];
 
         //  Define property with a configurable flag to allow reconfiguration
-        Object.defineProperty(RULE_STORE, sanitized_name, {configurable: true, enumerable: true, get : () => fn});
+        RULE_STORE[sanitized_name] = fn;
     }
 
     //  Run multiple validator extensions in one go by passing an object
@@ -440,6 +443,43 @@ export default class Validator {
 
         //  For each key in object, check if its value is a function
         for (const name of Object.keys(obj)) Validator.extend(name, obj[name]);
+    }
+
+    //  Add an enum validation rule
+    //
+    //  @param object   obj     Enumeration rule objects, in format of {myenum: [...], myotherenum: [...]}
+    static extendEnum (obj) {
+        //  Check if passed variable is an object
+        if (
+            !isObject(obj)
+        ) throw new Error('Please provide an object to extendEnum');
+
+        //  For each key in object, check if its value is a function
+        for (const name of Object.keys(obj)) {
+            if (
+                !Array.isArray(obj[name]) || 
+                obj[name].length === 0
+            ) throw new Error('Invalid enum extension: please ensure an extension provides an array with content');
+
+            const enum_map = new Map();
+            for (const el of obj[name]) {
+                if (!isNeString(el) && !Number.isFinite(el)) {
+                    throw new Error(`Invalid enum extension for ${name}: only primitive strings/numbers are allowed for now`);
+                }
+                enum_map.set(el, true);
+            }
+
+            //  Create function and transfer name to it
+            let f = function (val) {
+                return ENUM_STORE.get(this.uid).has(val); // eslint-disable-line no-invalid-this
+            };
+            f.uid = name;
+            f = f.bind(f);
+            ENUM_STORE.set(name, enum_map);
+
+            //  Store on map
+            RULE_STORE[name] = f;
+        }
     }
 
 }

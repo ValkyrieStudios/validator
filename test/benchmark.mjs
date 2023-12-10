@@ -82,6 +82,8 @@ const vcomplex = new Validator({
         phone: '?phone',
     },
 });
+const venum = new Validator({animal: 'MYENUM'});
+Validator.extendEnum({MYENUM: ['dog', 'cat', 'bird', 'donkey', 'cow', 'horse', 'pig']});
 
 //  Run benchmarks
 for (const el of [
@@ -369,6 +371,15 @@ for (const el of [
             },
             meta: {gender_options: ['F', 'M', 'U']},
         }),
+    },
+    //  Baseline - check enum
+    {
+        lbl: 'Validator@check - existing - enum - valid',
+        fn: () => vsimple.check({animal: 'pig'}),
+    },
+    {
+        lbl: 'Validator@check - existing - enum - invalid',
+        fn: () => vsimple.check({animal: 12345}),
     },
     //  vAlphaNumSpaces
     {

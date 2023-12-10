@@ -7,6 +7,20 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Added
+- feat: Validator @extendEnum: This new method allows registering one or more enumerations as validation rules, as with all validator extensions the name of the enum can then be used as part of a validation rule or called directly through Validator.rules. Take note: currently onle arrays of primitive strings/numbers are allowed. For example:
+```
+Validator.extendEnum({
+    FRUITS: ['apple', 'pear', 'banana'],
+    ANIMALS: ['dog', 'cat', 'parrot'],
+    AGE_13_18: [13, 14, 15, 16, 17, 18],
+    AGE_19_25: [19, 20, 21, 22, 23, 24, 25],
+});
+
+new Validator({age: 'AGE_13_18'}).check({age: 15}); // true
+new Validator({age: '!AGE_13_18'}).check({age: 19}); // true
+
+Validator.rules.AGE_13_18(15); // true
+```
 - feat: Validator Instance @check: This new method only returns whether or not a data object is valid against the validator and as such is magnitudes faster at spotting invalidity than the @validate function, it is also faster at spotting validity due to less internal overhead, for example:
 ```
 const v = new Validator({
