@@ -92,7 +92,7 @@ describe('vSize', () => {
 
         const evaluation = new Validator(rules).validate(typechecks);
 
-        assert.deepEqual({
+        assert.deepEqual(evaluation, {
             is_valid: false,
             count: 9,
             errors: {
@@ -144,7 +144,7 @@ describe('vSize', () => {
         });
 
         it('Should validate an array whose length is equal to the provided parameter as valid', () => {
-            assert.ok(new Validator({a: 'size:5'}).check({a: ['apple', 'pear', 'orange', 'melon', 'grape']});
+            assert.ok(new Validator({a: 'size:5'}).check({a: ['apple', 'pear', 'orange', 'melon', 'grape']}));
         });
 
         it('Should validate an array whose length is larger than the provided parameter as invalid', () => {

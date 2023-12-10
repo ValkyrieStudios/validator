@@ -93,6 +93,10 @@ const RULE_STORE = {
     eq                          : isEqual,
 };
 
+//  Rules that should not spread params
+const NO_SPREAD_RULES = new Map();
+NO_SPREAD_RULES.set('in', true);
+
 //  Error model function
 //
 //  @param string   msg     Error message being hit
@@ -237,7 +241,9 @@ function checkField (cursor, list, data) {
         for (const p of rule.params) params.push(typeof p === 'function' ? p(data) : p);
 
         //  Run rule - if check fails (not valid && not not | not && valid)
-        const rule_valid = RULE_STORE[rule.type](cursor, ...params);
+        const rule_valid = NO_SPREAD_RULES.has(rule.type)
+            ? RULE_STORE[rule.type](cursor, params)
+            : RULE_STORE[rule.type](cursor, ...params);
         if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) return false;
     }
 

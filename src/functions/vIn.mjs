@@ -13,7 +13,7 @@ const memoizedHashParams = memoize(params => {
     return hashed;
 });
 
-export default function vIn (val, params = undefined) {
+export default function vIn (val, params) {
     if (
         !(typeof params === 'string' && params.trim().length > 0) && 
         !(Array.isArray(params) && params.length > 0)
