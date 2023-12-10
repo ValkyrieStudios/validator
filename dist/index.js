@@ -54,6 +54,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: !0 }; return { done: !1, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = !0, didErr = !1, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = !0; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+var ENUM_STORE = new Map();
 var RULE_STORE = {
   alpha_num_spaces: _vAlphaNumSpaces["default"],
   alpha_num_spaces_multiline: _vAlphaNumSpacesMultiline["default"],
@@ -406,13 +407,7 @@ var Validator = exports["default"] = function () {
       var sanitized_name = name.trim();
       if (typeof fn !== 'function') throw new Error("Invalid extension: ".concat(sanitized_name, ", please ensure a valid function is passed"));
       if (RULE_STORE[sanitized_name]) delete RULE_STORE[sanitized_name];
-      Object.defineProperty(RULE_STORE, sanitized_name, {
-        configurable: !0,
-        enumerable: !0,
-        get: function get() {
-          return fn;
-        }
-      });
+      RULE_STORE[sanitized_name] = fn;
     }
   }, {
     key: "extendMulti",
@@ -421,6 +416,38 @@ var Validator = exports["default"] = function () {
       for (var _i = 0, _Object$keys = Object.keys(obj); _i < _Object$keys.length; _i++) {
         var name = _Object$keys[_i];
         Validator.extend(name, obj[name]);
+      }
+    }
+  }, {
+    key: "extendEnum",
+    value: function extendEnum(obj) {
+      if (!(0, _is3["default"])(obj)) throw new Error('Please provide an object to extendEnum');
+      for (var _i2 = 0, _Object$keys2 = Object.keys(obj); _i2 < _Object$keys2.length; _i2++) {
+        var name = _Object$keys2[_i2];
+        if (!Array.isArray(obj[name]) || obj[name].length === 0) throw new Error('Invalid enum extension: please ensure an extension provides an array with content');
+        var enum_map = new Map();
+        var _iterator8 = _createForOfIteratorHelper(obj[name]),
+          _step8;
+        try {
+          for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+            var el = _step8.value;
+            if (!(0, _isNotEmpty["default"])(el) && !Number.isFinite(el)) {
+              throw new Error("Invalid enum extension for ".concat(name, ": only primitive strings/numbers are allowed for now"));
+            }
+            enum_map.set(el, !0);
+          }
+        } catch (err) {
+          _iterator8.e(err);
+        } finally {
+          _iterator8.f();
+        }
+        var f = function f(val) {
+          return ENUM_STORE.get(this.uid).has(val);
+        };
+        f.uid = name;
+        f = f.bind(f);
+        ENUM_STORE.set(name, enum_map);
+        RULE_STORE[name] = f;
       }
     }
   }]);
