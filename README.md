@@ -298,6 +298,29 @@ v.check({a: ['contact@valkyriestudios.be', 'peter@valkyriestudios.be'}); // true
 v.check({a: ['contact@valkyriestudios.be', 'contact@valkyriestudios.be']}); // false
 ```
 
+**Take note:** When using the `.validate` method the evaluation result for a descriptor working with OR groups will be multi-dimensional like this:
+```
+const v = new Validator({
+    contact: {
+        email: '(email)(false)',
+        address: '?string_ne',
+    },
+});
+const evaluation = v.validate({contact: {address: 'bla'}});
+//  {
+//      is_valid: false,
+//      count: 1,
+//      errors: {
+//          'contact.email': [
+//              [
+//                  {msg: 'email', params: []}
+//              ], [
+//                  {msg: 'false', params: []}
+//              ]
+//          ]
+//      }
+//  }
+
 ## Customization
 ### Extending the validator with custom rules
 A validator library can/should only provide the default rules that would cover 90% of the validation use cases, however some validations are custom
