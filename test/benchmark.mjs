@@ -21,6 +21,7 @@ import vGreaterThan             from '../src/functions/vGreaterThan.mjs';
 import vGreaterThanOrEqual      from '../src/functions/vGreaterThanOrEqual.mjs';
 import vGuid                    from '../src/functions/vGuid.mjs';
 import vIn                      from '../src/functions/vIn.mjs';
+import vIsFalse                 from '../src/functions/vIsFalse.mjs';
 import vLessThan                from '../src/functions/vLessThan.mjs';
 import vLessThanOrEqual         from '../src/functions/vLessThanOrEqual.mjs';
 import vMax                     from '../src/functions/vMax.mjs';
@@ -545,6 +546,15 @@ for (const el of [
     {
         lbl: 'functions/vIn - invalid',
         fn: () => vIn('wine', ['cake', 'pie', 'cupcake']),
+    },
+    //  vIsFalse
+    {
+        lbl: 'functions/vIsFalse - valid',
+        fn: () => vIsFalse(false),
+    },
+    {
+        lbl: 'functions/vIsFalse - invalid',
+        fn: () => vIsFalse(true),
     },
     //  vLessThan
     {
