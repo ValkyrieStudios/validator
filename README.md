@@ -261,7 +261,7 @@ validator.check({fruits: ['apple', 'dog', 'orange', 'pear', 'pear']}); // false 
 
 ### OR Groups
 Every now and then we want to validate whether or not something is either A or B, for example whether or not a value is an email or its false. To tackle this notion of something being valid in multiple ways you can employ an or group, for example to validate whether or not something is either an email or false we can do the following:
-```
+```js
 const v = new Validator({a: '(email)(false)'});
 v.check({a: false}); // true
 v.check({a: 'contact@valkyriestudios.be'}); // true
@@ -271,7 +271,7 @@ v.check({a: true}); // false
 ```
 
 OR groups can be combined with the `?` sometimes flag as well like `?(email)(false)` which would have the following behavior:
-```
+```js
 const v = new Validator({a: '(email)(false)'});
 v.check({a: false}); // true
 v.check({a: 'contact@valkyriestudios.be'}); // true
@@ -281,7 +281,7 @@ v.check({a: true}); // false
 ```
 
 And can also be combined with other operators to form more complex rules such as:
-```
+```js
 const v = new Validator({a: '?(integer|between:1,150|!between:50,100)(integer|between:-1,150)'});
 v.check({a: 0}); // false
 v.check({a: 20}); // true
@@ -291,7 +291,7 @@ v.check({a: 65}); // false
 ```
 
 And even with array combinators:
-```
+```js
 const v = new Validator({a: '(email)([unique|min:1]email)');
 v.check({a: 'contact@valkyriestudios.be'}); // true
 v.check({a: ['contact@valkyriestudios.be', 'peter@valkyriestudios.be'}); // true
@@ -299,7 +299,7 @@ v.check({a: ['contact@valkyriestudios.be', 'contact@valkyriestudios.be']}); // f
 ```
 
 **Take note:** When using the `.validate` method the evaluation result for a descriptor working with OR groups will be multi-dimensional like this:
-```
+```js
 const v = new Validator({
     contact: {
         email: '(email)(false)',
@@ -320,6 +320,7 @@ const evaluation = v.validate({contact: {address: 'bla'}});
 //          ]
 //      }
 //  }
+```
 
 ## Customization
 ### Extending the validator with custom rules
