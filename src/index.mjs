@@ -111,6 +111,17 @@ function isValidName (val) {
     return /^[A-Za-z_\-0-9]{1,}$/g.test(val);
 }
 
+//  Validate whether or not a passed object has valid names/values
+//
+//  @param Object   obj         Object to validate
+//  @param Function valueFn     Function to use for value checks
+function isValidExtension (obj, valueFn) {
+    if (!isObject(obj) || Object.keys(obj).filter(val => !isValidName(val)).length > 0) throw new Error('Invalid extension');
+
+    //  Validate all values
+    for (const val of Object.values(obj)) valueFn(val);
+}
+
 //  Error model function
 //
 //  @param string   msg     Error message being hit
@@ -463,74 +474,42 @@ export default class Validator {
     //  @param string   name    Name of the rule
     //  @param Function fn      Validation function
     static extend (name, fn) {
-        //  Check if a name which is a non-empty string is provided
-        if (
-            typeof name !== 'string' ||
-            !isValidName(name)
-        ) throw new Error('Invalid extension: ensure name is a string only containing alphanumeric, dash or underscore characters');
-
-        //  Check if function is provided
-        if (
-            typeof fn !== 'function'
-        ) throw new Error(`Invalid extension: ${name}, ensure a valid function is passed`);
-
-        //  If prop already exists, delete it
-        if (RULE_STORE[name]) delete RULE_STORE[name];
-
-        //  Define property with a configurable flag to allow reconfiguration
-        RULE_STORE[name] = fn;
+        if (typeof name !== 'string') throw new Error('Invalid extension');
+        Validator.extendMulti({[name]: fn});
     }
 
     //  Run multiple validator extensions in one go by passing an object
     //
     //  @param object   obj     Object in the format of {rule_1: Function, rule_2: Function, ...}
     static extendMulti (obj) {
-        //  Check if passed variable is an object
-        if (!isObject(obj)) throw new Error('Provide an object to extendMulti');
+        isValidExtension(obj, val => {
+            if (typeof val !== 'function') throw new Error('Invalid extension');
+        });
 
-        //  Validate all names
-        if (Object.keys(obj).filter(val => !isValidName(val)).length > 0) {
-            throw new Error('Invalid extension: ensure names only contain alphanumeric, dash or underscore characters');
-        }
-
-        //  Validate all values
-        if (Object.values(obj).filter(val => typeof val !== 'function').length > 0) {
-            throw new Error('Invalid extension: ensure all values are functions');
-        }
-
-        //  For each key in object, check if its value is a function
-        for (const name of Object.keys(obj)) Validator.extend(name, obj[name]);
+        //  Register each rule
+        for (const key of Object.keys(obj)) RULE_STORE[key] = obj[key];
     }
 
     //  Add regex validation rule
     //
     //  @param object   obj     Regex rule objects, in format of {myregex: /.../, myotherregex: new RegExp()}
     static extendRegex (obj) {
-        //  Check if passed variable is an object
-        if (!isObject(obj)) throw new Error('Provide an object to extendRegex');
-
-        //  Validate all names
-        if (Object.keys(obj).filter(val => !isValidName(val)).length > 0) {
-            throw new Error('Invalid regex extension: ensure names only contain alphanumeric, dash or underscore characters');
-        }
-
-        //  Validate all values
-        if (Object.values(obj).filter(val => Object.prototype.toString.call(val) !== '[object RegExp]').length > 0) {
-            throw new Error('Invalid regex extension: ensure all values are regexes');
-        }
+        isValidExtension(obj, val => {
+            if (Object.prototype.toString.call(val) !== '[object RegExp]') throw new Error('Invalid extension');
+        });
 
         //  For each key in object, check if its value is a function
-        for (const name of Object.keys(obj)) {
-            //  Create function and transfer name to it
+        for (const key of Object.keys(obj)) {
+            //  Create function and transfer key to it
             let f = function (val) {
                 return typeof val === 'string' && REGEX_STORE.get(this.uid).test(val); // eslint-disable-line no-invalid-this
             };
-            f.uid = name;
+            f.uid = key;
             f = f.bind(f);
-            REGEX_STORE.set(name, new RegExp(obj[name])); // Copy regex
+            REGEX_STORE.set(key, new RegExp(obj[key])); // Copy regex
 
             //  Store on map
-            RULE_STORE[name] = f;
+            RULE_STORE[key] = f;
         }
     }
 
@@ -538,41 +517,27 @@ export default class Validator {
     //
     //  @param object   obj     Enumeration rule objects, in format of {myenum: [...], myotherenum: [...]}
     static extendEnum (obj) {
-        //  Check if passed variable is an object
-        if (!isObject(obj)) throw new Error('Provide an object to extendEnum');
-
-        //  Validate all names
-        if (Object.keys(obj).filter(val => !isValidName(val)).length > 0) {
-            throw new Error('Invalid enum: ensure names only contain alphanumeric, dash or underscore characters');
-        }
-
-        //  Validate all values
-        for (const val of Object.values(obj)) {
-            if (!Array.isArray(val) || val.length === 0) {
-                throw new Error('Invalid enum: ensure all values are arrays with content');
-            }
-
-            if (val.filter(el => !isNeString(el) && !Number.isFinite(el)).length > 0) {
-                throw new Error('Invalid enum: ensure all values only contain primitive strings/numbers');
-            }
-        }
+        isValidExtension(obj, val => {
+            if (Array.isArray(val) && val.length !== 0 && val.filter(el => isNeString(el) || Number.isFinite(el)).length === val.length) return;
+            throw new Error('Invalid extension');
+        });
 
         //  For each key in object, check if its value is a function
-        for (const name of Object.keys(obj)) {
+        for (const key of Object.keys(obj)) {
             //  Convert array to map (also dedupes)
             const enum_map = new Map();
-            for (const el of obj[name]) enum_map.set(el, true);
+            for (const el of obj[key]) enum_map.set(el, true);
 
-            //  Create function and transfer name to it
+            //  Create function and transfer key to it
             let f = function (val) {
                 return (typeof val === 'string' || Number.isFinite(val)) && ENUM_STORE.get(this.uid).has(val); // eslint-disable-line no-invalid-this,max-len
             };
-            f.uid = name;
+            f.uid = key;
             f = f.bind(f);
-            ENUM_STORE.set(name, enum_map);
+            ENUM_STORE.set(key, enum_map);
 
             //  Store on map
-            RULE_STORE[name] = f;
+            RULE_STORE[key] = f;
         }
     }
 

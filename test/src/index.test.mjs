@@ -19,14 +19,13 @@ import vCountry                 from '../../src/functions/vCountry.mjs';
 import vCountryAlpha3           from '../../src/functions/vCountryAlpha3.mjs';
 import vDateString              from '../../src/functions/vDateString.mjs';
 import vEmail                   from '../../src/functions/vEmail.mjs';
+import vFalse                   from '../../src/functions/vFalse.mjs';
 import vGeoLatitude             from '../../src/functions/vGeoLatitude.mjs';
 import vGeoLongitude            from '../../src/functions/vGeoLongitude.mjs';
 import vGreaterThan             from '../../src/functions/vGreaterThan.mjs';
 import vGreaterThanOrEqual      from '../../src/functions/vGreaterThanOrEqual.mjs';
 import vGuid                    from '../../src/functions/vGuid.mjs';
 import vIn                      from '../../src/functions/vIn.mjs';
-import vIsFalse                 from '../../src/functions/vIsFalse.mjs';
-import vIsTrue                  from '../../src/functions/vIsTrue.mjs';
 import vLessThan                from '../../src/functions/vLessThan.mjs';
 import vLessThanOrEqual         from '../../src/functions/vLessThanOrEqual.mjs';
 import vMax                     from '../../src/functions/vMax.mjs';
@@ -39,6 +38,7 @@ import vSysIPv4                 from '../../src/functions/vSysIPv4.mjs';
 import vSysIPv6                 from '../../src/functions/vSysIPv6.mjs';
 import vSysIPv4_or_v6           from '../../src/functions/vSysIPv4_or_v6.mjs';
 import vTimeZone                from '../../src/functions/vTimeZone.mjs';
+import vTrue                    from '../../src/functions/vTrue.mjs';
 import vUrl                     from '../../src/functions/vUrl.mjs';
 import vUrlNoQuery              from '../../src/functions/vUrlNoQuery.mjs';
 import vUrlImage                from '../../src/functions/vUrlImage.mjs';
@@ -1148,6 +1148,7 @@ describe('Validator - Core', () => {
                 date_string                 : vDateString,
                 email                       : vEmail,
                 equal_to                    : Is.Eq,
+                false                       : vFalse,
                 geo_latitude                : vGeoLatitude,
                 geo_longitude               : vGeoLongitude,
                 greater_than                : vGreaterThan,
@@ -1155,8 +1156,6 @@ describe('Validator - Core', () => {
                 guid                        : vGuid,
                 in                          : vIn,
                 integer                     : Number.isInteger,
-                is_false                    : vIsFalse,
-                is_true                     : vIsTrue,
                 less_than                   : vLessThan,
                 less_than_or_equal          : vLessThanOrEqual,
                 max                         : vMax,
@@ -1174,6 +1173,7 @@ describe('Validator - Core', () => {
                 sys_ipv6                    : vSysIPv6,
                 sys_ipv4_or_v6              : vSysIPv4_or_v6,
                 time_zone                   : vTimeZone,
+                true                        : vTrue,
                 url                         : vUrl,
                 url_noquery                 : vUrlNoQuery,
                 url_img                     : vUrlImage,
@@ -1201,7 +1201,7 @@ describe('Validator - Core', () => {
         it('Should throw if not provided anything', () => {
             assert.throws(
                 () => Validator.extend(),
-                new Error('Invalid extension: ensure name is a string only containing alphanumeric, dash or underscore characters')
+                new Error('Invalid extension')
             );
         });
 
@@ -1209,7 +1209,7 @@ describe('Validator - Core', () => {
             for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
                 assert.throws(
                     () => Validator.extend(el, () => true),
-                    new Error('Invalid extension: ensure name is a string only containing alphanumeric, dash or underscore characters')
+                    new Error('Invalid extension')
                 );
             }
         });
@@ -1226,7 +1226,7 @@ describe('Validator - Core', () => {
             ]) {
                 assert.throws(
                     () => Validator.extend(el, () => true),
-                    new Error('Invalid extension: ensure name is a string only containing alphanumeric, dash or underscore characters')
+                    new Error('Invalid extension')
                 );
             }
         });
@@ -1235,7 +1235,7 @@ describe('Validator - Core', () => {
             for (const el of CONSTANTS.NOT_FUNCTION) {
                 assert.throws(
                     () => Validator.extend('rule', el),
-                    new Error('Invalid extension: rule, ensure a valid function is passed')
+                    new Error('Invalid extension')
                 );
             }
         });
@@ -1296,7 +1296,7 @@ describe('Validator - Core', () => {
         it('Should throw if not provided anything', () => {
             assert.throws(
                 () => Validator.extendMulti(),
-                new Error('Provide an object to extendMulti')
+                new Error('Invalid extension')
             );
         });
 
@@ -1304,7 +1304,7 @@ describe('Validator - Core', () => {
             for (const el of CONSTANTS.NOT_OBJECT) {
                 assert.throws(
                     () => Validator.extendMulti(el),
-                    new Error('Provide an object to extendMulti')
+                    new Error('Invalid extension')
                 );
             }
         });
@@ -1325,7 +1325,7 @@ describe('Validator - Core', () => {
             ]) {
                 assert.throws(
                     () => Validator.extendMulti({[el]: val => val === true}),
-                    new Error('Invalid extension: ensure names only contain alphanumeric, dash or underscore characters')
+                    new Error('Invalid extension')
                 );
 
                 assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, el));
@@ -1337,7 +1337,7 @@ describe('Validator - Core', () => {
                 const uid = guid();
                 assert.throws(
                     () => Validator.extendMulti({[uid]: el}),
-                    new Error('Invalid extension: ensure all values are functions')
+                    new Error('Invalid extension')
                 );
 
                 assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid));
@@ -1441,7 +1441,7 @@ describe('Validator - Core', () => {
         it('Should throw if not provided anything', () => {
             assert.throws(
                 () => Validator.extendRegex(),
-                new Error('Provide an object to extendRegex')
+                new Error('Invalid extension')
             );
         });
 
@@ -1449,7 +1449,7 @@ describe('Validator - Core', () => {
             for (const el of CONSTANTS.NOT_OBJECT) {
                 assert.throws(
                     () => Validator.extendRegex(el),
-                    new Error('Provide an object to extendRegex')
+                    new Error('Invalid extension')
                 );
             }
         });
@@ -1471,7 +1471,7 @@ describe('Validator - Core', () => {
                 const uid = guid();
                 assert.throws(
                     () => Validator.extendRegex({[uid]: ['foo', 'bar'], [el]: ['foobar', 'barfoo']}),
-                    new Error('Invalid regex extension: ensure names only contain alphanumeric, dash or underscore characters')
+                    new Error('Invalid extension')
                 );
 
                 assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, el));
@@ -1485,7 +1485,7 @@ describe('Validator - Core', () => {
                 const uid2 = guid();
                 assert.throws(
                     () => Validator.extendRegex({[uid]: /hello/g, [uid2]: el}),
-                    new Error('Invalid regex extension: ensure all values are regexes')
+                    new Error('Invalid extension')
                 );
                 assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid));
                 assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid2));
@@ -1564,7 +1564,7 @@ describe('Validator - Core', () => {
         it('Should throw if not provided anything', () => {
             assert.throws(
                 () => Validator.extendEnum(),
-                new Error('Provide an object to extendEnum')
+                new Error('Invalid extension')
             );
         });
 
@@ -1572,7 +1572,7 @@ describe('Validator - Core', () => {
             for (const el of CONSTANTS.NOT_OBJECT) {
                 assert.throws(
                     () => Validator.extendEnum(el),
-                    new Error('Provide an object to extendEnum')
+                    new Error('Invalid extension')
                 );
             }
         });
@@ -1594,7 +1594,7 @@ describe('Validator - Core', () => {
                 const uid = guid();
                 assert.throws(
                     () => Validator.extendEnum({[uid]: ['foo', 'bar'], [el]: ['foobar', 'barfoo']}),
-                    new Error('Invalid enum: ensure names only contain alphanumeric, dash or underscore characters')
+                    new Error('Invalid extension')
                 );
 
                 assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, el));
@@ -1608,7 +1608,7 @@ describe('Validator - Core', () => {
                 const uid2 = guid();
                 assert.throws(
                     () => Validator.extendEnum({[uid]: ['foo', 'bar'], [uid2]: el}),
-                    new Error('Invalid enum: ensure all values are arrays with content')
+                    new Error('Invalid extension')
                 );
                 assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid));
                 assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid2));
@@ -1667,22 +1667,22 @@ describe('Validator - Core', () => {
         it('Should throw if provided an object where certain arrays contain more than just primitive strings or numbers', () => {
             assert.throws(
                 () => Validator.extendEnum({enum_1: ['foo', false, 'bar']}),
-                new Error('Invalid enum: ensure all values only contain primitive strings/numbers')
+                new Error('Invalid extension')
             );
 
             assert.throws(
                 () => Validator.extendEnum({enum_1: ['foo', {a: 1}, 'bar']}),
-                new Error('Invalid enum: ensure all values only contain primitive strings/numbers')
+                new Error('Invalid extension')
             );
 
             assert.throws(
                 () => Validator.extendEnum({enum_1: ['foo', new Date(), 'bar']}),
-                new Error('Invalid enum: ensure all values only contain primitive strings/numbers')
+                new Error('Invalid extension')
             );
 
             assert.throws(
                 () => Validator.extendEnum({enum_1: ['foo', ['foo'], 'bar']}),
-                new Error('Invalid enum: ensure all values only contain primitive strings/numbers')
+                new Error('Invalid extension')
             );
         });
 
