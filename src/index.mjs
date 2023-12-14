@@ -27,6 +27,7 @@ import vGreaterThanOrEqual      from './functions/vGreaterThanOrEqual.mjs';
 import vGuid                    from './functions/vGuid.mjs';
 import vIn                      from './functions/vIn.mjs';
 import vIsFalse                 from './functions/vIsFalse.mjs';
+import vIsTrue                  from './functions/vIsTrue.mjs';
 import vLessThan                from './functions/vLessThan.mjs';
 import vLessThanOrEqual         from './functions/vLessThanOrEqual.mjs';
 import vMax                     from './functions/vMax.mjs';
@@ -70,6 +71,7 @@ const RULE_STORE = {
     guid                        : vGuid,
     in                          : vIn,
     is_false                    : vIsFalse,
+    is_true                     : vIsTrue,
     integer                     : Number.isInteger,
     less_than                   : vLessThan,
     less_than_or_equal          : vLessThanOrEqual,

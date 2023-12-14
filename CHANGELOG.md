@@ -8,6 +8,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 ### Added
 - Rule: is_false - Will check whether or not something is strictly false
+- Rule: is_true - Will check whether or not something is strictly true
 
 ## [5.0.0] - 2023-12-10
 ### Added

@@ -22,6 +22,7 @@ import vGreaterThanOrEqual      from '../src/functions/vGreaterThanOrEqual.mjs';
 import vGuid                    from '../src/functions/vGuid.mjs';
 import vIn                      from '../src/functions/vIn.mjs';
 import vIsFalse                 from '../src/functions/vIsFalse.mjs';
+import vIsTrue                  from '../src/functions/vIsTrue.mjs';
 import vLessThan                from '../src/functions/vLessThan.mjs';
 import vLessThanOrEqual         from '../src/functions/vLessThanOrEqual.mjs';
 import vMax                     from '../src/functions/vMax.mjs';
@@ -555,6 +556,15 @@ for (const el of [
     {
         lbl: 'functions/vIsFalse - invalid',
         fn: () => vIsFalse(true),
+    },
+    //  vIsTrue
+    {
+        lbl: 'functions/vIsTrue - valid',
+        fn: () => vIsTrue(true),
+    },
+    {
+        lbl: 'functions/vIsTrue - invalid',
+        fn: () => vIsTrue(false),
     },
     //  vLessThan
     {
