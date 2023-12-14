@@ -398,7 +398,7 @@ describe('Validator - Core', () => {
             assert.ok(validator.check({}));
         });
 
-        it('Should return valid when no rules are valid but sometimes flag is set and theres multiple rules but those are valid too', () => {
+        it('Should return valid when no rules are valid but sometimes flag is set and multiple fields but those are valid too', () => {
             const validator = new Validator({a: '?(guid)(false)', b: 'integer|between:10,50'});
             assert.ok(validator.check({b: 42}));
         });
@@ -1195,7 +1195,7 @@ describe('Validator - Core', () => {
             );
         });
 
-        it('Should return valid when no rules are valid but sometimes flag is set and theres multiple rules but those are valid too', () => {
+        it('Should return valid when no rules are valid but sometimes flag is set and multiple fields but those are valid too', () => {
             const validator = new Validator({a: '?(guid)(false)', b: 'integer|between:10,50'});
             assert.deepEqual(
                 validator.validate({b: 42}),
@@ -1234,7 +1234,7 @@ describe('Validator - Core', () => {
                                 {msg: 'between', params: ['20', '42']},
                             ],
                             [
-                                {msg: 'false', params: []}
+                                {msg: 'false', params: []},
                             ],
                         ],
                     },
@@ -1255,7 +1255,7 @@ describe('Validator - Core', () => {
                                 {msg: 'in', params: [[1,2,3]]},
                             ],
                             [
-                                {msg: 'iterable', params: []}
+                                {msg: 'iterable', params: []},
                             ],
                         ],
                     },

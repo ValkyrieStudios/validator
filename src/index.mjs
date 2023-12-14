@@ -152,10 +152,12 @@ function deepGet (obj, path) {
 //
 //  @param string   val     Value to determine config from, eg: 'unique|min:1|max:5'
 function getIterableConfig (val) {
+    const max = val.match(/max:\d{1,}/);
+    const min = val.match(/min:\d{1,}/);
     return {
         unique  : val.indexOf('unique') >= 0,
-        max     : val.match(/max:\d{1,}(\||$)/) ? parseInt(`${val}`.split('max:', 2)[1].split('|', 1)[0]) : false,
-        min     : val.match(/min:\d{1,}(\||$)/) ? parseInt(`${val}`.split('min:', 2)[1].split('|', 1)[0]) : false,
+        max     : max ? parseInt(`${max}`.split('max:', 2)[1]) : false,
+        min     : min ? parseInt(`${min}`.split('min:', 2)[1]) : false,
     };
 }
 
@@ -167,7 +169,7 @@ function parseRule (raw) {
     let cursor = `${raw}`;
 
     //  ([...]) Check for iterable behavior
-    let iterable = /(\[|\])/g.test(cursor);
+    let iterable = /(\[|\]){1,}/.test(cursor);
     if (iterable) {
         const start_ix  = cursor.indexOf('[');
         const end_ix    = cursor.indexOf(']');
@@ -231,12 +233,13 @@ function parseGroups (raw) {
     if (sometimes) cursor = cursor.substring(1);
 
     //  Conditional or group
-    let conditionals = cursor.match(/\([a-zA-Z0-9|?.[\],:<>]{1,}\)/g);
-    if (!conditionals) conditionals = [cursor];
-
-    //  Parse into rules
     const rules = [];
-    for (const el of conditionals) rules.push(parseRule(el.replace(/(\(|\))/g, '')));
+    const conditionals = cursor.match(/\([a-zA-Z0-9|?.[\],:<>]{1,}\)/g);
+    if (!conditionals) {
+        rules.push(parseRule(cursor));
+    } else {
+        for (const el of conditionals) rules.push(parseRule(el.replace(/(\(|\))/g, '')));
+    }    
 
     return {sometimes, rules};
 }

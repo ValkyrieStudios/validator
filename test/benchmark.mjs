@@ -15,14 +15,13 @@ import vCountry                 from '../src/functions/vCountry.mjs';
 import vCountryAlpha3           from '../src/functions/vCountryAlpha3.mjs';
 import vDateString              from '../src/functions/vDateString.mjs';
 import vEmail                   from '../src/functions/vEmail.mjs';
+import vFalse                   from '../src/functions/vFalse.mjs';
 import vGeoLatitude             from '../src/functions/vGeoLatitude.mjs';
 import vGeoLongitude            from '../src/functions/vGeoLongitude.mjs';
 import vGreaterThan             from '../src/functions/vGreaterThan.mjs';
 import vGreaterThanOrEqual      from '../src/functions/vGreaterThanOrEqual.mjs';
 import vGuid                    from '../src/functions/vGuid.mjs';
 import vIn                      from '../src/functions/vIn.mjs';
-import vIsFalse                 from '../src/functions/vIsFalse.mjs';
-import vIsTrue                  from '../src/functions/vIsTrue.mjs';
 import vLessThan                from '../src/functions/vLessThan.mjs';
 import vLessThanOrEqual         from '../src/functions/vLessThanOrEqual.mjs';
 import vMax                     from '../src/functions/vMax.mjs';
@@ -35,13 +34,14 @@ import vSysIPv4_or_v6           from '../src/functions/vSysIPv4_or_v6.mjs';
 import vSysIPv6                 from '../src/functions/vSysIPv6.mjs';
 import vSysMac                  from '../src/functions/vSysMac.mjs';
 import vTimeZone                from '../src/functions/vTimeZone.mjs';
+import vTrue                    from '../src/functions/vTrue.mjs';
 import vUrl                     from '../src/functions/vUrl.mjs';
 import vUrlNoQuery              from '../src/functions/vUrlNoQuery.mjs';
 import vUrlImage                from '../src/functions/vUrlImage.mjs';
 import Validator                from '../src/index.mjs';
 
-const ROW_TEST_WIDTH    = 50;
-const ROW_OPS_WIDTH     = 15;
+const ROW_TEST_WIDTH    = 60;
+const ROW_OPS_WIDTH     = 20;
 const EXPORT_COLLECTOR  = [];
 
 function separator () {
@@ -84,8 +84,18 @@ const vcomplex = new Validator({
         phone: '?phone',
     },
 });
+const vsimple_groups = new Validator({a: '(string_ne)(false)'});
+const vmedium_groups = new Validator({
+    first_name: '(string|alpha_num_spaces|min:2)(false)',
+    last_name: '(string|alpha_num_spaces|min:2)(false)',
+    age: '?integer|between:1,150',
+    gender: 'in:<meta.gender_options>',
+});
 const venum = new Validator({animal: 'MYENUM'});
 Validator.extendEnum({MYENUM: ['dog', 'cat', 'bird', 'donkey', 'cow', 'horse', 'pig']});
+
+const vregex = new Validator({a: 'is_hello'});
+Validator.extendRegex({is_hello: /^((h|H)ello|(o|O)la)$/});
 
 //  Run benchmarks
 for (const el of [
@@ -170,6 +180,25 @@ for (const el of [
             contact: {
                 email: 'contact@valkyriestudios.be',
             },
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@validate - coldstart - groups/simple',
+        fn: () => new Validator({a: '(string_ne)(false)'}).validate({a: 'hello'}),
+    },
+    {
+        lbl: 'Validator@validate - coldstart - groups/medium',
+        fn: () => new Validator({
+            first_name: '(string|alpha_num_spaces|min:2)(false)',
+            last_name: '(string|alpha_num_spaces|min:2)(false)',
+            age: '?integer|between:1,150',
+            gender: 'in:<meta.gender_options>',
+        }).validate({
+            first_name: 'Peter',
+            last_name: false,
+            age: 33,
+            gender: 'M',
             meta: {gender_options: ['F', 'M', 'U']},
         }),
     },
@@ -309,6 +338,44 @@ for (const el of [
             meta: {gender_options: ['F', 'M', 'U']},
         }),
     },
+    {
+        lbl: 'Validator@check - coldstart - groups/simple - valid',
+        fn: () => new Validator({a: '(string_ne)(false)'}).check({a: 'hello'}),
+    },
+    {
+        lbl: 'Validator@check - coldstart - groups/simple - invalid',
+        fn: () => new Validator({a: '(string_ne)(false)'}).check({a: 42}),
+    },
+    {
+        lbl: 'Validator@check - coldstart - groups/medium - valid',
+        fn: () => new Validator({
+            first_name: '(string|alpha_num_spaces|min:2)(false)',
+            last_name: '(string|alpha_num_spaces|min:2)(false)',
+            age: '?integer|between:1,150',
+            gender: 'in:<meta.gender_options>',
+        }).check({
+            first_name: 'Peter',
+            last_name: false,
+            age: 33,
+            gender: 'M',
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@check - coldstart - groups/medium - invalid',
+        fn: () => new Validator({
+            first_name: '(string|alpha_num_spaces|min:2)(false)',
+            last_name: '(string|alpha_num_spaces|min:2)(false)',
+            age: '?integer|between:1,150',
+            gender: 'in:<meta.gender_options>',
+        }).check({
+            first_name: 'Peter',
+            last_name: 'a',
+            age: 33,
+            gender: 'M',
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
     //  Baseline - check pre-existing
     {
         lbl: 'Validator@check - existing - simple - valid',
@@ -374,14 +441,51 @@ for (const el of [
             meta: {gender_options: ['F', 'M', 'U']},
         }),
     },
+    {
+        lbl: 'Validator@check - existing - groups/simple - valid',
+        fn: () => vsimple_groups.check({a: 'hello'}),
+    },
+    {
+        lbl: 'Validator@check - existing - groups/simple - invalid',
+        fn: () => vsimple_groups.check({a: 12345}),
+    },
+    {
+        lbl: 'Validator@check - existing - groups/medium - valid',
+        fn: () => vmedium_groups.check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            age: 33,
+            gender: 'M',
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@check - existing - groups/medium - invalid',
+        fn: () => vmedium_groups.check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            age: 'None of ya business',
+            gender: 'M',
+            meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
     //  Baseline - check enum
     {
         lbl: 'Validator@check - existing - enum - valid',
-        fn: () => vsimple.check({animal: 'pig'}),
+        fn: () => venum.check({animal: 'pig'}),
     },
     {
         lbl: 'Validator@check - existing - enum - invalid',
-        fn: () => vsimple.check({animal: 12345}),
+        fn: () => venum.check({animal: 12345}),
+    },
+    //  Baseline - check regex
+    {
+        lbl: 'Validator@check - existing - regex - valid',
+        fn: () => vregex.check({a: 'Hello'}),
+    },
+    {
+        lbl: 'Validator@check - existing - regex - invalid',
+        fn: () => vregex.check({a: 'Helo'}),
     },
     //  vAlphaNumSpaces
     {
@@ -548,23 +652,23 @@ for (const el of [
         lbl: 'functions/vIn - invalid',
         fn: () => vIn('wine', ['cake', 'pie', 'cupcake']),
     },
-    //  vIsFalse
+    //  vFalse
     {
-        lbl: 'functions/vIsFalse - valid',
-        fn: () => vIsFalse(false),
+        lbl: 'functions/vFalse - valid',
+        fn: () => vFalse(false),
     },
     {
-        lbl: 'functions/vIsFalse - invalid',
-        fn: () => vIsFalse(true),
+        lbl: 'functions/vFalse - invalid',
+        fn: () => vFalse(true),
     },
-    //  vIsTrue
+    //  vTrue
     {
-        lbl: 'functions/vIsTrue - valid',
-        fn: () => vIsTrue(true),
+        lbl: 'functions/vTrue - valid',
+        fn: () => vTrue(true),
     },
     {
-        lbl: 'functions/vIsTrue - invalid',
-        fn: () => vIsTrue(false),
+        lbl: 'functions/vTrue - invalid',
+        fn: () => vTrue(false),
     },
     //  vLessThan
     {
