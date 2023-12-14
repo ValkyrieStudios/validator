@@ -1437,6 +1437,129 @@ describe('Validator - Core', () => {
         });
     });
 
+    describe('@extendRegex FN', () => {
+        it('Should throw if not provided anything', () => {
+            assert.throws(
+                () => Validator.extendRegex(),
+                new Error('Provide an object to extendRegex')
+            );
+        });
+
+        it('Should throw if not provided an object', () => {
+            for (const el of CONSTANTS.NOT_OBJECT) {
+                assert.throws(
+                    () => Validator.extendRegex(el),
+                    new Error('Provide an object to extendRegex')
+                );
+            }
+        });
+
+        it('Should not throw if provided an empty object', () => {
+            assert.doesNotThrow(() => Validator.extendRegex({}));
+        });
+
+        it('Should throw if provided an object where certain values do not have a valid name', () => {
+            for (const el of [
+                ' foo ',
+                'foo.a.b',
+                'foo(a)',
+                'foo)b',
+                'foo[a]',
+                'foo a',
+                'foo_}',
+            ]) {
+                const uid = guid();
+                assert.throws(
+                    () => Validator.extendRegex({[uid]: ['foo', 'bar'], [el]: ['foobar', 'barfoo']}),
+                    new Error('Invalid regex extension: ensure names only contain alphanumeric, dash or underscore characters')
+                );
+
+                assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, el));
+                assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid));
+            }
+        });
+
+        it('Should throw if provided an object where certain values do not have a regex set', () => {
+            for (const el of CONSTANTS.NOT_REGEXP) {
+                const uid = guid();
+                const uid2 = guid();
+                assert.throws(
+                    () => Validator.extendRegex({[uid]: /hello/g, [uid2]: el}),
+                    new Error('Invalid regex extension: ensure all values are regexes')
+                );
+                assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid));
+                assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid2));
+            }
+        });
+
+        it('Should work', () => {
+            Validator.extendRegex({
+                contains_hello: /hello/,
+                contains_hello_insensitive: new RegExp('hello', 'i'),
+            });
+
+            assert.ok(new Validator({a: 'contains_hello'}).check({a: 'When i say hello this should work'}));
+            assert.ok(new Validator({
+                a: 'contains_hello_insensitive',
+                b: 'contains_hello',
+            }).check({
+                a: 'When i say heLlo this should work',
+                b: 'When i say hello this should work',
+            }));
+            assert.equal(new Validator({a: 'contains_hello'}).check({a: 'This helo should not work'}), false);
+            assert.equal(new Validator({a: 'contains_hello'}).check({a: 'This helLo should not work'}), false);
+            assert.equal(new Validator({a: 'contains_hello_insensitive'}).check({a: 'This helo should not work'}), false);
+        });
+
+        it('Extensions should also show up as functions in rules', () => {
+            Validator.extendRegex({
+                contains_hello: /hello/,
+                contains_hello_insensitive: /hello/i,
+            });
+
+            assert.ok(Validator.rules.contains_hello instanceof Function);
+            assert.ok(Validator.rules.contains_hello('When i say hello this should work'));
+            assert.equal(Validator.rules.contains_hello('This helo should not work'), false);
+
+            assert.ok(Validator.rules.contains_hello_insensitive instanceof Function);
+            assert.ok(Validator.rules.contains_hello_insensitive('When i say heLlo this should work'));
+            assert.equal(Validator.rules.contains_hello_insensitive('This helo should not work'), false);
+        });
+
+        it('Should allow redefining the same rules', () => {
+            Validator.extendRegex({contains_hello: /Hello/});
+
+            assert.ok(Validator.rules.contains_hello instanceof Function);
+            assert.ok(Validator.rules.contains_hello('Hello there'));
+            assert.equal(Validator.rules.contains_hello('hello there'), false);
+            assert.equal(Validator.rules.contains_hello('ola amigos'), false);
+            assert.equal(Validator.rules.contains_hello('Ola amigos'), false);
+
+            Validator.extendRegex({contains_hello: /((h|H)ello|(o|O)la)/});
+
+            assert.ok(Validator.rules.contains_hello('Hello there'));
+            assert.ok(Validator.rules.contains_hello('hello there'));
+            assert.ok(Validator.rules.contains_hello('ola amigos'));
+            assert.ok(Validator.rules.contains_hello('Ola amigos'));
+        });
+
+        it('Should allow working with not/sometimes flags', () => {
+            Validator.extendRegex({contains_hello: /((h|H)ello|(o|O)la)/});
+
+            assert.ok(new Validator({a: 'contains_hello'}).check({a: 'Hello there'}));
+            assert.ok(new Validator({a: 'contains_hello'}).check({a: 'hello there'}));
+            assert.ok(new Validator({a: 'contains_hello'}).check({a: 'ola amigos'}));
+            assert.ok(new Validator({a: 'contains_hello'}).check({a: 'Ola amigos'}));
+
+            assert.equal(new Validator({a: '!contains_hello'}).check({a: 'Hello there'}), false);
+            assert.equal(new Validator({a: '!contains_hello'}).check({a: 'hello there'}), false);
+            assert.equal(new Validator({a: '!contains_hello'}).check({a: 'ola amigos'}), false);
+            assert.equal(new Validator({a: '!contains_hello'}).check({a: 'Ola amigos'}), false);
+
+            assert.ok(new Validator({a: '?contains_hello', b: 'integer'}).check({b: 42}));
+        });
+    });
+
     describe('@extendEnum FN', () => {
         it('Should throw if not provided anything', () => {
             assert.throws(

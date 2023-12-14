@@ -47,6 +47,9 @@ import vUrlImage                from './functions/vUrlImage.mjs';
 //  Used for enum storage using extendEnum
 const ENUM_STORE = new Map();
 
+//  Used for regex storage using extendRegex
+const REGEX_STORE = new Map();
+
 //  Used for rule storage of all validation rules
 const RULE_STORE = {
     alpha_num_spaces            : vAlphaNumSpaces,
@@ -461,6 +464,38 @@ export default class Validator {
 
         //  For each key in object, check if its value is a function
         for (const name of Object.keys(obj)) Validator.extend(name, obj[name]);
+    }
+
+    //  Add regex validation rule
+    //
+    //  @param object   obj     Regex rule objects, in format of {myregex: /.../, myotherregex: new RegExp()}
+    static extendRegex (obj) {
+        //  Check if passed variable is an object
+        if (!isObject(obj)) throw new Error('Provide an object to extendRegex');
+
+        //  Validate all names
+        if (Object.keys(obj).filter(val => !isValidName(val)).length > 0) {
+            throw new Error('Invalid regex extension: ensure names only contain alphanumeric, dash or underscore characters');
+        }
+
+        //  Validate all values
+        if (Object.values(obj).filter(val => Object.prototype.toString.call(val) !== '[object RegExp]').length > 0) {
+            throw new Error('Invalid regex extension: ensure all values are regexes');
+        }
+
+        //  For each key in object, check if its value is a function
+        for (const name of Object.keys(obj)) {
+            //  Create function and transfer name to it
+            let f = function (val) {
+                return typeof val === 'string' && REGEX_STORE.get(this.uid).test(val); // eslint-disable-line no-invalid-this
+            };
+            f.uid = name;
+            f = f.bind(f);
+            REGEX_STORE.set(name, new RegExp(obj[name])); // Copy regex
+
+            //  Store on map
+            RULE_STORE[name] = f;
+        }
     }
 
     //  Add an enum validation rule

@@ -9,6 +9,19 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - feat: Rule: is_false - Will check whether or not something is strictly false
 - feat: Rule: is_true - Will check whether or not something is strictly true
+- feat: Validator@extendRegex: This new method allows registering one or more regexes as validation rules, as with all validator extensions the name of the regex (key in the object) can be used as part of a validation rule or called directly through Validator.rules.
+```
+Validator.extendRegex({contains_hello: /((h|H)ello|(o|O)la)/});
+new Validator({a: 'contains_hello'}).check({a: 'Hello there'})); // true
+new Validator({a: 'contains_hello'}).check({a: 'hello there'})); // true
+new Validator({a: 'contains_hello'}).check({a: 'ola amigos'})); // true
+new Validator({a: 'contains_hello'}).check({a: 'Ola amigos'})); // true
+
+new Validator({a: '!contains_hello'}).check({a: 'Hello there'}); // false
+new Validator({a: '!contains_hello'}).check({a: 'hello there'}); // false
+new Validator({a: '!contains_hello'}).check({a: 'ola amigos'}); // false
+new Validator({a: '!contains_hello'}).check({a: 'Ola amigos'}); // false
+```
 
 ### Improved
 - Validator@extend: Will now throw if a rule name contains anything but alphanumeric, dashes or underscore characters
