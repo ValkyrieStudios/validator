@@ -104,19 +104,15 @@ const RULE_STORE = {
     eq                          : isEqual,
 };
 
-//  Validate whether or not a name is valid
-//
-//  @param string   val     Value to validate
-function isValidName (val) {
-    return /^[A-Za-z_\-0-9]{1,}$/g.test(val);
-}
-
 //  Validate whether or not a passed object has valid names/values
 //
 //  @param Object   obj         Object to validate
 //  @param Function valueFn     Function to use for value checks
-function isValidExtension (obj, valueFn) {
-    if (!isObject(obj) || Object.keys(obj).filter(val => !isValidName(val)).length > 0) throw new Error('Invalid extension');
+function validExtension (obj, valueFn) {
+    if (
+        !isObject(obj) ||
+        Object.keys(obj).filter(val => !/^[A-Za-z_\-0-9]{1,}$/g.test(val)).length > 0
+    ) throw new Error('Invalid extension');
 
     //  Validate all values
     for (const val of Object.values(obj)) valueFn(val);
@@ -400,63 +396,68 @@ export default class Validator {
         }
 
         const errors = {};
-        for (const rule of this.plan) {
-            //  Retrieve cursor that rule is run against
-            const cursor = deepGet(data, rule.key);
+        for (const part of this.plan) {
+            //  Retrieve cursor that part is run against
+            const cursor = deepGet(data, part.key);
             
             //  If we cant find cursor we need to validate for the 'sometimes' flag
             if (cursor === undefined) {
-                if (!rule.sometimes) errors[rule.key] = [M_Error('not_found')];
+                if (!part.sometimes) errors[part.key] = [M_Error('not_found')];
                 continue;
             }
 
-            //  Check for iterable config
-            if (rule.iterable) {
-                //  If not an array -> invalid
-                if (!Array.isArray(cursor)) {
-                    errors[rule.key] = [M_Error('iterable')];
-                    continue;
-                }
+            let has_valid = false;
+            const part_errors = [];
+            for (const rule of part.rules) {
+                let error_cursor = [];
 
-                //  rule.iterable.min is set and val length is below the min -> invalid
-                if (Number.isFinite(rule.iterable.min) && cursor.length < rule.iterable.min) {
-                    errors[rule.key] = [M_Error('iterable_min', [rule.iterable.min])];
-                    continue;
-                }
+                //  Check for iterable config
+                if (rule.iterable) {
+                    //  If      not an array -> invalid
+                    //  Elif    rule.iterable.min is set and val length is below the min -> invalid
+                    //  Elif    rule.iterable.max is set and val length is above max -> invalid
+                    //  El      iterable validation
+                    if (!Array.isArray(cursor)) {
+                        error_cursor.push(M_Error('iterable'));
+                    } else if (Number.isFinite(rule.iterable.min) && cursor.length < rule.iterable.min) {
+                        error_cursor.push(M_Error('iterable_min', [rule.iterable.min]));
+                    } else if (Number.isFinite(rule.iterable.max) && cursor.length > rule.iterable.max) {
+                        error_cursor.push(M_Error('iterable_max', [rule.iterable.max]));
+                    } else {
+                        //  If rule.iterable.unique is set create map to store hashes and keep tabs
+                        //  on uniqueness as we run through the array
+                        let iterable_unique = true;
+                        const unique_map    = iterable_unique && rule.iterable.unique ? new Map() : false;
+                        for (let idx = 0; idx < cursor.length; idx++) {
+                            const evaluation = validateField(cursor[idx], rule.list, data);
+                            if (!evaluation.is_valid) error_cursor.push(...evaluation.errors.map(el => Object.assign({idx}, el)));
 
-                //  rule.iterable.max is set and val length is above max -> invalid
-                if (Number.isFinite(rule.iterable.max) && cursor.length > rule.iterable.max) {
-                    errors[rule.key] = [M_Error('iterable_max', [rule.iterable.max])];
-                    continue;
-                }
+                            //  If no unique map or iterable unique was already turned off continue
+                            if (!unique_map || !iterable_unique) continue;
 
-                //  If rule.iterable.unique is set create map to store hashes and keep tabs
-                //  on uniqueness as we run through the array
-                let iterable_unique = true;
-                const unique_map    = iterable_unique && rule.iterable.unique ? new Map() : false;
-                for (let idx = 0; idx < cursor.length; idx++) {
-                    const field_evaluation = validateField(cursor[idx], rule.list, data);
-                    if (!field_evaluation.is_valid) {
-                        if (!errors[rule.key]) errors[rule.key] = [];
-                        for (const obj of field_evaluation.errors) errors[rule.key].push(Object.assign({idx}, obj));
+                            //  Compute fnv hash if uniqueness needs to be checked, if map size differs from
+                            //  our current point in the iteration add uniqueness error
+                            unique_map.set(fnv1A(cursor[idx]), true);
+                            if (unique_map.size !== (idx + 1)) {
+                                iterable_unique = false;
+                                error_cursor.unshift(M_Error('iterable_unique'));
+                            }
+                        }
                     }
-
-                    //  If no unique map or iterable unique was already turned off continue
-                    if (!unique_map || !iterable_unique) continue;
-
-                    //  Compute fnv hash if uniqueness needs to be checked, if map size differs from
-                    //  our current point in the iteration add uniqueness error
-                    unique_map.set(fnv1A(cursor[idx]), true);
-                    if (unique_map.size !== (idx + 1)) {
-                        iterable_unique = false;
-                        if (!errors[rule.key]) errors[rule.key] = [];
-                        errors[rule.key].unshift(M_Error('iterable_unique'));
-                    }
+                } else {
+                    const evaluation = validateField(cursor, rule.list, data);
+                    if (!evaluation.is_valid) error_cursor = evaluation.errors;
                 }
-            } else {
-                const field_evaluation = validateField(cursor, rule.list, data);
-                if (!field_evaluation.is_valid) errors[rule.key] = field_evaluation.errors;
+
+                if (error_cursor.length === 0) {
+                    has_valid = true;
+                    break;
+                } else {
+                    part_errors.push(error_cursor);
+                }
             }
+
+            if (!has_valid) errors[part.key] = part.rules.length > 1 ? part_errors : part_errors[0];
         }
 
         const count = Object.keys(errors).length;
@@ -482,7 +483,7 @@ export default class Validator {
     //
     //  @param object   obj     Object in the format of {rule_1: Function, rule_2: Function, ...}
     static extendMulti (obj) {
-        isValidExtension(obj, val => {
+        validExtension(obj, val => {
             if (typeof val !== 'function') throw new Error('Invalid extension');
         });
 
@@ -494,7 +495,7 @@ export default class Validator {
     //
     //  @param object   obj     Regex rule objects, in format of {myregex: /.../, myotherregex: new RegExp()}
     static extendRegex (obj) {
-        isValidExtension(obj, val => {
+        validExtension(obj, val => {
             if (Object.prototype.toString.call(val) !== '[object RegExp]') throw new Error('Invalid extension');
         });
 
@@ -517,7 +518,7 @@ export default class Validator {
     //
     //  @param object   obj     Enumeration rule objects, in format of {myenum: [...], myotherenum: [...]}
     static extendEnum (obj) {
-        isValidExtension(obj, val => {
+        validExtension(obj, val => {
             if (Array.isArray(val) && val.length !== 0 && val.filter(el => isNeString(el) || Number.isFinite(el)).length === val.length) return;
             throw new Error('Invalid extension');
         });
