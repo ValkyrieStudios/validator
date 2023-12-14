@@ -20,14 +20,13 @@ import vCountry                 from './functions/vCountry.mjs';
 import vCountryAlpha3           from './functions/vCountryAlpha3.mjs';
 import vDateString              from './functions/vDateString.mjs';
 import vEmail                   from './functions/vEmail.mjs';
+import vFalse                   from './functions/vFalse.mjs';
 import vGeoLatitude             from './functions/vGeoLatitude.mjs';
 import vGeoLongitude            from './functions/vGeoLongitude.mjs';
 import vGreaterThan             from './functions/vGreaterThan.mjs';
 import vGreaterThanOrEqual      from './functions/vGreaterThanOrEqual.mjs';
 import vGuid                    from './functions/vGuid.mjs';
 import vIn                      from './functions/vIn.mjs';
-import vIsFalse                 from './functions/vIsFalse.mjs';
-import vIsTrue                  from './functions/vIsTrue.mjs';
 import vLessThan                from './functions/vLessThan.mjs';
 import vLessThanOrEqual         from './functions/vLessThanOrEqual.mjs';
 import vMax                     from './functions/vMax.mjs';
@@ -40,6 +39,7 @@ import vSysMac                  from './functions/vSysMac.mjs';
 import vSysIPv4                 from './functions/vSysIPv4.mjs';
 import vSysIPv6                 from './functions/vSysIPv6.mjs';
 import vSysIPv4_or_v6           from './functions/vSysIPv4_or_v6.mjs';
+import vTrue                    from './functions/vTrue.mjs';
 import vUrl                     from './functions/vUrl.mjs';
 import vUrlNoQuery              from './functions/vUrlNoQuery.mjs';
 import vUrlImage                from './functions/vUrlImage.mjs';
@@ -67,14 +67,13 @@ const RULE_STORE = {
     date_string                 : vDateString,
     email                       : vEmail,
     equal_to                    : isEqual,
+    false                       : vFalse,
     geo_latitude                : vGeoLatitude,
     geo_longitude               : vGeoLongitude,
     greater_than                : vGreaterThan,
     greater_than_or_equal       : vGreaterThanOrEqual,
     guid                        : vGuid,
     in                          : vIn,
-    is_false                    : vIsFalse,
-    is_true                     : vIsTrue,
     integer                     : Number.isInteger,
     less_than                   : vLessThan,
     less_than_or_equal          : vLessThanOrEqual,
@@ -93,6 +92,7 @@ const RULE_STORE = {
     sys_ipv6                    : vSysIPv6,
     sys_ipv4_or_v6              : vSysIPv4_or_v6,
     time_zone                   : vTimeZone,
+    true                        : vTrue,
     url                         : vUrl,
     url_noquery                 : vUrlNoQuery,
     url_img                     : vUrlImage,
@@ -159,10 +159,6 @@ function parseRule (raw) {
     //  Copy contents of raw into here as working-copy
     let cursor = `${raw}`;
 
-    //  (?) Parse sometimes flag
-    const sometimes = cursor.charAt(0) === '?';
-    if (sometimes) cursor = cursor.substring(1);
-
     //  ([...]) Check for iterable behavior
     let iterable = /(\[|\])/g.test(cursor);
     if (iterable) {
@@ -213,7 +209,29 @@ function parseRule (raw) {
         return acc;
     }, []);
 
-    return {sometimes, iterable, list};
+    return {iterable, list};
+}
+
+//  Parse a rule into or-group
+//
+//  @param string   raw    Raw configured string with possible or groups
+function parseGroups (raw) {
+    //  Copy contents of raw into here as working-copy
+    let cursor = `${raw}`;
+
+    //  (?) Parse sometimes flag
+    const sometimes = cursor.charAt(0) === '?';
+    if (sometimes) cursor = cursor.substring(1);
+
+    //  Conditional or group
+    let conditionals = cursor.match(/\([a-zA-Z0-9\|?\.\[\]\:\<\>]{1,}\)/g);
+    if (!conditionals) conditionals = [cursor];
+
+    //  Parse into rules
+    const rules = [];
+    for (const el of conditionals) rules.push(parseRule(el.replace(/(\(|\))/g, '')));
+
+    return {sometimes, rules};
 }
 
 //  Fully validate a rule list against a certain field cursor, returns errors array and is_valid prop
@@ -274,14 +292,14 @@ export default class Validator {
 
         //  Recursively parse our validation rules, to allow for deeply nested validation to be done
         const plan = [];
-        function parse (val, key) {
+        function recursor (val, key) {
             //  If      the cursor is an object -> recurse
             //  Elif    the cursor is a string -> parse
             //  El      throw error as misconfiguration
             if (isObject(val)) {
-                Object.keys(val).forEach(val_key => parse(val[val_key], key ? `${key}.${val_key}` : val_key));
+                Object.keys(val).forEach(val_key => recursor(val[val_key], key ? `${key}.${val_key}` : val_key));
             } else if (isNeString(val)) {
-                const rule = parseRule(val);
+                const rule = parseGroups(val);
                 rule.key = key;
                 plan.push(rule);
             } else {
@@ -289,7 +307,7 @@ export default class Validator {
                 throw new TypeError('The rule for a key needs to be a string value');
             }
         }
-        parse(rules);
+        recursor(rules);
 
         //  Set the parsed plan as a get property on our validation instance
         Object.defineProperty(this, 'plan', {get: () => plan});
@@ -299,43 +317,61 @@ export default class Validator {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) return this.plan.length === 0;
         
-        for (const rule of this.plan) {
-            //  Retrieve cursor that rule is run against
-            const cursor = deepGet(data, rule.key);
+        for (const part of this.plan) {
+            //  Retrieve cursor that part is run against
+            const cursor = deepGet(data, part.key);
             
             //  If we cant find cursor we need to validate for the 'sometimes' flag
             if (cursor === undefined) {
-                if (rule.sometimes) continue;
+                if (part.sometimes) continue;
                 return false;
             }
 
-            //  Check for iterable config
-            if (rule.iterable) {
-                if (
-                    //  If not an array -> invalid
-                    !Array.isArray(cursor) || 
-                    //  rule.iterable.min is set and val length is below the min -> invalid
-                    (Number.isFinite(rule.iterable.min) && cursor.length < rule.iterable.min) || 
-                    //  rule.iterable.max is set and val length is above max -> invalid
-                    (Number.isFinite(rule.iterable.max) && cursor.length > rule.iterable.max)
-                ) return false;
+            //  Go through rules in cursor: if all of them are invalid return false immediately
+            let valid_count = 0;
+            for (const rule of part.rules) {
+                let is_valid = true;
 
-                //  If rule.iterable.unique is set create map to store hashes and keep tabs
-                //  on uniqueness as we run through the array
-                const unique_map = new Map();
-                for (let idx = 0; idx < cursor.length; idx++) {
-                    if (!checkField(cursor[idx], rule.list, data)) return false;
+                //  Check for iterable config
+                if (rule.iterable) {
+                    if (
+                        //  If not an array -> invalid
+                        !Array.isArray(cursor) || 
+                        //  rule.iterable.min is set and val length is below the min -> invalid
+                        (Number.isFinite(rule.iterable.min) && cursor.length < rule.iterable.min) || 
+                        //  rule.iterable.max is set and val length is above max -> invalid
+                        (Number.isFinite(rule.iterable.max) && cursor.length > rule.iterable.max)
+                    ) {
+                        is_valid = false;
+                    } else {
+                        //  If rule.iterable.unique is set create map to store hashes and keep tabs
+                        //  on uniqueness as we run through the array
+                        const unique_map = new Map();
+                        for (let idx = 0; idx < cursor.length; idx++) {
+                            if (!checkField(cursor[idx], rule.list, data)) {
+                                is_valid = false;
+                                break;
+                            }
 
-                    //  Continue if no uniqueness checks need to happen
-                    if (!rule.iterable.unique) continue;
+                            //  Continue if no uniqueness checks need to happen
+                            if (!rule.iterable.unique) continue;
 
-                    //  Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique
-                    unique_map.set(fnv1A(cursor[idx]), true);
-                    if (unique_map.size !== (idx + 1)) return false;
+                            //  Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique
+                            unique_map.set(fnv1A(cursor[idx]), true);
+                            if (unique_map.size !== (idx + 1)) {
+                                is_valid = false;
+                                break;
+                            }
+                        }
+                    }
+                } else if (!checkField(cursor, rule.list, data)) {
+                    is_valid = false;
                 }
-            } else if (!checkField(cursor, rule.list, data)) {
-                return false;
+
+                if (is_valid) valid_count++;
             }
+
+            if (!valid_count) return false;
         }
 
         return true;

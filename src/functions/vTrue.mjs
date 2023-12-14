@@ -1,5 +1,5 @@
 'use strict';
 
-export default function vIsTrue (val) {
+export default function vTrue (val) {
     return val === true;
 }

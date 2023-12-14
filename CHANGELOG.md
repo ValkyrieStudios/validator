@@ -7,8 +7,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Added
-- feat: Rule: is_false - Will check whether or not something is strictly false
-- feat: Rule: is_true - Will check whether or not something is strictly true
+- feat: Rule: false - Will check whether or not something is strictly false
+- feat: Rule: true - Will check whether or not something is strictly true
 - feat: Validator@extendRegex: This new method allows registering one or more regexes as validation rules, as with all validator extensions the name of the regex (key in the object) can be used as part of a validation rule or called directly through Validator.rules.
 ```
 Validator.extendRegex({contains_hello: /((h|H)ello|(o|O)la)/});
@@ -21,6 +21,18 @@ new Validator({a: '!contains_hello'}).check({a: 'Hello there'}); // false
 new Validator({a: '!contains_hello'}).check({a: 'hello there'}); // false
 new Validator({a: '!contains_hello'}).check({a: 'ola amigos'}); // false
 new Validator({a: '!contains_hello'}).check({a: 'Ola amigos'}); // false
+```
+- feat: Added support for conditional or-grouping in .check, allowing multiple rule groups to be used for a single field. For example:
+```
+new Validator({a: '(integer|between:1,150)(false)'}).check({a: false}); // true
+new Validator({a: '(integer|between:1,150)(false)'}).check({a: true}); // false
+new Validator({a: '(integer|between:1,150)(false)'}).check({a: -150}); // false
+new Validator({a: '(integer|between:1,150)(false)'}).check({a: 50}); // true
+
+new Validator({a: '?(integer|between:1,150)(integer|between:-1,150)'}).check({a: 50}); // true
+new Validator({a: '?(integer|between:1,150)(integer|between:-1,150)'}).check({a: -50}); // true
+new Validator({a: '?(integer|between:1,150)(integer|between:-1,150)'}).check({a: 0}); // false
+new Validator({a: '?(integer|between:1,150)(integer|between:-1,150)'}).check({}); // true
 ```
 
 ### Improved
