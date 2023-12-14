@@ -323,6 +323,10 @@ const evaluation = v.validate({contact: {address: 'bla'}});
 ```
 
 ## Customization
+The below section describes 4 different ways to extend the base set of rules that already exist within the validator. It needs to be mentioned that
+**the validator's rules are centrally stored, meaning that these extensions only need to be run once and don't necessarily need to be run in the same
+file :)**
+
 ### Extending the validator with custom rules
 A validator library can/should only provide the default rules that would cover 90% of the validation use cases, however some validations are custom
 to your specific case, as such you can add your own custom rules through the `extend` static function on the Validator class.
