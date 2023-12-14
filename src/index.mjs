@@ -231,7 +231,7 @@ function parseGroups (raw) {
     if (sometimes) cursor = cursor.substring(1);
 
     //  Conditional or group
-    let conditionals = cursor.match(/\([a-zA-Z0-9\|?\.\[\]\:\<\>]{1,}\)/g);
+    let conditionals = cursor.match(/\([a-zA-Z0-9|?.[\]:<>]{1,}\)/g);
     if (!conditionals) conditionals = [cursor];
 
     //  Parse into rules
@@ -519,8 +519,11 @@ export default class Validator {
     //  @param object   obj     Enumeration rule objects, in format of {myenum: [...], myotherenum: [...]}
     static extendEnum (obj) {
         validExtension(obj, val => {
-            if (Array.isArray(val) && val.length !== 0 && val.filter(el => isNeString(el) || Number.isFinite(el)).length === val.length) return;
-            throw new Error('Invalid extension');
+            if (
+                !Array.isArray(val) ||
+                val.length === 0 ||
+                val.filter(el => isNeString(el) || Number.isFinite(el)).length !== val.length
+            ) throw new Error('Invalid extension');
         });
 
         //  For each key in object, check if its value is a function
