@@ -40,14 +40,14 @@
   },
   "homepage": "https://github.com/ValkyrieStudios/validator#readme",
   "dependencies": {
-    "@valkyriestudios/utils": "^9.0.0"
+    "@valkyriestudios/utils": "^10.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
-    "@babel/core": "^7.23.5",
+    "@babel/core": "^7.23.6",
     "@babel/eslint-parser": "^7.23.3",
     "@babel/plugin-syntax-import-assertions": "^7.23.3",
-    "@babel/preset-env": "^7.23.5",
+    "@babel/preset-env": "^7.23.6",
     "@babel/register": "^7.22.15",
     "@valkyriestudios/data-continents": "^0.2.0",
     "@valkyriestudios/data-countries": "^0.2.0",

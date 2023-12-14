@@ -27,6 +27,9 @@ new Validator({a: '!contains_hello'}).check({a: 'Ola amigos'}); // false
 - Validator@extend: Will now throw if a rule name contains anything but alphanumeric, dashes or underscore characters
 - Validator@extendMulti: Will now throw if a rule name contains anything but alphanumeric, dashes or underscore characters
 - Validator@extendEnum: Will now throw if a rule name contains anything but alphanumeric, dashes or underscore characters
+- Dep: Upgrade @valkyriestudios/utils to 10.0.0
+- Dev Dep: Upgrade @babel/core to 7.23.6
+- Dev Dep: Upgrade @babel/preset-env to 7.23.6
 
 ## [5.0.0] - 2023-12-10
 ### Added
