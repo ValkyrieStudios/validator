@@ -5,12 +5,12 @@
 [![npm](https://img.shields.io/npm/v/@valkyriestudios/validator.svg)](https://www.npmjs.com/package/@valkyriestudios/validator)
 [![npm](https://img.shields.io/npm/dm/@valkyriestudios/validator.svg)](https://www.npmjs.com/package/@valkyriestudios/validator)
 
-An extensible javascript validator
+An extensible blazing-fast javascript validator
 
-`npm install @valkyriestudios/validator`
+## Installation
+`npm install --save @valkyriestudios/validator`
 
 ## Example usage
-
 ```js
 import Validator from '@valkyriestudios/validator';
 
@@ -39,54 +39,7 @@ const evaluation = v.validate({
 console.log(evaluation.is_valid); // true
 ```
 
-## How does this work?
-
-### Instantiating a new validator
-A validator instance is reusable across multiple validation runs, it's instantiated with a set of rules that it needs to validate later down the
-line. These rules can go from single dimensional kv objects to multi-dimensional kv objects.
-
-You can create very small validators `... = new Validator({email: 'email'});` to very complex validators using a simple
-readable syntax.
-
-```js
-new Validator({
-    address: {
-        street: 'string|alpha_num_spaces',
-        nr: 'integer',
-        zip: 'integer|between:1000,9999',
-    },
-    contact: {
-        email: 'email',
-    },
-    filters: {
-        ids: '[unique]integer|greater_than:0',
-        types: '[unique|max:5]is_type',
-    },
-});
-```
-
-### Anatomy of a validation descriptor
-Validation of a value can be a simple one-off thing, or it can be a set of rules that the value needs to go through, as such a validation
-descriptor can contain multiple rules.
-
-The syntax for this is best shown with a good example `integer|between:1000,9999|!equal_to:5`.
-
-- **| Rule delimiter**
-The `|` symbol is a delimiter to show where a new rule starts
-
-- **: Parameter start**
-The `:` symbol marks where the rule name ends and the parameter list for the rule starts
-
-- **, Parameter delimiter**
-The `,` symbol marks where a new parameter starts
-
-- **! Opposite validation**
-The `!` symbol marks a rule as the opposite, meaning that we should revert the validation, another example is `!equal_to:foo`, which means accept anything that is not foo. This can be used with any rule (including custom ones) as well as parameterized rules.
-
-As such the example rule here validates on 3 things, the `integer` rule and `between` rule, where the between rule has 2 parameters
-(1000, 9999) as well as that any value can not be equal to 5.
-
-### @validate: Running validations and checking evaluations
+## @validate: Running validations and checking evaluations
 After a validator instance is created, you can run it as many times as you want to validate a data object passed to it. The resultset of this is called an `evaluation` and is returned when calling the `validate` function.
 
 ```js
@@ -160,8 +113,7 @@ v.validate({
 // }
 ```
 
-
-### @check: Simple/Speedy validity checks
+## @check: Simple/Speedy validity checks
 In case you don't need an evaluation object and are simply interested in whether or not something is valid you can also choose to work with the faster `check` method available on any validator instance. This method is faster than standard validation through `validate` due to not needing to build up a full resultset and immediately returning the moment it spots something invalid.
 
 ```js
@@ -170,6 +122,49 @@ const myvalidator = new Validator({name: 'string_ne|min:2', age: 'integer|betwee
 myvalidator.check({name: 'Peter', age: '250'}); // false
 myvalidator.check({name: 'Peter', age: 20}); // true
 ```
+
+## How does this work?
+### Instantiating a new validator
+A validator instance is reusable across multiple validation runs, it's instantiated with a set of rules that it needs to validate later down the
+line. These rules can go from single dimensional kv objects to multi-dimensional kv objects.
+
+You can create very small validators `... = new Validator({email: 'email'});` to very complex validators using a simple
+readable syntax.
+
+```js
+new Validator({
+    address: {
+        street: 'string|alpha_num_spaces',
+        nr: 'integer',
+        zip: 'integer|between:1000,9999',
+    },
+    contact: {
+        email: '(email)(false)',
+    },
+    filters: {
+        ids: '?[unique]integer|greater_than:0',
+        types: '[unique|max:5]is_type',
+    },
+});
+```
+
+### Anatomy of a validation descriptor
+Validation of a value can be a simple one-off thing, or it can be a set of rules that the value needs to go through, as such a validation
+descriptor can contain multiple rules.
+
+The syntax for this is best shown with a good example `integer|between:1000,9999|!equal_to:5`.
+
+##### Rule delimiter: `|` 
+The `|` symbol is a delimiter to show where a rule ends and another rule starts. eg: `integer|min:10` will evaluate the integer rule and the minimum rule with param 10
+
+##### Parameter star: `:`
+Certain rules allow for parameters to be passed, the `:` symbol marks where the rule name ends and the parameter (or list of parameters start). For example in `equal_to:5` the name of the rule being evaluated is `equal_to` and the parameter that will be passed to it is: `5`.
+
+##### Parameter delimiter: `,`
+In case a rule allows for more than one parameter to be passed we can identify each distinct parameter value by separating them with the `,` symbol. For example in the rule `between:1000,999` the list of parameters passed for evaluation to the `between` rule is `[1000, 9999]`.
+
+##### Opposite validation: `!`
+The `!` symbol marks a rule as the opposite of what we're validation for, meaning that we should revert the validation, another example is `!equal_to:foo`, which means accept anything that is **not equal to** foo. This can be used with any rule (including custom ones) as well as parameterized rules. For example: `!equal_to:<otherfield>` would mean only validate as true if the value being passed is not equal to the value of the otherfield prop in our data object.
 
 ### Linking to other parameters inside of the data object
 Validation sometimes requires context, this context is usually linked to other variables in the data object that is being validated. Think of a
@@ -242,7 +237,7 @@ v.check({ids: 5}); // false
 v.check({ids: [5]}); // true
 ```
 
-##### Options
+###### Options
 We understand that array validation requires just a tad more control, as such you can pass the following options to the array iterable in the rule.
 
 | Key | Meaning | Example |
@@ -256,10 +251,7 @@ These options can be combined as well. For example the following rule will ensur
 ```js
 Validator.extend('is_fruit', val => ['apple', 'orange', 'pear'].indexOf(val) >= 0);
 
-const validator = new Validator({
-    fruits: `[unique|min:1|max:4]is_fruit`.
-});
-
+const validator = new Validator({fruits: `[unique|min:1|max:4]is_fruit`});
 validator.check({fruits: ['apple', 'orange']}); // true
 validator.check({fruits: ['apple', 'apple', 'orange']}); // false (not unique)
 validator.check({fruits: []}); // false (min: 1)
@@ -267,6 +259,46 @@ validator.check({fruits: ['apple', 'dog', 'orange']}); // false (is_fruit)
 validator.check({fruits: ['apple', 'dog', 'orange', 'pear', 'pear']}); // false (is_fruit and over max)
 ```
 
+### OR Groups
+Every now and then we want to validate whether or not something is either A or B, for example whether or not a value is an email or its false. To tackle this notion of something being valid in multiple ways you can employ an or group, for example to validate whether or not something is either an email or false we can do the following:
+```
+const v = new Validator({a: '(email)(false)'});
+v.check({a: false}); // true
+v.check({a: 'contact@valkyriestudios.be'}); // true
+v.check({}); // false
+v.check({a: 'foobar'}); // false
+v.check({a: true}); // false
+```
+
+OR groups can be combined with the `?` sometimes flag as well like `?(email)(false)` which would have the following behavior:
+```
+const v = new Validator({a: '(email)(false)'});
+v.check({a: false}); // true
+v.check({a: 'contact@valkyriestudios.be'}); // true
+v.check({}); // true
+v.check({a: 'foobar'}); // false
+v.check({a: true}); // false
+```
+
+And can also be combined with other operators to form more complex rules such as:
+```
+const v = new Validator({a: '?(integer|between:1,150|!between:50,100)(integer|between:-1,150)'});
+v.check({a: 0}); // false
+v.check({a: 20}); // true
+v.check({}); // true
+v.check({a: -20}); // true
+v.check({a: 65}); // false
+```
+
+And even with array combinators:
+```
+const v = new Validator({a: '(email)([unique|min:1]email)');
+v.check({a: 'contact@valkyriestudios.be'}); // true
+v.check({a: ['contact@valkyriestudios.be', 'peter@valkyriestudios.be'}); // true
+v.check({a: ['contact@valkyriestudios.be', 'contact@valkyriestudios.be']}); // false
+```
+
+## Customization
 ### Extending the validator with custom rules
 A validator library can/should only provide the default rules that would cover 90% of the validation use cases, however some validations are custom
 to your specific case, as such you can add your own custom rules through the `extend` static function on the Validator class.
@@ -276,11 +308,8 @@ Adding a rule to the Validator is global and shared among all other validator in
 Example of a rule that will validate whether a string is a user role:
 
 ```js
-Validator.extend('user_role', function (val) {
-    return ['admin', 'user', 'guest'].includes(val);
-});
+Validator.extend('user_role', val =>  ['admin', 'user', 'guest'].includes(val));
 
-example usage
 (new Validator({a: 'user_role'})).check({a: 'owner'}); // false
 (new Validator({a: 'user_role'})).check({a: 'admin'}); // true
 ```
@@ -288,18 +317,15 @@ example usage
 Example of a rule that will validate whether an integer is the double of a provided parameter
 
 ```js
-Validator.extend('is_double', function (val, param) {
-    return val === (param * 2);
-});
+Validator.extend('is_double', (val, param) => val === (param * 2));
 
-example usage
 const v = new Validator({a: 'is_double:<meta.b>'});
 
 v.check({a: 6, meta: {b: 4}}); // false
 v.check({a: 8, meta: {b: 4}}); // true
 ```
 
-##### Multiple rules at once?
+### Multiple rules at once?
 If you see the need to add a group of custom rules, this can also be done through `Validator.extendMulti`:
 
 ```js
@@ -350,7 +376,32 @@ Validator.extendEnum({FRUITS: ['apple', 'pear', 'banana']});
 v.check('banana'); // true
 ```
 
-### Want to use the validation rules directly without a validator?
+### Extending the validator with regex(es)
+Every now and them we need to validate whether or not a provided value is valid according to a certain pattern, more often than not we employ a regex to do so. To make it easier to define/use them you can make use of the static `Validator.extendRegex` method.
+
+This method expects a kv-map where the `key` is the name we want to validate with and the `value` is a regex (either created through `/.../` syntax or `new RegExp(...);`. For example let's say we wanted to adjust our fruist/animal validation from above and turn it into a regex to also validate on whether or not they match the capitalized version of them. We could do so as follows:
+```js
+Validator.extendRegex({
+    is_fruit    : /^((a|A)pple|(p|P)ear|(o|O)range)$/g,
+    is_animal   : /^((d|D)og|(c|C)at|(h|H)orse)$/g,
+    is_pet      : /^((d|D)og|(c|C)at)$/g,
+});
+```
+
+**Take Note:** In most real-world use cases regexes don't tend to change at runtime, however in case this does happen you can always re-run the regex extension, for example:
+```js
+Validator.extendRegex({FRUITS: /^(apple|pear)$/g});
+
+const v = new Validator({val: 'FRUITS'});
+v.check('banana'); // false
+
+Validator.extendRegex({FRUITS: /^(apple|pear|banana)$/g});
+v.check('banana'); // true
+```
+
+**Cautionary Note:** Regex can be incredibly powerful as long as you know how to wield it, it can however also lead to inperformance if not written correctly. If you want to learn more about Regex performance feel free to peruse this article regarding what is colloquially known as **[Evil RegEx](https://medium.com/@nitinpatel_20236/what-are-evil-regexes-7b21058c747e)**.
+
+## Want to use the validation rules directly without a validator?
 If you see the need to directly use the validation rule functions without a validator instance, or want to check internal state you can use the `Validator.rules` static.
 
 ```js
@@ -358,17 +409,16 @@ Validator.rules.phone('+32 487 61 59 82'); // true
 Validator.rules.email('contact@valkyriestudios.be'); // true
 ```
 
-This also goes for enumeration rules:
+This also goes for **enumeration** and **regex** rules:
 
 ```js
-Validator.extendEnum({
-    NAMES: ['Peter', 'John'],
-    fruits: ['apple', 'pear'],
-});
+Validator.extendEnum({NAMES: ['Peter', 'John']});
+Validator.extendRegex({fruits: /^(appl(e|3)|pear)$/g});
 Validator.rules.NAMES('Peter'); // true
 Validator.rules.NAMES('Jack'); // false
 Validator.rules.fruits('apple'); // true
-Validator.rules.fruits('appl3'); // false
+Validator.rules.fruits('appl2'); // false
+Validator.rules.fruits('appl3'); // true
 ```
 
 ## Available rules
@@ -392,6 +442,7 @@ The following list shows you all the default rules that are provided by this lib
 | email | Validate that a provided value is an email, take note: this only structurally tests if an email is good, it doesn't test whether an email actually exists |
 | eq | Alias of equal_to |
 | equal_to | Validate that a provided value is equal to another value, this can be used on primitives (string, number, boolean) but also on non-primitives (objects, arrays, dates). Equality checks for non-primitives are done through FNV1A hashing |
+| false | Validate that a provided value is strictly equal to false |
 | geo_latitude | Validate that a provided value is a valid latitude value |
 | geo_longitude | Validate that a provided value is a valid longitude value |
 | greater_than | Validate that a provided value is greater than a provided number, if passed a string or array this will validate on length |
@@ -420,6 +471,7 @@ The following list shows you all the default rules that are provided by this lib
 | sys_ipv6 | Validate that a provided value is a valid IPv6 address | 
 | sys_ipv4_or_v6 | Validate that a provided value is either a valid IPv4 or a valid IPv6 address | 
 | time_zone | Validate that a provided value is a time_zone string (Take Note: this uses Intl.DateTimeFormat) |
+| true | Validate that a provided value is strictly equal to true |
 | url | Validate that a provided value is a url, this allows for query string values as well |
 | url_noquery | Validate that a provided value is a url without any query string values |
 | url_img | Validate that a provided value is a url linking to an image file (eg: https://mywebsite.com/123.jpg) |
