@@ -282,7 +282,7 @@ v.check({a: true}); // false
 
 And can also be combined with other operators to form more complex rules such as:
 ```js
-const v = new Validator({a: '?(integer|between:1,150|!between:50,100)(integer|between:-1,150)'});
+const v = new Validator({a: '?(integer|between:1,150|!between:50,100)(integer|between:-1,-150)'});
 v.check({a: 0}); // false
 v.check({a: 20}); // true
 v.check({}); // true
