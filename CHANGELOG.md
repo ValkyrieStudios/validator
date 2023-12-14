@@ -22,7 +22,7 @@ new Validator({a: '!contains_hello'}).check({a: 'hello there'}); // false
 new Validator({a: '!contains_hello'}).check({a: 'ola amigos'}); // false
 new Validator({a: '!contains_hello'}).check({a: 'Ola amigos'}); // false
 ```
-- feat: Added support for conditional or-grouping in .check, allowing multiple rule groups to be used for a single field. For example:
+- feat: Added support for conditional or-grouping in check and validate, allowing multiple rule groups to be used for a single field. When using the new or-groups a field will be valid if at least one of the groups is valid. For example:
 ```
 new Validator({a: '(integer|between:1,150)(false)'}).check({a: false}); // true
 new Validator({a: '(integer|between:1,150)(false)'}).check({a: true}); // false
