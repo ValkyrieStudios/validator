@@ -101,6 +101,13 @@ const RULE_STORE = {
     eq                          : isEqual,
 };
 
+//  Validate whether or not a name is valid
+//
+//  @param string   val     Value to validate
+function isValidName (val) {
+    return /^[A-Za-z_\-0-9]{1,}$/g.test(val);
+}
+
 //  Error model function
 //
 //  @param string   msg     Error message being hit
@@ -158,7 +165,7 @@ function parseRule (raw) {
     if (iterable) {
         const start_ix  = cursor.indexOf('[');
         const end_ix    = cursor.indexOf(']');
-        if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Iterable misconfiguration, please verify rule config for ${raw}`);
+        if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
 
         iterable  = getIterableConfig(cursor.substring(0, end_ix));
         cursor    = cursor.substring(end_ix + 1);
@@ -187,7 +194,7 @@ function parseRule (raw) {
                     if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
                         //  Ensure we validate that parameterized string value is correct eg: <meta.myval>
                         if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
-                            throw new TypeError(`Parameterization misconfiguration, please verify rule config for ${raw}`);
+                            throw new TypeError(`Parameterization misconfiguration, verify rule config for ${raw}`);
                         }
                         
                         param = param.substr(1, param.length - 2);
@@ -260,7 +267,7 @@ export default class Validator {
 
     constructor (rules = undefined) {
         //  Check for rules
-        if (!isObject(rules)) throw new TypeError('Please provide an object to define the rules of this validator');
+        if (!isObject(rules)) throw new TypeError('Provide an object to define the rules of this validator');
 
         //  Recursively parse our validation rules, to allow for deeply nested validation to be done
         const plan = [];
@@ -420,21 +427,19 @@ export default class Validator {
         //  Check if a name which is a non-empty string is provided
         if (
             typeof name !== 'string' ||
-            name.trim().length === 0
-        ) throw new Error('Invalid extension: please ensure a valid name is passed');
-
-        const sanitized_name = name.trim();
+            !isValidName(name)
+        ) throw new Error('Invalid extension: ensure name is a string only containing alphanumeric, dash or underscore characters');
 
         //  Check if function is provided
         if (
             typeof fn !== 'function'
-        ) throw new Error(`Invalid extension: ${sanitized_name}, please ensure a valid function is passed`);
+        ) throw new Error(`Invalid extension: ${name}, ensure a valid function is passed`);
 
         //  If prop already exists, delete it
-        if (RULE_STORE[sanitized_name]) delete RULE_STORE[sanitized_name];
+        if (RULE_STORE[name]) delete RULE_STORE[name];
 
         //  Define property with a configurable flag to allow reconfiguration
-        RULE_STORE[sanitized_name] = fn;
+        RULE_STORE[name] = fn;
     }
 
     //  Run multiple validator extensions in one go by passing an object
@@ -442,9 +447,17 @@ export default class Validator {
     //  @param object   obj     Object in the format of {rule_1: Function, rule_2: Function, ...}
     static extendMulti (obj) {
         //  Check if passed variable is an object
-        if (
-            !isObject(obj)
-        ) throw new Error('Please provide an object to extendMulti');
+        if (!isObject(obj)) throw new Error('Provide an object to extendMulti');
+
+        //  Validate all names
+        if (Object.keys(obj).filter(val => !isValidName(val)).length > 0) {
+            throw new Error('Invalid extension: ensure names only contain alphanumeric, dash or underscore characters');
+        }
+
+        //  Validate all values
+        if (Object.values(obj).filter(val => typeof val !== 'function').length > 0) {
+            throw new Error('Invalid extension: ensure all values are functions');
+        }
 
         //  For each key in object, check if its value is a function
         for (const name of Object.keys(obj)) Validator.extend(name, obj[name]);
@@ -455,29 +468,33 @@ export default class Validator {
     //  @param object   obj     Enumeration rule objects, in format of {myenum: [...], myotherenum: [...]}
     static extendEnum (obj) {
         //  Check if passed variable is an object
-        if (
-            !isObject(obj)
-        ) throw new Error('Please provide an object to extendEnum');
+        if (!isObject(obj)) throw new Error('Provide an object to extendEnum');
+
+        //  Validate all names
+        if (Object.keys(obj).filter(val => !isValidName(val)).length > 0) {
+            throw new Error('Invalid enum: ensure names only contain alphanumeric, dash or underscore characters');
+        }
+
+        //  Validate all values
+        for (const val of Object.values(obj)) {
+            if (!Array.isArray(val) || val.length === 0) {
+                throw new Error('Invalid enum: ensure all values are arrays with content');
+            }
+
+            if (val.filter(el => !isNeString(el) && !Number.isFinite(el)).length > 0) {
+                throw new Error('Invalid enum: ensure all values only contain primitive strings/numbers');
+            }
+        }
 
         //  For each key in object, check if its value is a function
         for (const name of Object.keys(obj)) {
-            if (
-                !Array.isArray(obj[name]) || 
-                obj[name].length === 0
-            ) throw new Error('Invalid enum extension: please ensure an extension provides an array with content');
-
+            //  Convert array to map (also dedupes)
             const enum_map = new Map();
-            for (const el of obj[name]) {
-                if (!isNeString(el) && !Number.isFinite(el)) {
-                    throw new Error(`Invalid enum extension for ${name}: only primitive strings/numbers are allowed for now`);
-                }
-                enum_map.set(el, true);
-            }
+            for (const el of obj[name]) enum_map.set(el, true);
 
             //  Create function and transfer name to it
             let f = function (val) {
-                if (typeof val !== 'string' && !Number.isFinite(val)) return false;
-                return ENUM_STORE.get(this.uid).has(val); // eslint-disable-line no-invalid-this
+                return (typeof val === 'string' || Number.isFinite(val)) && ENUM_STORE.get(this.uid).has(val); // eslint-disable-line no-invalid-this,max-len
             };
             f.uid = name;
             f = f.bind(f);

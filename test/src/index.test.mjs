@@ -5,6 +5,7 @@
 import {describe, it}           from 'node:test';
 import assert                   from 'node:assert/strict';
 import Is                       from '@valkyriestudios/utils/src/is.mjs';
+import guid                     from '@valkyriestudios/utils/src/hash/guid.mjs';
 import CONSTANTS                from '../constants.mjs';
 import Validator                from '../../src/index.mjs';
 import vAlphaNumSpaces          from '../../src/functions/vAlphaNumSpaces.mjs';
@@ -24,6 +25,8 @@ import vGreaterThan             from '../../src/functions/vGreaterThan.mjs';
 import vGreaterThanOrEqual      from '../../src/functions/vGreaterThanOrEqual.mjs';
 import vGuid                    from '../../src/functions/vGuid.mjs';
 import vIn                      from '../../src/functions/vIn.mjs';
+import vIsFalse                 from '../../src/functions/vIsFalse.mjs';
+import vIsTrue                  from '../../src/functions/vIsTrue.mjs';
 import vLessThan                from '../../src/functions/vLessThan.mjs';
 import vLessThanOrEqual         from '../../src/functions/vLessThanOrEqual.mjs';
 import vMax                     from '../../src/functions/vMax.mjs';
@@ -63,22 +66,22 @@ describe('Validator - Core', () => {
     it('Should throw a type error when passed wrong configuration options', () => {
         assert.throws(
             () => new Validator(),
-            new TypeError('Please provide an object to define the rules of this validator')
+            new TypeError('Provide an object to define the rules of this validator')
         );
 
         assert.throws(
             () => new Validator(5),
-            new TypeError('Please provide an object to define the rules of this validator')
+            new TypeError('Provide an object to define the rules of this validator')
         );
 
         assert.throws(
             () => new Validator([{hello: 'world'}, 5, true]),
-            new TypeError('Please provide an object to define the rules of this validator')
+            new TypeError('Provide an object to define the rules of this validator')
         );
 
         assert.throws(
             () => new Validator('foo'),
-            new TypeError('Please provide an object to define the rules of this validator')
+            new TypeError('Provide an object to define the rules of this validator')
         );
 
         assert.throws(
@@ -93,7 +96,7 @@ describe('Validator - Core', () => {
 
         assert.throws(
             () => new Validator({foo: 'number', a: 'in:<>'}),
-            new TypeError('Parameterization misconfiguration, please verify rule config for in:<>')
+            new TypeError('Parameterization misconfiguration, verify rule config for in:<>')
         );
     });
 
@@ -193,17 +196,17 @@ describe('Validator - Core', () => {
         it('Should throw if passed an invalid iterable config during rule creation', () => {
             assert.throws(
                 () => new Validator({a: '[string'}),
-                new TypeError('Iterable misconfiguration, please verify rule config for [string')
+                new TypeError('Iterable misconfiguration, verify rule config for [string')
             );
 
             assert.throws(
                 () => new Validator({a: ']string'}),
-                new TypeError('Iterable misconfiguration, please verify rule config for ]string')
+                new TypeError('Iterable misconfiguration, verify rule config for ]string')
             );
 
             assert.throws(
                 () => new Validator({a: '][string'}),
-                new TypeError('Iterable misconfiguration, please verify rule config for ][string')
+                new TypeError('Iterable misconfiguration, verify rule config for ][string')
             );
         });
 
@@ -602,17 +605,17 @@ describe('Validator - Core', () => {
         it('Should throw if passed an invalid iterable config during rule creation', () => {
             assert.throws(
                 () => new Validator({a: '[string'}),
-                new TypeError('Iterable misconfiguration, please verify rule config for [string')
+                new TypeError('Iterable misconfiguration, verify rule config for [string')
             );
 
             assert.throws(
                 () => new Validator({a: ']string'}),
-                new TypeError('Iterable misconfiguration, please verify rule config for ]string')
+                new TypeError('Iterable misconfiguration, verify rule config for ]string')
             );
 
             assert.throws(
                 () => new Validator({a: '][string'}),
-                new TypeError('Iterable misconfiguration, please verify rule config for ][string')
+                new TypeError('Iterable misconfiguration, verify rule config for ][string')
             );
         });
 
@@ -1152,6 +1155,8 @@ describe('Validator - Core', () => {
                 guid                        : vGuid,
                 in                          : vIn,
                 integer                     : Number.isInteger,
+                is_false                    : vIsFalse,
+                is_true                     : vIsTrue,
                 less_than                   : vLessThan,
                 less_than_or_equal          : vLessThanOrEqual,
                 max                         : vMax,
@@ -1196,15 +1201,32 @@ describe('Validator - Core', () => {
         it('Should throw if not provided anything', () => {
             assert.throws(
                 () => Validator.extend(),
-                new Error('Invalid extension: please ensure a valid name is passed')
+                new Error('Invalid extension: ensure name is a string only containing alphanumeric, dash or underscore characters')
             );
         });
 
-        it('Should throw if not provided a string or if provided an empty after trimming string name', () => {
+        it('Should throw if not provided a string', () => {
             for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
                 assert.throws(
                     () => Validator.extend(el, () => true),
-                    new Error('Invalid extension: please ensure a valid name is passed')
+                    new Error('Invalid extension: ensure name is a string only containing alphanumeric, dash or underscore characters')
+                );
+            }
+        });
+
+        it('Should throw if not provided a valid string', () => {
+            for (const el of [
+                ' foo ',
+                'foo.a.b',
+                'foo(a)',
+                'foo)b',
+                'foo[a]',
+                'foo a',
+                'foo_}',
+            ]) {
+                assert.throws(
+                    () => Validator.extend(el, () => true),
+                    new Error('Invalid extension: ensure name is a string only containing alphanumeric, dash or underscore characters')
                 );
             }
         });
@@ -1213,7 +1235,7 @@ describe('Validator - Core', () => {
             for (const el of CONSTANTS.NOT_FUNCTION) {
                 assert.throws(
                     () => Validator.extend('rule', el),
-                    new Error('Invalid extension: rule, please ensure a valid function is passed')
+                    new Error('Invalid extension: rule, ensure a valid function is passed')
                 );
             }
         });
@@ -1274,7 +1296,7 @@ describe('Validator - Core', () => {
         it('Should throw if not provided anything', () => {
             assert.throws(
                 () => Validator.extendMulti(),
-                new Error('Please provide an object to extendMulti')
+                new Error('Provide an object to extendMulti')
             );
         });
 
@@ -1282,7 +1304,7 @@ describe('Validator - Core', () => {
             for (const el of CONSTANTS.NOT_OBJECT) {
                 assert.throws(
                     () => Validator.extendMulti(el),
-                    new Error('Please provide an object to extendMulti')
+                    new Error('Provide an object to extendMulti')
                 );
             }
         });
@@ -1291,12 +1313,34 @@ describe('Validator - Core', () => {
             assert.doesNotThrow(() => Validator.extendMulti({}));
         });
 
+        it('Should throw if provided an object where certain values do not have a valid name', () => {
+            for (const el of [
+                ' foo ',
+                'foo.a.b',
+                'foo(a)',
+                'foo)b',
+                'foo[a]',
+                'foo a',
+                'foo_}',
+            ]) {
+                assert.throws(
+                    () => Validator.extendMulti({[el]: val => val === true}),
+                    new Error('Invalid extension: ensure names only contain alphanumeric, dash or underscore characters')
+                );
+
+                assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, el));
+            }
+        });
+
         it('Should throw if provided an object where certain values do not have a function', () => {
             for (const el of CONSTANTS.NOT_FUNCTION) {
+                const uid = guid();
                 assert.throws(
-                    () => Validator.extendMulti({rule_1: el}),
-                    new Error('Invalid extension: rule_1, please ensure a valid function is passed')
+                    () => Validator.extendMulti({[uid]: el}),
+                    new Error('Invalid extension: ensure all values are functions')
                 );
+
+                assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid));
             }
         });
 
@@ -1397,7 +1441,7 @@ describe('Validator - Core', () => {
         it('Should throw if not provided anything', () => {
             assert.throws(
                 () => Validator.extendEnum(),
-                new Error('Please provide an object to extendEnum')
+                new Error('Provide an object to extendEnum')
             );
         });
 
@@ -1405,7 +1449,7 @@ describe('Validator - Core', () => {
             for (const el of CONSTANTS.NOT_OBJECT) {
                 assert.throws(
                     () => Validator.extendEnum(el),
-                    new Error('Please provide an object to extendEnum')
+                    new Error('Provide an object to extendEnum')
                 );
             }
         });
@@ -1414,12 +1458,37 @@ describe('Validator - Core', () => {
             assert.doesNotThrow(() => Validator.extendEnum({}));
         });
 
+        it('Should throw if provided an object where certain values do not have a valid name', () => {
+            for (const el of [
+                ' foo ',
+                'foo.a.b',
+                'foo(a)',
+                'foo)b',
+                'foo[a]',
+                'foo a',
+                'foo_}',
+            ]) {
+                const uid = guid();
+                assert.throws(
+                    () => Validator.extendEnum({[uid]: ['foo', 'bar'], [el]: ['foobar', 'barfoo']}),
+                    new Error('Invalid enum: ensure names only contain alphanumeric, dash or underscore characters')
+                );
+
+                assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, el));
+                assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid));
+            }
+        });
+
         it('Should throw if provided an object where certain values do not have an array with content', () => {
             for (const el of CONSTANTS.NOT_ARRAY_WITH_EMPTY) {
+                const uid = guid();
+                const uid2 = guid();
                 assert.throws(
-                    () => Validator.extendEnum({enum_1: ['foo', 'bar'], enum_2: el}),
-                    new Error('Invalid enum extension: please ensure an extension provides an array with content')
+                    () => Validator.extendEnum({[uid]: ['foo', 'bar'], [uid2]: el}),
+                    new Error('Invalid enum: ensure all values are arrays with content')
                 );
+                assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid));
+                assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid2));
             }
         });
 
@@ -1475,22 +1544,22 @@ describe('Validator - Core', () => {
         it('Should throw if provided an object where certain arrays contain more than just primitive strings or numbers', () => {
             assert.throws(
                 () => Validator.extendEnum({enum_1: ['foo', false, 'bar']}),
-                new Error('Invalid enum extension for enum_1: only primitive strings/numbers are allowed for now')
+                new Error('Invalid enum: ensure all values only contain primitive strings/numbers')
             );
 
             assert.throws(
                 () => Validator.extendEnum({enum_1: ['foo', {a: 1}, 'bar']}),
-                new Error('Invalid enum extension for enum_1: only primitive strings/numbers are allowed for now')
+                new Error('Invalid enum: ensure all values only contain primitive strings/numbers')
             );
 
             assert.throws(
                 () => Validator.extendEnum({enum_1: ['foo', new Date(), 'bar']}),
-                new Error('Invalid enum extension for enum_1: only primitive strings/numbers are allowed for now')
+                new Error('Invalid enum: ensure all values only contain primitive strings/numbers')
             );
 
             assert.throws(
                 () => Validator.extendEnum({enum_1: ['foo', ['foo'], 'bar']}),
-                new Error('Invalid enum extension for enum_1: only primitive strings/numbers are allowed for now')
+                new Error('Invalid enum: ensure all values only contain primitive strings/numbers')
             );
         });
 

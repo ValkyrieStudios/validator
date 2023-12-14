@@ -7,12 +7,17 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Added
-- Rule: is_false - Will check whether or not something is strictly false
-- Rule: is_true - Will check whether or not something is strictly true
+- feat: Rule: is_false - Will check whether or not something is strictly false
+- feat: Rule: is_true - Will check whether or not something is strictly true
+
+### Improved
+- Validator@extend: Will now throw if a rule name contains anything but alphanumeric, dashes or underscore characters
+- Validator@extendMulti: Will now throw if a rule name contains anything but alphanumeric, dashes or underscore characters
+- Validator@extendEnum: Will now throw if a rule name contains anything but alphanumeric, dashes or underscore characters
 
 ## [5.0.0] - 2023-12-10
 ### Added
-- feat: Validator @extendEnum: This new method allows registering one or more enumerations as validation rules, as with all validator extensions the name of the enum can then be used as part of a validation rule or called directly through Validator.rules. Take note: currently onle arrays of primitive strings/numbers are allowed. For example:
+- feat: Validator @extendEnum: This new method allows registering one or more enumerations as validation rules, as with all validator extensions the name of the enum can then be used as part of a validation rule or called directly through Validator.rules. Take note: currently only arrays of primitive strings/numbers are allowed. For example:
 ```
 Validator.extendEnum({
     FRUITS: ['apple', 'pear', 'banana'],
