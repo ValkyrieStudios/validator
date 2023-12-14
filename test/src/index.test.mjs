@@ -381,6 +381,46 @@ describe('Validator - Core', () => {
         });
     });
 
+    describe('@check FN - lexer: groups', () => {
+        it('Should return valid when one of both rules are valid', () => {
+            const validator = new Validator({a: '([max:5|min:2]string)(false)'});
+            assert.ok(validator.check({a: ['hello', 'there', 'cool']}));
+            assert.ok(validator.check({a: false}));
+        });
+
+        it('Should return valid when all rules are valid', () => {
+            const validator = new Validator({a: '([max:5|min:2]string)([max:5|min:3]string_ne)'});
+            assert.ok(validator.check({a: ['hello', 'there', 'cool']}));
+        });
+
+        it('Should return valid when no rules are valid but sometimes flag is set and its the only rule', () => {
+            const validator = new Validator({a: '?(guid)(false)'});
+            assert.ok(validator.check({}));
+        });
+
+        it('Should return valid when no rules are valid but sometimes flag is set and theres multiple rules but those are valid too', () => {
+            const validator = new Validator({a: '?(guid)(false)', b: 'integer|between:10,50'});
+            assert.ok(validator.check({b: 42}));
+        });
+
+        it('Should return invalid when both rules are invalid and correctly set error messages as multi-dimensional array', () => {
+            const validator = new Validator({a: '(guid)(false)'});
+            assert.equal(validator.check({a: 'foobar'}), false);
+        });
+
+        it('Should return invalid and correctly set error messages as multi-dimensional array with multiple rules to a group', () => {
+            const validator = new Validator({a: '(integer|between:20,42)(false)'});
+            assert.equal(validator.check({a: 'foobar'}), false);
+        });
+
+        it('Should check correctly with parameterization', () => {
+            const validator = new Validator({a: '(in:<nums>)([unique|min:1|max:10]in:<meta.strings>)'});
+            assert.equal(validator.check({a: 'foobar', nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}), false);
+            assert.ok(validator.check({a: 2, nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}));
+            assert.ok(validator.check({a: ['other'], nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}));
+        });
+    });
+
     describe('@validate FN', () => {
         it('Should return a properly formatted evaluation object', () => {
             const evaluation = new Validator({a: 'number', b: 'number'}).validate({a: 20, b: false});
@@ -1126,6 +1166,113 @@ describe('Validator - Core', () => {
         });
     });
 
+    describe('@validate FN - lexer: groups', () => {
+        it('Should return valid when one of both rules are valid', () => {
+            const validator = new Validator({a: '([max:5|min:2]string)(false)'});
+            assert.deepEqual(
+                validator.validate({a: ['hello', 'there', 'cool']}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+            assert.deepEqual(
+                validator.validate({a: false}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+        });
+
+        it('Should return valid when all rules are valid', () => {
+            const validator = new Validator({a: '([max:5|min:2]string)([max:5|min:3]string_ne)'});
+            assert.deepEqual(
+                validator.validate({a: ['hello', 'there', 'cool']}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+        });
+
+        it('Should return valid when no rules are valid but sometimes flag is set and its the only rule', () => {
+            const validator = new Validator({a: '?(guid)(false)'});
+            assert.deepEqual(
+                validator.validate({}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+        });
+
+        it('Should return valid when no rules are valid but sometimes flag is set and theres multiple rules but those are valid too', () => {
+            const validator = new Validator({a: '?(guid)(false)', b: 'integer|between:10,50'});
+            assert.deepEqual(
+                validator.validate({b: 42}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+        });
+
+        it('Should return invalid when both rules are invalid and correctly set error messages as multi-dimensional array', () => {
+            const validator = new Validator({a: '(guid)(false)'});
+            assert.deepEqual(
+                validator.validate({a: 'foobar'}),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        a: [
+                            [{msg: 'guid', params: []}],
+                            [{msg: 'false', params: []}],
+                        ],
+                    },
+                }
+            );
+        });
+
+        it('Should return invalid and correctly set error messages as multi-dimensional array with multiple rules to a group', () => {
+            const validator = new Validator({a: '(integer|between:20,42)(false)'});
+            assert.deepEqual(
+                validator.validate({a: 'foobar'}),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        a: [
+                            [
+                                {msg: 'integer', params: []},
+                                {msg: 'between', params: ['20', '42']},
+                            ],
+                            [
+                                {msg: 'false', params: []}
+                            ],
+                        ],
+                    },
+                }
+            );
+        });
+
+        it('Should validate correctly with parameterization', () => {
+            const validator = new Validator({a: '(in:<nums>)([unique|min:1|max:10]in:<meta.strings>)'});
+            assert.deepEqual(
+                validator.validate({a: 'foobar', nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        a: [
+                            [
+                                {msg: 'in', params: [[1,2,3]]},
+                            ],
+                            [
+                                {msg: 'iterable', params: []}
+                            ],
+                        ],
+                    },
+                }
+            );
+            assert.deepEqual(
+                validator.validate({a: 2, nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+
+            assert.deepEqual(
+                validator.validate({a: ['other'], nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+        });
+    });
+
     describe('@rules GET', () => {
         it('Should return the configured rules on the Validator as an object', () => {
             assert.equal(typeof Validator.rules, 'object');
@@ -1842,6 +1989,65 @@ describe('Validator - Core', () => {
                     ],
                     'filters.types': [
                         {idx: 2, msg: 'is_type', params: []},
+                    ],
+                },
+            });
+        });
+
+        it('Should be able to validate complex multidimensional objects [5]', () => {
+            Validator.extend('is_type', val => ['type1', 'type2', 'type4'].indexOf(val) >= 0);
+
+            const validator = new Validator({
+                filters: {
+                    ids: '[unique]integer|greater_than:0',
+                    types: '[unique|max:3]is_type',
+                },
+                contact: {
+                    email: '(email)(false)',
+                },
+            });
+
+            let evaluation = validator.validate({
+                filters: {
+                    ids: [2, 3, 4, 1.5],
+                    types: ['type1', 'type2', 'type2', 'type3'],
+                },
+                contact: {
+                    email: false,
+                },
+            });
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 2,
+                errors: {
+                    'filters.ids': [{idx: 3, msg: 'integer', params: []}],
+                    'filters.types': [{msg: 'iterable_max', params: [3]}],
+                },
+            });
+
+            evaluation = validator.validate({
+                filters: {
+                    ids: [2, 3, 4, 1.5, 4],
+                    types: ['type1', 'type2', 'type3'],
+                },
+                contact: {
+                    email: 'foobar',
+                },
+            });
+            assert.deepEqual(evaluation, {
+                is_valid: false,
+                count: 3,
+                errors: {
+                    'filters.ids': [
+                        {msg: 'iterable_unique', params: []},
+                        {idx: 3, msg: 'integer', params: []},
+                    ],
+                    'filters.types': [
+                        {idx: 2, msg: 'is_type', params: []},
+                    ],
+                    'contact.email': [
+                        [{msg: 'email', params: []}],
+                        [{msg: 'false', params: []}],
                     ],
                 },
             });
