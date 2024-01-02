@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- Dev Dep: Upgrade @babel/core to 7.23.7
+- Dev Dep: Upgrade @babel/preset-env to 7.23.7
+- Dev Dep: Upgrade @babel/register to 7.23.7
+- Dev Dep: Upgrade eslint to 8.56.0
+
 ## [6.0.0] - 2023-12-14
 ### Added
 - feat: Rule: false - Will check whether or not something is strictly false
