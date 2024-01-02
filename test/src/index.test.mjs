@@ -2052,5 +2052,29 @@ describe('Validator - Core', () => {
                 },
             });
         });
+
+        it('Should be valid if a nested objects\'s fields are all optional and no nested object is passed', () => {
+            const validator = new Validator({
+                filters: {
+                    ids: '?[unique]integer|greater_than:0',
+                    types: '?[unique|max:3]is_type',
+                },
+                contact_email: 'email',
+            });
+
+            assert.ok(validator.check({contact_email: 'contact@valkyriestudios.be'}));
+        });
+
+        it('Should be invalid if a nested objects\'s fields are not all optional and no nested object is passed', () => {
+            const validator = new Validator({
+                filters: {
+                    ids: '?[unique]integer|greater_than:0',
+                    types: '[unique|max:3]is_type',
+                },
+                contact_email: 'email',
+            });
+
+            assert.equal(validator.check({contact_email: 'contact@valkyriestudios.be'}), false);
+        });
     });
 });
