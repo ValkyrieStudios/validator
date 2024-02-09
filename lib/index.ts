@@ -1,13 +1,13 @@
 'use strict';
 
-import isString                 from '@valkyriestudios/utils/src/string/is.mjs';
-import isNeString               from '@valkyriestudios/utils/src/string/isNotEmpty.mjs';
-import isDate                   from '@valkyriestudios/utils/src/date/is.mjs';
-import isNeArray                from '@valkyriestudios/utils/src/array/isNotEmpty.mjs';
-import isObject                 from '@valkyriestudios/utils/src/object/is.mjs';
-import isNeObject               from '@valkyriestudios/utils/src/object/isNotEmpty.mjs';
-import isEqual                  from '@valkyriestudios/utils/src/equal.mjs';
-import fnv1A                    from '@valkyriestudios/utils/src/hash/fnv1A.mjs';
+import isString                 from '@valkyriestudios/utils/string/is';
+import isNeString               from '@valkyriestudios/utils/string/isNotEmpty';
+import isDate                   from '@valkyriestudios/utils/date/is';
+import isNeArray                from '@valkyriestudios/utils/array/isNotEmpty';
+import isObject                 from '@valkyriestudios/utils/object/is';
+import isNeObject               from '@valkyriestudios/utils/object/isNotEmpty';
+import isEqual                  from '@valkyriestudios/utils/equal';
+import fnv1A                    from '@valkyriestudios/utils/hash/fnv1A';
 
 import vAlphaNumSpaces          from './functions/vAlphaNumSpaces.mjs';
 import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline.mjs';
@@ -29,8 +29,6 @@ import vGuid                    from './functions/vGuid.mjs';
 import vIn                      from './functions/vIn.mjs';
 import vLessThan                from './functions/vLessThan.mjs';
 import vLessThanOrEqual         from './functions/vLessThanOrEqual.mjs';
-import vMax                     from './functions/vMax.mjs';
-import vMin                     from './functions/vMin.mjs';
 import vPhone                   from './functions/vPhone.mjs';
 import vTimeZone                from './functions/vTimeZone.mjs';
 import vRequired                from './functions/vRequired.mjs';
