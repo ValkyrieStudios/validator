@@ -44,12 +44,23 @@ import vUrlImage                from './functions/vUrlImage.mjs';
 
 //  Raw data type for input checking
 type DataPrimitive  = string | number | boolean | null;
-type DataValue      = DataPrimitive | DataObject | DataArray;
-type DataArray      = Array<DataValue>;
-type DataObject     = {[key:string]: DataValue};
+type DataVal        = DataPrimitive | DataObject | DataArray;
+type DataArray      = Array<DataVal>;
+type DataObject     = {[key:string]: DataVal};
+
+//  Validation rule input data types
+type RulesRawVal    = string | RulesRaw;
+type RulesRaw       = {[key:string]: RulesRawVal};
+
+//  Validation components
+interface ValidationIterable {
+    unique: boolean;
+    max: number|boolean;
+    min: number|boolean;
+}
 
 //  Used for enum storage using extendEnum
-type ExtEnumValInner    = string|number;
+type ExtEnumValInner    = string | number;
 type ExtEnumVal         = ExtEnumValInner[];
 type ExtEnum            = Record<string, ExtEnumVal>;
 const ENUM_STORE:Map<string, Map<ExtEnumValInner, boolean>> = new Map();
@@ -139,7 +150,7 @@ function M_Error (msg, params = []) {
 //
 //  @param object   obj     Object to pull data from
 //  @param string   path    Path to pull from (eg: 'a.b.c')
-function deepGet (obj:DataObject, path:string):DataValue {
+function deepGet (obj:DataObject, path:string):DataVal {
     const parts = path.split('.');
 
     let cursor = obj;
@@ -160,13 +171,13 @@ function deepGet (obj:DataObject, path:string):DataValue {
 //  Get the config for an iterable validation
 //
 //  @param string   val     Value to determine config from, eg: 'unique|min:1|max:5'
-function getIterableConfig (val) {
+function getIterableConfig (val:string):ValidationIterable {
     const max = val.match(/max:\d{1,}/);
     const min = val.match(/min:\d{1,}/);
     return {
         unique  : val.indexOf('unique') >= 0,
-        max     : max ? parseInt(`${max}`.split('max:', 2)[1]) : false,
-        min     : min ? parseInt(`${min}`.split('min:', 2)[1]) : false,
+        max     : max ? parseInt(`${max[0]}`.split('max:', 2)[1]) : false,
+        min     : min ? parseInt(`${min[0]}`.split('min:', 2)[1]) : false,
     };
 }
 
@@ -178,8 +189,8 @@ function parseRule (raw) {
     let cursor = `${raw}`;
 
     //  ([...]) Check for iterable behavior
-    let iterable = /(\[|\]){1,}/.test(cursor);
-    if (iterable) {
+    let iterable:ValidationIterable|false = false;
+    if (/(\[|\]){1,}/.test(cursor)) {
         const start_ix  = cursor.indexOf('[');
         const end_ix    = cursor.indexOf(']');
         if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
