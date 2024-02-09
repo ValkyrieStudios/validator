@@ -9,41 +9,41 @@ import isNeObject               from '@valkyriestudios/utils/object/isNotEmpty';
 import isEqual                  from '@valkyriestudios/utils/equal';
 import fnv1A                    from '@valkyriestudios/utils/hash/fnv1A';
 
-import vAlphaNumSpaces          from './functions/vAlphaNumSpaces.mjs';
-import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline.mjs';
-import vBetween                 from './functions/vBetween.mjs';
-import vBetweenInclusive        from './functions/vBetweenInclusive.mjs';
-import vBoolean                 from './functions/vBoolean.mjs';
-import vColorHex                from './functions/vColorHex.mjs';
-import vContinent               from './functions/vContinent.mjs';
-import vCountry                 from './functions/vCountry.mjs';
-import vCountryAlpha3           from './functions/vCountryAlpha3.mjs';
-import vDateString              from './functions/vDateString.mjs';
-import vEmail                   from './functions/vEmail.mjs';
-import vFalse                   from './functions/vFalse.mjs';
-import vGeoLatitude             from './functions/vGeoLatitude.mjs';
-import vGeoLongitude            from './functions/vGeoLongitude.mjs';
-import vGreaterThan             from './functions/vGreaterThan.mjs';
-import vGreaterThanOrEqual      from './functions/vGreaterThanOrEqual.mjs';
-import vGuid                    from './functions/vGuid.mjs';
-import vIn                      from './functions/vIn.mjs';
-import vLessThan                from './functions/vLessThan.mjs';
-import vLessThanOrEqual         from './functions/vLessThanOrEqual.mjs';
-import vPhone                   from './functions/vPhone.mjs';
-import vTimeZone                from './functions/vTimeZone.mjs';
-import vRequired                from './functions/vRequired.mjs';
-import vSize                    from './functions/vSize.mjs';
-import vSysMac                  from './functions/vSysMac.mjs';
-import vSysIPv4                 from './functions/vSysIPv4.mjs';
-import vSysIPv6                 from './functions/vSysIPv6.mjs';
-import vSysIPv4_or_v6           from './functions/vSysIPv4_or_v6.mjs';
-import vTrue                    from './functions/vTrue.mjs';
-import vUrl                     from './functions/vUrl.mjs';
-import vUrlNoQuery              from './functions/vUrlNoQuery.mjs';
-import vUrlImage                from './functions/vUrlImage.mjs';
+import vAlphaNumSpaces          from './functions/vAlphaNumSpaces';
+import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline';
+import vBetween                 from './functions/vBetween';
+import vBetweenInclusive        from './functions/vBetweenInclusive';
+import vBoolean                 from './functions/vBoolean';
+import vColorHex                from './functions/vColorHex';
+import vContinent               from './functions/vContinent';
+import vCountry                 from './functions/vCountry';
+import vCountryAlpha3           from './functions/vCountryAlpha3';
+import vDateString              from './functions/vDateString';
+import vEmail                   from './functions/vEmail';
+import vFalse                   from './functions/vFalse';
+import vGeoLatitude             from './functions/vGeoLatitude';
+import vGeoLongitude            from './functions/vGeoLongitude';
+import vGreaterThan             from './functions/vGreaterThan';
+import vGreaterThanOrEqual      from './functions/vGreaterThanOrEqual';
+import vGuid                    from './functions/vGuid';
+import vIn                      from './functions/vIn';
+import vLessThan                from './functions/vLessThan';
+import vLessThanOrEqual         from './functions/vLessThanOrEqual';
+import vPhone                   from './functions/vPhone';
+import vTimeZone                from './functions/vTimeZone';
+import vRequired                from './functions/vRequired';
+import vSize                    from './functions/vSize';
+import vSysMac                  from './functions/vSysMac';
+import vSysIPv4                 from './functions/vSysIPv4';
+import vSysIPv6                 from './functions/vSysIPv6';
+import vSysIPv4_or_v6           from './functions/vSysIPv4_or_v6';
+import vTrue                    from './functions/vTrue';
+import vUrl                     from './functions/vUrl';
+import vUrlNoQuery              from './functions/vUrlNoQuery';
+import vUrlImage                from './functions/vUrlImage';
 
 //  Raw data type for input checking
-type DataPrimitive  = string | number | boolean | null;
+type DataPrimitive  = string | number | boolean | Date | null;
 type DataVal        = DataPrimitive | DataObject | DataArray;
 type DataArray      = Array<DataVal>;
 type DataObject     = {[key:string]: DataVal};
@@ -53,10 +53,25 @@ type RulesRawVal    = string | RulesRaw;
 type RulesRaw       = {[key:string]: RulesRawVal};
 
 //  Validation components
+interface ValidationError {
+    msg:string;
+    params:DataVal[];
+}
+
 interface ValidationIterable {
     unique: boolean;
     max: number|boolean;
     min: number|boolean;
+}
+
+interface ValidationRule {
+    iterable:ValidationIterable|false;
+}
+
+interface ValidationGroup {
+    key:string;
+    sometimes:boolean;
+    rules:ValidationRule[];
 }
 
 //  Used for enum storage using extendEnum
@@ -128,7 +143,10 @@ const RULE_STORE = {
 //
 //  @param Object   obj         Object to validate
 //  @param Function valueFn     Function to use for value checks
-function validExtension (obj, valueFn) {
+function validExtension  <T> (
+    obj:Record<string, T>,
+    valueFn:(arg0:T) => void
+) {
     if (
         !isObject(obj) ||
         Object.keys(obj).filter(val => !/^[A-Za-z_\-0-9]{1,}$/g.test(val)).length > 0
@@ -136,14 +154,6 @@ function validExtension (obj, valueFn) {
 
     //  Validate all values
     for (const val of Object.values(obj)) valueFn(val);
-}
-
-//  Error model function
-//
-//  @param string   msg     Error message being hit
-//  @param array    params  (default=[]) Parameters that were passed
-function M_Error (msg, params = []) {
-    return {msg, params};
 }
 
 //  Get a value from a path in a json-like structure
@@ -244,7 +254,7 @@ function parseRule (raw) {
 //  Parse a rule into or-group
 //
 //  @param string   raw    Raw configured string with possible or groups
-function parseGroups (raw) {
+function parseGroup (key:string, raw:string):ValidationGroup {
     //  Copy contents of raw into here as working-copy
     let cursor = `${raw}`;
 
@@ -261,7 +271,7 @@ function parseGroups (raw) {
         for (const el of conditionals) rules.push(parseRule(el.replace(/(\(|\))/g, '')));
     }    
 
-    return {sometimes, rules};
+    return {key, sometimes, rules};
 }
 
 //  Fully validate a rule list against a certain field cursor, returns errors array and is_valid prop
@@ -270,11 +280,11 @@ function parseGroups (raw) {
 //  @param array    list            List of rules to run against the cursor
 //  @param object   data            Original data object (used in param checks)
 function validateField (cursor, list, data) {
-    const errors = [];
+    const errors:ValidationError[] = [];
     for (const rule of list) {
         //  Check if rule exists
         if (!RULE_STORE[rule.type]) {
-            errors.push(M_Error('rule_not_found', [rule.type]));
+            errors.push({msg: 'rule_not_found', params: [rule.type]});
             continue;
         }
 
@@ -285,7 +295,7 @@ function validateField (cursor, list, data) {
         //  Run rule - if check fails (not valid && not not | not && valid) push into errors
         const rule_valid = RULE_STORE[rule.type](cursor, ...params);
         if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) {
-            errors.push(M_Error(`${rule.not ? 'not_' : ''}${rule.type}`, params));
+            errors.push({msg: `${rule.not ? 'not_' : ''}${rule.type}`, params});
         }
     }
 
@@ -316,38 +326,39 @@ function checkField (cursor, list, data) {
 
 export default class Validator {
 
-    constructor (rules = undefined) {
+    #plan:ValidationGroup[];
+
+    constructor (rules:RulesRaw) {
         //  Check for rules
         if (!isObject(rules)) throw new TypeError('Provide an object to define the rules of this validator');
 
         //  Recursively parse our validation rules, to allow for deeply nested validation to be done
-        const plan = [];
-        function recursor (val, key) {
+        const plan:ValidationGroup[] = [];
+        function recursor (val:RulesRawVal, key?:string):void {
             //  If      the cursor is an object -> recurse
             //  Elif    the cursor is a string -> parse
             //  El      throw error as misconfiguration
-            if (isObject(val)) {
+            if (typeof val === 'string') {
+                if (val.trim().length === 0) throw new TypeError('Rule value is empty');
+                plan.push(parseGroup(key, val));
+            } else if (isObject(val)) {
                 Object.keys(val).forEach(val_key => recursor(val[val_key], key ? `${key}.${val_key}` : val_key));
-            } else if (isNeString(val)) {
-                const rule = parseGroups(val);
-                rule.key = key;
-                plan.push(rule);
             } else {
                 //  Throw a type error if neither a string nor an object
-                throw new TypeError('The rule for a key needs to be a string value');
+                throw new TypeError('Invalid rule value');
             }
         }
         recursor(rules);
 
         //  Set the parsed plan as a get property on our validation instance
-        Object.defineProperty(this, 'plan', {get: () => plan});
+        this.#plan = plan;
     }
 
     check (data:DataObject):boolean {
         //  No data passed? Check if rules were set up
-        if (!isObject(data)) return this.plan.length === 0;
+        if (!isObject(data)) return this.#plan.length === 0;
         
-        for (const part of this.plan) {
+        for (const part of this.#plan) {
             //  Retrieve cursor that part is run against
             const cursor = deepGet(data, part.key);
             
@@ -368,9 +379,9 @@ export default class Validator {
                         //  If not an array -> invalid
                         !Array.isArray(cursor) || 
                         //  rule.iterable.min is set and val length is below the min -> invalid
-                        (Number.isFinite(rule.iterable.min) && cursor.length < rule.iterable.min) || 
+                        (Number.isFinite(rule.iterable.min) && cursor.length < (rule.iterable.min as number)) || 
                         //  rule.iterable.max is set and val length is above max -> invalid
-                        (Number.isFinite(rule.iterable.max) && cursor.length > rule.iterable.max)
+                        (Number.isFinite(rule.iterable.max) && cursor.length > (rule.iterable.max as number))
                     ) {
                         is_valid = false;
                     } else {
@@ -410,22 +421,22 @@ export default class Validator {
     validate (data:DataObject) {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) {
-            const is_valid = this.plan.length === 0;
+            const is_valid = this.#plan.length === 0;
             return {
                 is_valid,
-                count: this.plan.length,
+                count: this.#plan.length,
                 errors: is_valid ? {} : 'NO_DATA',
             };
         }
 
-        const errors = {};
-        for (const part of this.plan) {
+        const errors:Record<string, ValidationError[]> = {};
+        for (const part of this.#plan) {
             //  Retrieve cursor that part is run against
             const cursor = deepGet(data, part.key);
             
             //  If we cant find cursor we need to validate for the 'sometimes' flag
             if (cursor === undefined) {
-                if (!part.sometimes) errors[part.key] = [M_Error('not_found')];
+                if (!part.sometimes) errors[part.key] = [{msg: 'not_found', params: []}];
                 continue;
             }
 
@@ -441,11 +452,11 @@ export default class Validator {
                     //  Elif    rule.iterable.max is set and val length is above max -> invalid
                     //  El      iterable validation
                     if (!Array.isArray(cursor)) {
-                        error_cursor.push(M_Error('iterable'));
-                    } else if (Number.isFinite(rule.iterable.min) && cursor.length < rule.iterable.min) {
-                        error_cursor.push(M_Error('iterable_min', [rule.iterable.min]));
-                    } else if (Number.isFinite(rule.iterable.max) && cursor.length > rule.iterable.max) {
-                        error_cursor.push(M_Error('iterable_max', [rule.iterable.max]));
+                        error_cursor.push({msg: 'iterable', params: []});
+                    } else if (Number.isFinite(rule.iterable.min) && cursor.length < (rule.iterable.min as number)) {
+                        error_cursor.push({msg: 'iterable_min', params: [rule.iterable.min]});
+                    } else if (Number.isFinite(rule.iterable.max) && cursor.length > (rule.iterable.max as number)) {
+                        error_cursor.push({msg: 'iterable_max', params: [rule.iterable.max]});
                     } else {
                         //  If rule.iterable.unique is set create map to store hashes and keep tabs
                         //  on uniqueness as we run through the array
@@ -518,7 +529,7 @@ export default class Validator {
     //
     //  @param object   obj     Regex rule objects, in format of {myregex: /.../, myotherregex: new RegExp()}
     static extendRegex (obj:ExtRegExp):void {
-        validExtension(obj, (val:ExtRegExp) => {
+        validExtension(obj, (val:ExtRegExpVal) => {
             if (Object.prototype.toString.call(val) !== '[object RegExp]') throw new Error('Invalid extension');
         });
 
