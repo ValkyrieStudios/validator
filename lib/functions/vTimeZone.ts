@@ -2,9 +2,9 @@
 
 /* eslint-disable max-len */
 
-const pre = (prefix, arr) => arr.map(val => `${prefix}/${val}`);
+const pre = (prefix:string, arr:string[]) => arr.map(val => `${prefix}/${val}`);
 
-const MAP = new Map();
+const MAP:Map<string, true> = new Map();
 for (const el of [
     ...pre('Africa', ['Abidjan', 'Accra', 'Bamako', 'Banjul', 'Conakry', 'Dakar', 'Freetown', 'Lome', 'Nouakchott', 'Ouagadougou', 'Timbuktu', 'Algiers', 'Bissau', 'Cairo', 'Casablanca', 'Ceuta', 'El_Aaiun', 'Johannesburg', 'Maseru', 'Mbabane', 'Juba', 'Khartoum', 'Lagos', 'Bangui', 'Brazzaville', 'Douala', 'Kinshasa', 'Libreville', 'Luanda', 'Malabo', 'Niamey', 'Porto-Novo', 'Maputo', 'Blantyre', 'Bujumbura', 'Gaborone', 'Harare', 'Kigali', 'Lubumbashi', 'Lusaka', 'Monrovia', 'Nairobi', 'Addis_Ababa', 'Asmara', 'Asmera', 'Dar_es_Salaam', 'Djibouti', 'Kampala', 'Mogadishu', 'Ndjamena', 'Sao_Tome', 'Tripoli', 'Tunis', 'Windhoek']),
     ...pre('Atlantic', ['Reykjavik', 'St_Helena', 'Azores', 'Bermuda', 'Canary', 'Cape_Verde', 'Faroe', 'Faeroe', 'Madeira', 'South_Georgia', 'Stanley', 'Jan_Mayen']),
@@ -72,6 +72,13 @@ for (const el of [
     'WET',
 ]) MAP.set(el, true);
 
-export default function vTimeZone (val) {
+/**
+ * Validate that a provided value is a time_zone string
+ * 
+ * @param val - Value to verify
+ * 
+ * @returns {boolean} Whether or not it's valid
+ */
+export default function vTimeZone (val:string|never):boolean {
     return typeof val === 'string' && MAP.has(val);
 }

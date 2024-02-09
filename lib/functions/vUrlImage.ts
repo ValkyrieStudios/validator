@@ -1,6 +1,6 @@
 'use strict';
 
-import vUrl from './vUrl.mjs';
+import vUrl from './vUrl';
 
 export const EXTENSIONS = Object.freeze([
     //	Joint Photographic Experts Group
@@ -42,7 +42,14 @@ export const EXTENSIONS = Object.freeze([
 const MAP = new Map();
 for (const el of EXTENSIONS) MAP.set(el, true);
 
-export default function vUrlImage (val) {
+/**
+ * Validate that a provided value is a url linking to an image file (eg: https://mywebsite.com/123.jpg)
+ * 
+ * @param val - Value to verify
+ * 
+ * @returns {boolean} Whether or not it's valid
+ */
+export default function vUrlImage (val:string|never):boolean {
     if (!vUrl(val)) return false;
 
     //	Deprotocolize -> take before query -> take before anchor -> split by / 
