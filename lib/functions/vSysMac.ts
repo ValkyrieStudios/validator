@@ -5,7 +5,14 @@
 //  When 48-bit addresses get converted to 64-bit addresses a hardcoded 16-bit value (FFFE)
 //  gets inserted between the manufacturer and device digits.
 
-export default function vSysMac (val) {
+/**
+ * Validate that a provided value is a valid MAC address
+ * 
+ * @param val - Value to verify
+ * 
+ * @returns {boolean} Whether or not it's valid
+ */
+export default function vSysMac (val:string|never):boolean {
     if (typeof val !== 'string') return false;
 
     //  Check for MM-MM-MM-SS-SS-SS format
