@@ -7,6 +7,6 @@
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vGeoLongitude (val:number|never):boolean {
+export default function vGeoLongitude (val:number):boolean {
     return Number.isFinite(val) && val >= -180 && val <= 180;
 }

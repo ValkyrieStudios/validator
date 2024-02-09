@@ -9,7 +9,7 @@
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vEmail (val:string|never):boolean {
+export default function vEmail (val:string):boolean {
     if (typeof val !== 'string' || val.trim().length !== val.length || val.length === 0) return false;
 
     const parts = val.split('@');

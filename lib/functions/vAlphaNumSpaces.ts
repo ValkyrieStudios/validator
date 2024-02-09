@@ -7,6 +7,6 @@
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vAlphaNumSpaces (val:string|never):boolean {
+export default function vAlphaNumSpaces (val:string):boolean {
     return typeof val === 'string' && /^[a-zA-Z0-9 ]*$/ig.test(val);
 }

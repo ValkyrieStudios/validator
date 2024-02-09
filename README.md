@@ -466,7 +466,7 @@ The following list shows you all the default rules that are provided by this lib
 | country | Validate that a provided value is an alpha-2 code according to ISO 3166-1 |
 | country_alpha3 | Validate that a provided value is an alpha-3 code according to ISO 3166-1 |
 | date | Validate that a provided value is a date object |
-| date_string | Validate that a provided value is a valid date string, take note: this will not validate strings representing dates before the start of the unix epoch |
+| date_string | Validate that a provided value is a valid date string |
 | email | Validate that a provided value is an email, take note: this only structurally tests if an email is good, it doesn't test whether an email actually exists |
 | eq | Alias of equal_to |
 | equal_to | Validate that a provided value is equal to another value, this can be used on primitives (string, number, boolean) but also on non-primitives (objects, arrays, dates). Equality checks for non-primitives are done through FNV1A hashing |
@@ -498,7 +498,7 @@ The following list shows you all the default rules that are provided by this lib
 | sys_ipv4 | Validate that a provided value is a valid IPv4 address |
 | sys_ipv6 | Validate that a provided value is a valid IPv6 address | 
 | sys_ipv4_or_v6 | Validate that a provided value is either a valid IPv4 or a valid IPv6 address | 
-| time_zone | Validate that a provided value is a time_zone string (Take Note: this uses Intl.DateTimeFormat) |
+| time_zone | Validate that a provided value is a time_zone string |
 | true | Validate that a provided value is strictly equal to true |
 | url | Validate that a provided value is a url, this allows for query string values as well |
 | url_noquery | Validate that a provided value is a url without any query string values |

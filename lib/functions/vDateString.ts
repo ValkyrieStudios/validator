@@ -7,7 +7,7 @@
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vDateString (val:string|never):boolean {
+export default function vDateString (val:string):boolean {
     return (
         typeof val === 'string' &&
         val.trim().length > 0 &&

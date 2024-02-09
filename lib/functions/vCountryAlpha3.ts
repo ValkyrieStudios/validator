@@ -10,6 +10,6 @@ for (const el of ['AFG', 'ALB', 'DZA', 'ASM', 'AND', 'AGO', 'AIA', 'ATA', 'ATG',
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vCountryAlpha3 (val:string|never):boolean {
+export default function vCountryAlpha3 (val:string):boolean {
     return typeof val === 'string' && MAP.has(val);
 }

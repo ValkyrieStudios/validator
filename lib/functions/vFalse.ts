@@ -7,6 +7,6 @@
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vFalse (val:boolean|never):boolean {
+export default function vFalse (val:boolean):boolean {
     return val === false;
 }

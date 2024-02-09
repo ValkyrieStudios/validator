@@ -10,9 +10,9 @@
  * @returns {boolean} Whether or not it's valid
  */
 export default function vBetween (
-    val:string|number|any[]|never,
-    lower_bound:string|number,
-    upper_bound:string|number
+    val:string|number|any[],
+    lower_bound:number,
+    upper_bound:number
 ):boolean {
     //  Normalize
     const _upper_bound:number = typeof upper_bound === 'string' ? parseFloat(upper_bound) : upper_bound;
