@@ -163,12 +163,12 @@ function validExtension  <T> (
 function deepGet (obj:DataObject, path:string):DataVal {
     const parts = path.split('.');
 
-    let cursor = obj;
+    let cursor:DataVal = obj;
     while (parts.length > 0) {
         if (isObject(cursor)) {
             const key = parts.shift();
             if (!Object.prototype.hasOwnProperty.call(cursor, key)) return undefined;
-            cursor = cursor[key];
+            cursor = (cursor as DataObject)[key];
         }
 
         //  If we have more parts and cursor is not an object -> immediately return undefined
@@ -194,7 +194,7 @@ function getIterableConfig (val:string):ValidationIterable {
 //  Parse a rule into a sub validator pipeline
 //
 //  @param string   raw    Rule value
-function parseRule (raw) {
+function parseRule (raw:string):ValidationRule {
     //  Copy contents of raw into here as working-copy
     let cursor = `${raw}`;
 

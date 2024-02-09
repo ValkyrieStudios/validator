@@ -1,12 +1,19 @@
 'use strict';
 
-//  Based on RFC3696 (https://datatracker.ietf.org/doc/html/rfc3696)
-
-export default function vEmail (val) {
+/**
+ * Validate that a provided value is a valid email address
+ * For more info: RFC3696 (https://datatracker.ietf.org/doc/html/rfc3696)
+ * Take note: This does not validate email existence
+ * 
+ * @param val - Value to verify
+ * 
+ * @returns {boolean} Whether or not it's valid
+ */
+export default function vEmail (val:string|never):boolean {
     if (typeof val !== 'string' || val.trim().length !== val.length || val.length === 0) return false;
 
     const parts = val.split('@');
-   
+
     //  Validate 2 parts exist (a single @ sign needs to be present)
     if (parts.length !== 2) return false;
 
