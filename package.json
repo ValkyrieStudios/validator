@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/ValkyrieStudios/validator#readme",
   "dependencies": {
-    "@valkyriestudios/utils": "^10.0.0"
+    "@valkyriestudios/utils": "^11.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",

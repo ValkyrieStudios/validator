@@ -7,6 +7,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- Dev Dep: Upgrade @valkyriestudios/utils to 11.3.0
 - Dev Dep: Upgrade @babel/core to 7.23.7
 - Dev Dep: Upgrade @babel/preset-env to 7.23.7
 - Dev Dep: Upgrade @babel/register to 7.23.7
