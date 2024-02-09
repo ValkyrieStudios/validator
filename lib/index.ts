@@ -42,11 +42,22 @@ import vUrl                     from './functions/vUrl.mjs';
 import vUrlNoQuery              from './functions/vUrlNoQuery.mjs';
 import vUrlImage                from './functions/vUrlImage.mjs';
 
+//  Raw data type for input checking
+type DataPrimitive  = string | number | boolean | null;
+type DataValue      = DataPrimitive | DataObject | DataArray;
+type DataArray      = Array<DataValue>;
+type DataObject     = {[key:string]: DataValue};
+
 //  Used for enum storage using extendEnum
-const ENUM_STORE = new Map();
+type ExtEnumValInner    = string|number;
+type ExtEnumVal         = ExtEnumValInner[];
+type ExtEnum            = Record<string, ExtEnumVal>;
+const ENUM_STORE:Map<string, Map<ExtEnumValInner, boolean>> = new Map();
 
 //  Used for regex storage using extendRegex
-const REGEX_STORE = new Map();
+type ExtRegExpVal   = RegExp;
+type ExtRegExp      = Record<string, ExtRegExpVal>;
+const REGEX_STORE:Map<string, ExtRegExpVal> = new Map();
 
 //  Used for rule storage of all validation rules
 const RULE_STORE = {
@@ -128,7 +139,7 @@ function M_Error (msg, params = []) {
 //
 //  @param object   obj     Object to pull data from
 //  @param string   path    Path to pull from (eg: 'a.b.c')
-function deepGet (obj, path) {
+function deepGet (obj:DataObject, path:string):DataValue {
     const parts = path.split('.');
 
     let cursor = obj;
@@ -321,7 +332,7 @@ export default class Validator {
         Object.defineProperty(this, 'plan', {get: () => plan});
     }
 
-    check (data) {
+    check (data:DataObject):boolean {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) return this.plan.length === 0;
         
@@ -385,7 +396,7 @@ export default class Validator {
         return true;
     }
 
-    validate (data) {
+    validate (data:DataObject) {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) {
             const is_valid = this.plan.length === 0;
@@ -495,18 +506,21 @@ export default class Validator {
     //  Add regex validation rule
     //
     //  @param object   obj     Regex rule objects, in format of {myregex: /.../, myotherregex: new RegExp()}
-    static extendRegex (obj) {
-        validExtension(obj, val => {
+    static extendRegex (obj:ExtRegExp):void {
+        validExtension(obj, (val:ExtRegExp) => {
             if (Object.prototype.toString.call(val) !== '[object RegExp]') throw new Error('Invalid extension');
         });
 
         //  For each key in object, check if its value is a function
         for (const key of Object.keys(obj)) {
             //  Create function and transfer key to it
-            let f = function (val) {
+            let f = function (val:string):boolean {
                 return typeof val === 'string' && REGEX_STORE.get(this.uid).test(val); // eslint-disable-line no-invalid-this
             };
+
+            //  @ts-ignore
             f.uid = key;
+
             f = f.bind(f);
             REGEX_STORE.set(key, new RegExp(obj[key])); // Copy regex
 
@@ -518,8 +532,8 @@ export default class Validator {
     //  Add an enum validation rule
     //
     //  @param object   obj     Enumeration rule objects, in format of {myenum: [...], myotherenum: [...]}
-    static extendEnum (obj) {
-        validExtension(obj, val => {
+    static extendEnum (obj:ExtEnum):void {
+        validExtension(obj, (val:ExtEnumVal):void => {
             if (
                 !Array.isArray(val) ||
                 val.length === 0 ||
@@ -530,14 +544,17 @@ export default class Validator {
         //  For each key in object, check if its value is a function
         for (const key of Object.keys(obj)) {
             //  Convert array to map (also dedupes)
-            const enum_map = new Map();
+            const enum_map:Map<ExtEnumValInner, boolean> = new Map();
             for (const el of obj[key]) enum_map.set(el, true);
 
             //  Create function and transfer key to it
-            let f = function (val) {
+            let f = function (val:ExtEnumValInner):boolean {
                 return (typeof val === 'string' || Number.isFinite(val)) && ENUM_STORE.get(this.uid).has(val); // eslint-disable-line no-invalid-this,max-len
             };
+            
+            //  @ts-ignore
             f.uid = key;
+            
             f = f.bind(f);
             ENUM_STORE.set(key, enum_map);
 
