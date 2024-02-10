@@ -52,13 +52,17 @@ for (const el of EXTENSIONS) MAP.set(el, true);
 export default function vUrlImage (val:string|never):boolean {
     if (!vUrl(val)) return false;
 
-    //	Deprotocolize -> take before query -> take before anchor -> split by / 
-    //	eg: 'https://mysite.com/123.jpg#hello?this=iscool' -> ['mysite.com', '123.jpg']
+    /**
+     * Deprotocolize -> take before query -> take before anchor -> split by / 
+     * eg: 'https://mysite.com/123.jpg#hello?this=iscool' -> ['mysite.com', '123.jpg']
+     */
     let sanitized = val.replace(/^(https?|ftp):\/\//g, '').split(/(\?|#)/g, 1)[0].split('/');
     if (sanitized.length < 2) return false;
 
-    //  Pop and split by dot
-    //  eg: ['mysite.com', '123.jpg'] -> ['123', 'jpg']
+    /**
+     * Pop and split by dot
+     * eg: ['mysite.com', '123.jpg'] -> ['123', 'jpg']
+     */
     sanitized = sanitized[sanitized.length - 1].split('.');
 
     //  Get extension

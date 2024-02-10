@@ -15,19 +15,21 @@ export default function vBetween (
     upper_bound:number
 ):boolean {
     //  Normalize
-    const _upper_bound:number = typeof upper_bound === 'string' ? parseFloat(upper_bound) : upper_bound;
-    const _lower_bound:number = typeof lower_bound === 'string' ? parseFloat(lower_bound) : lower_bound;
+    const n_upper_bound:number = typeof upper_bound === 'string' ? parseFloat(upper_bound) : upper_bound;
+    const n_lower_bound:number = typeof lower_bound === 'string' ? parseFloat(lower_bound) : lower_bound;
 
     //  If upper or lower bound normalized is not numerical return false
-    if (!Number.isFinite(_upper_bound) || !Number.isFinite(_lower_bound)) return false;
+    if (!Number.isFinite(n_upper_bound) || !Number.isFinite(n_lower_bound)) return false;
 
-    //  If value is string or array, use length for validation
-    //  Else if number use value for validation
-    //  Else return false
+    /**
+     * If   value is string or array, use length for validation
+     * Elif number use value for validation
+     * El   return false
+     */
     if (typeof val === 'string' || Array.isArray(val)) {
-        return val.length > _lower_bound && val.length < _upper_bound;
+        return val.length > n_lower_bound && val.length < n_upper_bound;
     } else if (Number.isFinite(val)) {
-        return val > _lower_bound && val < _upper_bound;
+        return val > n_lower_bound && val < n_upper_bound;
     } else {
         return false;
     }

@@ -26,7 +26,6 @@
             "unix"
         ],
         "no-unmodified-loop-condition": "error",
-        "no-use-before-define": "error",
         "require-atomic-updates": "error",
         "arrow-body-style": [
             "error",
@@ -124,7 +123,6 @@
         "function-call-argument-newline": ["error", "consistent"],
         "implicit-arrow-linebreak": ["error", "beside"],
         "keyword-spacing": ["error", {"before": true, "after": true}],
-        "linebreak-style": "off",
         "lines-between-class-members": ["error", "always"],
         "max-len": ["error", {"code": 140}],
         "max-statements-per-line": ["error", {"max": 1}],

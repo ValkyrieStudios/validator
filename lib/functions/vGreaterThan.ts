@@ -11,21 +11,23 @@
  */
 export default function vGreaterThan (
     val:string|number|any[],
-    bound:number,
+    bound:number
 ):boolean {
     //  Normalize
-    const _bound:number = typeof bound === 'string' ? parseFloat(bound) : bound;
+    const n_bound:number = typeof bound === 'string' ? parseFloat(bound) : bound;
 
     //  If bound normalized is not numerical return false
-    if (!Number.isFinite(_bound)) return false;
+    if (!Number.isFinite(n_bound)) return false;
 
-    //  If value is string or array, use length for validation
-    //  Else if number use value for validation
-    //  Else return false
+    /**
+     * If   value is string or array, use length for validation
+     * Elif number use value for validation
+     * El   return false
+     */
     if (typeof val === 'string' || Array.isArray(val)) {
-        return val.length > _bound;
+        return val.length > n_bound;
     } else if (Number.isFinite(val)) {
-        return val > _bound;
+        return val > n_bound;
     } else {
         return false;
     }

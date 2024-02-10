@@ -1,9 +1,13 @@
 'use strict';
 
-//  M stands for manufacturer digits
-//  S stands for device digits
-//  When 48-bit addresses get converted to 64-bit addresses a hardcoded 16-bit value (FFFE)
-//  gets inserted between the manufacturer and device digits.
+/**
+ * Mac Address Quick summary:
+ * 
+ * M stands for manufacturer digits
+ * S stands for device digits
+ * When 48-bit addresses get converted to 64-bit addresses a hardcoded 16-bit value (FFFE)
+ * gets inserted between the manufacturer and device digits.
+ */
 
 /**
  * Validate that a provided value is a valid MAC address

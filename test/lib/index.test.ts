@@ -121,6 +121,7 @@ describe('Validator - Core', () => {
 
         it('Should validate to true if no data was passed and no rules were set up', () => {
             const validator = new Validator({});
+            //  @ts-ignore
             assert.ok(validator.check());
         });
 
@@ -481,12 +482,14 @@ describe('Validator - Core', () => {
 
         it('Should validate to true if no data was passed and no rules were set up', () => {
             const validator = new Validator({});
+            //  @ts-ignore
             const evaluation = validator.validate();
             assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should validate to false with \'NO_DATA\' if no data was passed and rules were set up', () => {
             const validator = new Validator({a: 'string_ne'});
+            //  @ts-ignore
             const evaluation = validator.validate();
             assert.deepEqual(evaluation, {is_valid: false, count: 1, errors: 'NO_DATA'});
         });

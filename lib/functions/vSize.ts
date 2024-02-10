@@ -17,10 +17,10 @@ export default function vSize (
     if (typeof val !== 'string' && !Array.isArray(val)) return false;
 
     //  Normalize
-    const _equals:number = typeof equals === 'string' ? parseFloat(equals) : equals;
+    const n_equals:number = typeof equals === 'string' ? parseFloat(equals) : equals;
 
     //  If equals is not numerical or nan, return false
-    if (!Number.isFinite(_equals)) return false;
+    if (!Number.isFinite(n_equals)) return false;
 
-    return val.length === _equals;
+    return val.length === n_equals;
 }

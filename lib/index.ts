@@ -139,10 +139,14 @@ const RULE_STORE = {
     eq                          : isEqual,
 };
 
-//  Validate whether or not a passed object has valid names/values
-//
-//  @param Object   obj         Object to validate
-//  @param Function valueFn     Function to use for value checks
+/**
+ * Validate whether or not a passed object has valid names/values
+ * 
+ * @param obj - Object to validate
+ * @param valueFn - Function to use for value checks
+ * 
+ * @throws {Error} Will throw if the extension is invalid
+ */
 function validExtension  <T> (
     obj:Record<string, T>,
     valueFn:(arg0:T) => void
@@ -156,10 +160,14 @@ function validExtension  <T> (
     for (const val of Object.values(obj)) valueFn(val);
 }
 
-//  Get a value from a path in a json-like structure
-//
-//  @param object   obj     Object to pull data from
-//  @param string   path    Path to pull from (eg: 'a.b.c')
+/**
+ * Get a value from a path in a json-like structure
+ * 
+ * @param obj - Object to pull data from (eg: {a: {b: {c: 'hello}}})
+ * @param path - Path to pull from (eg: 'a.b.c')
+ * 
+ * @returns {DataVal} Value at path position
+ */
 function deepGet (obj:DataObject, path:string):DataVal {
     const parts = path.split('.');
 
@@ -178,9 +186,13 @@ function deepGet (obj:DataObject, path:string):DataVal {
     return cursor;
 }
 
-//  Get the config for an iterable validation
-//
-//  @param string   val     Value to determine config from, eg: 'unique|min:1|max:5'
+/**
+ * Parse raw string into iterable configuration
+ * 
+ * @param val - Value to determine config from, eg: 'unique|min:1|max:5'
+ * 
+ * @returns {ValidationIterable} Iterable configuration
+ */
 function getIterableConfig (val:string):ValidationIterable {
     const max = val.match(/max:\d{1,}/);
     const min = val.match(/min:\d{1,}/);
@@ -191,9 +203,13 @@ function getIterableConfig (val:string):ValidationIterable {
     };
 }
 
-//  Parse a rule into a sub validator pipeline
-//
-//  @param string   raw    Rule value
+/**
+ * Parse a rule into a sub validator pipeline
+ * 
+ * @param raw - Raw validation rule
+ * 
+ * @returns {ValidationRule} Parsed validation rule
+ */
 function parseRule (raw:string):ValidationRule {
     //  Copy contents of raw into here as working-copy
     let cursor = `${raw}`;
@@ -209,8 +225,10 @@ function parseRule (raw:string):ValidationRule {
         cursor    = cursor.substring(end_ix + 1);
     }
 
-    //  Accumulate all the checks that need to be run for this field
-    //  (eg: string_ne|min:20 will become an array with two checks)
+    /**
+     * Accumulate all the checks that need to be run for this field
+     * (eg: string_ne|min:20 will become an array with two checks)
+     */
     const list = cursor.split('|').reduce((acc, rule_part) => {
         let params  = rule_part.split(':');
         let type    = params.shift().trim();
@@ -251,9 +269,14 @@ function parseRule (raw:string):ValidationRule {
     return {iterable, list};
 }
 
-//  Parse a rule into or-group
-//
-//  @param string   raw    Raw configured string with possible or groups
+/**
+ * Parse a rule into a validation group (X OR Y OR Z)
+ * 
+ * @param key - Name of the group (key path on the validator)
+ * @param raw - Full rule string with possible or groups
+ * 
+ * @returns Parsed validation group
+ */
 function parseGroup (key:string, raw:string):ValidationGroup {
     //  Copy contents of raw into here as working-copy
     let cursor = `${raw}`;
@@ -274,12 +297,23 @@ function parseGroup (key:string, raw:string):ValidationGroup {
     return {key, sometimes, rules};
 }
 
-//  Fully validate a rule list against a certain field cursor, returns errors array and is_valid prop
-//
-//  @param mixed    cursor          Cursor value to run the rule list against
-//  @param array    list            List of rules to run against the cursor
-//  @param object   data            Original data object (used in param checks)
-function validateField (cursor, list, data) {
+/**
+ * Fully validate a rule list against a certain field cursor
+ * 
+ * @param cursor - Cursor value to run the rule list against
+ * @param list - List of rules to run against the cursor
+ * @param data - Original data object (used in param checks)
+ * 
+ * @returns Object containing an errors array and is_valid prop
+ */
+function validateField (
+    cursor:DataVal,
+    list:ValidationRule[],
+    data:DataObject
+):{
+    errors:ValidationError[];
+    is_valid:boolean;
+} {
     const errors:ValidationError[] = [];
     for (const rule of list) {
         //  Check if rule exists
@@ -302,12 +336,20 @@ function validateField (cursor, list, data) {
     return {errors, is_valid: errors.length === 0};
 }
 
-//  Check a rule list against a certain field cursor, returns true/false if valid or not
-//
-//  @param mixed    cursor          Cursor value to run the rule list against
-//  @param array    list            List of rules to run against the cursor
-//  @param object   data            Original data object (used in param checks)
-function checkField (cursor, list, data) {
+/**
+ * Check a rule list against a certain field cursor
+ * 
+ * @param cursor - Cursor value to run the rule list against
+ * @param list - List of rules to run against the cursor
+ * @param data - Original data object (used in param checks)
+ * 
+ * @returns {boolean} Whether or not the value is valid
+ */
+function checkField (
+    cursor:DataVal,
+    list:ValidationRule[],
+    data:DataObject
+):boolean {
     for (const rule of list) {
         //  Check if rule exists
         if (!RULE_STORE[rule.type]) return false;
@@ -335,9 +377,11 @@ export default class Validator {
         //  Recursively parse our validation rules, to allow for deeply nested validation to be done
         const plan:ValidationGroup[] = [];
         function recursor (val:RulesRawVal, key?:string):void {
-            //  If      the cursor is an object -> recurse
-            //  Elif    the cursor is a string -> parse
-            //  El      throw error as misconfiguration
+            /**
+             * If   the cursor is a string -> parse
+             * Elif the cursor is an object -> recurse
+             * El   throw error as misconfiguration
+             */
             if (typeof val === 'string') {
                 if (val.trim().length === 0) throw new TypeError('Rule value is empty');
                 plan.push(parseGroup(key, val));
@@ -447,10 +491,12 @@ export default class Validator {
 
                 //  Check for iterable config
                 if (rule.iterable) {
-                    //  If      not an array -> invalid
-                    //  Elif    rule.iterable.min is set and val length is below the min -> invalid
-                    //  Elif    rule.iterable.max is set and val length is above max -> invalid
-                    //  El      iterable validation
+                    /**
+                     * If      not an array -> invalid
+                     * Elif    rule.iterable.min is set and val length is below the min -> invalid
+                     * Elif    rule.iterable.max is set and val length is above max -> invalid
+                     * El      iterable validation
+                     */
                     if (!Array.isArray(cursor)) {
                         error_cursor.push({msg: 'iterable', params: []});
                     } else if (Number.isFinite(rule.iterable.min) && cursor.length < (rule.iterable.min as number)) {
@@ -458,19 +504,23 @@ export default class Validator {
                     } else if (Number.isFinite(rule.iterable.max) && cursor.length > (rule.iterable.max as number)) {
                         error_cursor.push({msg: 'iterable_max', params: [rule.iterable.max]});
                     } else {
-                        //  If rule.iterable.unique is set create map to store hashes and keep tabs
-                        //  on uniqueness as we run through the array
+                        /**
+                         * If rule.iterable.unique is set create map to store hashes and keep tabs
+                         * on uniqueness as we run through the array
+                         */
                         let iterable_unique = true;
                         const unique_map    = iterable_unique && rule.iterable.unique ? new Map() : false;
                         for (let idx = 0; idx < cursor.length; idx++) {
                             const evaluation = validateField(cursor[idx], rule.list, data);
-                            if (!evaluation.is_valid) error_cursor.push(...evaluation.errors.map(el => ({idx, ...el}));
+                            if (!evaluation.is_valid) error_cursor.push(...evaluation.errors.map(el => ({idx, ...el})));
 
                             //  If no unique map or iterable unique was already turned off continue
                             if (!unique_map || !iterable_unique) continue;
 
-                            //  Compute fnv hash if uniqueness needs to be checked, if map size differs from
-                            //  our current point in the iteration add uniqueness error
+                            /**
+                             * Compute fnv hash if uniqueness needs to be checked, if map size differs from
+                             * our current point in the iteration add uniqueness error
+                             */
                             unique_map.set(fnv1A(cursor[idx]), true);
                             if (unique_map.size !== (idx + 1)) {
                                 iterable_unique = false;
@@ -504,19 +554,29 @@ export default class Validator {
         return Object.freeze({...RULE_STORE});
     }
 
-    //  Extend validator rule set
-    //
-    //  @param string   name    Name of the rule
-    //  @param Function fn      Validation function
-    static extend (name, fn) {
+    /**
+     * Extend validator rule set with a new rule
+     * 
+     * @param name - Name of the rule you want to add
+     * @param fn - Rule Function (function that returns a boolean and as its first value will get the value being validated)
+     */
+    static extend (name:string, fn):void {
         if (typeof name !== 'string') throw new Error('Invalid extension');
         Validator.extendMulti({[name]: fn});
     }
 
-    //  Run multiple validator extensions in one go by passing an object
-    //
-    //  @param object   obj     Object in the format of {rule_1: Function, rule_2: Function, ...}
-    static extendMulti (obj) {
+    /**
+     * Run multiple validator extends using a function kv-map
+     * 
+     * Example:
+     *  Validator.extendMulti({
+     *      is_fruit: val => ['apple', 'pear', 'orange'].indexOf(val) >= 0,
+     *      is_pet: val => ['dog', 'cat'].indexOf(val) >= 0,
+     *  });
+     * 
+     * @param obj - Function kv-map to extend the validator with
+     */
+    static extendMulti (obj):void {
         validExtension(obj, val => {
             if (typeof val !== 'function') throw new Error('Invalid extension');
         });
@@ -525,9 +585,20 @@ export default class Validator {
         for (const key of Object.keys(obj)) RULE_STORE[key] = obj[key];
     }
 
-    //  Add regex validation rule
-    //
-    //  @param object   obj     Regex rule objects, in format of {myregex: /.../, myotherregex: new RegExp()}
+    /**
+     * Extend the validation using a regex kv-map
+     * 
+     * Example:
+     *  Validator.extendRegex({
+     *      is_fruit    : /^((a|A)pple|(p|P)ear|(o|O)range)$/g,
+     *      is_animal   : /^((d|D)og|(c|C)at|(h|H)orse)$/g,
+     *  });
+     * Usage:
+     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'});  // false
+     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'aPple', b: 'Dog'}); // true
+     * 
+     * @param obj - RegExp kv-map to extend the validator with
+     */
     static extendRegex (obj:ExtRegExp):void {
         validExtension(obj, (val:ExtRegExpVal) => {
             if (Object.prototype.toString.call(val) !== '[object RegExp]') throw new Error('Invalid extension');
@@ -540,6 +611,7 @@ export default class Validator {
                 return typeof val === 'string' && REGEX_STORE.get(this.uid).test(val); // eslint-disable-line no-invalid-this
             };
 
+            //  eslint-disable-next-line
             //  @ts-ignore
             f.uid = key;
 
@@ -551,9 +623,20 @@ export default class Validator {
         }
     }
 
-    //  Add an enum validation rule
-    //
-    //  @param object   obj     Enumeration rule objects, in format of {myenum: [...], myotherenum: [...]}
+    /**
+     * Extend the validation using an enum rule kv-map
+     * 
+     * Example:
+     *  Validator.extendEnum({
+     *      is_fruit: ['apple', 'banana', 'pear'],
+     *      is_pet: ['dog', 'cat'],
+     *  });
+     * Usage:
+     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'}); // false
+     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'apple', b: 'dog'}); // true
+     * 
+     * @param obj - Enumeration kv-map to extend the validator with
+     */
     static extendEnum (obj:ExtEnum):void {
         validExtension(obj, (val:ExtEnumVal):void => {
             if (
@@ -574,6 +657,7 @@ export default class Validator {
                 return (typeof val === 'string' || Number.isFinite(val)) && ENUM_STORE.get(this.uid).has(val); // eslint-disable-line no-invalid-this,max-len
             };
 
+            //  eslint-disable-next-line
             //  @ts-ignore
             f.uid = key;
 
