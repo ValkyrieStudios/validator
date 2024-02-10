@@ -10,6 +10,6 @@ import vIPv6 from './vSysIPv6';
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vSysIPv4_or_v6 (val:string|never):boolean {
+export default function vSysIPv4_or_v6 (val:string):boolean {
     return vIPv4(val) || vIPv6(val);
 }

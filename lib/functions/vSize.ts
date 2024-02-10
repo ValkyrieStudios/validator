@@ -10,7 +10,7 @@
  * @returns {boolean} Whether or not it's valid
  */
 export default function vSize (
-    val:string|any[],
+    val:string|unknown[],
     equals:number
 ):boolean {
     //  Only allow strings or arrays here

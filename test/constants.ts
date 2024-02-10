@@ -1,6 +1,6 @@
 'use strict';
 
-/* eslint-disable max-len,no-new-wrappers,no-array-constructor,no-new-object */
+/* eslint-disable max-len,no-new-wrappers,no-array-constructor,no-new-object,@typescript-eslint/no-array-constructor */
 
 function testFunction () {}
 const testArrowFunction = () => {};
@@ -13,7 +13,7 @@ const IS_REGEXP:RegExp[]              = [/abcdefg/i, new RegExp('\\w+')];
 const IS_DATE:Date[]                  = [new Date()];
 const IS_ARRAY:number[][]             = [[0, 1, 2], new Array(1, 2, 3), new Array(5)];
 const IS_OBJECT:Record<string,any>[]  = [{bar:'foo'}, new Object(), Object.create(null), Object.create([])];
-const IS_FUNCTION:Function[]          = [testFunction, testArrowFunction];
+const IS_FUNCTION:any[]               = [testFunction, testArrowFunction];
 const IS_NULLABLE:unknown[]           = [NaN, undefined, null];
 
 const NOT_ARRAY:any[] = [

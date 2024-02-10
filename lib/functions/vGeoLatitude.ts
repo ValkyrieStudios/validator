@@ -8,5 +8,5 @@
  * @returns {boolean} Whether or not it's valid
  */
 export default function vGeoLatitude (val:number):boolean {
-    return Number.isFinite(val) && val >= -90 && val <= 90;
+    return typeof val === 'number' && Number.isFinite(val) && val >= -90 && val <= 90;
 }

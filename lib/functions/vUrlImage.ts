@@ -49,8 +49,8 @@ for (const el of EXTENSIONS) MAP.set(el, true);
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vUrlImage (val:string|never):boolean {
-    if (!vUrl(val)) return false;
+export default function vUrlImage (val:string):boolean {
+    if (typeof val !== 'string' || !vUrl(val)) return false;
 
     /**
      * Deprotocolize -> take before query -> take before anchor -> split by / 

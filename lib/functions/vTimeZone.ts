@@ -79,6 +79,6 @@ for (const el of [
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vTimeZone (val:string|never):boolean {
+export default function vTimeZone (val:string):boolean {
     return typeof val === 'string' && MAP.has(val);
 }

@@ -2,43 +2,40 @@
 
 /* eslint-disable max-len,no-console,no-unused-vars */
 
-import fs from 'fs';
+import * as fs from 'node:fs';
 
-import vAlphaNumSpaces          from '../src/functions/vAlphaNumSpaces.mjs';
-import vAlphaNumSpacesMultiline from '../src/functions/vAlphaNumSpacesMultiline.mjs';
-import vBetween                 from '../src/functions/vBetween.mjs';
-import vBetweenInclusive        from '../src/functions/vBetweenInclusive.mjs';
-import vBoolean                 from '../src/functions/vBoolean.mjs';
-import vColorHex                from '../src/functions/vColorHex.mjs';
-import vContinent               from '../src/functions/vContinent.mjs';
-import vCountry                 from '../src/functions/vCountry.mjs';
-import vCountryAlpha3           from '../src/functions/vCountryAlpha3.mjs';
-import vDateString              from '../src/functions/vDateString.mjs';
-import vEmail                   from '../src/functions/vEmail.mjs';
-import vFalse                   from '../src/functions/vFalse.mjs';
-import vGeoLatitude             from '../src/functions/vGeoLatitude.mjs';
-import vGeoLongitude            from '../src/functions/vGeoLongitude.mjs';
-import vGreaterThan             from '../src/functions/vGreaterThan.mjs';
-import vGreaterThanOrEqual      from '../src/functions/vGreaterThanOrEqual.mjs';
-import vGuid                    from '../src/functions/vGuid.mjs';
-import vIn                      from '../src/functions/vIn.mjs';
-import vLessThan                from '../src/functions/vLessThan.mjs';
-import vLessThanOrEqual         from '../src/functions/vLessThanOrEqual.mjs';
-import vMax                     from '../src/functions/vMax.mjs';
-import vMin                     from '../src/functions/vMin.mjs';
-import vPhone                   from '../src/functions/vPhone.mjs';
-import vRequired                from '../src/functions/vRequired.mjs';
-import vSize                    from '../src/functions/vSize.mjs';
-import vSysIPv4                 from '../src/functions/vSysIPv4.mjs';
-import vSysIPv4_or_v6           from '../src/functions/vSysIPv4_or_v6.mjs';
-import vSysIPv6                 from '../src/functions/vSysIPv6.mjs';
-import vSysMac                  from '../src/functions/vSysMac.mjs';
-import vTimeZone                from '../src/functions/vTimeZone.mjs';
-import vTrue                    from '../src/functions/vTrue.mjs';
-import vUrl                     from '../src/functions/vUrl.mjs';
-import vUrlNoQuery              from '../src/functions/vUrlNoQuery.mjs';
-import vUrlImage                from '../src/functions/vUrlImage.mjs';
-import Validator                from '../src/index.mjs';
+import vAlphaNumSpaces          from '../lib/functions/vAlphaNumSpaces';
+import vAlphaNumSpacesMultiline from '../lib/functions/vAlphaNumSpacesMultiline';
+import vBetween                 from '../lib/functions/vBetween';
+import vBetweenInclusive        from '../lib/functions/vBetweenInclusive';
+import vColorHex                from '../lib/functions/vColorHex';
+import vContinent               from '../lib/functions/vContinent';
+import vCountry                 from '../lib/functions/vCountry';
+import vCountryAlpha3           from '../lib/functions/vCountryAlpha3';
+import vDateString              from '../lib/functions/vDateString';
+import vEmail                   from '../lib/functions/vEmail';
+import vFalse                   from '../lib/functions/vFalse';
+import vGeoLatitude             from '../lib/functions/vGeoLatitude';
+import vGeoLongitude            from '../lib/functions/vGeoLongitude';
+import vGreaterThan             from '../lib/functions/vGreaterThan';
+import vGreaterThanOrEqual      from '../lib/functions/vGreaterThanOrEqual';
+import vGuid                    from '../lib/functions/vGuid';
+import vIn                      from '../lib/functions/vIn';
+import vLessThan                from '../lib/functions/vLessThan';
+import vLessThanOrEqual         from '../lib/functions/vLessThanOrEqual';
+import vPhone                   from '../lib/functions/vPhone';
+import vRequired                from '../lib/functions/vRequired';
+import vSize                    from '../lib/functions/vSize';
+import vSysIPv4                 from '../lib/functions/vSysIPv4';
+import vSysIPv4_or_v6           from '../lib/functions/vSysIPv4_or_v6';
+import vSysIPv6                 from '../lib/functions/vSysIPv6';
+import vSysMac                  from '../lib/functions/vSysMac';
+import vTimeZone                from '../lib/functions/vTimeZone';
+import vTrue                    from '../lib/functions/vTrue';
+import vUrl                     from '../lib/functions/vUrl';
+import vUrlNoQuery              from '../lib/functions/vUrlNoQuery';
+import vUrlImage                from '../lib/functions/vUrlImage';
+import Validator                from '../lib/index';
 
 const ROW_TEST_WIDTH    = 60;
 const ROW_OPS_WIDTH     = 20;
@@ -531,15 +528,6 @@ for (const el of [
         lbl: 'functions/vBetweenInclusive - invalid',
         fn: () => vBetweenInclusive(100, 10, 99),
     },
-    //  vBoolean
-    {
-        lbl: 'functions/vBoolean - valid',
-        fn: () => vBoolean(true),
-    },
-    {
-        lbl: 'functions/vBoolean - invalid',
-        fn: () => vBoolean('hello'),
-    },
     //  vColorHex
     {
         lbl: 'functions/vColorHex - valid',
@@ -688,24 +676,6 @@ for (const el of [
         lbl: 'functions/vLessThanOrEqual - invalid',
         fn: () => vLessThanOrEqual(99, 10),
     },
-    //  vMax
-    {
-        lbl: 'functions/vMax - valid',
-        fn: () => vMax(5, 10),
-    },
-    {
-        lbl: 'functions/vMax - invalid',
-        fn: () => vMax(99, 10),
-    },
-    //  vMin
-    {
-        lbl: 'functions/vMin - valid',
-        fn: () => vMin(10, 5),
-    },
-    {
-        lbl: 'functions/vMin - invalid',
-        fn: () => vMin(10, 99),
-    },
     //  vPhone
     {
         lbl: 'functions/vPhone - valid',
@@ -821,8 +791,8 @@ for (const el of [
         lbl: 'functions/vUrlImage - invalid',
         fn: () => vUrlImage('https://www.myfancyimage.com/jpg?aquery=true'),
     },
-]) bench(el, 100000);
+]) bench(el, 500000);
 
-fs.writeFileSync('./test/benchmarks/latest.json', JSON.stringify(EXPORT_COLLECTOR, null, 4, true), 'utf8');
+fs.writeFileSync('./test/benchmarks/latest.json', JSON.stringify(EXPORT_COLLECTOR, null, 4), 'utf8');
 
 separator();

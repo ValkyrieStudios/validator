@@ -57,8 +57,10 @@ describe('vTimeZone', () => {
         }
     });
 
-    //  For more info around the reason this test is required:
-    //  https://github.com/tc39/ecma402/issues/778
+    /**
+     * For more info around the reason this test is required:
+     * https://github.com/tc39/ecma402/issues/778
+     */
     it('Should be valid when passing a string that is not in the Intl.supportedValueOf spec but which is a valid time zone', () => {
         for (const el of [
             'CET',

@@ -9,6 +9,6 @@ import vUrl from './vUrl';
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vUrlNoQuery (val:string|never):boolean {
+export default function vUrlNoQuery (val:string):boolean {
     return vUrl(val) && val.indexOf('?') < 0 && val.indexOf('&') < 0;
 }

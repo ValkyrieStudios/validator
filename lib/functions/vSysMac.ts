@@ -16,7 +16,7 @@
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vSysMac (val:string|never):boolean {
+export default function vSysMac (val:string):boolean {
     if (typeof val !== 'string') return false;
 
     //  Check for MM-MM-MM-SS-SS-SS format

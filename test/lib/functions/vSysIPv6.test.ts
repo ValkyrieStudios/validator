@@ -47,8 +47,10 @@ describe('vSysIPv6', () => {
         const v = new Validator({a: 'sys_ipv6'});
         const tpl = c => 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, c);
 
-        //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-        //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+        /**
+         * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+         * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+         */
 
         for (let i = 0; i < 48; i++) {
             assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
@@ -67,8 +69,10 @@ describe('vSysIPv6', () => {
         const v = new Validator({a: 'sys_ipv6'});
         const tpl = c => 'xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx'.replace(/x/g, c);
 
-        //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-        //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+        /**
+         * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+         * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+         */
 
         for (let i = 0; i < 48; i++) {
             assert.equal(v.check({a: tpl(String.fromCharCode(i))}), false);
@@ -94,8 +98,10 @@ describe('vSysIPv6', () => {
         const tpl7 = c => '9325:d2ec:568b:39ad:d5bc:8548:xxxx:6f92'.replace(/x/g, c);
         const tpl8 = c => '9325:d2ec:568b:39ad:d5bc:8548:d23b:xxxx'.replace(/x/g, c);
 
-        //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-        //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+        /**
+         * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+         * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+         */
 
         for (let i = 0; i < 48; i++) {
             assert.equal(v.check({a: tpl1(String.fromCharCode(i))}), false);
@@ -166,8 +172,10 @@ describe('vSysIPv6', () => {
         const tpl31 = c => '6c55:897f:e0f5:c12c:109a:4d8b:f2a5:bbx1'.replace(/x/g, c);
         const tpl32 = c => '6c55:897f:e0f5:c12c:109a:4d8b:f2a5:bbdx'.replace(/x/g, c);
 
-        //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-        //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+        /**
+         * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+         * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+         */
 
         for (let i = 0; i < 48; i++) {
             assert.equal(v.check({a: tpl1(String.fromCharCode(i))}), false);

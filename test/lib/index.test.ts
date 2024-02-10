@@ -12,7 +12,6 @@ import vAlphaNumSpaces          from '../../lib/functions/vAlphaNumSpaces';
 import vAlphaNumSpacesMultiline from '../../lib/functions/vAlphaNumSpacesMultiline';
 import vBetween                 from '../../lib/functions/vBetween';
 import vBetweenInclusive        from '../../lib/functions/vBetweenInclusive';
-import vBoolean                 from '../../lib/functions/vBoolean';
 import vColorHex                from '../../lib/functions/vColorHex';
 import vContinent               from '../../lib/functions/vContinent';
 import vCountry                 from '../../lib/functions/vCountry';
@@ -1299,7 +1298,7 @@ describe('Validator - Core', () => {
                 array_ne                    : Is.NeArray,
                 between                     : vBetween,
                 between_inc                 : vBetweenInclusive,
-                boolean                     : vBoolean,
+                boolean                     : Is.Boolean,
                 color_hex                   : vColorHex,
                 continent                   : vContinent,
                 country                     : vCountry,
@@ -1530,7 +1529,7 @@ describe('Validator - Core', () => {
 
         it('Should work across multiple instances', () => {
             Validator.extendMulti({
-                double: function (val, p1) {
+                double: function (val:number, p1:number) {
                     return val === (p1 * 2);
                 },
             });

@@ -1,5 +1,6 @@
 'use strict';
 
+import isBoolean                from '@valkyriestudios/utils/boolean/is';
 import isString                 from '@valkyriestudios/utils/string/is';
 import isNeString               from '@valkyriestudios/utils/string/isNotEmpty';
 import isDate                   from '@valkyriestudios/utils/date/is';
@@ -13,7 +14,6 @@ import vAlphaNumSpaces          from './functions/vAlphaNumSpaces';
 import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline';
 import vBetween                 from './functions/vBetween';
 import vBetweenInclusive        from './functions/vBetweenInclusive';
-import vBoolean                 from './functions/vBoolean';
 import vColorHex                from './functions/vColorHex';
 import vContinent               from './functions/vContinent';
 import vCountry                 from './functions/vCountry';
@@ -43,7 +43,7 @@ import vUrlNoQuery              from './functions/vUrlNoQuery';
 import vUrlImage                from './functions/vUrlImage';
 
 //  Raw data type for input checking
-type DataPrimitive  = string | number | boolean | Date | null | unknown;
+type DataPrimitive  = string | number | boolean | Date | symbol | null | unknown;
 type DataVal        = DataPrimitive | DataObject | DataArray;
 type DataArray      = Array<DataVal>;
 type DataObject     = {[key:string]: DataVal};
@@ -64,14 +64,21 @@ interface ValidationIterable {
     min: number|boolean;
 }
 
-interface ValidationRule {
+interface ValidationRulePart {
+    type:string;
+    params:unknown[];
+    not:boolean;
+}
+
+interface ValidationRules {
     iterable:ValidationIterable|false;
+    list: ValidationRulePart[];
 }
 
 interface ValidationGroup {
     key:string;
     sometimes:boolean;
-    rules:ValidationRule[];
+    rules:ValidationRules[];
 }
 
 //  Used for enum storage using extendEnum
@@ -85,59 +92,62 @@ type ExtRegExpVal   = RegExp;
 type ExtRegExp      = Record<string, ExtRegExpVal>;
 const REGEX_STORE:Map<string, ExtRegExpVal> = new Map();
 
-//  Used for rule storage of all validation rules
-const RULE_STORE = {
-    alpha_num_spaces            : vAlphaNumSpaces,
-    alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
-    array                       : Array.isArray,
-    array_ne                    : isNeArray,
-    between                     : vBetween,
-    between_inc                 : vBetweenInclusive,
-    boolean                     : vBoolean,
-    color_hex                   : vColorHex,
-    continent                   : vContinent,
-    country                     : vCountry,
-    country_alpha3              : vCountryAlpha3,
-    date                        : isDate,
-    date_string                 : vDateString,
-    email                       : vEmail,
-    equal_to                    : isEqual,
-    false                       : vFalse,
-    geo_latitude                : vGeoLatitude,
-    geo_longitude               : vGeoLongitude,
-    greater_than                : vGreaterThan,
-    greater_than_or_equal       : vGreaterThanOrEqual,
-    guid                        : vGuid,
-    in                          : vIn,
-    integer                     : Number.isInteger,
-    less_than                   : vLessThan,
-    less_than_or_equal          : vLessThanOrEqual,
-    max                         : vLessThanOrEqual,
-    min                         : vGreaterThanOrEqual,
-    number                      : Number.isFinite,
-    object                      : isObject,
-    object_ne                   : isNeObject,
-    phone                       : vPhone,
-    required                    : vRequired,
-    size                        : vSize,
-    string                      : isString,
-    string_ne                   : isNeString,
-    sys_mac                     : vSysMac,
-    sys_ipv4                    : vSysIPv4,
-    sys_ipv6                    : vSysIPv6,
-    sys_ipv4_or_v6              : vSysIPv4_or_v6,
-    time_zone                   : vTimeZone,
-    true                        : vTrue,
-    url                         : vUrl,
-    url_noquery                 : vUrlNoQuery,
-    url_img                     : vUrlImage,
-    //  Aliases
-    gt                          : vGreaterThan,
-    gte                         : vGreaterThanOrEqual,
-    lt                          : vLessThan,
-    lte                         : vLessThanOrEqual,
-    eq                          : isEqual,
+//  Rule storage
+type DefaultRuleDictionary = {
+    alpha_num_spaces: typeof vAlphaNumSpaces;
+    alpha_num_spaces_multiline: typeof vAlphaNumSpaces;
+    array: (val:unknown) => boolean;
+    array_ne: typeof isNeArray;
+    between: typeof vBetween;
+    between_inc: typeof vBetweenInclusive;
+    boolean: typeof isBoolean;
+    color_hex: typeof vColorHex;
+    continent: typeof vContinent;
+    country: typeof vCountry;
+    country_alpha3: typeof vCountryAlpha3;
+    date: typeof isDate;
+    date_string: typeof vDateString;
+    email: typeof vEmail;
+    equal_to: typeof isEqual;
+    false: typeof vFalse;
+    geo_latitude: typeof vGeoLatitude;
+    geo_longitude: typeof vGeoLongitude;
+    greater_than: typeof vGreaterThan;
+    greater_than_or_equal: typeof vGreaterThanOrEqual;
+    guid: typeof vGuid;
+    in: typeof vIn;
+    integer: (val:unknown) => boolean;
+    less_than: typeof vLessThan;
+    less_than_or_equal: typeof vLessThanOrEqual;
+    max: typeof vLessThanOrEqual;
+    min: typeof vGreaterThanOrEqual;
+    number: (val:unknown) => boolean;
+    object: typeof isObject;
+    object_ne: typeof isNeObject;
+    phone: typeof vPhone;
+    required: typeof vRequired;
+    size: typeof vSize;
+    string: typeof isString;
+    string_ne: typeof isNeString;
+    sys_mac: typeof vSysMac;
+    sys_ipv4: typeof vSysIPv4;
+    sys_ipv6: typeof vSysIPv6;
+    sys_ipv4_or_v6: typeof vSysIPv4_or_v6;
+    time_zone: typeof vTimeZone;
+    true: typeof vTrue;
+    url: typeof vUrl;
+    url_noquery: typeof vUrlNoQuery;
+    url_img: typeof vUrlImage;
+    gt: typeof vGreaterThan;
+    gte: typeof vGreaterThanOrEqual;
+    lt: typeof vLessThan;
+    lte: typeof vLessThanOrEqual;
+    eq: typeof isEqual;
 };
+
+type CustomRuleDictionary = Record<string, (...args:any[]) => boolean>;
+
+type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
 
 /**
  * Validate whether or not a passed object has valid names/values
@@ -208,9 +218,9 @@ function getIterableConfig (val:string):ValidationIterable {
  * 
  * @param raw - Raw validation rule
  * 
- * @returns {ValidationRule} Parsed validation rule
+ * @returns {ValidationRules} Parsed validation rule
  */
-function parseRule (raw:string):ValidationRule {
+function parseRule (raw:string):ValidationRules {
     //  Copy contents of raw into here as working-copy
     let cursor = `${raw}`;
 
@@ -230,8 +240,8 @@ function parseRule (raw:string):ValidationRule {
      * (eg: string_ne|min:20 will become an array with two checks)
      */
     const list = cursor.split('|').reduce((acc, rule_part) => {
-        let params  = rule_part.split(':');
-        let type    = params.shift().trim();
+        let params:string[]|string[][]|unknown[]|unknown[][]  = rule_part.split(':');
+        let type    = (params.shift() as string).trim();
 
         //  Get 'not' flag
         const not = type.charAt(0) === '!';
@@ -239,14 +249,14 @@ function parseRule (raw:string):ValidationRule {
 
         //  Get parameters
         if (params.length > 0) {
-            if (type === 'in' && params[0].indexOf(',') > 0) {
-                params = [params[0].split(',')];
+            if (type === 'in' && (params[0] as string).indexOf(',') > 0) {
+                params = [(params[0] as string).split(',')];
             } else {
-                params = params[0].split(',');
+                params = (params[0] as string).split(',');
 
                 //  Parse parameters into callback functions
                 for (let i = 0; i < params.length; i++) {
-                    let param = params[i];
+                    let param = params[i] as string;
                     if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
                         //  Ensure we validate that parameterized string value is correct eg: <meta.myval>
                         if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
@@ -254,7 +264,7 @@ function parseRule (raw:string):ValidationRule {
                         }
 
                         param = param.substr(1, param.length - 2);
-                        params[i] = data => deepGet(data, param);
+                        params[i] = (data:DataObject) => deepGet(data, param);
                     } else {
                         params[i] = param;
                     }
@@ -308,7 +318,7 @@ function parseGroup (key:string, raw:string):ValidationGroup {
  */
 function validateField (
     cursor:DataVal,
-    list:ValidationRule[],
+    list:ValidationRulePart[],
     data:DataObject
 ):{
     errors:ValidationError[];
@@ -347,7 +357,7 @@ function validateField (
  */
 function checkField (
     cursor:DataVal,
-    list:ValidationRule[],
+    list:ValidationRulePart[],
     data:DataObject
 ):boolean {
     for (const rule of list) {
@@ -366,9 +376,62 @@ function checkField (
     return true;
 }
 
-export default class Validator {
+let RULE_STORE:RuleDictionary = {
+    alpha_num_spaces            : vAlphaNumSpaces,
+    alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
+    array                       : Array.isArray,
+    array_ne                    : isNeArray,
+    between                     : vBetween,
+    between_inc                 : vBetweenInclusive,
+    boolean                     : isBoolean,
+    color_hex                   : vColorHex,
+    continent                   : vContinent,
+    country                     : vCountry,
+    country_alpha3              : vCountryAlpha3,
+    date                        : isDate,
+    date_string                 : vDateString,
+    email                       : vEmail,
+    equal_to                    : isEqual,
+    false                       : vFalse,
+    geo_latitude                : vGeoLatitude,
+    geo_longitude               : vGeoLongitude,
+    greater_than                : vGreaterThan,
+    greater_than_or_equal       : vGreaterThanOrEqual,
+    guid                        : vGuid,
+    in                          : vIn,
+    integer                     : Number.isInteger,
+    less_than                   : vLessThan,
+    less_than_or_equal          : vLessThanOrEqual,
+    max                         : vLessThanOrEqual,
+    min                         : vGreaterThanOrEqual,
+    number                      : Number.isFinite,
+    object                      : isObject,
+    object_ne                   : isNeObject,
+    phone                       : vPhone,
+    required                    : vRequired,
+    size                        : vSize,
+    string                      : isString,
+    string_ne                   : isNeString,
+    sys_mac                     : vSysMac,
+    sys_ipv4                    : vSysIPv4,
+    sys_ipv6                    : vSysIPv6,
+    sys_ipv4_or_v6              : vSysIPv4_or_v6,
+    time_zone                   : vTimeZone,
+    true                        : vTrue,
+    url                         : vUrl,
+    url_noquery                 : vUrlNoQuery,
+    url_img                     : vUrlImage,
+    //  Aliases
+    gt                          : vGreaterThan,
+    gte                         : vGreaterThanOrEqual,
+    lt                          : vLessThan,
+    lte                         : vLessThanOrEqual,
+    eq                          : isEqual,
+};
 
-    #plan:ValidationGroup[];
+class Validator {
+
+    private plan:ValidationGroup[];
 
     constructor (rules:RulesRaw) {
         //  Check for rules
@@ -395,14 +458,14 @@ export default class Validator {
         recursor(rules);
 
         //  Set the parsed plan as a get property on our validation instance
-        this.#plan = plan;
+        this.plan = plan;
     }
 
     check (data:DataObject):boolean {
         //  No data passed? Check if rules were set up
-        if (!isObject(data)) return this.#plan.length === 0;
+        if (!isObject(data)) return this.plan.length === 0;
 
-        for (const part of this.#plan) {
+        for (const part of this.plan) {
             //  Retrieve cursor that part is run against
             const cursor = deepGet(data, part.key);
 
@@ -429,8 +492,10 @@ export default class Validator {
                     ) {
                         is_valid = false;
                     } else {
-                        //  If rule.iterable.unique is set create map to store hashes and keep tabs
-                        //  on uniqueness as we run through the array
+                        /**
+                         * If rule.iterable.unique is set create map to store hashes and keep tabs
+                         * on uniqueness as we run through the array
+                         */
                         const unique_map = new Map();
                         for (let idx = 0; idx < cursor.length; idx++) {
                             if (!checkField(cursor[idx], rule.list, data)) {
@@ -465,16 +530,16 @@ export default class Validator {
     validate (data:DataObject) {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) {
-            const is_valid = this.#plan.length === 0;
+            const is_valid = this.plan.length === 0;
             return {
                 is_valid,
-                count: this.#plan.length,
+                count: this.plan.length,
                 errors: is_valid ? {} : 'NO_DATA',
             };
         }
 
-        const errors:Record<string, ValidationError[]> = {};
-        for (const part of this.#plan) {
+        const errors:{[key:string]: ValidationError[]} = {};
+        for (const part of this.plan) {
             //  Retrieve cursor that part is run against
             const cursor = deepGet(data, part.key);
 
@@ -485,9 +550,9 @@ export default class Validator {
             }
 
             let has_valid = false;
-            const part_errors = [];
+            const part_errors:(ValidationError|ValidationError[])[] = [];
             for (const rule of part.rules) {
-                let error_cursor = [];
+                let error_cursor:ValidationError[] = [];
 
                 //  Check for iterable config
                 if (rule.iterable) {
@@ -541,7 +606,11 @@ export default class Validator {
                 }
             }
 
-            if (!has_valid) errors[part.key] = part.rules.length > 1 ? part_errors : part_errors[0];
+            if (!has_valid) {
+                errors[part.key] = part.rules.length > 1
+                    ? (part_errors as ValidationError[])
+                    : (part_errors[0] as ValidationError[]);
+            }
         }
 
         const count = Object.keys(errors).length;
@@ -549,8 +618,7 @@ export default class Validator {
         return {is_valid: !count, count, errors};
     }
 
-    //  Returns the rule set currently on the validator, will return it as an immutable dereferenced object
-    static get rules () {
+    static get rules ():RuleDictionary {
         return Object.freeze({...RULE_STORE});
     }
 
@@ -560,7 +628,7 @@ export default class Validator {
      * @param name - Name of the rule you want to add
      * @param fn - Rule Function (function that returns a boolean and as its first value will get the value being validated)
      */
-    static extend (name:string, fn):void {
+    static extend (name:string, fn:(...args:any[]) => boolean):void {
         if (typeof name !== 'string') throw new Error('Invalid extension');
         Validator.extendMulti({[name]: fn});
     }
@@ -576,13 +644,13 @@ export default class Validator {
      * 
      * @param obj - Function kv-map to extend the validator with
      */
-    static extendMulti (obj):void {
+    static extendMulti<T extends CustomRuleDictionary> (obj:T):void {
         validExtension(obj, val => {
             if (typeof val !== 'function') throw new Error('Invalid extension');
         });
 
         //  Register each rule
-        for (const key of Object.keys(obj)) RULE_STORE[key] = obj[key];
+        RULE_STORE = {...RULE_STORE, ...obj};
     }
 
     /**
@@ -619,7 +687,7 @@ export default class Validator {
             REGEX_STORE.set(key, new RegExp(obj[key])); // Copy regex
 
             //  Store on map
-            RULE_STORE[key] = f;
+            Validator.extendMulti({[key]: f});
         }
     }
 
@@ -665,8 +733,10 @@ export default class Validator {
             ENUM_STORE.set(key, enum_map);
 
             //  Store on map
-            RULE_STORE[key] = f;
+            Validator.extendMulti({[key]: f});
         }
     }
 
 }
+
+export default Validator;

@@ -25,9 +25,11 @@ describe('vSysMac', () => {
         const v = new Validator({a: 'sys_mac'});
         const tpl = c => 'xxxxxxxxxxxx'.replace(/x/g, c);
 
-        //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-        //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-        //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+        /**
+         * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+         * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+         * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+         */
 
         for (let i = 0; i < 48; i++) {
             assert.deepEqual(
@@ -409,9 +411,11 @@ describe('vSysMac', () => {
             const v = new Validator({a: 'sys_mac'});
             const tpl = c => 'xx-xx-xx-xx-xx-xx'.replace(/x/g, c);
 
-            //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-            //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-            //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+            /**
+             * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+             * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+             * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+             */
 
             for (let i = 0; i < 48; i++) {
                 assert.deepEqual(
@@ -446,9 +450,11 @@ describe('vSysMac', () => {
             const v = new Validator({a: 'sys_mac'});
             const tpl = c => '01-23-45-x7-89-AB'.replace(/x/g, c);
 
-            //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-            //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-            //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+            /**
+             * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+             * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+             * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+             */
 
             for (let i = 0; i < 48; i++) {
                 assert.deepEqual(
@@ -489,9 +495,11 @@ describe('vSysMac', () => {
             const v = new Validator({a: 'sys_mac'});
             const tpl = c => 'xx:xx:xx:xx:xx:xx'.replace(/x/g, c);
 
-            //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-            //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-            //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+            /**
+             * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+             * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+             * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+             */
 
             for (let i = 0; i < 48; i++) {
                 assert.deepEqual(
@@ -526,9 +534,11 @@ describe('vSysMac', () => {
             const v = new Validator({a: 'sys_mac'});
             const tpl = c => '01:23:45:x7:89:AB'.replace(/x/g, c);
 
-            //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-            //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-            //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+            /**
+             * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+             * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+             * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+             */
 
             for (let i = 0; i < 48; i++) {
                 assert.deepEqual(
@@ -569,9 +579,11 @@ describe('vSysMac', () => {
             const v = new Validator({a: 'sys_mac'});
             const tpl = c => 'xxx.xxx.xxx.xxx'.replace(/x/g, c);
 
-            //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-            //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-            //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+            /**
+             * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+             * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+             * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+             */
 
             for (let i = 0; i < 48; i++) {
                 assert.deepEqual(
@@ -606,9 +618,11 @@ describe('vSysMac', () => {
             const v = new Validator({a: 'sys_mac'});
             const tpl = c => '012.345.x78.9AB'.replace(/x/g, c);
 
-            //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-            //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-            //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+            /**
+             * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+             * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+             * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+             */
 
             for (let i = 0; i < 48; i++) {
                 assert.deepEqual(
@@ -671,9 +685,11 @@ describe('vSysMac', () => {
             const v = new Validator({a: 'sys_mac'});
             const tpl = c => '01:23:45:FF:FE:x7:89:AB'.replace(/x/g, c);
 
-            //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-            //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-            //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+            /**
+             * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+             * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+             * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+             */
 
             for (let i = 0; i < 48; i++) {
                 assert.deepEqual(
@@ -708,9 +724,11 @@ describe('vSysMac', () => {
             const v = new Validator({a: 'sys_mac'});
             const tpl = c => 'xxxx:xxFF:FExx:xxxx'.replace(/x/g, c);
 
-            //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-            //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-            //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+            /**
+             * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+             * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+             * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+             */
 
             for (let i = 0; i < 48; i++) {
                 assert.deepEqual(
@@ -771,9 +789,11 @@ describe('vSysMac', () => {
             const v = new Validator({a: 'sys_mac'});
             const tpl = c => '01-23-45-FF-FE-x7-89-AB'.replace(/x/g, c);
 
-            //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-            //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-            //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+            /**
+             * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+             * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+             * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+             */
 
             for (let i = 0; i < 48; i++) {
                 assert.deepEqual(
@@ -808,9 +828,11 @@ describe('vSysMac', () => {
             const v = new Validator({a: 'sys_mac'});
             const tpl = c => 'xxxx-xxFF-FExx-xxxx'.replace(/x/g, c);
 
-            //  0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
-            //  A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
-            //  a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+            /**
+             * 0-9 are charcode range [48..57] in Ascii table (and subsequently unicode) as such we exclude those
+             * A-Z are charcode range [65..90] in Ascii table (and subsequently unicode) as such we exclude those
+             * a-z are charcode range [97..122] in Ascii table (and subsequently unicode) as such we exclude those
+             */
 
             for (let i = 0; i < 48; i++) {
                 assert.deepEqual(

@@ -3,7 +3,7 @@
 import fnv1A   from '@valkyriestudios/utils/hash/fnv1A';
 import memoize from '@valkyriestudios/utils/caching/memoize';
 
-const memoizedHashParams = memoize((params:any[]) => {
+const memoizedHashParams = memoize((params:unknown[]) => {
     const hashed = [];
     for (const el of params) hashed.push(fnv1A(el));
     return hashed;
@@ -17,7 +17,7 @@ const memoizedHashParams = memoize((params:any[]) => {
  * 
  * @returns {boolean} Whether or not it's valid
  */
-export default function vIn (val:any, params:any[]):boolean {
+export default function vIn (val:any, params:unknown[]):boolean {
     if (!Array.isArray(params) || params.length === 0) return false;
 
     //  Primitive check

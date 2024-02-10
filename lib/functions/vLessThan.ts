@@ -10,7 +10,7 @@
  * @returns {boolean} Whether or not it's valid
  */
 export default function vLessThan (
-    val:string|number|any[],
+    val:string|number|unknown[],
     bound:number
 ):boolean {
     //  Normalize
@@ -26,7 +26,7 @@ export default function vLessThan (
      */
     if (typeof val === 'string' || Array.isArray(val)) {
         return val.length < n_bound;
-    } else if (Number.isFinite(val)) {
+    } else if (typeof val === 'number' && Number.isFinite(val)) {
         return val < n_bound;
     } else {
         return false;
