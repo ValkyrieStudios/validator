@@ -43,7 +43,7 @@ import vUrlNoQuery              from './functions/vUrlNoQuery';
 import vUrlImage                from './functions/vUrlImage';
 
 //  Raw data type for input checking
-type DataPrimitive  = string | number | boolean | Date | null;
+type DataPrimitive  = string | number | boolean | Date | null | unknown;
 type DataVal        = DataPrimitive | DataObject | DataArray;
 type DataArray      = Array<DataVal>;
 type DataObject     = {[key:string]: DataVal};
@@ -234,7 +234,7 @@ function parseRule (raw:string):ValidationRule {
                         if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
                             throw new TypeError(`Parameterization misconfiguration, verify rule config for ${raw}`);
                         }
-                        
+
                         param = param.substr(1, param.length - 2);
                         params[i] = data => deepGet(data, param);
                     } else {
@@ -269,7 +269,7 @@ function parseGroup (key:string, raw:string):ValidationGroup {
         rules.push(parseRule(cursor));
     } else {
         for (const el of conditionals) rules.push(parseRule(el.replace(/(\(|\))/g, '')));
-    }    
+    }
 
     return {key, sometimes, rules};
 }
@@ -357,11 +357,11 @@ export default class Validator {
     check (data:DataObject):boolean {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) return this.#plan.length === 0;
-        
+
         for (const part of this.#plan) {
             //  Retrieve cursor that part is run against
             const cursor = deepGet(data, part.key);
-            
+
             //  If we cant find cursor we need to validate for the 'sometimes' flag
             if (cursor === undefined) {
                 if (part.sometimes) continue;
@@ -377,9 +377,9 @@ export default class Validator {
                 if (rule.iterable) {
                     if (
                         //  If not an array -> invalid
-                        !Array.isArray(cursor) || 
+                        !Array.isArray(cursor) ||
                         //  rule.iterable.min is set and val length is below the min -> invalid
-                        (Number.isFinite(rule.iterable.min) && cursor.length < (rule.iterable.min as number)) || 
+                        (Number.isFinite(rule.iterable.min) && cursor.length < (rule.iterable.min as number)) ||
                         //  rule.iterable.max is set and val length is above max -> invalid
                         (Number.isFinite(rule.iterable.max) && cursor.length > (rule.iterable.max as number))
                     ) {
@@ -433,7 +433,7 @@ export default class Validator {
         for (const part of this.#plan) {
             //  Retrieve cursor that part is run against
             const cursor = deepGet(data, part.key);
-            
+
             //  If we cant find cursor we need to validate for the 'sometimes' flag
             if (cursor === undefined) {
                 if (!part.sometimes) errors[part.key] = [{msg: 'not_found', params: []}];
@@ -474,7 +474,7 @@ export default class Validator {
                             unique_map.set(fnv1A(cursor[idx]), true);
                             if (unique_map.size !== (idx + 1)) {
                                 iterable_unique = false;
-                                error_cursor.unshift(M_Error('iterable_unique'));
+                                error_cursor.unshift({msg: 'iterable_unique', params: []});
                             }
                         }
                     }
@@ -573,10 +573,10 @@ export default class Validator {
             let f = function (val:ExtEnumValInner):boolean {
                 return (typeof val === 'string' || Number.isFinite(val)) && ENUM_STORE.get(this.uid).has(val); // eslint-disable-line no-invalid-this,max-len
             };
-            
+
             //  @ts-ignore
             f.uid = key;
-            
+
             f = f.bind(f);
             ENUM_STORE.set(key, enum_map);
 
