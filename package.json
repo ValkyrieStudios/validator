@@ -19,17 +19,15 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "node --test ./test/src",
-    "test:only": "node --test --test-only ./test/src",
-    "test:coverage": "c8 node --test ./test/src",
+    "build": "npm run lint && npm run test && tsc -p ./tsconfig.build.json && tsc -p ./tsconfig.types.json && tsc -p ./tsconfig.types_all.json",
+    "test": "node --require esbuild-register --test ./test/lib/**/*.ts ./test/lib/*.ts",
+    "test:only": "node --require esbuild-register --test --test-only ./test/lib/**/*.ts ./test/lib/*.ts",
+    "test:coverage": "nyc npm run test",
     "lint": "npm run lint:src && npm run lint:test",
-    "lint:src": "./node_modules/.bin/eslint --ext .js,.mjs ./src",
-    "lint:test": "./node_modules/.bin/eslint --ext .js,.mjs ./test",
-    "build": "npm run lint && npm run test:coverage && rm -rf ./dist && mkdir ./dist && npx babel src --out-dir ./dist && npm run build:cleanup",
-    "build:cleanup": "npm run build:cleanup:mjs && npm run build:cleanup:src",
-    "build:cleanup:mjs": "sed -i \"s/\\.mjs/\\.js/g\" ./dist/**/*.js && sed -i \"s/\\.mjs/\\.js/g\" ./dist/*.js",
-    "build:cleanup:src": "sed -i \"s/valkyriestudios\\/utils\\/src/valkyriestudios\\/utils/g\" ./dist/**/*.js && sed -i \"s/valkyriestudios\\/utils\\/src/valkyriestudios\\/utils/g\" ./dist/*.js",
-    "codecov": "codecov"
+    "lint:src": "./node_modules/.bin/eslint --ext .js,.ts,.mjs ./lib",
+    "lint:test": "./node_modules/.bin/eslint --ext .js,.ts,.mjs ./test",
+    "codecov": "codecov",
+    "benchmark": "node --require esbuild-register ./test/benchmark.ts"
   },
   "repository": {
     "type": "git",
@@ -43,18 +41,15 @@
     "@valkyriestudios/utils": "^11.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.4",
-    "@babel/core": "^7.23.7",
-    "@babel/eslint-parser": "^7.23.3",
-    "@babel/plugin-syntax-import-assertions": "^7.23.3",
-    "@babel/preset-env": "^7.23.7",
-    "@babel/register": "^7.23.7",
+    "@types/node": "^20.11.16",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "@valkyriestudios/data-continents": "^0.2.0",
     "@valkyriestudios/data-countries": "^0.2.0",
     "@valkyriestudios/data-timezones": "^0.5.0",
-    "babel-plugin-transform-minify-booleans": "^6.9.4",
-    "babel-plugin-transform-remove-console": "^6.9.4",
-    "c8": "^8.0.1",
-    "eslint": "^8.56.0"
+    "esbuild-register": "^3.5.0",
+    "eslint": "^8.56.0",
+    "nyc": "^15.1.0",
+    "typescript": "^5.3.3"
   }
 }
