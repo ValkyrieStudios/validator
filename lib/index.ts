@@ -464,7 +464,7 @@ export default class Validator {
                         const unique_map    = iterable_unique && rule.iterable.unique ? new Map() : false;
                         for (let idx = 0; idx < cursor.length; idx++) {
                             const evaluation = validateField(cursor[idx], rule.list, data);
-                            if (!evaluation.is_valid) error_cursor.push(...evaluation.errors.map(el => Object.assign({idx}, el)));
+                            if (!evaluation.is_valid) error_cursor.push(...evaluation.errors.map(el => ({idx, ...el}));
 
                             //  If no unique map or iterable unique was already turned off continue
                             if (!unique_map || !iterable_unique) continue;
@@ -501,7 +501,7 @@ export default class Validator {
 
     //  Returns the rule set currently on the validator, will return it as an immutable dereferenced object
     static get rules () {
-        return Object.freeze(Object.assign({}, RULE_STORE));
+        return Object.freeze({...RULE_STORE});
     }
 
     //  Extend validator rule set
