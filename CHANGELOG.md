@@ -5,13 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [7.0.0] - 2024-02-10
+### Added
+- Migrate to Typescript and as such comes with declarations 🚀
+- .nycrc
+- Dev Dep: @types/node@20.11.6
+- Dev Dep: @typescript-eslint/eslint-plugin@6.21.0
+- Dev Dep: @typescript-eslint/parser@6.21.0
+- Dev Dep: esbuild-register@3.5.0
+- Dev Dep: nyc@15.1.0
+- Dev Dep: typescript@5.3.3
+
 ### Improved
-- Dev Dep: Upgrade @valkyriestudios/utils to 11.3.0
-- Dev Dep: Upgrade @babel/core to 7.23.7
-- Dev Dep: Upgrade @babel/preset-env to 7.23.7
-- Dev Dep: Upgrade @babel/register to 7.23.7
-- Dev Dep: Upgrade eslint to 8.56.0
+- Dep: Upgrade @valkyriestudios/utils to 11.3.0
+- Minor performance improvements across the board, for more details check the difference between v7 and v6 in the test/benchmarks folder
+
+### Removed
+- .babelrc
+- .c8rc.json
+- Dev Dep: @babel/cli
+- Dev Dep: @babel/core
+- Dev Dep: @babel/eslint-parser
+- Dev Dep: @babel/plugin-syntax-import-assertions
+- Dev Dep: @babel/preset-env
+- Dev Dep: @babel/register
+- Dev Dep: babel-plugin-transform-minify-booleans
+- Dev Dep: babel-plugin-transform-remove-console
+- Dev Dep: c8 (in favor of nyc)
 
 ## [6.0.0] - 2023-12-14
 ### Added
