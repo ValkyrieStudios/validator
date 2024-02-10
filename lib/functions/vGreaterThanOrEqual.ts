@@ -23,7 +23,7 @@ export default function vGreaterThanOrEqual (
     //  Else if number use value for validation
     //  Else return false
     if (typeof val === 'string' || Array.isArray(val)) {
-        return val.length > _bound;
+        return val.length >= _bound;
     } else if (Number.isFinite(val)) {
         return val >= _bound;
     } else {

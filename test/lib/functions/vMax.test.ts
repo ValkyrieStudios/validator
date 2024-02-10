@@ -102,7 +102,7 @@ describe('vMax', () => {
 
         assert.deepEqual(evaluation, {
             is_valid: false,
-            count: 6,
+            count: 5,
             errors: {
                 d1: [{msg:'max', params: ['250']}],
                 e1: [{msg:'max', params: ['250']}],

@@ -102,7 +102,7 @@ describe('vGreaterThanOrEqual', () => {
 
         assert.deepEqual(evaluation, {
             is_valid: false,
-            count: 6,
+            count: 5,
             errors: {
                 d1: [{msg:'greater_than_or_equal', params: ['2']}],
                 e1: [{msg:'greater_than_or_equal', params: ['2']}],

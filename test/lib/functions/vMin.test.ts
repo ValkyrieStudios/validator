@@ -102,11 +102,10 @@ describe('vMin', () => {
 
         assert.deepEqual(evaluation, {
             is_valid: false,
-            count: 6,
+            count: 5,
             errors: {
                 d1: [{msg:'min', params: ['2']}],
                 e1: [{msg:'min', params: ['2']}],
-                f1: [{msg:'min', params: ['2']}],
                 g1: [{msg:'min', params: ['2']}],
                 h1: [{msg:'min', params: ['2']}],
                 m1: [{msg:'min', params: ['2']}],

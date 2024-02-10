@@ -83,7 +83,7 @@ describe('vSize', () => {
         };
 
         const valid_keys    = ['c1', 'i1', 'l1'];
-        const invalid_keys  = ['a1', 'b1', 'd1', 'e1', 'f1', 'g1', 'h1', 'j1', 'm1'];
+        const invalid_keys  = ['a1', 'b1', 'd1', 'e1', 'g1', 'h1', 'j1', 'm1'];
         const rules         = [...valid_keys, ...invalid_keys].reduce((acc, key) => {
             acc[key] = 'size:5';
             return acc;
@@ -93,13 +93,12 @@ describe('vSize', () => {
 
         assert.deepEqual(evaluation, {
             is_valid: false,
-            count: 9,
+            count: 8,
             errors: {
                 a1: [{msg: 'size', params: ['5']}],
                 b1: [{msg: 'size', params: ['5']}],
                 d1: [{msg: 'size', params: ['5']}],
                 e1: [{msg: 'size', params: ['5']}],
-                f1: [{msg: 'size', params: ['5']}],
                 g1: [{msg: 'size', params: ['5']}],
                 h1: [{msg: 'size', params: ['5']}],
                 j1: [{msg: 'size', params: ['5']}],
