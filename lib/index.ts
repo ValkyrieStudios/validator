@@ -433,11 +433,13 @@ let RULE_STORE:RuleDictionary = {
     eq                          : isEqual,
 };
 
-class Validator {
+export type TV <T> = Record<keyof T, string>;
+
+class Validator <T extends RulesRaw> {
 
     private plan:ValidationGroup[];
 
-    constructor (rules:RulesRaw) {
+    constructor (rules:T) {
         //  Check for rules
         if (!isObject(rules)) throw new TypeError('Provide an object to define the rules of this validator');
 
