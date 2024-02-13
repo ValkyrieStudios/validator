@@ -47,6 +47,7 @@ type DataPrimitive  = string | number | boolean | Date | symbol | null | unknown
 type DataVal        = DataPrimitive | DataObject | DataArray;
 type DataArray      = Array<DataVal>;
 type DataObject     = {[key:string]: DataVal};
+type GenericObject  = {[key:string]:any};
 
 //  Validation rule input data types
 type RulesRawVal    = string | RulesRaw;
@@ -151,10 +152,10 @@ type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
 
 /**
  * Validate whether or not a passed object has valid names/values
- * 
+ *
  * @param obj - Object to validate
  * @param valueFn - Function to use for value checks
- * 
+ *
  * @throws {Error} Will throw if the extension is invalid
  */
 function validExtension  <T> (
@@ -172,10 +173,10 @@ function validExtension  <T> (
 
 /**
  * Get a value from a path in a json-like structure
- * 
+ *
  * @param obj - Object to pull data from (eg: {a: {b: {c: 'hello}}})
  * @param path - Path to pull from (eg: 'a.b.c')
- * 
+ *
  * @returns {DataVal} Value at path position
  */
 function deepGet (obj:DataObject, path:string):DataVal {
@@ -198,9 +199,9 @@ function deepGet (obj:DataObject, path:string):DataVal {
 
 /**
  * Parse raw string into iterable configuration
- * 
+ *
  * @param val - Value to determine config from, eg: 'unique|min:1|max:5'
- * 
+ *
  * @returns {ValidationIterable} Iterable configuration
  */
 function getIterableConfig (val:string):ValidationIterable {
@@ -215,9 +216,9 @@ function getIterableConfig (val:string):ValidationIterable {
 
 /**
  * Parse a rule into a sub validator pipeline
- * 
+ *
  * @param raw - Raw validation rule
- * 
+ *
  * @returns {ValidationRules} Parsed validation rule
  */
 function parseRule (raw:string):ValidationRules {
@@ -281,10 +282,10 @@ function parseRule (raw:string):ValidationRules {
 
 /**
  * Parse a rule into a validation group (X OR Y OR Z)
- * 
+ *
  * @param key - Name of the group (key path on the validator)
  * @param raw - Full rule string with possible or groups
- * 
+ *
  * @returns Parsed validation group
  */
 function parseGroup (key:string, raw:string):ValidationGroup {
@@ -309,11 +310,11 @@ function parseGroup (key:string, raw:string):ValidationGroup {
 
 /**
  * Fully validate a rule list against a certain field cursor
- * 
+ *
  * @param cursor - Cursor value to run the rule list against
  * @param list - List of rules to run against the cursor
  * @param data - Original data object (used in param checks)
- * 
+ *
  * @returns Object containing an errors array and is_valid prop
  */
 function validateField (
@@ -348,11 +349,11 @@ function validateField (
 
 /**
  * Check a rule list against a certain field cursor
- * 
+ *
  * @param cursor - Cursor value to run the rule list against
  * @param list - List of rules to run against the cursor
  * @param data - Original data object (used in param checks)
- * 
+ *
  * @returns {boolean} Whether or not the value is valid
  */
 function checkField (
@@ -461,13 +462,13 @@ class Validator {
         this.plan = plan;
     }
 
-    check (data:DataObject):boolean {
+    check <T extends GenericObject> (data:T):boolean {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) return this.plan.length === 0;
 
         for (const part of this.plan) {
             //  Retrieve cursor that part is run against
-            const cursor = deepGet(data, part.key);
+            const cursor = deepGet(data as DataObject, part.key);
 
             //  If we cant find cursor we need to validate for the 'sometimes' flag
             if (cursor === undefined) {
@@ -498,7 +499,7 @@ class Validator {
                          */
                         const unique_map = new Map();
                         for (let idx = 0; idx < cursor.length; idx++) {
-                            if (!checkField(cursor[idx], rule.list, data)) {
+                            if (!checkField(cursor[idx], rule.list, data as DataObject)) {
                                 is_valid = false;
                                 break;
                             }
@@ -514,7 +515,7 @@ class Validator {
                             }
                         }
                     }
-                } else if (!checkField(cursor, rule.list, data)) {
+                } else if (!checkField(cursor, rule.list, data as DataObject)) {
                     is_valid = false;
                 }
 
@@ -527,7 +528,7 @@ class Validator {
         return true;
     }
 
-    validate (data:DataObject) {
+    validate <T extends GenericObject> (data:T) {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) {
             const is_valid = this.plan.length === 0;
@@ -541,7 +542,7 @@ class Validator {
         const errors:{[key:string]: ValidationError[]} = {};
         for (const part of this.plan) {
             //  Retrieve cursor that part is run against
-            const cursor = deepGet(data, part.key);
+            const cursor = deepGet(data as DataObject, part.key);
 
             //  If we cant find cursor we need to validate for the 'sometimes' flag
             if (cursor === undefined) {
@@ -576,7 +577,7 @@ class Validator {
                         let iterable_unique = true;
                         const unique_map    = iterable_unique && rule.iterable.unique ? new Map() : false;
                         for (let idx = 0; idx < cursor.length; idx++) {
-                            const evaluation = validateField(cursor[idx], rule.list, data);
+                            const evaluation = validateField(cursor[idx], rule.list, data as DataObject);
                             if (!evaluation.is_valid) error_cursor.push(...evaluation.errors.map(el => ({idx, ...el})));
 
                             //  If no unique map or iterable unique was already turned off continue
@@ -594,7 +595,7 @@ class Validator {
                         }
                     }
                 } else {
-                    const evaluation = validateField(cursor, rule.list, data);
+                    const evaluation = validateField(cursor, rule.list, data as DataObject);
                     if (!evaluation.is_valid) error_cursor = evaluation.errors;
                 }
 
@@ -624,7 +625,7 @@ class Validator {
 
     /**
      * Extend validator rule set with a new rule
-     * 
+     *
      * @param name - Name of the rule you want to add
      * @param fn - Rule Function (function that returns a boolean and as its first value will get the value being validated)
      */
@@ -635,13 +636,13 @@ class Validator {
 
     /**
      * Run multiple validator extends using a function kv-map
-     * 
+     *
      * Example:
      *  Validator.extendMulti({
      *      is_fruit: val => ['apple', 'pear', 'orange'].indexOf(val) >= 0,
      *      is_pet: val => ['dog', 'cat'].indexOf(val) >= 0,
      *  });
-     * 
+     *
      * @param obj - Function kv-map to extend the validator with
      */
     static extendMulti<T extends CustomRuleDictionary> (obj:T):void {
@@ -655,7 +656,7 @@ class Validator {
 
     /**
      * Extend the validation using a regex kv-map
-     * 
+     *
      * Example:
      *  Validator.extendRegex({
      *      is_fruit    : /^((a|A)pple|(p|P)ear|(o|O)range)$/g,
@@ -664,7 +665,7 @@ class Validator {
      * Usage:
      *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'});  // false
      *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'aPple', b: 'Dog'}); // true
-     * 
+     *
      * @param obj - RegExp kv-map to extend the validator with
      */
     static extendRegex (obj:ExtRegExp):void {
@@ -693,7 +694,7 @@ class Validator {
 
     /**
      * Extend the validation using an enum rule kv-map
-     * 
+     *
      * Example:
      *  Validator.extendEnum({
      *      is_fruit: ['apple', 'banana', 'pear'],
@@ -702,7 +703,7 @@ class Validator {
      * Usage:
      *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'}); // false
      *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'apple', b: 'dog'}); // true
-     * 
+     *
      * @param obj - Enumeration kv-map to extend the validator with
      */
     static extendEnum (obj:ExtEnum):void {
