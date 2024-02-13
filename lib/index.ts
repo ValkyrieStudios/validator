@@ -4,6 +4,7 @@ import isBoolean                from '@valkyriestudios/utils/boolean/is';
 import isString                 from '@valkyriestudios/utils/string/is';
 import isNeString               from '@valkyriestudios/utils/string/isNotEmpty';
 import isDate                   from '@valkyriestudios/utils/date/is';
+import isFunction               from '@valkyriestudios/utils/function/is';
 import isNeArray                from '@valkyriestudios/utils/array/isNotEmpty';
 import isObject                 from '@valkyriestudios/utils/object/is';
 import isNeObject               from '@valkyriestudios/utils/object/isNotEmpty';
@@ -111,6 +112,7 @@ type DefaultRuleDictionary = {
     email: typeof vEmail;
     equal_to: typeof isEqual;
     false: typeof vFalse;
+    function: typeof isFunction;
     geo_latitude: typeof vGeoLatitude;
     geo_longitude: typeof vGeoLongitude;
     greater_than: typeof vGreaterThan;
@@ -394,6 +396,7 @@ let RULE_STORE:RuleDictionary = {
     email                       : vEmail,
     equal_to                    : isEqual,
     false                       : vFalse,
+    function                    : isFunction,
     geo_latitude                : vGeoLatitude,
     geo_longitude               : vGeoLongitude,
     greater_than                : vGreaterThan,
