@@ -39,6 +39,33 @@ const evaluation = v.validate({
 console.log(evaluation.is_valid); // true
 ```
 
+## Example Typescript usage while ensuring validator is fully validating type
+When using Validator within typescript and you want to ensure a validator is fully validating the props of a specific type or interface you can wrap
+it in the TV type that is exported from @valkyriestudios/validator.
+
+Example:
+```ts
+import Validator, {TV} from '@valkyriestudios/validator';
+
+type User {
+    first_name: string;
+    last_name: string;
+    email: string;
+}
+
+//  Good
+const vUser = new Validator<TV<User>>({
+    first_name: 'string_ne|min:2',
+    last_name: 'string_ne|min:2',
+    email: 'email',
+});
+
+//  Intellisense will complain because last_name and email rules are missing
+const vUser = new Validator<TV<User>>({
+    first_name: 'string_ne|min:2',
+});
+```
+
 ## @validate: Running validations and checking evaluations
 After a validator instance is created, you can run it as many times as you want to validate a data object passed to it. The resultset of this is called an `evaluation` and is returned when calling the `validate` function.
 
