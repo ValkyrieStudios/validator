@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- feat: Rule: sys_port - Will check whether or not something is a valid port according to the tcp range
+
 ## [7.3.0] - 2024-02-13
 ### Added
-- feat typings: Added TV type export
+- feat: typings: Added TV type export
 
 ## [7.2.0] - 2024-02-13
 ### Added

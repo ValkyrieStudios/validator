@@ -30,6 +30,7 @@ import vSysIPv4                 from '../lib/functions/vSysIPv4';
 import vSysIPv4_or_v6           from '../lib/functions/vSysIPv4_or_v6';
 import vSysIPv6                 from '../lib/functions/vSysIPv6';
 import vSysMac                  from '../lib/functions/vSysMac';
+import vSysPort                 from '../lib/functions/vSysPort';
 import vTimeZone                from '../lib/functions/vTimeZone';
 import vTrue                    from '../lib/functions/vTrue';
 import vUrl                     from '../lib/functions/vUrl';
@@ -745,6 +746,15 @@ for (const el of [
     {
         lbl: 'functions/vSysIPv6 - invalid',
         fn: () => vSysIPv6('9325:xxxx:568b:39ad:d5bc:8548:d23b:6f92'),
+    },
+    //  vSysPort
+    {
+        lbl: 'functions/vSysPort - valid',
+        fn: () => vSysPort(9999),
+    },
+    {
+        lbl: 'functions/vSysPort - invalid',
+        fn: () => vSysPort(0),
     },
     //  vSysMac
     {

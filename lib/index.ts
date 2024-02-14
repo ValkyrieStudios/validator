@@ -38,6 +38,7 @@ import vSysMac                  from './functions/vSysMac';
 import vSysIPv4                 from './functions/vSysIPv4';
 import vSysIPv6                 from './functions/vSysIPv6';
 import vSysIPv4_or_v6           from './functions/vSysIPv4_or_v6';
+import vSysPort                 from './functions/vSysPort';
 import vTrue                    from './functions/vTrue';
 import vUrl                     from './functions/vUrl';
 import vUrlNoQuery              from './functions/vUrlNoQuery';
@@ -136,6 +137,7 @@ type DefaultRuleDictionary = {
     sys_ipv4: typeof vSysIPv4;
     sys_ipv6: typeof vSysIPv6;
     sys_ipv4_or_v6: typeof vSysIPv4_or_v6;
+    sys_port: typeof vSysPort;
     time_zone: typeof vTimeZone;
     true: typeof vTrue;
     url: typeof vUrl;
@@ -420,6 +422,7 @@ let RULE_STORE:RuleDictionary = {
     sys_ipv4                    : vSysIPv4,
     sys_ipv6                    : vSysIPv6,
     sys_ipv4_or_v6              : vSysIPv4_or_v6,
+    sys_port                    : vSysPort,
     time_zone                   : vTimeZone,
     true                        : vTrue,
     url                         : vUrl,

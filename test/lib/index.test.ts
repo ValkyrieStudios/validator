@@ -3,7 +3,7 @@
 /* eslint-disable max-lines */
 
 import {describe, it}           from 'node:test';
-import assert                   from 'node:assert/strict';
+import * as assert              from 'node:assert/strict';
 import Is                       from '@valkyriestudios/utils/is';
 import guid                     from '@valkyriestudios/utils/hash/guid';
 import CONSTANTS                from '../constants';
@@ -34,6 +34,7 @@ import vSysMac                  from '../../lib/functions/vSysMac';
 import vSysIPv4                 from '../../lib/functions/vSysIPv4';
 import vSysIPv6                 from '../../lib/functions/vSysIPv6';
 import vSysIPv4_or_v6           from '../../lib/functions/vSysIPv4_or_v6';
+import vSysPort                 from '../../lib/functions/vSysPort';
 import vTimeZone                from '../../lib/functions/vTimeZone';
 import vTrue                    from '../../lib/functions/vTrue';
 import vUrl                     from '../../lib/functions/vUrl';
@@ -436,18 +437,18 @@ describe('Validator - Core', () => {
             const evaluation = new Validator({a: 'number', b: 'number'}).validate({a: 20, b: false});
 
             //  Evaluate object
-            assert(typeof evaluation, 'object');
+            assert.equal(typeof evaluation, 'object');
             assert.deepEqual(Object.keys(evaluation), ['is_valid', 'count', 'errors']);
 
             //  Evaluate object structure: is_valid
-            assert(typeof evaluation.is_valid, 'Boolean');
+            assert.equal(typeof evaluation.is_valid, 'boolean');
 
             //  Evaluate object structure: count
-            assert(typeof evaluation.count, 'number');
+            assert.equal(typeof evaluation.count, 'number');
             assert.ok(evaluation.count === 1);
 
             //  Evaluate object structure: errors
-            assert(typeof evaluation.errors, 'object');
+            assert.equal(typeof evaluation.errors, 'object');
             assert.deepEqual(evaluation.errors, {
                 b: [{msg: 'number', params: []}],
             });
@@ -1332,6 +1333,7 @@ describe('Validator - Core', () => {
                 sys_ipv4                    : vSysIPv4,
                 sys_ipv6                    : vSysIPv6,
                 sys_ipv4_or_v6              : vSysIPv4_or_v6,
+                sys_port                    : vSysPort,
                 time_zone                   : vTimeZone,
                 true                        : vTrue,
                 url                         : vUrl,
