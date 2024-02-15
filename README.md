@@ -499,6 +499,7 @@ The following list shows you all the default rules that are provided by this lib
 | equal_to | Validate that a provided value is equal to another value, this can be used on primitives (string, number, boolean) but also on non-primitives (objects, arrays, dates). Equality checks for non-primitives are done through FNV1A hashing |
 | false | Validate that a provided value is strictly equal to false |
 | function | Validate that a provided value is a Function |
+| async_function | Validate that a provided value is an async function |
 | geo_latitude | Validate that a provided value is a valid latitude value |
 | geo_longitude | Validate that a provided value is a valid longitude value |
 | greater_than | Validate that a provided value is greater than a provided number, if passed a string or array this will validate on length |
