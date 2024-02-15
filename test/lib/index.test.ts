@@ -1310,6 +1310,7 @@ describe('Validator - Core', () => {
                 equal_to                    : Is.Eq,
                 false                       : vFalse,
                 function                    : Is.Function,
+                async_function              : Is.AsyncFunction,
                 geo_latitude                : vGeoLatitude,
                 geo_longitude               : vGeoLongitude,
                 greater_than                : vGreaterThan,

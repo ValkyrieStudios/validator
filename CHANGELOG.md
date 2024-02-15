@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- feat: Rule: async_function - Will check whether or not something is an async function
+
 ### Improved
 - Dep: Upgrade @valkyriestudios/utils to 11.4.0
 - Dev Dep: Upgrade @types/node to 20.11.18
