@@ -383,6 +383,10 @@ function checkField (
     return true;
 }
 
+function freezeStore (store:RuleDictionary):Readonly<RuleDictionary>  {
+    return Object.freeze({...store});
+}
+
 let RULE_STORE:RuleDictionary = {
     alpha_num_spaces            : vAlphaNumSpaces,
     alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
@@ -439,6 +443,8 @@ let RULE_STORE:RuleDictionary = {
     eq                          : isEqual,
 };
 
+let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
+
 export type TV <T> = Record<keyof T, string>;
 
 class Validator <T extends RulesRaw> {
@@ -473,7 +479,7 @@ class Validator <T extends RulesRaw> {
         this.plan = plan;
     }
 
-    check <T extends GenericObject> (data:T):boolean {
+    check <K extends GenericObject> (data:K):boolean {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) return this.plan.length === 0;
 
@@ -539,7 +545,7 @@ class Validator <T extends RulesRaw> {
         return true;
     }
 
-    validate <T extends GenericObject> (data:T) {
+    validate <K extends GenericObject> (data:K) {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) {
             const is_valid = this.plan.length === 0;
@@ -630,8 +636,8 @@ class Validator <T extends RulesRaw> {
         return {is_valid: !count, count, errors};
     }
 
-    static get rules ():RuleDictionary {
-        return Object.freeze({...RULE_STORE});
+    static get rules ():Readonly<RuleDictionary> {
+        return FROZEN_RULE_STORE;
     }
 
     /**
@@ -656,13 +662,16 @@ class Validator <T extends RulesRaw> {
      *
      * @param obj - Function kv-map to extend the validator with
      */
-    static extendMulti<T extends CustomRuleDictionary> (obj:T):void {
+    static extendMulti<K extends CustomRuleDictionary> (obj:K):void {
         validExtension(obj, val => {
             if (typeof val !== 'function') throw new Error('Invalid extension');
         });
 
         //  Register each rule
         RULE_STORE = {...RULE_STORE, ...obj};
+
+        //  Freeze Rule store
+        FROZEN_RULE_STORE = freezeStore(RULE_STORE);
     }
 
     /**
@@ -701,6 +710,9 @@ class Validator <T extends RulesRaw> {
             //  Store on map
             Validator.extendMulti({[key]: f});
         }
+
+        //  Freeze Rule store
+        FROZEN_RULE_STORE = freezeStore(RULE_STORE);
     }
 
     /**
@@ -747,6 +759,9 @@ class Validator <T extends RulesRaw> {
             //  Store on map
             Validator.extendMulti({[key]: f});
         }
+
+        //  Freeze Rule store
+        FROZEN_RULE_STORE = freezeStore(RULE_STORE);
     }
 
 }

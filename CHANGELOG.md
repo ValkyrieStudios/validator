@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- dx-typings: Validator.rules getter is now correctly flagged as returning a Readonly RuleDictionary
+- perf: Making use of Validator.rules.* will now be magnitudes faster as it no longer constructs a frozen rule store on every call to it (see difference for rules/* between v7_4_0 benchmark and v7_6_0 benchmark)
+
 ## [7.5.0] - 2024-02-15
 ### Added
 - feat: Rule: async_function - Will check whether or not something is an async function
