@@ -383,6 +383,13 @@ function checkField (
     return true;
 }
 
+/**
+ * Freeze a store for public consumption through Validator.rules
+ *
+ * @param store - Rule store to freeze
+ *
+ * @returns Frozen rule store
+ */
 function freezeStore (store:RuleDictionary):Readonly<RuleDictionary>  {
     return Object.freeze({...store});
 }
