@@ -485,6 +485,11 @@ for (const el of [
         lbl: 'Validator@check - existing - regex - invalid',
         fn: () => vregex.check({a: 'Helo'}),
     },
+    //  rules.* (testing with string_ne as baseline)
+    {
+        lbl: 'rules/* - string_ne for comparison',
+        fn: () => Validator.rules.string_ne(' hello world '),
+    },
     //  vAlphaNumSpaces
     {
         lbl: 'functions/vAlphaNumSpaces - 10 chars',
@@ -801,6 +806,7 @@ for (const el of [
         lbl: 'functions/vUrlImage - invalid',
         fn: () => vUrlImage('https://www.myfancyimage.com/jpg?aquery=true'),
     },
+
 ]) bench(el, 500000);
 
 fs.writeFileSync('./test/benchmarks/latest.json', JSON.stringify(EXPORT_COLLECTOR, null, 4), 'utf8');

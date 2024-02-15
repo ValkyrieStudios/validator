@@ -52,4 +52,4 @@ describe('vSysPort', () => {
             assert.deepEqual(v.validate({a: i}), {is_valid: true, count: 0, errors: {}});
         }
     });
-})
+});
