@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- feat: typings: Added RulesRaw type export
+- feat: typings: Added GenericObject type export
+
 ## [7.6.0] - 2024-02-15
 ### Improved
 - dx-typings: Validator.rules getter is now correctly flagged as returning a Readonly RuleDictionary

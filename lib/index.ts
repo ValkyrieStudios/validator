@@ -46,15 +46,15 @@ import vUrlNoQuery              from './functions/vUrlNoQuery';
 import vUrlImage                from './functions/vUrlImage';
 
 //  Raw data type for input checking
-type DataPrimitive  = string | number | boolean | Date | symbol | null | unknown;
-type DataVal        = DataPrimitive | DataObject | DataArray;
-type DataArray      = Array<DataVal>;
-type DataObject     = {[key:string]: DataVal};
-type GenericObject  = {[key:string]:any};
+type DataPrimitive          = string | number | boolean | Date | symbol | null | unknown;
+type DataVal                = DataPrimitive | DataObject | DataArray;
+type DataArray              = Array<DataVal>;
+type DataObject             = {[key:string]: DataVal};
+export type GenericObject   = {[key:string]:any};
 
 //  Validation rule input data types
-type RulesRawVal    = string | RulesRaw;
-type RulesRaw       = {[key:string]: RulesRawVal};
+type RulesRawVal            = string | RulesRaw;
+export type RulesRaw        = {[key:string]: RulesRawVal};
 
 //  Validation components
 interface ValidationError {
