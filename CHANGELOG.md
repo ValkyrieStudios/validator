@@ -10,6 +10,11 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - feat: typings: Added RulesRaw type export
 - feat: typings: Added GenericObject type export
 
+### Improved
+- Dev Dep: Upgrade @types/node to 20.11.19
+- Dev Dep: Upgrade @typescript-eslint/eslint-plugin to 7.0.2
+- Dev Dep: Upgrade @typescript-eslint/parser to 7.0.2
+
 ## [7.6.0] - 2024-02-15
 ### Improved
 - dx-typings: Validator.rules getter is now correctly flagged as returning a Readonly RuleDictionary
