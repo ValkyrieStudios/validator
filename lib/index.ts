@@ -58,6 +58,7 @@ export type RulesRaw        = {[key:string]: RulesRawVal};
 
 //  Validation components
 interface ValidationError {
+    idx?:number;
     msg:string;
     params:DataVal[];
 }
@@ -89,7 +90,7 @@ interface ValidationGroup {
 type ExtEnumValInner    = string | number;
 type ExtEnumVal         = ExtEnumValInner[];
 type ExtEnum            = Record<string, ExtEnumVal>;
-const ENUM_STORE:Map<string, Map<ExtEnumValInner, boolean>> = new Map();
+const ENUM_STORE:Map<string, Set<ExtEnumValInner>> = new Map();
 
 //  Used for regex storage using extendRegex
 type ExtRegExpVal   = RegExp;
@@ -521,7 +522,7 @@ class Validator <T extends RulesRaw> {
                          * If rule.iterable.unique is set create map to store hashes and keep tabs
                          * on uniqueness as we run through the array
                          */
-                        const unique_map = new Map();
+                        const unique_set = new Set();
                         for (let idx = 0; idx < cursor.length; idx++) {
                             if (!checkField(cursor[idx], rule.list, data as DataObject)) {
                                 is_valid = false;
@@ -532,8 +533,8 @@ class Validator <T extends RulesRaw> {
                             if (!rule.iterable.unique) continue;
 
                             //  Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique
-                            unique_map.set(fnv1A(cursor[idx]), true);
-                            if (unique_map.size !== (idx + 1)) {
+                            unique_set.add(fnv1A(cursor[idx]));
+                            if (unique_set.size !== (idx + 1)) {
                                 is_valid = false;
                                 break;
                             }
@@ -599,20 +600,20 @@ class Validator <T extends RulesRaw> {
                          * on uniqueness as we run through the array
                          */
                         let iterable_unique = true;
-                        const unique_map    = iterable_unique && rule.iterable.unique ? new Map() : false;
+                        const unique_set = iterable_unique && rule.iterable.unique ? new Set() : false;
                         for (let idx = 0; idx < cursor.length; idx++) {
                             const evaluation = validateField(cursor[idx], rule.list, data as DataObject);
                             if (!evaluation.is_valid) error_cursor.push(...evaluation.errors.map(el => ({idx, ...el})));
 
                             //  If no unique map or iterable unique was already turned off continue
-                            if (!unique_map || !iterable_unique) continue;
+                            if (!unique_set || !iterable_unique) continue;
 
                             /**
                              * Compute fnv hash if uniqueness needs to be checked, if map size differs from
                              * our current point in the iteration add uniqueness error
                              */
-                            unique_map.set(fnv1A(cursor[idx]), true);
-                            if (unique_map.size !== (idx + 1)) {
+                            unique_set.add(fnv1A(cursor[idx]));
+                            if (unique_set.size !== (idx + 1)) {
                                 iterable_unique = false;
                                 error_cursor.unshift({msg: 'iterable_unique', params: []});
                             }
@@ -748,8 +749,8 @@ class Validator <T extends RulesRaw> {
         //  For each key in object, check if its value is a function
         for (const key of Object.keys(obj)) {
             //  Convert array to map (also dedupes)
-            const enum_map:Map<ExtEnumValInner, boolean> = new Map();
-            for (const el of obj[key]) enum_map.set(el, true);
+            const enum_set:Set<ExtEnumValInner> = new Set();
+            for (const el of obj[key]) enum_set.add(el);
 
             //  Create function and transfer key to it
             let f = function (val:ExtEnumValInner):boolean {
@@ -761,7 +762,7 @@ class Validator <T extends RulesRaw> {
             f.uid = key;
 
             f = f.bind(f);
-            ENUM_STORE.set(key, enum_map);
+            ENUM_STORE.set(key, enum_set);
 
             //  Store on map
             Validator.extendMulti({[key]: f});

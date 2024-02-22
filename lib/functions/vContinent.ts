@@ -1,15 +1,14 @@
 'use strict';
 
-const MAP:Map<string, boolean> = new Map();
-for (const el of ['AF', 'AN', 'AS', 'EU', 'NA', 'OC', 'SA']) MAP.set(el, true);
+const SET = new Set(['AF', 'AN', 'AS', 'EU', 'NA', 'OC', 'SA']);
 
 /**
  * Validate that a provided value is a continent code
- * 
+ *
  * @param val - Value to verify
- * 
+ *
  * @returns {boolean} Whether or not it's valid
  */
 export default function vContinent (val:string):boolean {
-    return typeof val === 'string' && MAP.has(val);
+    return typeof val === 'string' && SET.has(val);
 }

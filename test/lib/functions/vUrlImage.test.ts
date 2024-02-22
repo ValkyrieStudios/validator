@@ -11,7 +11,7 @@ describe('vUrlImage', () => {
     it('Should validate a url string that is a valid url and an image url as valid', () => {
         const v = new Validator({a: 'url_img'});
 
-        for (const ext of EXTENSIONS) {
+        EXTENSIONS.forEach(ext => {
             for (const el of [
                 `http://foo.com/blah_blah/${guid()}.${ext}`,
                 `http://foo.com/blah_blah_(wikipedia).${ext}`,
@@ -48,7 +48,7 @@ describe('vUrlImage', () => {
                 const evaluation = v.validate({a: el});
                 assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
             }
-        }
+        });
     });
 
     it('Should not validate a url string that is a valid url but not an image url as valid', () => {

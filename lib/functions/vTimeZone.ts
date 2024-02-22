@@ -4,8 +4,7 @@
 
 const pre = (prefix:string, arr:string[]) => arr.map(val => `${prefix}/${val}`);
 
-const MAP:Map<string, true> = new Map();
-for (const el of [
+const SET = new Set([
     ...pre('Africa', ['Abidjan', 'Accra', 'Bamako', 'Banjul', 'Conakry', 'Dakar', 'Freetown', 'Lome', 'Nouakchott', 'Ouagadougou', 'Timbuktu', 'Algiers', 'Bissau', 'Cairo', 'Casablanca', 'Ceuta', 'El_Aaiun', 'Johannesburg', 'Maseru', 'Mbabane', 'Juba', 'Khartoum', 'Lagos', 'Bangui', 'Brazzaville', 'Douala', 'Kinshasa', 'Libreville', 'Luanda', 'Malabo', 'Niamey', 'Porto-Novo', 'Maputo', 'Blantyre', 'Bujumbura', 'Gaborone', 'Harare', 'Kigali', 'Lubumbashi', 'Lusaka', 'Monrovia', 'Nairobi', 'Addis_Ababa', 'Asmara', 'Asmera', 'Dar_es_Salaam', 'Djibouti', 'Kampala', 'Mogadishu', 'Ndjamena', 'Sao_Tome', 'Tripoli', 'Tunis', 'Windhoek']),
     ...pre('Atlantic', ['Reykjavik', 'St_Helena', 'Azores', 'Bermuda', 'Canary', 'Cape_Verde', 'Faroe', 'Faeroe', 'Madeira', 'South_Georgia', 'Stanley', 'Jan_Mayen']),
     ...pre('America/Argentina', ['Buenos_Aires', 'Catamarca', 'ComodRivadavia', 'Cordoba', 'Jujuy', 'La_Rioja', 'Mendoza', 'Rio_Gallegos', 'Salta', 'San_Juan', 'San_Luis', 'Tucuman', 'Ushuaia']),
@@ -70,15 +69,15 @@ for (const el of [
     'NZ-CHAT',
     'Kwajalein',
     'WET',
-]) MAP.set(el, true);
+]);
 
 /**
  * Validate that a provided value is a time_zone string
- * 
+ *
  * @param val - Value to verify
- * 
+ *
  * @returns {boolean} Whether or not it's valid
  */
 export default function vTimeZone (val:string):boolean {
-    return typeof val === 'string' && MAP.has(val);
+    return typeof val === 'string' && SET.has(val);
 }

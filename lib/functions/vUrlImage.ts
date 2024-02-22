@@ -2,33 +2,24 @@
 
 import vUrl from './vUrl';
 
-export const EXTENSIONS = Object.freeze([
-    //	Joint Photographic Experts Group
+export const EXTENSIONS = new Set([
     'jpg',
     'jpeg',
     'jpe',
     'jif',
     'jfif',
     'jfi',
-    //	Portable Network Graphics
     'png',
-    //	ICO & CUR
     'ico',
     'cur',
-    //	Tagged Image File Format
     'tiff',
     'tif',
-    //	Graphics Interchange Format
     'gif',
-    // 	WEBP
     'webp',
-    //	Bitmap ('bmp')
     'bmp',
     'dib',
-    //	Scalable Vector Graphics (svg)
     'svg',
     'svgz',
-    //	Heif (High Efficiency Image File Format)
     'heif',
     'heifs',
     'heic',
@@ -39,21 +30,18 @@ export const EXTENSIONS = Object.freeze([
     'hif',
 ]);
 
-const MAP = new Map();
-for (const el of EXTENSIONS) MAP.set(el, true);
-
 /**
  * Validate that a provided value is a url linking to an image file (eg: https://mywebsite.com/123.jpg)
- * 
+ *
  * @param val - Value to verify
- * 
+ *
  * @returns {boolean} Whether or not it's valid
  */
 export default function vUrlImage (val:string):boolean {
     if (typeof val !== 'string' || !vUrl(val)) return false;
 
     /**
-     * Deprotocolize -> take before query -> take before anchor -> split by / 
+     * Deprotocolize -> take before query -> take before anchor -> split by /
      * eg: 'https://mysite.com/123.jpg#hello?this=iscool' -> ['mysite.com', '123.jpg']
      */
     let sanitized = val.replace(/^(https?|ftp):\/\//g, '').split(/(\?|#)/g, 1)[0].split('/');
@@ -68,5 +56,5 @@ export default function vUrlImage (val:string):boolean {
     //  Get extension
     const ext = sanitized.pop();
 
-    return sanitized.join('.').length > 0 && MAP.has(ext);
+    return sanitized.join('.').length > 0 && EXTENSIONS.has(ext);
 }
