@@ -475,7 +475,7 @@ class Validator <T extends RulesRaw> {
                 if (val.trim().length === 0) throw new TypeError('Rule value is empty');
                 plan.push(parseGroup(key, val));
             } else if (isObject(val)) {
-                Object.keys(val).forEach(val_key => recursor(val[val_key], key ? `${key}.${val_key}` : val_key));
+                for (const val_key in val) recursor(val[val_key], key ? `${key}.${val_key}` : val_key);
             } else {
                 //  Throw a type error if neither a string nor an object
                 throw new TypeError('Invalid rule value');
@@ -603,7 +603,7 @@ class Validator <T extends RulesRaw> {
                         const unique_set = iterable_unique && rule.iterable.unique ? new Set() : false;
                         for (let idx = 0; idx < cursor.length; idx++) {
                             const evaluation = validateField(cursor[idx], rule.list, data as DataObject);
-                            if (!evaluation.is_valid) error_cursor.push(...evaluation.errors.map(el => ({idx, ...el})));
+                            if (!evaluation.is_valid) for (const el of evaluation.errors) error_cursor.push({idx, ...el});
 
                             //  If no unique map or iterable unique was already turned off continue
                             if (!unique_set || !iterable_unique) continue;
@@ -702,7 +702,7 @@ class Validator <T extends RulesRaw> {
         });
 
         //  For each key in object, check if its value is a function
-        for (const key of Object.keys(obj)) {
+        for (const key in obj) {
             //  Create function and transfer key to it
             let f = function (val:string):boolean {
                 return typeof val === 'string' && REGEX_STORE.get(this.uid).test(val); // eslint-disable-line no-invalid-this
@@ -747,7 +747,7 @@ class Validator <T extends RulesRaw> {
         });
 
         //  For each key in object, check if its value is a function
-        for (const key of Object.keys(obj)) {
+        for (const key in obj) {
             //  Convert array to map (also dedupes)
             const enum_set:Set<ExtEnumValInner> = new Set();
             for (const el of obj[key]) enum_set.add(el);
