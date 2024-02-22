@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.8.0] - 2024-02-22
+### Improved
+- Swap out map for set usage where possible to reduce memory footprint
+- Add missing optional idx key to evaluation error struct (this is used when validating arrays)
+- Dep: Upgrade @valkyriestudios/utils to 11.5.0
+- Dev Dep: Upgrade @types/node to 20.11.20
+
 ## [7.7.0] - 2024-02-20
 ### Added
 - feat: typings: Added RulesRaw type export
