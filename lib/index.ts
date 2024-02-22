@@ -246,8 +246,10 @@ function parseRule (raw:string):ValidationRules {
      * Accumulate all the checks that need to be run for this field
      * (eg: string_ne|min:20 will become an array with two checks)
      */
-    const list = cursor.split('|').reduce((acc, rule_part) => {
-        let params:string[]|string[][]|unknown[]|unknown[][]  = rule_part.split(':');
+    const list = [];
+    const cursor_parts = cursor.split('|');
+    for (const rule_part of cursor_parts) {
+        let params:string[]|string[][]|unknown[]|unknown[][] = rule_part.split(':');
         let type    = (params.shift() as string).trim();
 
         //  Get 'not' flag
@@ -278,10 +280,8 @@ function parseRule (raw:string):ValidationRules {
                 }
             }
         }
-
-        acc.push({type, params, not});
-        return acc;
-    }, []);
+        list.push({type, params, not});
+    }
 
     return {iterable, list};
 }
