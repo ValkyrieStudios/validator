@@ -297,7 +297,7 @@ function parseRule (raw:string):ValidationRules {
  */
 function parseGroup (key:string, raw:string):ValidationGroup {
     //  Copy contents of raw into here as working-copy
-    let cursor = `${raw}`;
+    let cursor = raw;
 
     //  (?) Parse sometimes flag
     const sometimes = cursor.charAt(0) === '?';
