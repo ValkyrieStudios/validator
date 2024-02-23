@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable no-labels */
+
 import isBoolean                from '@valkyriestudios/utils/boolean/is';
 import isString                 from '@valkyriestudios/utils/string/is';
 import isNeString               from '@valkyriestudios/utils/string/isNotEmpty';
@@ -502,52 +504,43 @@ class Validator <T extends RulesRaw> {
             }
 
             //  Go through rules in cursor: if all of them are invalid return false immediately
-            let valid_count = 0;
-            for (const rule of part.rules) {
-                let is_valid = true;
-
+            let is_valid = false;
+            partLoop: for (const rule of part.rules) {
                 //  Check for iterable config
-                if (rule.iterable) {
-                    if (
-                        //  If not an array -> invalid
-                        !Array.isArray(cursor) ||
-                        //  rule.iterable.min is set and val length is below the min -> invalid
-                        (Number.isFinite(rule.iterable.min) && cursor.length < (rule.iterable.min as number)) ||
-                        //  rule.iterable.max is set and val length is above max -> invalid
-                        (Number.isFinite(rule.iterable.max) && cursor.length > (rule.iterable.max as number))
-                    ) {
-                        is_valid = false;
-                    } else {
-                        /**
-                         * If rule.iterable.unique is set create map to store hashes and keep tabs
-                         * on uniqueness as we run through the array
-                         */
-                        const unique_set = new Set();
-                        for (let idx = 0; idx < cursor.length; idx++) {
-                            if (!checkField(cursor[idx], rule.list, data as DataObject)) {
-                                is_valid = false;
-                                break;
-                            }
-
-                            //  Continue if no uniqueness checks need to happen
-                            if (!rule.iterable.unique) continue;
-
-                            //  Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique
-                            unique_set.add(fnv1A(cursor[idx]));
-                            if (unique_set.size !== (idx + 1)) {
-                                is_valid = false;
-                                break;
-                            }
-                        }
-                    }
-                } else if (!checkField(cursor, rule.list, data as DataObject)) {
-                    is_valid = false;
+                if (!rule.iterable) {
+                    if (checkField(cursor, rule.list, data as DataObject)) is_valid = true;
+                    continue;
                 }
 
-                if (is_valid) valid_count++;
+                if (
+                    //  If not an array -> invalid
+                    !Array.isArray(cursor) ||
+                    //  rule.iterable.min is set and val length is below the min -> invalid
+                    (Number.isFinite(rule.iterable.min) && cursor.length < (rule.iterable.min as number)) ||
+                    //  rule.iterable.max is set and val length is above max -> invalid
+                    (Number.isFinite(rule.iterable.max) && cursor.length > (rule.iterable.max as number))
+                ) continue;
+
+                /**
+                 * If rule.iterable.unique is set create map to store hashes and keep tabs
+                 * on uniqueness as we run through the array
+                 */
+                const unique_set = new Set();
+                for (let idx = 0; idx < cursor.length; idx++) {
+                    if (!checkField(cursor[idx], rule.list, data as DataObject)) continue partLoop;
+
+                    //  Continue if no uniqueness checks need to happen
+                    if (!rule.iterable.unique) continue;
+
+                    //  Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique
+                    unique_set.add(fnv1A(cursor[idx]));
+                    if (unique_set.size !== (idx + 1)) continue partLoop;
+                }
+
+                is_valid = true;
             }
 
-            if (!valid_count) return false;
+            if (!is_valid) return false;
         }
 
         return true;

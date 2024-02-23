@@ -7,6 +7,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- Validator@check: Slight performance improvement when doing array validation by implementing alternative early escape mechanic using parent loop breaker 
 - Dep: Upgrade @valkyriestudios/utils to 11.6.0
 
 ## [7.8.0] - 2024-02-22
