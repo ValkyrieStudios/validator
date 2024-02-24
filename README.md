@@ -184,7 +184,7 @@ The syntax for this is best shown with a good example `integer|between:1000,9999
 ##### Rule delimiter: `|` 
 The `|` symbol is a delimiter to show where a rule ends and another rule starts. eg: `integer|min:10` will evaluate the integer rule and the minimum rule with param 10
 
-##### Parameter star: `:`
+##### Parameter start: `:`
 Certain rules allow for parameters to be passed, the `:` symbol marks where the rule name ends and the parameter (or list of parameters start). For example in `equal_to:5` the name of the rule being evaluated is `equal_to` and the parameter that will be passed to it is: `5`.
 
 ##### Parameter delimiter: `,`
@@ -523,10 +523,11 @@ The following list shows you all the default rules that are provided by this lib
 | size | Validate that a provided value has a specific size, this only applies to strings and arrays and checks on length |
 | string | Validate that a provided value is a string |
 | string_ne | Same behavior as `string`, with the additional check that empty strings (after trimming) will not be seen as valid |
-| sys_mac | Validate that a provided value is a valid MAC address |
 | sys_ipv4 | Validate that a provided value is a valid IPv4 address |
 | sys_ipv6 | Validate that a provided value is a valid IPv6 address | 
-| sys_ipv4_or_v6 | Validate that a provided value is either a valid IPv4 or a valid IPv6 address | 
+| sys_ipv4_or_v6 | Validate that a provided value is either a valid IPv4 or a valid IPv6 address |
+| sys_mac | Validate that a provided value is a valid MAC address |
+| sys_port | Validate that a provided value is a valid port number (between 1 and 65535) | 
 | time_zone | Validate that a provided value is a time_zone string |
 | true | Validate that a provided value is strictly equal to true |
 | url | Validate that a provided value is a url, this allows for query string values as well |
