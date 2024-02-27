@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 ### Improved
 - Validator@validate: Now has a typed return result
+- Dep: Upgrade @valkyriestudios/utils to 11.7.0
+- Dev Dep: Upgrade @typescript-eslint/eslint-plugin to 7.1.0
+- Dev Dep: Upgrade @typescript-eslint/parser to 7.1.0
+- Dev Dep: Upgrade eslint to 8.57.0
 
 ## [7.9.0] - 2024-02-23
 ### Improved
