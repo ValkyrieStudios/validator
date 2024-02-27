@@ -88,6 +88,25 @@ interface ValidationGroup {
     rules:ValidationRules[];
 }
 
+interface ValidationResult {
+    /**
+     * Whether or not the validation was valid
+     */
+    is_valid:boolean;
+    /**
+     * Integer value defining how many fields were invalid in the provided data object
+     */
+    count:number;
+    /**
+     * Errors object which will be filled with the errors of the validation result if there are any.
+     *
+     * Take note: 'NO_DATA' is set when no data was passed to the validator.
+     *
+     * Example: {b: [{msg: 'number', params: []}]}
+     */
+    errors: 'NO_DATA' | {[key:string]:ValidationError[]};
+}
+
 //  Used for enum storage using extendEnum
 type ExtEnumValInner    = string | number;
 type ExtEnumVal         = ExtEnumValInner[];
@@ -546,7 +565,7 @@ class Validator <T extends RulesRaw> {
         return true;
     }
 
-    validate <K extends GenericObject> (data:K) {
+    validate <K extends GenericObject> (data:K):ValidationResult {
         //  No data passed? Check if rules were set up
         if (!isObject(data)) {
             const is_valid = this.plan.length === 0;
