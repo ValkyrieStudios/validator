@@ -192,7 +192,7 @@ function validExtension  <T> (
 ) {
     if (
         !isObject(obj) ||
-        Object.keys(obj).filter(val => !/^[A-Za-z_\-0-9]{1,}$/g.test(val)).length > 0
+        Object.keys(obj).filter(val => !/^[A-Za-z_\-0-9]{1,}$/g.test(val)).length
     ) throw new Error('Invalid extension');
 
     //  Validate all values
@@ -277,7 +277,7 @@ function parseRule (raw:string):ValidationRules {
         if (not) type = type.substring(1);
 
         //  Get parameters
-        if (params.length > 0) {
+        if (params.length) {
             if (type === 'in' && (params[0] as string).indexOf(',') > 0) {
                 params = [(params[0] as string).split(',')];
             } else {
@@ -634,7 +634,7 @@ class Validator <T extends RulesRaw> {
                     if (!evaluation.is_valid) error_cursor = evaluation.errors;
                 }
 
-                if (error_cursor.length === 0) {
+                if (!error_cursor.length) {
                     has_valid = true;
                     break;
                 } else {

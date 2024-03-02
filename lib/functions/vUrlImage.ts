@@ -56,5 +56,5 @@ export default function vUrlImage (val:string):boolean {
     //  Get extension
     const ext = sanitized.pop();
 
-    return sanitized.join('.').length > 0 && EXTENSIONS.has(ext);
+    return sanitized.join('.').length && EXTENSIONS.has(ext);
 }
