@@ -211,15 +211,13 @@ function deepGet (obj:DataObject, path:string):DataVal {
     const parts = path.split('.');
 
     let cursor:DataVal = obj;
-    while (parts.length > 0) {
-        if (isObject(cursor)) {
-            const key = parts.shift();
-            if (!Object.prototype.hasOwnProperty.call(cursor, key)) return undefined;
-            cursor = (cursor as DataObject)[key];
-        }
+    let key:string;
+    while (parts.length) {
+        if (!isObject(cursor)) return undefined;
 
-        //  If we have more parts and cursor is not an object -> immediately return undefined
-        if (parts.length > 0 && !isObject(cursor)) return undefined;
+        key = parts.shift();
+        if (!cursor.hasOwnProperty(key)) return undefined;
+        cursor = (cursor as DataObject)[key];
     }
 
     return cursor;
