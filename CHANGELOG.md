@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Validator@extendSchema: Register a rule object as a rule on its own and use it within other Validators
+
 ## [7.10.0] - 2024-02-27
 ### Improved
 - Validator@validate: Now has a typed return result

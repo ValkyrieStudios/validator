@@ -47,18 +47,18 @@ import vUrl                     from './functions/vUrl';
 import vUrlNoQuery              from './functions/vUrlNoQuery';
 import vUrlImage                from './functions/vUrlImage';
 
-//  Raw data type for input checking
+/* Raw data type for input checking */
 type DataPrimitive          = string | number | boolean | Date | symbol | null | unknown;
 type DataVal                = DataPrimitive | DataObject | DataArray;
 type DataArray              = Array<DataVal>;
 type DataObject             = {[key:string]: DataVal};
 export type GenericObject   = {[key:string]:any};
 
-//  Validation rule input data types
+/* Validation rule input data types */
 type RulesRawVal            = string | RulesRaw;
 export type RulesRaw        = {[key:string]: RulesRawVal};
 
-//  Validation components
+/* Validation components */
 interface ValidationError {
     idx?:number;
     msg:string;
@@ -107,18 +107,23 @@ interface ValidationResult {
     errors: 'NO_DATA' | {[key:string]:ValidationError[]};
 }
 
-//  Used for enum storage using extendEnum
+/* Used for enum storage using extendEnum */
 type ExtEnumValInner    = string | number;
 type ExtEnumVal         = ExtEnumValInner[];
 type ExtEnum            = Record<string, ExtEnumVal>;
 const ENUM_STORE:Map<string, Set<ExtEnumValInner>> = new Map();
 
-//  Used for regex storage using extendRegex
+/* Used for regex storage using extendRegex */
 type ExtRegExpVal   = RegExp;
 type ExtRegExp      = Record<string, ExtRegExpVal>;
 const REGEX_STORE:Map<string, ExtRegExpVal> = new Map();
 
-//  Rule storage
+/* Used for schema storage using extendSchema */
+type ExtSchemaVal   = RulesRaw;
+type ExtSchema      = Record<string, ExtSchemaVal>;
+const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map();
+
+/* Rule storage */
 type DefaultRuleDictionary = {
     alpha_num_spaces: typeof vAlphaNumSpaces;
     alpha_num_spaces_multiline: typeof vAlphaNumSpaces;
@@ -188,15 +193,15 @@ type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
  */
 function validExtension  <T> (
     obj:Record<string, T>,
-    valueFn:(arg0:T) => void
+    valueFn:(arg0:T, key?:string) => void
 ) {
     if (
         !isObject(obj) ||
         Object.keys(obj).filter(val => !/^[A-Za-z_\-0-9]{1,}$/g.test(val)).length
     ) throw new Error('Invalid extension');
 
-    //  Validate all values
-    for (const val of Object.values(obj)) valueFn(val);
+    /* Validate all values */
+    for (const [key, val] of Object.entries(obj)) valueFn(val, key);
 }
 
 /**
@@ -248,10 +253,10 @@ function getIterableConfig (val:string):ValidationIterable {
  * @returns {ValidationRules} Parsed validation rule
  */
 function parseRule (raw:string):ValidationRules {
-    //  Copy contents of raw into here as working-copy
+    /* Copy contents of raw into here as working-copy */
     let cursor = `${raw}`;
 
-    //  ([...]) Check for iterable behavior
+    /* ([...]) Check for iterable behavior */
     let iterable:ValidationIterable|false = false;
     if (/(\[|\]){1,}/.test(cursor)) {
         const start_ix  = cursor.indexOf('[');
@@ -272,22 +277,22 @@ function parseRule (raw:string):ValidationRules {
         let params:string[]|string[][]|unknown[]|unknown[][] = rule_part.split(':');
         let type    = (params.shift() as string).trim();
 
-        //  Get 'not' flag
+        /* Get 'not' flag */
         const not = type.charAt(0) === '!';
         if (not) type = type.substring(1);
 
-        //  Get parameters
+        /* Get parameters */
         if (params.length) {
             if (type === 'in' && (params[0] as string).indexOf(',') > 0) {
                 params = [(params[0] as string).split(',')];
             } else {
                 params = (params[0] as string).split(',');
 
-                //  Parse parameters into callback functions
+                /* Parse parameters into callback functions */
                 for (let i = 0; i < params.length; i++) {
                     let param = params[i] as string;
                     if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
-                        //  Ensure we validate that parameterized string value is correct eg: <meta.myval>
+                        /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
                         if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
                             throw new TypeError(`Parameterization misconfiguration, verify rule config for ${raw}`);
                         }
@@ -315,14 +320,14 @@ function parseRule (raw:string):ValidationRules {
  * @returns Parsed validation group
  */
 function parseGroup (key:string, raw:string):ValidationGroup {
-    //  Copy contents of raw into here as working-copy
+    /* Copy contents of raw into here as working-copy */
     let cursor = raw;
 
-    //  (?) Parse sometimes flag
+    /* (?) Parse sometimes flag */
     const sometimes = cursor.charAt(0) === '?';
     if (sometimes) cursor = cursor.substring(1);
 
-    //  Conditional or group
+    /* Conditional or group */
     const rules = [];
     const conditionals = cursor.match(/\([a-zA-Z0-9|?.[\],:<>]{1,}\)/g);
     if (!conditionals) {
@@ -353,17 +358,17 @@ function validateField (
 } {
     const errors:ValidationError[] = [];
     for (const rule of list) {
-        //  Check if rule exists
+        /* Check if rule exists */
         if (!RULE_STORE[rule.type]) {
             errors.push({msg: 'rule_not_found', params: [rule.type]});
             continue;
         }
 
-        //  Get params that need to be passed, each param is either a function or a primitive
+        /* Get params that need to be passed, each param is either a function or a primitive */
         const params = [];
         for (const p of rule.params) params.push(typeof p === 'function' ? p(data) : p);
 
-        //  Run rule - if check fails (not valid && not not | not && valid) push into errors
+        /* Run rule - if check fails (not valid && not not | not && valid) push into errors */
         const rule_valid = RULE_STORE[rule.type](cursor, ...params);
         if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) {
             errors.push({msg: `${rule.not ? 'not_' : ''}${rule.type}`, params});
@@ -388,14 +393,14 @@ function checkField (
     data:DataObject
 ):boolean {
     for (const rule of list) {
-        //  Check if rule exists
+        /* Check if rule exists */
         if (!RULE_STORE[rule.type]) return false;
 
-        //  Get params that need to be passed, each param is either a function or a primitive
+        /* Get params that need to be passed, each param is either a function or a primitive */
         const params = [];
         for (const p of rule.params) params.push(typeof p === 'function' ? p(data) : p);
 
-        //  Run rule - if check fails (not valid && not not | not && valid)
+        /* Run rule - if check fails (not valid && not not | not && valid) */
         const rule_valid = RULE_STORE[rule.type](cursor, ...params);
         if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) return false;
     }
@@ -462,7 +467,7 @@ let RULE_STORE:RuleDictionary = {
     url                         : vUrl,
     url_noquery                 : vUrlNoQuery,
     url_img                     : vUrlImage,
-    //  Aliases
+    /* Aliases */
     gt                          : vGreaterThan,
     gte                         : vGreaterThanOrEqual,
     lt                          : vLessThan,
@@ -479,10 +484,10 @@ class Validator <T extends RulesRaw> {
     private plan:ValidationGroup[];
 
     constructor (rules:T) {
-        //  Check for rules
+        /* Check for rules */
         if (!isObject(rules)) throw new TypeError('Provide an object to define the rules of this validator');
 
-        //  Recursively parse our validation rules, to allow for deeply nested validation to be done
+        /* Recursively parse our validation rules, to allow for deeply nested validation to be done */
         const plan:ValidationGroup[] = [];
         function recursor (val:RulesRawVal, key?:string):void {
             /**
@@ -496,45 +501,45 @@ class Validator <T extends RulesRaw> {
             } else if (isObject(val)) {
                 for (const val_key in val) recursor(val[val_key], key ? `${key}.${val_key}` : val_key);
             } else {
-                //  Throw a type error if neither a string nor an object
+                /* Throw a type error if neither a string nor an object */
                 throw new TypeError('Invalid rule value');
             }
         }
         recursor(rules);
 
-        //  Set the parsed plan as a get property on our validation instance
+        /* Set the parsed plan as a get property on our validation instance */
         this.plan = plan;
     }
 
     check <K extends GenericObject> (data:K):boolean {
-        //  No data passed? Check if rules were set up
+        /* No data passed? Check if rules were set up */
         if (!isObject(data)) return this.plan.length === 0;
 
         for (const part of this.plan) {
-            //  Retrieve cursor that part is run against
+            /* Retrieve cursor that part is run against */
             const cursor = deepGet(data as DataObject, part.key);
 
-            //  If we cant find cursor we need to validate for the 'sometimes' flag
+            /* If we cant find cursor we need to validate for the 'sometimes' flag */
             if (cursor === undefined) {
                 if (part.sometimes) continue;
                 return false;
             }
 
-            //  Go through rules in cursor: if all of them are invalid return false immediately
+            /* Go through rules in cursor: if all of them are invalid return false immediately */
             let is_valid = false;
             partLoop: for (const rule of part.rules) {
-                //  Check for iterable config
+                /* Check for iterable config */
                 if (!rule.iterable) {
                     if (checkField(cursor, rule.list, data as DataObject)) is_valid = true;
                     continue;
                 }
 
                 if (
-                    //  If not an array -> invalid
+                    /* If not an array -> invalid */
                     !Array.isArray(cursor) ||
-                    //  rule.iterable.min is set and val length is below the min -> invalid
+                    /* rule.iterable.min is set and val length is below the min -> invalid */
                     (Number.isFinite(rule.iterable.min) && cursor.length < (rule.iterable.min as number)) ||
-                    //  rule.iterable.max is set and val length is above max -> invalid
+                    /* rule.iterable.max is set and val length is above max -> invalid */
                     (Number.isFinite(rule.iterable.max) && cursor.length > (rule.iterable.max as number))
                 ) continue;
 
@@ -546,10 +551,10 @@ class Validator <T extends RulesRaw> {
                 for (let idx = 0; idx < cursor.length; idx++) {
                     if (!checkField(cursor[idx], rule.list, data as DataObject)) continue partLoop;
 
-                    //  Continue if no uniqueness checks need to happen
+                    /* Continue if no uniqueness checks need to happen */
                     if (!rule.iterable.unique) continue;
 
-                    //  Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique
+                    /* Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique */
                     unique_set.add(fnv1A(cursor[idx]));
                     if (unique_set.size !== (idx + 1)) continue partLoop;
                 }
@@ -564,7 +569,7 @@ class Validator <T extends RulesRaw> {
     }
 
     validate <K extends GenericObject> (data:K):ValidationResult {
-        //  No data passed? Check if rules were set up
+        /* No data passed? Check if rules were set up */
         if (!isObject(data)) {
             const is_valid = this.plan.length === 0;
             return {
@@ -576,10 +581,10 @@ class Validator <T extends RulesRaw> {
 
         const errors:{[key:string]: ValidationError[]} = {};
         for (const part of this.plan) {
-            //  Retrieve cursor that part is run against
+            /* Retrieve cursor that part is run against */
             const cursor = deepGet(data as DataObject, part.key);
 
-            //  If we cant find cursor we need to validate for the 'sometimes' flag
+            /* If we cant find cursor we need to validate for the 'sometimes' flag */
             if (cursor === undefined) {
                 if (!part.sometimes) errors[part.key] = [{msg: 'not_found', params: []}];
                 continue;
@@ -590,7 +595,7 @@ class Validator <T extends RulesRaw> {
             for (const rule of part.rules) {
                 let error_cursor:ValidationError[] = [];
 
-                //  Check for iterable config
+                /* Check for iterable config */
                 if (rule.iterable) {
                     /**
                      * If      not an array -> invalid
@@ -615,7 +620,7 @@ class Validator <T extends RulesRaw> {
                             const evaluation = validateField(cursor[idx], rule.list, data as DataObject);
                             if (!evaluation.is_valid) for (const el of evaluation.errors) error_cursor.push({idx, ...el});
 
-                            //  If no unique map or iterable unique was already turned off continue
+                            /* If no unique map or iterable unique was already turned off continue */
                             if (!unique_set || !iterable_unique) continue;
 
                             /**
@@ -685,10 +690,10 @@ class Validator <T extends RulesRaw> {
             if (typeof val !== 'function') throw new Error('Invalid extension');
         });
 
-        //  Register each rule
+        /* Register each rule */
         RULE_STORE = {...RULE_STORE, ...obj};
 
-        //  Freeze Rule store
+        /* Freeze Rule store */
         FROZEN_RULE_STORE = freezeStore(RULE_STORE);
     }
 
@@ -701,8 +706,8 @@ class Validator <T extends RulesRaw> {
      *      is_animal   : /^((d|D)og|(c|C)at|(h|H)orse)$/g,
      *  });
      * Usage:
-     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'});  // false
-     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'aPple', b: 'Dog'}); // true
+     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'});  false
+     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'aPple', b: 'Dog'}); true
      *
      * @param obj - RegExp kv-map to extend the validator with
      */
@@ -711,25 +716,25 @@ class Validator <T extends RulesRaw> {
             if (Object.prototype.toString.call(val) !== '[object RegExp]') throw new Error('Invalid extension');
         });
 
-        //  For each key in object, check if its value is a function
+        /* For each key in object, check if its value is a function */
         for (const key in obj) {
-            //  Create function and transfer key to it
+            /* Create function and transfer key to it */
             let f = function (val:string):boolean {
-                return typeof val === 'string' && REGEX_STORE.get(this.uid).test(val); // eslint-disable-line no-invalid-this
+                return typeof val === 'string' && REGEX_STORE.get(this.uid).test(val); /* eslint-disable-line no-invalid-this */
             };
 
-            //  eslint-disable-next-line
-            //  @ts-ignore
+            /* eslint-disable-next-line */
+            /* @ts-ignore */
             f.uid = key;
 
             f = f.bind(f);
-            REGEX_STORE.set(key, new RegExp(obj[key])); // Copy regex
+            REGEX_STORE.set(key, new RegExp(obj[key])); /* Copy regex */
 
-            //  Store on map
+            /* Store on map */
             Validator.extendMulti({[key]: f});
         }
 
-        //  Freeze Rule store
+        /* Freeze Rule store */
         FROZEN_RULE_STORE = freezeStore(RULE_STORE);
     }
 
@@ -742,8 +747,8 @@ class Validator <T extends RulesRaw> {
      *      is_pet: ['dog', 'cat'],
      *  });
      * Usage:
-     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'}); // false
-     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'apple', b: 'dog'}); // true
+     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'}); false
+     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'apple', b: 'dog'}); true
      *
      * @param obj - Enumeration kv-map to extend the validator with
      */
@@ -756,29 +761,77 @@ class Validator <T extends RulesRaw> {
             ) throw new Error('Invalid extension');
         });
 
-        //  For each key in object, check if its value is a function
+        /* For each key in object, check if its value is a function */
         for (const key in obj) {
-            //  Convert array to map (also dedupes)
+            /* Convert array to map (also dedupes) */
             const enum_set:Set<ExtEnumValInner> = new Set();
             for (const el of obj[key]) enum_set.add(el);
 
-            //  Create function and transfer key to it
+            /* Create function and transfer key to it */
             let f = function (val:ExtEnumValInner):boolean {
-                return (typeof val === 'string' || Number.isFinite(val)) && ENUM_STORE.get(this.uid).has(val); // eslint-disable-line no-invalid-this,max-len
+                return (typeof val === 'string' || Number.isFinite(val)) && ENUM_STORE.get(this.uid).has(val); /* eslint-disable-line no-invalid-this,max-len */
             };
 
-            //  eslint-disable-next-line
-            //  @ts-ignore
+            /* eslint-disable-next-line */
+            /* @ts-ignore */
             f.uid = key;
 
             f = f.bind(f);
             ENUM_STORE.set(key, enum_set);
 
-            //  Store on map
+            /* Store on map */
             Validator.extendMulti({[key]: f});
         }
 
-        //  Freeze Rule store
+        /* Freeze Rule store */
+        FROZEN_RULE_STORE = freezeStore(RULE_STORE);
+    }
+
+    /**
+     * Extend the validator using a schema kv-map
+     *
+     * Example:
+     *  Validator.extendSchema({
+     *      user: {
+     *          first_name: 'string_ne|min:3',
+     *          last_name: 'string_ne|min:3',
+     *          email: '?email',
+     *          phone: '?phone',
+     *      },
+     *  });
+     *
+     * Usage:
+     *  new Validator({a: 'user', b: '?[unique|min:1]user'}).check({a: {first_name: 'Peter', last_name: 'Vermeulen'}}); true
+     *  new Validator({a: '[unique|min:1]user'}).check({a: [{first_name: false, last_name: 'Vermeulen'}]}); false
+     */
+    static extendSchema (obj:ExtSchema):void {
+        const built_map:Map<string, Validator<RulesRaw>> = new Map();
+        validExtension(obj, (val:ExtSchemaVal, key:string):void => {
+            try {
+                built_map.set(key, new Validator(val));
+            } catch (err) {
+                throw new Error('Invalid extension');
+            }
+        });
+
+        /* For each key in map add to SchemaStore */
+        for (const [key, schema_validator] of built_map.entries()) {
+            let f = function (val:GenericObject):boolean {
+                return SCHEMA_STORE.get(this.uid).check(val);
+            };
+
+            /* eslint-disable-next-line */
+            /* @ts-ignore */
+            f.uid = key;
+
+            f = f.bind(f);
+            SCHEMA_STORE.set(key, schema_validator);
+
+            /* Store on map */
+            Validator.extendMulti({[key]: f});
+        }
+
+        /* Freeze Rule store */
         FROZEN_RULE_STORE = freezeStore(RULE_STORE);
     }
 

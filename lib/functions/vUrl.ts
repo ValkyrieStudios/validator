@@ -2,9 +2,9 @@
 
 /**
  * Validate that a provided value is a url, this allows for query string values as well
- * 
+ *
  * @param val - Value to verify
- * 
+ *
  * @returns {boolean} Whether or not it's valid
  */
 export default function vUrl (val:string):boolean {

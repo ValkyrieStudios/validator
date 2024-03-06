@@ -1873,6 +1873,172 @@ describe('Validator - Core', () => {
         });
     });
 
+    describe('@extendSchema FN', () => {
+        it('Should throw if not provided anything', () => {
+            assert.throws(
+                //  @ts-ignore
+                () => Validator.extendSchema(),
+                new Error('Invalid extension')
+            );
+        });
+
+        it('Should throw if not provided an object', () => {
+            for (const el of CONSTANTS.NOT_OBJECT) {
+                assert.throws(
+                    () => Validator.extendSchema(el),
+                    new Error('Invalid extension')
+                );
+            }
+        });
+
+        it('Should not throw if provided an empty object', () => {
+            assert.doesNotThrow(() => Validator.extendSchema({}));
+        });
+
+        it('Should throw if provided an object where certain schemas are invalid', () => {
+            const uid = guid();
+            const uid2 = guid();
+            assert.throws(
+                /* @ts-ignore */
+                () => Validator.extendSchema({
+                    [uid]: {
+                        first_name: 'string_ne|min:3',
+                        last_name: 'string_ne|min:3',
+                        email: 'email',
+                    },
+                    [uid2]: {
+                        first_name: 'string_ne|min:3',
+                        last_name: 'string_ne|min:3',
+                        email: 42,
+                    },
+                }),
+                new Error('Invalid extension')
+            );
+
+            assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid));
+            assert.ok(!Object.prototype.hasOwnProperty.call(Validator.rules, uid2));
+        });
+
+        it('Should not throw and register rules if provided an object where all schemas are valid', () => {
+            const uid = guid();
+            const uid2 = guid();
+            assert.doesNotThrow(
+                () => Validator.extendSchema({
+                    [uid]: {
+                        first_name: 'string_ne|min:3',
+                        last_name: 'string_ne|min:3',
+                        email: 'email',
+                    },
+                    [uid2]: {
+                        first_name: 'string_ne|min:3',
+                        last_name: 'string_ne|min:3',
+                        email: 'email',
+                        phone: 'phone',
+                    },
+                })
+            );
+
+            assert.ok(Object.prototype.hasOwnProperty.call(Validator.rules, uid));
+            assert.ok(Object.prototype.hasOwnProperty.call(Validator.rules, uid2));
+        });
+
+        it('Should work', () => {
+            const uid = guid();
+            const uid2 = guid();
+            Validator.extendSchema({
+                [uid]: {
+                    first_name: 'string_ne|min:3',
+                    last_name: 'string_ne|min:3',
+                    email: 'email',
+                },
+                [uid2]: {
+                    first_name: 'string_ne|min:3',
+                    last_name: 'string_ne|min:3',
+                    email: 'email',
+                    phone: 'phone',
+                },
+            });
+
+            assert.ok(new Validator({a: `${uid}`}).check({
+                first_name: 'Peter',
+                last_name: 'Vermeulen',
+                email: 'contact@valkyriestudios.be',
+            }));
+            assert.ok(new Validator({a: `${uid}`}).check({
+                first_name: 'Peter',
+                last_name: 'Vermeulen',
+                email: false,
+            }) === false);
+            assert.ok(new Validator({a: `${uid2}`}).check({
+                first_name: 'Peter',
+                last_name: 'Vermeulen',
+                email: 'contact@valkyriestudios.be',
+            }) === false);
+            assert.ok(new Validator({a: `${uid2}`}).check({
+                first_name: 'Peter',
+                last_name: 'Vermeulen',
+                email: 'contact@valkyriestudios.be',
+                phone: '+32 487 61 59 82'
+            }));
+        });
+
+        it('Extensions should also show up as functions in rules', () => {
+            const uid = guid();
+            const uid2 = guid();
+            Validator.extendSchema({
+                [uid]: {
+                    first_name: 'string_ne|min:3',
+                    last_name: 'string_ne|min:3',
+                    email: 'email',
+                },
+                [uid2]: {
+                    first_name: 'string_ne|min:3',
+                    last_name: 'string_ne|min:3',
+                    email: 'email',
+                    phone: 'phone',
+                },
+            });
+
+            assert.ok(Validator.rules[uid] instanceof Function);
+            assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen', email: 'contact@valkyriestudios.be'}));
+            assert.equal(Validator.rules[uid]('fooo'), false);
+
+            assert.ok(Validator.rules[uid2] instanceof Function);
+            assert.ok(Validator.rules[uid2]({
+                first_name: 'Peter',
+                last_name: 'Vermeulen',
+                email: 'contact@valkyriestudios.be',
+                phone: false,
+            }) === false);
+        });
+
+        it('Should allow redefining the same rule', () => {
+            const uid = guid();
+            Validator.extendSchema({
+                [uid]: {
+                    first_name: 'string_ne|min:3',
+                    last_name: 'string_ne|min:3',
+                    email: 'email',
+                },
+            });
+
+            assert.ok(Validator.rules[uid] instanceof Function);
+            assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen', email: 'contact@valkyriestudios.be'}));
+            assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen'}) === false);
+
+            Validator.extendSchema({
+                [uid]: {
+                    first_name: 'string_ne|min:3',
+                    last_name: 'string_ne|min:3',
+                },
+            });
+
+            assert.ok(Validator.rules[uid] instanceof Function);
+            assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen', email: 'contact@valkyriestudios.be'}));
+            assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen'}));
+        });
+    });
+
     describe('Complex validation scenarions', () => {
         it('Should be able to validate complex objects [1]', () => {
             const evaluation = new Validator({
