@@ -95,33 +95,31 @@ Validator.extendEnum({MYENUM: ['dog', 'cat', 'bird', 'donkey', 'cow', 'horse', '
 const vregex = new Validator({a: 'is_hello'});
 Validator.extendRegex({is_hello: /^((h|H)ello|(o|O)la)$/});
 
-Validator.extendSchema({
-    small: {
-        first_name: 'string_ne|min:3',
-        last_name: 'string_ne|min:3',
-        email: 'email',
-    },
-    medium: {
-        first_name: 'string_ne|min:3',
-        last_name: 'string_ne|min:3',
-        email: 'email',
-        phone: 'phone',
-        tz: 'time_zone',
-    },
-    address: {
-        street: 'string_ne|min:3',
-        zip: 'integer|min:1000|max:9999',
-        number: 'string_ne|min:3',
-        city: 'string_ne|min:2',
-    },
-    large: {
-        first_name: 'string_ne|min:3',
-        last_name: 'string_ne|min:3',
-        email: 'email',
-        phone: 'phone',
-        tz: 'time_zone',
-        address: 'address',
-    },
+Validator.extendSchema('small', {
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3',
+    email: 'email',
+});
+Validator.extendSchema('medium', {
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3',
+    email: 'email',
+    phone: 'phone',
+    tz: 'time_zone',
+});
+Validator.extendSchema('address', {
+    street: 'string_ne|min:3',
+    zip: 'integer|min:1000|max:9999',
+    number: 'string_ne|min:3',
+    city: 'string_ne|min:2',
+});
+Validator.extendSchema('large', {
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3',
+    email: 'email',
+    phone: 'phone',
+    tz: 'time_zone',
+    address: 'address',
 });
 
 const vsimple_schema = new Validator({a: 'small'});

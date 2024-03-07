@@ -393,6 +393,77 @@ Validator.extendMulti({
 });
 ```
 
+### Extending the validator with schemas
+Most applications are structured around a series of models, for example a User, Location, Company model. In most real-world scenarios these models will need to be validated the same wherever they're being used. To make this validation easier we've introduced a method to allow extending the validator with a rule that validates an object according to a series of rules.
+
+For example a user model that can contain a first_name, last_name, email, phone and time zone could be registered as follows:
+
+```js
+Validator.extendSchema('user', {
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3',
+    email: 'email',
+    phone: 'phone',
+    zone: 'time_zone',
+});
+
+const v = new Validator({a: 'user'});
+v.check({a: {
+    first_name: 'Peter',
+    last_name: 'Vermeulen',
+    email: 'contact@valkyriestudios.be',
+}}); // false
+v.check({a: {
+    first_name: 'Peter',
+    last_name: 'Vermeulen',
+    email: 'contact@valkyriestudios.be',
+    phone: '(555) 123 4567',
+    zone: 'America/New_York',
+}}); // true
+```
+
+As with all other ways of extending the Validator these defined rules can also be called directly:
+
+```js
+Validator.rules.user({first_name: 'Peter'}); // false
+```
+
+**Quicktip**: When using typescript you can also ensure that your Validator schema extensions stay aligned with your defined types and interfaces. In the following example intellisense will complain about the address schema not being aligned with the address type.
+
+```ts
+import Validator, {TV} from '@valkyriestudios/validator';
+
+type User = {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+}
+
+type Address = {
+    street: string;
+    city: string;
+    zip: string;
+    number: string;
+}
+
+Validator.extendSchema<TV<User>>('user', {
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3',
+    email: 'email',
+    phone: 'phone',
+});
+
+Validator.extendSchema<TV<Address>>('address', {
+    street: 'string_ne|min:2',
+    city: 'string_ne|min:2',
+    number: 'string_ne|min:2',
+    //  Typescript will complain about 'zip' not being part of this
+});
+```
+
+**Quicktip**: Given that Validator is a global singleton it is beneficial to centralize schema extension, as you only need to register them once.
+
 ### Extending the validator with enumerations
 In most real-world scenarios we often need to validate whether or not a provided value is in a fixed set. The above extendMulti example is one way of doing so but in many use cases those predefined sets come from somewhere else. To make it easier to define/use them you can make use of the static `Validator.extendEnum` method.
 
