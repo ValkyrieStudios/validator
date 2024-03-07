@@ -119,8 +119,6 @@ type ExtRegExp      = Record<string, ExtRegExpVal>;
 const REGEX_STORE:Map<string, ExtRegExpVal> = new Map();
 
 /* Used for schema storage using extendSchema */
-type ExtSchemaVal   = RulesRaw;
-type ExtSchema      = Record<string, ExtSchemaVal>;
 const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map();
 
 /* Rule storage */
@@ -184,6 +182,16 @@ type CustomRuleDictionary = Record<string, (...args:any[]) => boolean>;
 type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
 
 /**
+ * Check whether or not a value is a valid extension name
+ *
+ * @param {string} val - Value to verify
+ * @returns {boolean} Whether or not the extension name is valid
+ */
+function validExtensionName (val:string):boolean {
+    return typeof val === 'string' && /^[A-Za-z_\-0-9]{1,}$/g.test(val);
+}
+
+/**
  * Validate whether or not a passed object has valid names/values
  *
  * @param obj - Object to validate
@@ -191,17 +199,16 @@ type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
  *
  * @throws {Error} Will throw if the extension is invalid
  */
-function validExtension  <T> (
+function validExtension <T> (
     obj:Record<string, T>,
     valueFn:(arg0:T, key?:string) => void
 ) {
-    if (
-        !isObject(obj) ||
-        Object.keys(obj).filter(val => !/^[A-Za-z_\-0-9]{1,}$/g.test(val)).length
-    ) throw new Error('Invalid extension');
+    if (!isObject(obj)) throw new Error('Invalid extension');
 
-    /* Validate all values */
-    for (const [key, val] of Object.entries(obj)) valueFn(val, key);
+    for (const [key, val] of Object.entries(obj)) {
+        if (!validExtensionName(key)) throw new Error('Invalid extension');
+        valueFn(val, key);
+    }
 }
 
 /**
@@ -670,7 +677,7 @@ class Validator <T extends RulesRaw> {
      * @param fn - Rule Function (function that returns a boolean and as its first value will get the value being validated)
      */
     static extend (name:string, fn:(...args:any[]) => boolean):void {
-        if (typeof name !== 'string') throw new Error('Invalid extension');
+        if (!validExtensionName(name)) throw new Error('Invalid extension');
         Validator.extendMulti({[name]: fn});
     }
 
@@ -791,45 +798,39 @@ class Validator <T extends RulesRaw> {
      * Extend the validator using a schema kv-map
      *
      * Example:
-     *  Validator.extendSchema({
-     *      user: {
-     *          first_name: 'string_ne|min:3',
-     *          last_name: 'string_ne|min:3',
-     *          email: '?email',
-     *          phone: '?phone',
-     *      },
+     *  Validator.extendSchema('user', {
+     *      first_name: 'string_ne|min:3',
+     *      last_name: 'string_ne|min:3',
+     *      email: '?email',
+     *      phone: '?phone',
      *  });
      *
      * Usage:
      *  new Validator({a: 'user', b: '?[unique|min:1]user'}).check({a: {first_name: 'Peter', last_name: 'Vermeulen'}}); true
      *  new Validator({a: '[unique|min:1]user'}).check({a: [{first_name: false, last_name: 'Vermeulen'}]}); false
      */
-    static extendSchema (obj:ExtSchema):void {
-        const built_map:Map<string, Validator<RulesRaw>> = new Map();
-        validExtension(obj, (val:ExtSchemaVal, key:string):void => {
-            try {
-                built_map.set(key, new Validator(val));
-            } catch (err) {
-                throw new Error('Invalid extension');
-            }
-        });
-
-        /* For each key in map add to SchemaStore */
-        for (const [key, schema_validator] of built_map.entries()) {
-            let f = function (val:GenericObject):boolean {
-                return SCHEMA_STORE.get(this.uid).check(val); /* eslint-disable-line no-invalid-this */
-            };
-
-            /* eslint-disable-next-line */
-            /* @ts-ignore */
-            f.uid = key;
-
-            f = f.bind(f);
-            SCHEMA_STORE.set(key, schema_validator);
-
-            /* Store on map */
-            Validator.extendMulti({[key]: f});
+    static extendSchema <K extends RulesRaw> (name:string, obj:K):void {
+        if (!validExtensionName(name) || !isNeObject(obj)) throw new Error('Invalid extension');
+        let validator:Validator<RulesRaw>;
+        try {
+            validator = new Validator(obj);
+        } catch (err) {
+            throw new Error('Invalid extension');
         }
+
+        let f = function (val:GenericObject):boolean {
+            return SCHEMA_STORE.get(this.uid).check(val); /* eslint-disable-line no-invalid-this */
+        };
+
+        /* eslint-disable-next-line */
+        /* @ts-ignore */
+        f.uid = name;
+
+        f = f.bind(f);
+        SCHEMA_STORE.set(name, validator);
+
+        /* Store on map */
+        Validator.extendMulti({[name]: f});
 
         /* Freeze Rule store */
         FROZEN_RULE_STORE = freezeStore(RULE_STORE);
