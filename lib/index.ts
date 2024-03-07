@@ -817,7 +817,7 @@ class Validator <T extends RulesRaw> {
         /* For each key in map add to SchemaStore */
         for (const [key, schema_validator] of built_map.entries()) {
             let f = function (val:GenericObject):boolean {
-                return SCHEMA_STORE.get(this.uid).check(val);
+                return SCHEMA_STORE.get(this.uid).check(val); /* eslint-disable-line no-invalid-this */
             };
 
             /* eslint-disable-next-line */

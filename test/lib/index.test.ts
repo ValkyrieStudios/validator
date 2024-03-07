@@ -1959,27 +1959,27 @@ describe('Validator - Core', () => {
                 },
             });
 
-            assert.ok(new Validator({a: `${uid}`}).check({
+            assert.ok(new Validator({a: `${uid}`}).check({a: {
                 first_name: 'Peter',
                 last_name: 'Vermeulen',
                 email: 'contact@valkyriestudios.be',
-            }));
-            assert.ok(new Validator({a: `${uid}`}).check({
+            }}));
+            assert.ok(new Validator({a: `${uid}`}).check({a: {
                 first_name: 'Peter',
                 last_name: 'Vermeulen',
                 email: false,
-            }) === false);
-            assert.ok(new Validator({a: `${uid2}`}).check({
+            }}) === false);
+            assert.ok(new Validator({a: `${uid2}`}).check({a: {
                 first_name: 'Peter',
                 last_name: 'Vermeulen',
                 email: 'contact@valkyriestudios.be',
-            }) === false);
-            assert.ok(new Validator({a: `${uid2}`}).check({
+            }}) === false);
+            assert.ok(new Validator({a: `${uid2}`}).check({a: {
                 first_name: 'Peter',
                 last_name: 'Vermeulen',
                 email: 'contact@valkyriestudios.be',
-                phone: '+32 487 61 59 82'
-            }));
+                phone: '+32 487 61 59 82',
+            }}));
         });
 
         it('Extensions should also show up as functions in rules', () => {

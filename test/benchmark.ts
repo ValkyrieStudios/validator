@@ -40,13 +40,13 @@ import Validator                from '../lib/index';
 
 const ROW_TEST_WIDTH    = 60;
 const ROW_OPS_WIDTH     = 20;
-const EXPORT_COLLECTOR  = [];
+const EXPORT_COLLECTOR:{lbl:string, ops:number}[]  = [];
 
 function separator () {
     console.info(''.padEnd(ROW_TEST_WIDTH + ROW_OPS_WIDTH, '-'));
 }
 
-function bench (el, iterations) {
+function bench (el:{lbl:string,fn:(...args:any)=>any}, iterations) {
     let runtime = performance.now();
     for (let i = 0; i < iterations; i++) el.fn();
     runtime = performance.now() - runtime;
@@ -94,6 +94,39 @@ Validator.extendEnum({MYENUM: ['dog', 'cat', 'bird', 'donkey', 'cow', 'horse', '
 
 const vregex = new Validator({a: 'is_hello'});
 Validator.extendRegex({is_hello: /^((h|H)ello|(o|O)la)$/});
+
+Validator.extendSchema({
+    small: {
+        first_name: 'string_ne|min:3',
+        last_name: 'string_ne|min:3',
+        email: 'email',
+    },
+    medium: {
+        first_name: 'string_ne|min:3',
+        last_name: 'string_ne|min:3',
+        email: 'email',
+        phone: 'phone',
+        tz: 'time_zone',
+    },
+    address: {
+        street: 'string_ne|min:3',
+        zip: 'integer|min:1000|max:9999',
+        number: 'string_ne|min:3',
+        city: 'string_ne|min:2',
+    },
+    large: {
+        first_name: 'string_ne|min:3',
+        last_name: 'string_ne|min:3',
+        email: 'email',
+        phone: 'phone',
+        tz: 'time_zone',
+        address: 'address',
+    },
+});
+
+const vsimple_schema = new Validator({a: 'small'});
+const vmedium_schema = new Validator({a: 'medium'});
+const vlarge_schema = new Validator({a: 'large'});
 
 //  Run benchmarks
 for (const el of [
@@ -198,6 +231,74 @@ for (const el of [
             age: 33,
             gender: 'M',
             meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@validate - coldstart - schema/small - valid',
+        fn: () => new Validator({a: 'small'}).validate({a: {
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+        }}),
+    },
+    {
+        lbl: 'Validator@validate - coldstart - schema/small - invalid',
+        fn: () => new Validator({a: 'small'}).validate({a: {
+            first_name: 'Peter',
+            last_name: false,
+            email: 'bla',
+        }}),
+    },
+    {
+        lbl: 'Validator@validate - coldstart - schema/medium - valid',
+        fn: () => new Validator({a: 'medium'}).validate({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+        }),
+    },
+    {
+        lbl: 'Validator@validate - coldstart - schema/medium - invalid',
+        fn: () => new Validator({a: 'medium'}).validate({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+        }),
+    },
+    {
+        lbl: 'Validator@validate - coldstart - schema/large - valid',
+        fn: () => new Validator({a: 'large'}).validate({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+            address: {
+                street: 'Example Rd',
+                zip: 9999,
+                number: '594F',
+                city: 'New York',
+            },
+        }),
+    },
+    {
+        lbl: 'Validator@validate - coldstart - schema/large - invalid',
+        fn: () => new Validator({a: 'large'}).validate({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+            address: {
+                street: 'Example Rd',
+                zip: 9999,
+                number: false,
+                city: 'New York',
+            },
         }),
     },
     //  Baseline - validating pre-existing
@@ -374,6 +475,74 @@ for (const el of [
             meta: {gender_options: ['F', 'M', 'U']},
         }),
     },
+    {
+        lbl: 'Validator@check - coldstart - schema/small - valid',
+        fn: () => new Validator({a: 'small'}).check({a: {
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+        }}),
+    },
+    {
+        lbl: 'Validator@check - coldstart - schema/small - invalid',
+        fn: () => new Validator({a: 'small'}).check({a: {
+            first_name: 'Peter',
+            last_name: false,
+            email: 'bla',
+        }}),
+    },
+    {
+        lbl: 'Validator@check - coldstart - schema/medium - valid',
+        fn: () => new Validator({a: 'medium'}).check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+        }),
+    },
+    {
+        lbl: 'Validator@check - coldstart - schema/medium - invalid',
+        fn: () => new Validator({a: 'medium'}).check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+        }),
+    },
+    {
+        lbl: 'Validator@check - coldstart - schema/large - valid',
+        fn: () => new Validator({a: 'large'}).check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+            address: {
+                street: 'Example Rd',
+                zip: 9999,
+                number: '594F',
+                city: 'New York',
+            },
+        }),
+    },
+    {
+        lbl: 'Validator@check - coldstart - schema/large - invalid',
+        fn: () => new Validator({a: 'large'}).check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+            address: {
+                street: 'Example Rd',
+                zip: 9999,
+                number: false,
+                city: 'New York',
+            },
+        }),
+    },
     //  Baseline - check pre-existing
     {
         lbl: 'Validator@check - existing - simple - valid',
@@ -465,6 +634,74 @@ for (const el of [
             age: 'None of ya business',
             gender: 'M',
             meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@check - existing - schema/small - valid',
+        fn: () => vsimple_schema.check({a: {
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+        }}),
+    },
+    {
+        lbl: 'Validator@check - existing - schema/small - invalid',
+        fn: () => vsimple_schema.check({a: {
+            first_name: 'Peter',
+            last_name: false,
+            email: 'bla',
+        }}),
+    },
+    {
+        lbl: 'Validator@check - existing - schema/medium - valid',
+        fn: () => vmedium_schema.check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+        }),
+    },
+    {
+        lbl: 'Validator@check - existing - schema/medium - invalid',
+        fn: () => vmedium_schema.check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+        }),
+    },
+    {
+        lbl: 'Validator@check - existing - schema/large - valid',
+        fn: () => vlarge_schema.check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+            address: {
+                street: 'Example Rd',
+                zip: 9999,
+                number: '594F',
+                city: 'New York',
+            },
+        }),
+    },
+    {
+        lbl: 'Validator@check - existing - schema/large - invalid',
+        fn: () => vlarge_schema.check({
+            first_name: 'Peter',
+            last_name: 'Vermeulen',
+            email: 'contact@valkyriestudios.be',
+            phone: '(555) 123-4567',
+            tz: 'America/New_York',
+            address: {
+                street: 'Example Rd',
+                zip: 9999,
+                number: false,
+                city: 'New York',
+            },
         }),
     },
     //  Baseline - check enum
