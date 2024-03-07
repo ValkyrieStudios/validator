@@ -9,6 +9,13 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - Validator@extendSchema: Register a rule object as a rule on its own and use it within other Validators
 
+### Improved
+- Dep: Upgrade @valkyriestudios/utils to 12.0.0
+- Dev Dep: Upgrade @types/node to 20.11.25
+- Dev Dep: Upgrade @typescript-eslint/eslint-plugin to 7.1.1
+- Dev Dep: Upgrade @typescript-eslint/parser to 7.1.1
+- Dev Dep: Upgrade typescript to 5.4.2
+
 ## [7.10.0] - 2024-02-27
 ### Improved
 - Validator@validate: Now has a typed return result
