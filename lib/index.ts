@@ -769,7 +769,8 @@ class Validator <T extends RulesRaw> {
      */
     static extendRegex (obj:ExtRegExp):void {
         validExtension(obj, (val:ExtRegExpVal) => {
-            if (Object.prototype.toString.call(val) !== '[object RegExp]') throw new Error('Invalid extension');
+            if (val instanceof RegExp) return;
+            throw new Error('Invalid extension');
         });
 
         /* For each key in object, check if its value is a function */
