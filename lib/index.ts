@@ -297,7 +297,7 @@ function parseRule (raw:string):ValidationRules {
     } else if (/({|}){1,}/.test(cursor)) {
         const start_ix  = cursor.indexOf('{');
         const end_ix    = cursor.indexOf('}');
-        if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Dictionary misconfiguration, verify rule config for ${raw}`);
+        if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
 
         iterable  = getIterableConfig(cursor.substring(0, end_ix), true);
         cursor    = cursor.substring(end_ix + 1);

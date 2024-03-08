@@ -1,6 +1,6 @@
 'use strict';
 
-/* eslint-disable max-lines */
+/* eslint-disable max-lines,max-statements,id-denylist */
 
 import {describe, it}           from 'node:test';
 import * as assert              from 'node:assert/strict';
@@ -203,7 +203,7 @@ describe('Validator - Core', () => {
         });
     });
 
-    describe('@check FN - lexer: iterable', () => {
+    describe('@check FN - lexer: iterable array', () => {
         it('Should throw if passed an invalid iterable config during rule creation', () => {
             assert.throws(
                 () => new Validator({a: '[string'}),
@@ -277,7 +277,7 @@ describe('Validator - Core', () => {
         });
     });
 
-    describe('@check FN - lexer: iterable:unique', () => {
+    describe('@check FN - lexer: iterable array:unique', () => {
         it('Should return valid when array is unique', () => {
             const validator = new Validator({a: '[unique]string'});
             assert.ok(validator.check({a: ['a', 'b', 'c']}));
@@ -309,7 +309,7 @@ describe('Validator - Core', () => {
         });
     });
 
-    describe('@check FN - lexer: iterable:max', () => {
+    describe('@check FN - lexer: iterable array:max', () => {
         it('Should return valid when within boundaries', () => {
             const validator = new Validator({a: '[max:5]string'});
             assert.ok(validator.check({a: ['hello', 'there']}));
@@ -337,7 +337,7 @@ describe('Validator - Core', () => {
         });
     });
 
-    describe('@check FN - lexer: iterable:min', () => {
+    describe('@check FN - lexer: iterable array:min', () => {
         it('Should return valid when within boundaries', () => {
             const validator = new Validator({a: '[min:5]string'});
             assert.ok(validator.check({a: ['hello', 'there', 'this', 'is', 'cool', 'right']}));
@@ -365,7 +365,7 @@ describe('Validator - Core', () => {
         });
     });
 
-    describe('@check FN - lexer: iterable:max+min', () => {
+    describe('@check FN - lexer: iterable array:max+min', () => {
         it('Should return valid when within boundaries', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             assert.ok(validator.check({a: ['hello', 'there', 'cool']}));
@@ -389,6 +389,195 @@ describe('Validator - Core', () => {
         it('Should return invalid when below bottom boundary', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             assert.equal(validator.check({a: ['1']}), false);
+        });
+    });
+
+    describe('@check FN - lexer: iterable object', () => {
+        it('Should throw if passed an invalid iterable config during rule creation', () => {
+            assert.throws(
+                () => new Validator({a: '{string'}),
+                new TypeError('Iterable misconfiguration, verify rule config for {string')
+            );
+
+            assert.throws(
+                () => new Validator({a: '}string'}),
+                new TypeError('Iterable misconfiguration, verify rule config for }string')
+            );
+
+            assert.throws(
+                () => new Validator({a: '}{string'}),
+                new TypeError('Iterable misconfiguration, verify rule config for }{string')
+            );
+        });
+
+        it('Should not throw if passed an iterable config during rule creation', () => {
+            assert.doesNotThrow(() => new Validator({a: '{}string'}));
+        });
+
+        it('Should return invalid when passing a non-object to an iterable', () => {
+            const validator = new Validator({a: '{}string'});
+            assert.equal(validator.check({a: 'hello'}), false);
+        });
+
+        it('Should return valid when passing an empty object to an iterable', () => {
+            const validator = new Validator({a: '{}string'});
+            assert.ok(validator.check({a: {}}));
+        });
+
+        it('Should allow validating an object', () => {
+            const validator = new Validator({a: '{}string'});
+            assert.ok(validator.check({a: {b: 'hello', c: 'there'}}));
+            assert.equal(validator.check({a: {b: 'hello', c: false}}), false);
+            assert.equal(validator.check({a: {b: 'hello', c: false, d: true}}), false);
+        });
+
+        it('Should allow validating an object with a \'?\' sometimes flag', () => {
+            const validator = new Validator({a: '?{}string'});
+            assert.ok(validator.check({a: {b: 'hello', c: 'there'}}));
+            assert.ok(validator.check({}));
+            assert.equal(validator.check({a: {b: 'hello', c: false, d: 'foo', e: true}}), false);
+        });
+
+        it('Should allow validating an object with a \'?\' sometimes flag and parameter pass', () => {
+            const validator = new Validator({a: '?{}string|in:<genders>'});
+            assert.ok(validator.check({a: {b: 'male', c: 'male', d: 'female', e: 'male'}, genders: ['male', 'female', 'other']}));
+            assert.ok(validator.check({genders: ['male', 'female', 'other']}));
+            assert.equal(validator.check({a: {b: 'dog'}, genders: ['male', 'female', 'other']}), false);
+        });
+
+        it('Should allow validating an object with a \'?\' sometimes flag, uniqueness and parameter pass', () => {
+            const validator = new Validator({a: '?{unique}string|in:<genders>'});
+            assert.equal(validator.check({a: {b: 'male', c: 'male', d: 'female', e: 'male'}, genders: ['male', 'female', 'other']}), false);
+            assert.ok(validator.check({a: {b: 'male', c: 'female'}, genders: ['male', 'female', 'other']}));
+        });
+
+        it('Should allow validating an object with a \'!\' not flag and parameter pass', () => {
+            const validator = new Validator({a: '{}string|!in:<genders>'});
+            assert.ok(validator.check({a: {b: 'bob', c: 'bob', d: 'john', e: 'bob', f: 'john'}, genders: ['male', 'female', 'other']}));
+            assert.equal(validator.check({a: {b: 'male', c: 'female', d: 'female'}, genders: ['male', 'female', 'other']}), false);
+            assert.equal(validator.check({a: {b: 'chicken', c: 'dog', d: 'female'}, genders: ['male', 'female', 'other']}), false);
+        });
+
+        it('Should allow validating an object with a \'!\' not flag, uniqueness and parameter pass', () => {
+            const validator = new Validator({a: '{unique}string|!in:<genders>'});
+            assert.ok(validator.check({a: {b: 'bob', c: 'john'}, genders: ['male', 'female', 'other']}));
+            assert.equal(validator.check({a: {b: 'male', c: 'female', d: 'female'}, genders: ['male', 'female', 'other']}), false);
+            assert.equal(validator.check({a: {b: 'chicken', c: 'dog', d: 'female'}, genders: ['male', 'female', 'other']}), false);
+        });
+    });
+
+    describe('@check FN - lexer: iterable object:unique', () => {
+        it('Should return valid when array is unique', () => {
+            const validator = new Validator({a: '{unique}string'});
+            assert.ok(validator.check({a: {b: 'a', c: 'b', d: 'c'}}));
+        });
+
+        it('Should return invalid when array is not unique', () => {
+            const validator = new Validator({a: '{unique}string'});
+            assert.equal(validator.check({a: {b: 'a', c: 'b', d: 'a'}}), false);
+        });
+
+        it('Should return invalid when array is not unique when using numbers', () => {
+            const validator = new Validator({a: '{unique}number'});
+            assert.equal(validator.check({a: {b: 1, c: 2, d: 2}}), false);
+        });
+
+        it('Should return invalid when array is not unique when using objects', () => {
+            const validator = new Validator({a: '{unique}object'});
+            assert.equal(validator.check({a: {b: {a: 1}, c: {b: 2}, d: {b: 2}}}), false);
+        });
+
+        it('Should return invalid when array is not unique and doesnt match rules', () => {
+            const validator = new Validator({a: '{unique}integer'});
+            assert.equal(validator.check({a: {b: 1, c: 2, d: 'a', e: 2}}), false);
+        });
+
+        it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+            const validator = new Validator({a: '{unique}integer'});
+            assert.equal(validator.check({a: {b: 1, c: 2, d: 'a', e: 2, f: 2, g: 2.2}}), false);
+        });
+    });
+
+    describe('@check FN - lexer: iterable object:max', () => {
+        it('Should return valid when within boundaries', () => {
+            const validator = new Validator({a: '{max:5}string'});
+            assert.ok(validator.check({a: {b: 'hello', c: 'there'}}));
+        });
+
+        it('Should return valid when at boundary', () => {
+            const validator = new Validator({a: '{max:5}string'});
+            assert.ok(validator.check({a: {b: '1', c: '2', d: '3', e: '4', f: '5'}}));
+        });
+
+        it('Should return invalid when above boundary', () => {
+            const validator = new Validator({a: '{max:5}string'});
+            assert.equal(validator.check({a: {b: '1', c: '2', d: '3', e: '4', f: '5', g: '6'}}), false);
+        });
+
+        it('Should only return iterable invalidity and not go into val evaluation when above boundary', () => {
+            const validator = new Validator({a: '{max:5}string'});
+            assert.equal(validator.check({a: {b: '1', c: '2', d: '3', e: '4', f: 5, g: '6'}}), false);
+        });
+
+        it('Should return iterable invalidity and go into val evaluation when at or below boundary', () => {
+            const validator = new Validator({a: '{max:5}string'});
+            assert.equal(validator.check({a: {b: '1', c: false, d: false, e: '2', f: false}}), false);
+            assert.equal(validator.check({a: {b: false, c: '1', d: '2', e: '3'}}), false);
+        });
+    });
+
+    describe('@check FN - lexer: iterable object:min', () => {
+        it('Should return valid when within boundaries', () => {
+            const validator = new Validator({a: '{min:5}string'});
+            assert.ok(validator.check({a: {b: 'hello', c: 'there', d: 'this', e: 'is', f: 'cool', g: 'right'}}));
+        });
+
+        it('Should return valid when at boundary', () => {
+            const validator = new Validator({a: '{min:5}string'});
+            assert.ok(validator.check({a: {b: 'hello', c: 'there', d: 'this', e: 'is', f: 'cool'}}));
+        });
+
+        it('Should return invalid when below boundary', () => {
+            const validator = new Validator({a: '{min:3}string'});
+            assert.equal(validator.check({a: {b: '1', c: '2'}}), false);
+        });
+
+        it('Should only return iterable invalidity and not go into val evaluation when below boundary', () => {
+            const validator = new Validator({a: '{min:4}string'});
+            assert.equal(validator.check({a: {b: '1', c: false}}), false);
+        });
+
+        it('Should return iterable invalidity and go into val evaluation when at or above boundary', () => {
+            const validator = new Validator({a: '{min:4}string'});
+            assert.equal(validator.check({a: {b: '1', c: false, d: false, e: '2'}}), false);
+            assert.equal(validator.check({a: {b: '1', c: false, d: '2', e: '3', f: false}}), false);
+        });
+    });
+
+    describe('@check FN - lexer: iterable object:max+min', () => {
+        it('Should return valid when within boundaries', () => {
+            const validator = new Validator({a: '{max:5|min:2}string'});
+            assert.ok(validator.check({a: {b: 'hello', c: 'there', d: 'cool'}}));
+        });
+
+        it('Should return valid when at top boundary', () => {
+            const validator = new Validator({a: '{max:5|min:2}string'});
+            assert.ok(validator.check({a: {b: '1', c: '2', d: '3', e: '4', f: '5'}}));
+        });
+
+        it('Should return invalid when above top boundary', () => {
+            const validator = new Validator({a: '{max:5|min:2}string'});
+            assert.equal(validator.check({a: {b: '1', c: '2', d: '3', e: '4', f: '5', g: '6'}}), false);
+        });
+
+        it('Should return valid when at bottom boundary', () => {
+            const validator = new Validator({a: '{max:5|min:2}string'});
+            assert.ok(validator.check({a: {b: '1', c: '2'}}));
+        });
+
+        it('Should return invalid when below bottom boundary', () => {
+            const validator = new Validator({a: '{max:5|min:2}string'});
+            assert.equal(validator.check({a: {b: '1'}}), false);
         });
     });
 
@@ -654,7 +843,7 @@ describe('Validator - Core', () => {
         });
     });
 
-    describe('@validate FN - lexer: iterable', () => {
+    describe('@validate FN - lexer: iterable array', () => {
         it('Should throw if passed an invalid iterable config during rule creation', () => {
             assert.throws(
                 () => new Validator({a: '[string'}),
@@ -846,7 +1035,7 @@ describe('Validator - Core', () => {
         });
     });
 
-    describe('@validate FN - lexer: iterable:unique', () => {
+    describe('@validate FN - lexer: iterable array:unique', () => {
         it('Should return valid when array is unique', () => {
             const validator = new Validator({a: '[unique]string'});
             const evaluation = validator.validate({a: ['a', 'b', 'c']});
@@ -927,7 +1116,7 @@ describe('Validator - Core', () => {
         });
     });
 
-    describe('@validate FN - lexer: iterable:max', () => {
+    describe('@validate FN - lexer: iterable array:max', () => {
         it('Should return valid when within boundaries', () => {
             const validator = new Validator({a: '[max:5]string'});
             const evaluation = validator.validate({a: ['hello', 'there']});
@@ -996,7 +1185,7 @@ describe('Validator - Core', () => {
         });
     });
 
-    describe('@validate FN - lexer: iterable:min', () => {
+    describe('@validate FN - lexer: iterable array:min', () => {
         it('Should return valid when within boundaries', () => {
             const validator = new Validator({a: '[min:5]string'});
             const evaluation = validator.validate({a: ['hello', 'there', 'this', 'is', 'cool', 'right']});
@@ -1065,7 +1254,7 @@ describe('Validator - Core', () => {
         });
     });
 
-    describe('@validate FN - lexer: iterable:max+min', () => {
+    describe('@validate FN - lexer: iterable array:max+min', () => {
         it('Should return valid when within boundaries', () => {
             const validator = new Validator({a: '[max:5|min:2]string'});
             const evaluation = validator.validate({a: ['hello', 'there', 'cool']});
@@ -1176,6 +1365,195 @@ describe('Validator - Core', () => {
                     ],
                 },
             });
+        });
+    });
+
+    describe('@validate FN - lexer: iterable object', () => {
+        it('Should throw if passed an invalid iterable config during rule creation', () => {
+            assert.throws(
+                () => new Validator({a: '{string'}),
+                new TypeError('Iterable misconfiguration, verify rule config for {string')
+            );
+
+            assert.throws(
+                () => new Validator({a: '}string'}),
+                new TypeError('Iterable misconfiguration, verify rule config for }string')
+            );
+
+            assert.throws(
+                () => new Validator({a: '}{string'}),
+                new TypeError('Iterable misconfiguration, verify rule config for }{string')
+            );
+        });
+
+        it('Should not throw if passed an iterable config during rule creation', () => {
+            assert.doesNotThrow(() => new Validator({a: '{}string'}));
+        });
+
+        it('Should return invalid when passing a non-object to an iterable', () => {
+            const validator = new Validator({a: '{}string'});
+            assert.equal(validator.validate({a: 'hello'}).is_valid, false);
+        });
+
+        it('Should return valid when passing an empty object to an iterable', () => {
+            const validator = new Validator({a: '{}string'});
+            assert.ok(validator.validate({a: {}}).is_valid);
+        });
+
+        it('Should allow validating an object', () => {
+            const validator = new Validator({a: '{}string'});
+            assert.ok(validator.validate({a: {b: 'hello', c: 'there'}}).is_valid);
+            assert.equal(validator.validate({a: {b: 'hello', c: false}}).is_valid, false);
+            assert.equal(validator.validate({a: {b: 'hello', c: false, d: true}}).is_valid, false);
+        });
+
+        it('Should allow validating an object with a \'?\' sometimes flag', () => {
+            const validator = new Validator({a: '?{}string'});
+            assert.ok(validator.validate({a: {b: 'hello', c: 'there'}}).is_valid);
+            assert.ok(validator.validate({}).is_valid);
+            assert.equal(validator.validate({a: {b: 'hello', c: false, d: 'foo', e: true}}).is_valid, false);
+        });
+
+        it('Should allow validating an object with a \'?\' sometimes flag and parameter pass', () => {
+            const validator = new Validator({a: '?{}string|in:<genders>'});
+            assert.ok(validator.validate({a: {b: 'male',  d: 'female', e: 'male'}, genders: ['male', 'female', 'other']}).is_valid);
+            assert.ok(validator.validate({genders: ['male', 'female', 'other']}).is_valid);
+            assert.equal(validator.validate({a: {b: 'dog'}, genders: ['male', 'female', 'other']}).is_valid, false);
+        });
+
+        it('Should allow validating an object with a \'?\' sometimes flag, uniqueness and parameter pass', () => {
+            const validator = new Validator({a: '?{unique}string|in:<genders>'});
+            assert.equal(validator.validate({a: {b: 'male', c: 'male'}, genders: ['male', 'female', 'other']}).is_valid, false);
+            assert.ok(validator.validate({a: {b: 'male', c: 'female'}, genders: ['male', 'female', 'other']}).is_valid);
+        });
+
+        it('Should allow validating an object with a \'!\' not flag and parameter pass', () => {
+            const validator = new Validator({a: '{}string|!in:<genders>'});
+            assert.ok(validator.validate({a: {b: 'bob', d: 'john', e: 'bob', f: 'john'}, genders: ['male', 'female', 'other']}).is_valid);
+            assert.equal(validator.validate({a: {b: 'male', d: 'female'}, genders: ['male', 'female', 'other']}).is_valid, false);
+            assert.equal(validator.validate({a: {b: 'chicken', d: 'female'}, genders: ['male', 'female', 'other']}).is_valid, false);
+        });
+
+        it('Should allow validating an object with a \'!\' not flag, uniqueness and parameter pass', () => {
+            const validator = new Validator({a: '{unique}string|!in:<genders>'});
+            assert.ok(validator.validate({a: {b: 'bob', c: 'john'}, genders: ['male', 'female', 'other']}).is_valid);
+            assert.equal(validator.validate({a: {b: 'male', c: 'female', d: 'female'}, genders: ['male', 'female', 'other']}).is_valid, false); // eslint-disable-line max-len
+            assert.equal(validator.validate({a: {b: 'chicken', c: 'dog', d: 'female'}, genders: ['male', 'female', 'other']}).is_valid, false); // eslint-disable-line max-len
+        });
+    });
+
+    describe('@validate FN - lexer: iterable object:unique', () => {
+        it('Should return valid when array is unique', () => {
+            const validator = new Validator({a: '{unique}string'});
+            assert.ok(validator.validate({a: {b: 'a', c: 'b', d: 'c'}}).is_valid);
+        });
+
+        it('Should return invalid when array is not unique', () => {
+            const validator = new Validator({a: '{unique}string'});
+            assert.equal(validator.validate({a: {b: 'a', c: 'b', d: 'a'}}).is_valid, false);
+        });
+
+        it('Should return invalid when array is not unique when using numbers', () => {
+            const validator = new Validator({a: '{unique}number'});
+            assert.equal(validator.validate({a: {b: 1, c: 2, d: 2}}).is_valid, false);
+        });
+
+        it('Should return invalid when array is not unique when using objects', () => {
+            const validator = new Validator({a: '{unique}object'});
+            assert.equal(validator.validate({a: {b: {a: 1}, c: {b: 2}, d: {b: 2}}}).is_valid, false);
+        });
+
+        it('Should return invalid when array is not unique and doesnt match rules', () => {
+            const validator = new Validator({a: '{unique}integer'});
+            assert.equal(validator.validate({a: {b: 1, c: 2, d: 'a', e: 2}}).is_valid, false);
+        });
+
+        it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+            const validator = new Validator({a: '{unique}integer'});
+            assert.equal(validator.validate({a: {b: 1, c: 2, d: 'a', e: 2, f: 2, g: 2.2}}).is_valid, false);
+        });
+    });
+
+    describe('@validate FN - lexer: iterable object:max', () => {
+        it('Should return valid when within boundaries', () => {
+            const validator = new Validator({a: '{max:5}string'});
+            assert.ok(validator.validate({a: {b: 'hello', c: 'there'}}).is_valid);
+        });
+
+        it('Should return valid when at boundary', () => {
+            const validator = new Validator({a: '{max:5}string'});
+            assert.ok(validator.validate({a: {b: '1', c: '2', d: '3', e: '4', f: '5'}}).is_valid);
+        });
+
+        it('Should return invalid when above boundary', () => {
+            const validator = new Validator({a: '{max:5}string'});
+            assert.equal(validator.validate({a: {b: '1', c: '2', d: '3', e: '4', f: '5', g: '6'}}).is_valid, false);
+        });
+
+        it('Should only return iterable invalidity and not go into val evaluation when above boundary', () => {
+            const validator = new Validator({a: '{max:5}string'});
+            assert.equal(validator.validate({a: {b: '1', c: '2', d: '3', e: '4', f: 5, g: '6'}}).is_valid, false);
+        });
+
+        it('Should return iterable invalidity and go into val evaluation when at or below boundary', () => {
+            const validator = new Validator({a: '{max:5}string'});
+            assert.equal(validator.validate({a: {b: '1', c: false, d: false, e: '2', f: false}}).is_valid, false);
+            assert.equal(validator.validate({a: {b: false, c: '1', d: '2', e: '3'}}).is_valid, false);
+        });
+    });
+
+    describe('@validate FN - lexer: iterable object:min', () => {
+        it('Should return valid when within boundaries', () => {
+            const validator = new Validator({a: '{min:5}string'});
+            assert.ok(validator.validate({a: {b: 'hello', c: 'there', d: 'this', e: 'is', f: 'cool', g: 'right'}}).is_valid);
+        });
+
+        it('Should return valid when at boundary', () => {
+            const validator = new Validator({a: '{min:5}string'});
+            assert.ok(validator.validate({a: {b: 'hello', c: 'there', d: 'this', e: 'is', f: 'cool'}}).is_valid);
+        });
+
+        it('Should return invalid when below boundary', () => {
+            const validator = new Validator({a: '{min:3}string'});
+            assert.equal(validator.validate({a: {b: '1', c: '2'}}).is_valid, false);
+        });
+
+        it('Should only return iterable invalidity and not go into val evaluation when below boundary', () => {
+            const validator = new Validator({a: '{min:4}string'});
+            assert.equal(validator.validate({a: {b: '1', c: false}}).is_valid, false);
+        });
+
+        it('Should return iterable invalidity and go into val evaluation when at or above boundary', () => {
+            const validator = new Validator({a: '{min:4}string'});
+            assert.equal(validator.validate({a: {b: '1', c: false, d: false, e: '2'}}).is_valid, false);
+            assert.equal(validator.validate({a: {b: '1', c: false, d: '2', e: '3', f: false}}).is_valid, false);
+        });
+    });
+
+    describe('@validate FN - lexer: iterable object:max+min', () => {
+        it('Should return valid when within boundaries', () => {
+            const validator = new Validator({a: '{max:5|min:2}string'});
+            assert.ok(validator.validate({a: {b: 'hello', c: 'there', d: 'cool'}}).is_valid);
+        });
+
+        it('Should return valid when at top boundary', () => {
+            const validator = new Validator({a: '{max:5|min:2}string'});
+            assert.ok(validator.validate({a: {b: '1', c: '2', d: '3', e: '4', f: '5'}}).is_valid);
+        });
+
+        it('Should return invalid when above top boundary', () => {
+            const validator = new Validator({a: '{max:5|min:2}string'});
+            assert.equal(validator.validate({a: {b: '1', c: '2', d: '3', e: '4', f: '5', g: '6'}}).is_valid, false);
+        });
+
+        it('Should return valid when at bottom boundary', () => {
+            const validator = new Validator({a: '{max:5|min:2}string'});
+            assert.ok(validator.validate({a: {b: '1', c: '2'}}).is_valid);
+        });
+
+        it('Should return invalid when below bottom boundary', () => {
+            const validator = new Validator({a: '{max:5|min:2}string'});
+            assert.equal(validator.validate({a: {b: '1'}}).is_valid, false);
         });
     });
 
