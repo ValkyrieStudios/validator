@@ -229,12 +229,14 @@ function deepGet (obj:DataObject, path:string):DataVal {
 
     let cursor:DataVal = obj;
     let key:string;
-    while (parts.length) {
+    let len:number = parts.length;
+    while (len) {
         if (!isObject(cursor)) return undefined;
 
         key = parts.shift();
         if (!cursor.hasOwnProperty(key)) return undefined;
         cursor = (cursor as DataObject)[key];
+        len--;
     }
 
     return cursor;
@@ -515,7 +517,11 @@ export type TV <T> = Record<keyof T, string>;
 
 class Validator <T extends RulesRaw> {
 
-    private plan:ValidationGroup[];
+    /* Validation plan */
+    #plan:ValidationGroup[];
+
+    /* Whether or not the validator instance is empty */
+    #is_empty:boolean;
 
     constructor (rules:T) {
         /* Check for rules */
@@ -542,14 +548,15 @@ class Validator <T extends RulesRaw> {
         recursor(rules);
 
         /* Set the parsed plan as a get property on our validation instance */
-        this.plan = plan;
+        this.#plan = plan;
+        this.#is_empty = !plan.length;
     }
 
     check <K extends GenericObject> (data:K):boolean {
         /* No data passed? Check if rules were set up */
-        if (!isObject(data)) return this.plan.length === 0;
+        if (!isObject(data)) return this.#is_empty;
 
-        for (const part of this.plan) {
+        for (const part of this.#plan) {
             /* Retrieve cursor that part is run against */
             const cursor = deepGet(data as DataObject, part.key);
 
@@ -574,9 +581,9 @@ class Validator <T extends RulesRaw> {
                 /* Get len of cursor and check with min/max */
                 const len = rule.iterable.handler.len(cursor);
                 if (
-                    /* rule.iterable.min is set and val length is below the min -> invalid */
+                    /* rule.iterable.min is set and len is below the min -> invalid */
                     (Number.isFinite(rule.iterable.min) && len < (rule.iterable.min as number)) ||
-                    /* rule.iterable.max is set and val length is above max -> invalid */
+                    /* rule.iterable.max is set and len is above max -> invalid */
                     (Number.isFinite(rule.iterable.max) && len > (rule.iterable.max as number))
                 ) continue;
 
@@ -611,22 +618,25 @@ class Validator <T extends RulesRaw> {
     validate <K extends GenericObject> (data:K):ValidationResult {
         /* No data passed? Check if rules were set up */
         if (!isObject(data)) {
-            const is_valid = this.plan.length === 0;
             return {
-                is_valid,
-                count: this.plan.length,
-                errors: is_valid ? {} : 'NO_DATA',
+                is_valid: this.#is_empty,
+                count: this.#plan.length,
+                errors: this.#is_empty ? {} : 'NO_DATA',
             };
         }
 
         const errors:{[key:string]: ValidationError[]} = {};
-        for (const part of this.plan) {
+        let count:number = 0;
+        for (const part of this.#plan) {
             /* Retrieve cursor that part is run against */
             const cursor = deepGet(data as DataObject, part.key);
 
             /* If we cant find cursor we need to validate for the 'sometimes' flag */
             if (cursor === undefined) {
-                if (!part.sometimes) errors[part.key] = [{msg: 'not_found', params: []}];
+                if (!part.sometimes) {
+                    count++;
+                    errors[part.key] = [{msg: 'not_found', params: []}];
+                }
                 continue;
             }
 
@@ -695,13 +705,12 @@ class Validator <T extends RulesRaw> {
             }
 
             if (!has_valid) {
+                count++;
                 errors[part.key] = part.rules.length > 1
                     ? (part_errors as ValidationError[])
                     : (part_errors[0] as ValidationError[]);
             }
         }
-
-        const count = Object.keys(errors).length;
 
         return {is_valid: !count, count, errors};
     }
