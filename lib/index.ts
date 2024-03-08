@@ -811,11 +811,8 @@ class Validator <T extends RulesRaw> {
      */
     static extendEnum (obj:ExtEnum):void {
         validExtension(obj, (val:ExtEnumVal):void => {
-            if (
-                !Array.isArray(val) ||
-                val.length === 0 ||
-                val.filter(el => isNeString(el) || Number.isFinite(el)).length !== val.length
-            ) throw new Error('Invalid extension');
+            if (isNeArray(val) && val.filter(el => isNeString(el) || Number.isFinite(el)).length === val.length) return;
+            throw new Error('Invalid extension');
         });
 
         /* For each key in object, check if its value is a function */
