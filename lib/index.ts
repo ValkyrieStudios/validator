@@ -69,6 +69,11 @@ interface ValidationIterable {
     unique: boolean;
     max: number|boolean;
     min: number|boolean;
+    handler: {
+        typ: (obj:unknown) => boolean;
+        len: (obj:unknown) => number;
+        val: (obj:unknown) => any[];
+    };
 }
 
 interface ValidationRulePart {
@@ -235,6 +240,20 @@ function deepGet (obj:DataObject, path:string):DataVal {
     return cursor;
 }
 
+/* Configuration for an iterable dictionary handler */
+const iterableDictHandler = {
+    typ: isObject,
+    len: (obj:GenericObject) => Object.keys(obj).length,
+    val: (obj:GenericObject) => Object.values(obj),
+};
+
+/* Configuration for an iterable array handler */
+const iterableArrayHandler = {
+    typ: Array.isArray,
+    len: (obj:any[]) => obj.length,
+    val: (obj:any[]) => obj,
+};
+
 /**
  * Parse raw string into iterable configuration
  *
@@ -242,13 +261,14 @@ function deepGet (obj:DataObject, path:string):DataVal {
  *
  * @returns {ValidationIterable} Iterable configuration
  */
-function getIterableConfig (val:string):ValidationIterable {
+function getIterableConfig (val:string, dict:boolean = false):ValidationIterable {
     const max = val.match(/max:\d{1,}/);
     const min = val.match(/min:\d{1,}/);
     return {
         unique  : val.indexOf('unique') >= 0,
         max     : max ? parseInt(`${max[0]}`.split('max:', 2)[1]) : false,
         min     : min ? parseInt(`${min[0]}`.split('min:', 2)[1]) : false,
+        handler : dict ? iterableDictHandler : iterableArrayHandler,
     };
 }
 
@@ -271,6 +291,13 @@ function parseRule (raw:string):ValidationRules {
         if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
 
         iterable  = getIterableConfig(cursor.substring(0, end_ix));
+        cursor    = cursor.substring(end_ix + 1);
+    } else if (/({|}){1,}/.test(cursor)) {
+        const start_ix  = cursor.indexOf('{');
+        const end_ix    = cursor.indexOf('}');
+        if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Dictionary misconfiguration, verify rule config for ${raw}`);
+
+        iterable  = getIterableConfig(cursor.substring(0, end_ix), true);
         cursor    = cursor.substring(end_ix + 1);
     }
 
@@ -541,28 +568,34 @@ class Validator <T extends RulesRaw> {
                     continue;
                 }
 
+                /* If not a valid type for the iterable -> invalid */
+                if (!rule.iterable.handler.typ(cursor)) continue;
+
+                /* Get len of cursor and check with min/max */
+                const len = rule.iterable.handler.len(cursor);
                 if (
-                    /* If not an array -> invalid */
-                    !Array.isArray(cursor) ||
                     /* rule.iterable.min is set and val length is below the min -> invalid */
-                    (Number.isFinite(rule.iterable.min) && cursor.length < (rule.iterable.min as number)) ||
+                    (Number.isFinite(rule.iterable.min) && len < (rule.iterable.min as number)) ||
                     /* rule.iterable.max is set and val length is above max -> invalid */
-                    (Number.isFinite(rule.iterable.max) && cursor.length > (rule.iterable.max as number))
+                    (Number.isFinite(rule.iterable.max) && len > (rule.iterable.max as number))
                 ) continue;
 
                 /**
                  * If rule.iterable.unique is set create map to store hashes and keep tabs
                  * on uniqueness as we run through the array
                  */
-                const unique_set = new Set();
-                for (let idx = 0; idx < cursor.length; idx++) {
-                    if (!checkField(cursor[idx], rule.list, data as DataObject)) continue partLoop;
+                const unique_set    = new Set();
+                const values        = rule.iterable.handler.val(cursor);
+                let cursor_value;
+                for (let idx = 0; idx < len; idx++) {
+                    cursor_value = values[idx];
+                    if (!checkField(cursor_value, rule.list, data as DataObject)) continue partLoop;
 
                     /* Continue if no uniqueness checks need to happen */
                     if (!rule.iterable.unique) continue;
 
                     /* Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique */
-                    unique_set.add(fnv1A(cursor[idx]));
+                    unique_set.add(fnv1A(cursor_value));
                     if (unique_set.size !== (idx + 1)) continue partLoop;
                 }
 
@@ -604,40 +637,47 @@ class Validator <T extends RulesRaw> {
 
                 /* Check for iterable config */
                 if (rule.iterable) {
-                    /**
-                     * If      not an array -> invalid
-                     * Elif    rule.iterable.min is set and val length is below the min -> invalid
-                     * Elif    rule.iterable.max is set and val length is above max -> invalid
-                     * El      iterable validation
-                     */
-                    if (!Array.isArray(cursor)) {
+                    /* Check type */
+                    if (!rule.iterable.handler.typ(cursor)) {
                         error_cursor.push({msg: 'iterable', params: []});
-                    } else if (Number.isFinite(rule.iterable.min) && cursor.length < (rule.iterable.min as number)) {
-                        error_cursor.push({msg: 'iterable_min', params: [rule.iterable.min]});
-                    } else if (Number.isFinite(rule.iterable.max) && cursor.length > (rule.iterable.max as number)) {
-                        error_cursor.push({msg: 'iterable_max', params: [rule.iterable.max]});
                     } else {
+                        const len = rule.iterable.handler.len(cursor);
+
                         /**
-                         * If rule.iterable.unique is set create map to store hashes and keep tabs
-                         * on uniqueness as we run through the array
+                         * if   rule.iterable.min is set and len is below the min -> invalid
+                         * Elif rule.iterable.max is set and len is above max -> invalid
+                         * El   iterable validation
                          */
-                        let iterable_unique = true;
-                        const unique_set = iterable_unique && rule.iterable.unique ? new Set() : false;
-                        for (let idx = 0; idx < cursor.length; idx++) {
-                            const evaluation = validateField(cursor[idx], rule.list, data as DataObject);
-                            if (!evaluation.is_valid) for (const el of evaluation.errors) error_cursor.push({idx, ...el});
-
-                            /* If no unique map or iterable unique was already turned off continue */
-                            if (!unique_set || !iterable_unique) continue;
-
+                        if (Number.isFinite(rule.iterable.min) && len < (rule.iterable.min as number)) {
+                            error_cursor.push({msg: 'iterable_min', params: [rule.iterable.min]});
+                        } else if (Number.isFinite(rule.iterable.max) && len > (rule.iterable.max as number)) {
+                            error_cursor.push({msg: 'iterable_max', params: [rule.iterable.max]});
+                        } else {
                             /**
-                             * Compute fnv hash if uniqueness needs to be checked, if map size differs from
-                             * our current point in the iteration add uniqueness error
+                             * If rule.iterable.unique is set create map to store hashes and keep tabs
+                             * on uniqueness as we run through the array
                              */
-                            unique_set.add(fnv1A(cursor[idx]));
-                            if (unique_set.size !== (idx + 1)) {
-                                iterable_unique = false;
-                                error_cursor.unshift({msg: 'iterable_unique', params: []});
+                            let iterable_unique = true;
+                            const unique_set = iterable_unique && rule.iterable.unique ? new Set() : false;
+                            const values = rule.iterable.handler.val(cursor);
+                            let cursor_value;
+                            for (let idx = 0; idx < len; idx++) {
+                                cursor_value = values[idx];
+                                const evaluation = validateField(cursor_value, rule.list, data as DataObject);
+                                if (!evaluation.is_valid) for (const el of evaluation.errors) error_cursor.push({idx, ...el});
+
+                                /* If no unique map or iterable unique was already turned off continue */
+                                if (!unique_set || !iterable_unique) continue;
+
+                                /**
+                                 * Compute fnv hash if uniqueness needs to be checked, if map size differs from
+                                 * our current point in the iteration add uniqueness error
+                                 */
+                                unique_set.add(fnv1A(cursor_value));
+                                if (unique_set.size !== (idx + 1)) {
+                                    iterable_unique = false;
+                                    error_cursor.unshift({msg: 'iterable_unique', params: []});
+                                }
                             }
                         }
                     }
