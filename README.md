@@ -250,8 +250,8 @@ v.check({password: 'mysecretpass', password_old: 'mysecretpass'}); // false
 v.check({password: 'mysecretpass', password_old: 'myoldpass'}); // true
 ```
 
-### Array validation
-Often, we have to deal with things such as validation of sets of data, good examples might be filters where you can have multi-selection. To tackle the concept of array validation you can treat any rule as an iterable rule by prefixing `[]` in front of it.
+### Array or KV-Map validation
+Often, we have to deal with things such as validation of sets of data, good examples might be filters where you can have multi-selection. To tackle the concept of array or KV-map validation you can treat any rule as an iterable rule by prefixing `[]` in front of it.
 
 For example the rule: `integer|greater_than:0` will validate that the provided value is an integer greater than 0, but if we expect an array of integers that need to be greater than 0 we can use the following: `[]integer|greater_than:0`.
 
@@ -264,14 +264,32 @@ v.check({ids: 5}); // false
 v.check({ids: [5]}); // true
 ```
 
+###### KV-Map (`{}`)
+In case you need to validate a KV-Map where each value needs to be valid according to the same rule swap out the `[]` prefix for `{}`.
+
+```js
+Validator.extendSchema('user', {first_name: 'string_ne|min:2'});
+
+const v = new Validator({users: '{min:1}user'});
+
+v.check({users: {}}); // false
+v.check({users: {
+    peter: {first_name: 'Peter'},
+}}); // true
+v.check({users: {
+    peter: {first_name: 'Peter'},
+    jake: {first_name: null}
+}}); // false
+```
+
 ###### Options
-We understand that array validation requires just a tad more control, as such you can pass the following options to the array iterable in the rule.
+We understand that array or KV-map validation requires just a tad more control, as such you can pass the following options to the iterable in the rule.
 
 | Key | Meaning | Example |
 |-----|---------|---------|
-| unique | Validate that the passed array is unique | \[unique\]integer\|greater_than\:0 |
-| max:val | Validate that they passed array can at max contain X elements | \[max\:5\]integer\|greater\_than\:0 |
-| min:val | Validate that they passed array needs to contain at least X elements | \[min\:5\]integer\|greater\_than\:0 |
+| unique | Validate that the passed array or kv-map is unique | \[unique\]integer\|greater_than\:0 |
+| max:val | Validate that the passed array or kv-map can at max contain X elements | \[max\:5\]integer\|greater\_than\:0 |
+| min:val | Validate that the passed array or kv-map needs to contain at least X elements | \[min\:5\]integer\|greater\_than\:0 |
 
 These options can be combined as well. For example the following rule will ensure that only a unique array with minimum 1 and maximum 4 elements can be passed, and that each element passes a custom rule (see extending) called is\_fruit:
 
