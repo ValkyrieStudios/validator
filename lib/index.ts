@@ -365,7 +365,7 @@ function parseGroup (key:string, raw:string):ValidationGroup {
 
     /* Conditional or group */
     const rules = [];
-    const conditionals = cursor.match(/\([a-zA-Z0-9|?.[\],:<>]{1,}\)/g);
+    const conditionals = cursor.match(/\([a-zA-Z0-9_\-|?.[\],:<>]{1,}\)/g);
     if (!conditionals) {
         rules.push(parseRule(cursor));
     } else {

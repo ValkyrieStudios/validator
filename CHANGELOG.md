@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- **groups**: Fixed an issue where using a rule with a dash or underscore in combination with conditional OR groups (eg: (string_ne|min:1)(false)) would not be correctly validated
+
 ## [8.1.0] - 2024-03-08
 ### Added
 - **iterable**: Ability to validate a kv-map object's values using iterable configuration `{}`. Same options apply as for array iterables (unique, min, max)

@@ -110,6 +110,80 @@ describe('Validator - Core', () => {
         );
     });
 
+    describe('@rules GET', () => {
+        it('Should return the configured rules on the Validator as an object', () => {
+            assert.equal(typeof Validator.rules, 'object');
+        });
+
+        it('Should return a correct kv-map of configured rules', () => {
+            assert.deepEqual(Validator.rules, {
+                alpha_num_spaces            : vAlphaNumSpaces,
+                alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
+                array                       : Array.isArray,
+                array_ne                    : Is.NeArray,
+                between                     : vBetween,
+                between_inc                 : vBetweenInclusive,
+                boolean                     : Is.Boolean,
+                color_hex                   : vColorHex,
+                continent                   : vContinent,
+                country                     : vCountry,
+                country_alpha3              : vCountryAlpha3,
+                date                        : Is.Date,
+                date_string                 : vDateString,
+                email                       : vEmail,
+                equal_to                    : Is.Eq,
+                false                       : vFalse,
+                function                    : Is.Function,
+                async_function              : Is.AsyncFunction,
+                geo_latitude                : vGeoLatitude,
+                geo_longitude               : vGeoLongitude,
+                greater_than                : vGreaterThan,
+                greater_than_or_equal       : vGreaterThanOrEqual,
+                guid                        : vGuid,
+                in                          : vIn,
+                integer                     : Number.isInteger,
+                less_than                   : vLessThan,
+                less_than_or_equal          : vLessThanOrEqual,
+                max                         : vLessThanOrEqual,
+                min                         : vGreaterThanOrEqual,
+                number                      : Number.isFinite,
+                object                      : Is.Object,
+                object_ne                   : Is.NeObject,
+                phone                       : vPhone,
+                required                    : vRequired,
+                size                        : vSize,
+                string                      : Is.String,
+                string_ne                   : Is.NeString,
+                sys_mac                     : vSysMac,
+                sys_ipv4                    : vSysIPv4,
+                sys_ipv6                    : vSysIPv6,
+                sys_ipv4_or_v6              : vSysIPv4_or_v6,
+                sys_port                    : vSysPort,
+                time_zone                   : vTimeZone,
+                true                        : vTrue,
+                url                         : vUrl,
+                url_noquery                 : vUrlNoQuery,
+                url_img                     : vUrlImage,
+                gt                          : vGreaterThan,
+                gte                         : vGreaterThanOrEqual,
+                lt                          : vLessThan,
+                lte                         : vLessThanOrEqual,
+                eq                          : Is.Eq,
+            });
+        });
+
+        it('Should return a immutable frozen version of the configured rules', () => {
+            const rules = Validator.rules;
+            assert.ok(Object.isFrozen(rules));
+        });
+
+        it('Should take into account extended rules', () => {
+            const fn = () => true;
+            Validator.extend('myfunction', fn);
+            assert.equal(Validator.rules.myfunction, fn);
+        });
+    });
+
     describe('@check FN', () => {
         it('Should return false when invalid', () => {
             assert.equal(new Validator({a: 'number', b: 'number'}).check({a: 20, b: false}), false);
@@ -586,6 +660,16 @@ describe('Validator - Core', () => {
             const validator = new Validator({a: '([max:5|min:2]string)(false)'});
             assert.ok(validator.check({a: ['hello', 'there', 'cool']}));
             assert.ok(validator.check({a: false}));
+        });
+
+        it('Should return valid when using rules with an underscore in them and one of them is valid', () => {
+            assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).check({a: 'hello'}));
+            assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).check({a: false}));
+        });
+
+        it('Should return valid when using rules with a dash in them and one of them is valid', () => {
+            Validator.extend('my-test-rule', val => val === true);
+            assert.ok(new Validator({a: '(my-test-rule)(false)'}).check({a: true}));
         });
 
         it('Should return valid when all rules are valid', () => {
@@ -1570,6 +1654,19 @@ describe('Validator - Core', () => {
             );
         });
 
+        it('Should return valid when using rules with an underscore in them and one of them is valid', () => {
+            assert.deepEqual(new Validator({
+                a: '(string_ne|min:1|max:128)(false)',
+            }).validate({a: 'hello'}), {is_valid: true, count: 0, errors: {}});
+        });
+
+        it('Should return valid when using rules with a dash in them and one of them is valid', () => {
+            Validator.extend('my-test-rule', val => val === true);
+            assert.deepEqual(new Validator({
+                a: '(my-test-rule)(false)',
+            }).validate({a: true}), {is_valid: true, count: 0, errors: {}});
+        });
+
         it('Should return valid when all rules are valid', () => {
             const validator = new Validator({a: '([max:5|min:2]string)([max:5|min:3]string_ne)'});
             assert.deepEqual(
@@ -1661,80 +1758,6 @@ describe('Validator - Core', () => {
                 validator.validate({a: ['other'], nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}),
                 {is_valid: true, count: 0, errors: {}}
             );
-        });
-    });
-
-    describe('@rules GET', () => {
-        it('Should return the configured rules on the Validator as an object', () => {
-            assert.equal(typeof Validator.rules, 'object');
-        });
-
-        it('Should return a correct kv-map of configured rules', () => {
-            assert.deepEqual(Validator.rules, {
-                alpha_num_spaces            : vAlphaNumSpaces,
-                alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
-                array                       : Array.isArray,
-                array_ne                    : Is.NeArray,
-                between                     : vBetween,
-                between_inc                 : vBetweenInclusive,
-                boolean                     : Is.Boolean,
-                color_hex                   : vColorHex,
-                continent                   : vContinent,
-                country                     : vCountry,
-                country_alpha3              : vCountryAlpha3,
-                date                        : Is.Date,
-                date_string                 : vDateString,
-                email                       : vEmail,
-                equal_to                    : Is.Eq,
-                false                       : vFalse,
-                function                    : Is.Function,
-                async_function              : Is.AsyncFunction,
-                geo_latitude                : vGeoLatitude,
-                geo_longitude               : vGeoLongitude,
-                greater_than                : vGreaterThan,
-                greater_than_or_equal       : vGreaterThanOrEqual,
-                guid                        : vGuid,
-                in                          : vIn,
-                integer                     : Number.isInteger,
-                less_than                   : vLessThan,
-                less_than_or_equal          : vLessThanOrEqual,
-                max                         : vLessThanOrEqual,
-                min                         : vGreaterThanOrEqual,
-                number                      : Number.isFinite,
-                object                      : Is.Object,
-                object_ne                   : Is.NeObject,
-                phone                       : vPhone,
-                required                    : vRequired,
-                size                        : vSize,
-                string                      : Is.String,
-                string_ne                   : Is.NeString,
-                sys_mac                     : vSysMac,
-                sys_ipv4                    : vSysIPv4,
-                sys_ipv6                    : vSysIPv6,
-                sys_ipv4_or_v6              : vSysIPv4_or_v6,
-                sys_port                    : vSysPort,
-                time_zone                   : vTimeZone,
-                true                        : vTrue,
-                url                         : vUrl,
-                url_noquery                 : vUrlNoQuery,
-                url_img                     : vUrlImage,
-                gt                          : vGreaterThan,
-                gte                         : vGreaterThanOrEqual,
-                lt                          : vLessThan,
-                lte                         : vLessThanOrEqual,
-                eq                          : Is.Eq,
-            });
-        });
-
-        it('Should return a immutable frozen version of the configured rules', () => {
-            const rules = Validator.rules;
-            assert.ok(Object.isFrozen(rules));
-        });
-
-        it('Should take into account extended rules', () => {
-            const fn = () => true;
-            Validator.extend('myfunction', fn);
-            assert.equal(Validator.rules.myfunction, fn);
         });
     });
 
