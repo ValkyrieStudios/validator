@@ -127,6 +127,7 @@ const REGEX_STORE:Map<string, ExtRegExpVal> = new Map();
 const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map();
 
 /* Rule storage */
+type RuleFn = (...args:any[]) => boolean;
 type DefaultRuleDictionary = {
     alpha_num_spaces: typeof vAlphaNumSpaces;
     alpha_num_spaces_multiline: typeof vAlphaNumSpaces;
@@ -182,7 +183,7 @@ type DefaultRuleDictionary = {
     eq: typeof isEqual;
 };
 
-type CustomRuleDictionary = Record<string, (...args:any[]) => boolean>;
+type CustomRuleDictionary = Record<string, RuleFn>;
 
 type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
 
@@ -406,8 +407,10 @@ function validateField (
 } {
     const errors:ValidationError[] = [];
     for (const rule of list) {
+        const rulefn = RULE_STORE.get(rule.type);
+
         /* Check if rule exists */
-        if (!RULE_STORE[rule.type]) {
+        if (!rulefn) {
             errors.push({msg: 'rule_not_found', params: [rule.type]});
             continue;
         }
@@ -417,7 +420,7 @@ function validateField (
         for (const p of rule.params) params.push(typeof p === 'function' ? p(data) : p);
 
         /* Run rule - if check fails (not valid && not not | not && valid) push into errors */
-        const rule_valid = RULE_STORE[rule.type](cursor, ...params);
+        const rule_valid = rulefn(cursor, ...params);
         if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) {
             errors.push({msg: `${rule.not ? 'not_' : ''}${rule.type}`, params});
         }
@@ -441,15 +444,17 @@ function checkField (
     data:DataObject
 ):boolean {
     for (const rule of list) {
+        const rulefn = RULE_STORE.get(rule.type);
+
         /* Check if rule exists */
-        if (!RULE_STORE[rule.type]) return false;
+        if (!rulefn) return false;
 
         /* Get params that need to be passed, each param is either a function or a primitive */
         const params = [];
         for (const p of rule.params) params.push(typeof p === 'function' ? p(data) : p);
 
         /* Run rule - if check fails (not valid && not not | not && valid) */
-        const rule_valid = RULE_STORE[rule.type](cursor, ...params);
+        const rule_valid = rulefn(cursor, ...params);
         if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) return false;
     }
 
@@ -487,65 +492,66 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
  *
  * @returns Frozen rule store
  */
-function freezeStore (store:RuleDictionary):Readonly<RuleDictionary>  {
-    return Object.freeze({...store});
+function freezeStore (dict:Map<string, RuleFn>):Readonly<RuleDictionary>  {
+    const store = {} as RuleDictionary;
+    for (const [key, value] of dict.entries()) store[key] = value;
+    return Object.freeze(store);
 }
 
-let RULE_STORE:RuleDictionary = {
-    alpha_num_spaces            : vAlphaNumSpaces,
-    alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
-    array                       : Array.isArray,
-    array_ne                    : isNeArray,
-    between                     : vBetween,
-    between_inc                 : vBetweenInclusive,
-    boolean                     : isBoolean,
-    color_hex                   : vColorHex,
-    continent                   : vContinent,
-    country                     : vCountry,
-    country_alpha3              : vCountryAlpha3,
-    date                        : isDate,
-    date_string                 : vDateString,
-    email                       : vEmail,
-    equal_to                    : isEqual,
-    false                       : vFalse,
-    function                    : isFunction,
-    async_function              : isAsyncFunction,
-    geo_latitude                : vGeoLatitude,
-    geo_longitude               : vGeoLongitude,
-    greater_than                : vGreaterThan,
-    greater_than_or_equal       : vGreaterThanOrEqual,
-    guid                        : vGuid,
-    in                          : vIn,
-    integer                     : Number.isInteger,
-    less_than                   : vLessThan,
-    less_than_or_equal          : vLessThanOrEqual,
-    max                         : vLessThanOrEqual,
-    min                         : vGreaterThanOrEqual,
-    number                      : Number.isFinite,
-    object                      : isObject,
-    object_ne                   : isNeObject,
-    phone                       : vPhone,
-    required                    : vRequired,
-    size                        : vSize,
-    string                      : isString,
-    string_ne                   : isNeString,
-    sys_mac                     : vSysMac,
-    sys_ipv4                    : vSysIPv4,
-    sys_ipv6                    : vSysIPv6,
-    sys_ipv4_or_v6              : vSysIPv4_or_v6,
-    sys_port                    : vSysPort,
-    time_zone                   : vTimeZone,
-    true                        : vTrue,
-    url                         : vUrl,
-    url_noquery                 : vUrlNoQuery,
-    url_img                     : vUrlImage,
-    /* Aliases */
-    gt                          : vGreaterThan,
-    gte                         : vGreaterThanOrEqual,
-    lt                          : vLessThan,
-    lte                         : vLessThanOrEqual,
-    eq                          : isEqual,
-};
+const RULE_STORE:Map<string, RuleFn> = new Map([
+    ['alpha_num_spaces', vAlphaNumSpaces],
+    ['alpha_num_spaces_multiline', vAlphaNumSpacesMultiline],
+    ['array', Array.isArray],
+    ['array_ne', isNeArray],
+    ['between', vBetween],
+    ['between_inc', vBetweenInclusive],
+    ['boolean', isBoolean],
+    ['color_hex', vColorHex],
+    ['continent', vContinent],
+    ['country', vCountry],
+    ['country_alpha3', vCountryAlpha3],
+    ['date', isDate],
+    ['date_string', vDateString],
+    ['email', vEmail],
+    ['equal_to', isEqual],
+    ['false', vFalse],
+    ['function', isFunction],
+    ['async_function', isAsyncFunction],
+    ['geo_latitude', vGeoLatitude],
+    ['geo_longitude', vGeoLongitude],
+    ['greater_than', vGreaterThan],
+    ['greater_than_or_equal', vGreaterThanOrEqual],
+    ['guid', vGuid],
+    ['in', vIn],
+    ['integer', Number.isInteger],
+    ['less_than', vLessThan],
+    ['less_than_or_equal', vLessThanOrEqual],
+    ['max', vLessThanOrEqual],
+    ['min', vGreaterThanOrEqual],
+    ['number', Number.isFinite],
+    ['object', isObject],
+    ['object_ne', isNeObject],
+    ['phone', vPhone],
+    ['required', vRequired],
+    ['size', vSize],
+    ['string', isString],
+    ['string_ne', isNeString],
+    ['sys_mac', vSysMac],
+    ['sys_ipv4', vSysIPv4],
+    ['sys_ipv6', vSysIPv6],
+    ['sys_ipv4_or_v6', vSysIPv4_or_v6],
+    ['sys_port', vSysPort],
+    ['time_zone', vTimeZone],
+    ['true', vTrue],
+    ['url', vUrl],
+    ['url_noquery', vUrlNoQuery],
+    ['url_img', vUrlImage],
+    ['gt', vGreaterThan],
+    ['gte', vGreaterThanOrEqual],
+    ['lt', vLessThan],
+    ['lte', vLessThanOrEqual],
+    ['eq', isEqual],
+] as [string, RuleFn][]);
 
 let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
 
@@ -745,7 +751,7 @@ class Validator <T extends RulesRaw> {
      * @param name - Name of the rule you want to add
      * @param fn - Rule Function (function that returns a boolean and as its first value will get the value being validated)
      */
-    static extend (name:string, fn:(...args:any[]) => boolean):void {
+    static extend (name:string, fn:RuleFn):void {
         if (!validExtensionName(name)) throw new Error('Invalid extension');
         Validator.extendMulti({[name]: fn});
     }
@@ -767,7 +773,7 @@ class Validator <T extends RulesRaw> {
         });
 
         /* Register each rule */
-        RULE_STORE = {...RULE_STORE, ...obj};
+        for (const [key, value] of Object.entries(obj)) RULE_STORE.set(key, value);
 
         /* Freeze Rule store */
         FROZEN_RULE_STORE = freezeStore(RULE_STORE);
