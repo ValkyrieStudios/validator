@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- perf: Improved performance of Validator construction by ~5-10%
+- perf: Improved performance of Validator coldstart validation by ~5-40% (depending on the size of ruleset)
+- perf: Improved performance of Validator coldstart checks by ~5-40% (depending on the size of ruleset)
+- perf: Improved performance of Existing Validator checks by ~5-7% (depending on the size of ruleset)
+- perf: Improved performance of direct-access enum rules (Validator.rules.*) by ~15-20%
+- perf: Known degradation of ~10% for coldstart validation of Validators with grouped rules eg: '(string_ne)(false)'
+
 ## [8.1.1] - 2024-03-09
 ### Fixed
 - **groups**: Fixed an issue where using a rule with a dash or underscore in combination with conditional OR groups (eg: (string_ne|min:1)(false)) would not be correctly validated due to a regex mismatch when parsing

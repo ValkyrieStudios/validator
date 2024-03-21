@@ -193,7 +193,7 @@ type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
  * @returns {boolean} Whether or not the extension name is valid
  */
 function validExtensionName (val:string):boolean {
-    return typeof val === 'string' && /^[A-Za-z_\-0-9]{1,}$/g.test(val);
+    return typeof val === 'string' && val.match(/^[A-Za-z_\-0-9]+?$/g) !== null;
 }
 
 /**
@@ -264,14 +264,26 @@ const iterableArrayHandler = {
  * @returns {ValidationIterable} Iterable configuration
  */
 function getIterableConfig (val:string, dict:boolean = false):ValidationIterable {
-    const max = val.match(/max:\d{1,}/);
-    const min = val.match(/min:\d{1,}/);
-    return {
-        unique  : val.indexOf('unique') >= 0,
-        max     : max ? parseInt(`${max[0]}`.split('max:', 2)[1]) : false,
-        min     : min ? parseInt(`${min[0]}`.split('min:', 2)[1]) : false,
-        handler : dict ? iterableDictHandler : iterableArrayHandler,
-    };
+    const unique = val.includes('unique');
+    let max:number|boolean = false;
+    let min:number|boolean = false;
+    const len = val.length;
+
+    // Extracting max and min values
+    const max_ix = val.indexOf('max:');
+    const min_ix = val.indexOf('min:');
+
+    if (max_ix !== -1) {
+        const end_ix = val.indexOf('|', max_ix);
+        max = parseInt(val.slice(max_ix + 4, end_ix !== -1 ? end_ix : len));
+    }
+
+    if (min_ix !== -1) {
+        const end_ix = val.indexOf('|', min_ix);
+        min = parseInt(val.slice(min_ix + 4, end_ix !== -1 ? end_ix : len));
+    }
+
+    return {unique, max, min, handler: dict ? iterableDictHandler : iterableArrayHandler};
 }
 
 /**
@@ -287,14 +299,14 @@ function parseRule (raw:string):ValidationRules {
 
     /* ([...]) Check for iterable behavior */
     let iterable:ValidationIterable|false = false;
-    if (/(\[|\]){1,}/.test(cursor)) {
+    if (cursor.indexOf('[') >= 0 || cursor.indexOf(']') >= 0) {
         const start_ix  = cursor.indexOf('[');
         const end_ix    = cursor.indexOf(']');
         if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
 
         iterable  = getIterableConfig(cursor.substring(0, end_ix));
         cursor    = cursor.substring(end_ix + 1);
-    } else if (/({|}){1,}/.test(cursor)) {
+    } else if (cursor.indexOf('{') >= 0 || cursor.indexOf('}') >= 0) {
         const start_ix  = cursor.indexOf('{');
         const end_ix    = cursor.indexOf('}');
         if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
@@ -328,12 +340,12 @@ function parseRule (raw:string):ValidationRules {
                 for (let i = 0; i < params.length; i++) {
                     let param = params[i] as string;
                     if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
+                        param = param.substring(1, param.length - 1);
                         /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
-                        if (!/^[a-zA-Z0-9_.]{1,}$/ig.test(param.substr(1, param.length - 2))) {
+                        if (!param.match(/^[a-zA-Z0-9_.]+?$/ig)) {
                             throw new TypeError(`Parameterization misconfiguration, verify rule config for ${raw}`);
                         }
 
-                        param = param.substr(1, param.length - 2);
                         params[i] = (data:DataObject) => deepGet(data, param);
                     } else {
                         params[i] = param;
@@ -365,11 +377,11 @@ function parseGroup (key:string, raw:string):ValidationGroup {
 
     /* Conditional or group */
     const rules = [];
-    const conditionals = cursor.match(/\([a-zA-Z0-9_\-|?.[\],:<>]{1,}\)/g);
+    const conditionals = cursor.match(/\([^()]+?\)/g);
     if (!conditionals) {
         rules.push(parseRule(cursor));
     } else {
-        for (const el of conditionals) rules.push(parseRule(el.replace(/(\(|\))/g, '')));
+        for (const el of conditionals) rules.push(parseRule(el.replace('(', '').replace(')', '')));
     }
 
     return {key, sometimes, rules};
@@ -442,6 +454,30 @@ function checkField (
     }
 
     return true;
+}
+
+/**
+ * Recursor used during validator construction to parse and convert a raw rule object into a validation plan
+ * 
+ * @param {ValidationGroup[]} plan - Plan accumulator
+ * @param {RulesRawVal} val - Raw rules value cursor
+ * @param {string?} key - Cursor key prefix (used when recursing in sub structure)
+ */
+function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
+    /**
+     * If   the cursor is a string -> parse
+     * Elif the cursor is an object -> recurse
+     * El   throw error as misconfiguration
+     */
+    if (typeof val === 'string') {
+        if (val.trim().length === 0) throw new TypeError('Rule value is empty');
+        plan.push(parseGroup(key, val));
+    } else if (isObject(val)) {
+        for (const val_key in val) recursor(plan, val[val_key], key ? `${key}.${val_key}` : val_key);
+    } else {
+        /* Throw a type error if neither a string nor an object */
+        throw new TypeError('Invalid rule value');
+    }
 }
 
 /**
@@ -529,23 +565,7 @@ class Validator <T extends RulesRaw> {
 
         /* Recursively parse our validation rules, to allow for deeply nested validation to be done */
         const plan:ValidationGroup[] = [];
-        function recursor (val:RulesRawVal, key?:string):void {
-            /**
-             * If   the cursor is a string -> parse
-             * Elif the cursor is an object -> recurse
-             * El   throw error as misconfiguration
-             */
-            if (typeof val === 'string') {
-                if (val.trim().length === 0) throw new TypeError('Rule value is empty');
-                plan.push(parseGroup(key, val));
-            } else if (isObject(val)) {
-                for (const val_key in val) recursor(val[val_key], key ? `${key}.${val_key}` : val_key);
-            } else {
-                /* Throw a type error if neither a string nor an object */
-                throw new TypeError('Invalid rule value');
-            }
-        }
-        recursor(rules);
+        recursor(plan, rules);
 
         /* Set the parsed plan as a get property on our validation instance */
         this.#plan = plan;
@@ -562,8 +582,8 @@ class Validator <T extends RulesRaw> {
 
             /* If we cant find cursor we need to validate for the 'sometimes' flag */
             if (cursor === undefined) {
-                if (part.sometimes) continue;
-                return false;
+                if (!part.sometimes) return false;
+                continue;
             }
 
             /* Go through rules in cursor: if all of them are invalid return false immediately */
@@ -777,7 +797,7 @@ class Validator <T extends RulesRaw> {
         for (const key in obj) {
             /* Create function and transfer key to it */
             let f = function (val:string):boolean {
-                return typeof val === 'string' && REGEX_STORE.get(this.uid).test(val); /* eslint-disable-line no-invalid-this */
+                return typeof val === 'string' && val.match(REGEX_STORE.get(this.uid)) !== null; /* eslint-disable-line no-invalid-this */
             };
 
             /* eslint-disable-next-line */
