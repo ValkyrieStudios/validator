@@ -1,6 +1,6 @@
 'use strict';
 
-/* eslint-disable max-len,no-console,no-unused-vars */
+/* eslint-disable max-len,max-lines,no-console,no-unused-vars */
 
 import * as fs from 'node:fs';
 
