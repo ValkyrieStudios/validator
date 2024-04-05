@@ -7,7 +7,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
-- **perf**: Improved performance of rule parsing/validator construction thanks to precompiled regexes and favoring test over match
+- **perf**: Improved performance of rule parsing/validator construction by ~5% thanks to precompiled regexes and favoring test over match
 - **perf**: rule - alpha_num_spaces: Improved performance by ~5-10% due to optimizing regex usage
 - **perf**: rule - alpha_num_spaces_multiline: Improved performance by ~5-10% due to optimizing regex usage
 - **perf**: rule - color_hex: Improved performance by ~5-25% due to optimizing regex usage
