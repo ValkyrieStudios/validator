@@ -463,7 +463,7 @@ function checkField (
 
 /**
  * Recursor used during validator construction to parse and convert a raw rule object into a validation plan
- * 
+ *
  * @param {ValidationGroup[]} plan - Plan accumulator
  * @param {RulesRawVal} val - Raw rules value cursor
  * @param {string?} key - Cursor key prefix (used when recursing in sub structure)
@@ -843,7 +843,7 @@ class Validator <T extends RulesRaw> {
 
         /* For each key in object, check if its value is a function */
         for (const key in obj) {
-            /* Convert array to map (also dedupes) */
+            /* Convert array to set (also dedupes) */
             const enum_set:Set<ExtEnumValInner> = new Set();
             for (const el of obj[key]) enum_set.add(el);
 
