@@ -15,6 +15,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - **perf**: rule - country_alpha3: Minor ~5% performance improvement due to dropping unnecessary type check
 - **perf**: rule - continent: Minor ~5% performance improvement due to dropping unnecessary type check
 - **perf**: rule - time_zone: Minor ~5% performance improvement due to dropping unnecessary type check
+- **perf**: rule - email: ~50% performance improvement due to optimizing regex usage
+- **perf**: rule - guid: Improved performance by ~5-10% due to optimizing regex usage
+- **perf**: rule - phone: Improved performance by ~5-10% due to optimizing regex usage and reducing operations
 - **deps**: Upgrade @valkyriestudios/utils to 12.1.0
 - **deps**: Upgrade @types/node to 10.12.4
 - **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.5.0
