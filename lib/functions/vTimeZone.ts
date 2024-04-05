@@ -79,5 +79,5 @@ const SET = new Set([
  * @returns {boolean} Whether or not it's valid
  */
 export default function vTimeZone (val:string):boolean {
-    return typeof val === 'string' && SET.has(val);
+    return SET.has(val);
 }

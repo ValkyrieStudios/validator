@@ -10,5 +10,5 @@ const SET = new Set(['AFG', 'ALB', 'DZA', 'ASM', 'AND', 'AGO', 'AIA', 'ATA', 'AT
  * @returns {boolean} Whether or not it's valid
  */
 export default function vCountryAlpha3 (val:string):boolean {
-    return typeof val === 'string' && SET.has(val);
+    return SET.has(val);
 }
