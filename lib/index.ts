@@ -187,6 +187,12 @@ type CustomRuleDictionary = Record<string, RuleFn>;
 
 type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
 
+/* Regexes used in processing */
+const RGX_PARAM_NAME    = /^[a-zA-Z0-9_.]+?$/i;
+const RGX_EXT_NAME      = /^[A-Za-z_\-0-9]+?$/;
+const RGX_GROUP         = /\([^()]+?\)/;
+const RGX_GROUP_MATCH   = /\([^()]+?\)/g;
+
 /**
  * Check whether or not a value is a valid extension name
  *
@@ -194,7 +200,7 @@ type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
  * @returns {boolean} Whether or not the extension name is valid
  */
 function validExtensionName (val:string):boolean {
-    return typeof val === 'string' && val.match(/^[A-Za-z_\-0-9]+?$/g) !== null;
+    return typeof val === 'string' && RGX_EXT_NAME.test(val);
 }
 
 /**
@@ -343,7 +349,7 @@ function parseRule (raw:string):ValidationRules {
                     if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
                         param = param.substring(1, param.length - 1);
                         /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
-                        if (!param.match(/^[a-zA-Z0-9_.]+?$/ig)) {
+                        if (!RGX_PARAM_NAME.test(param)) {
                             throw new TypeError(`Parameterization misconfiguration, verify rule config for ${raw}`);
                         }
 
@@ -377,15 +383,14 @@ function parseGroup (key:string, raw:string):ValidationGroup {
     if (sometimes) cursor = cursor.substring(1);
 
     /* Conditional or group */
-    const rules = [];
-    const conditionals = cursor.match(/\([^()]+?\)/g);
-    if (!conditionals) {
-        rules.push(parseRule(cursor));
+    if (!RGX_GROUP.test(cursor)) {
+        return {key, sometimes, rules: [parseRule(cursor)]};
     } else {
-        for (const el of conditionals) rules.push(parseRule(el.replace('(', '').replace(')', '')));
+        const rules = [];
+        const conditionals = cursor.match(RGX_GROUP_MATCH);
+        for (const el of conditionals) rules.push(parseRule(el.substring(1, el.length - 1)));
+        return {key, sometimes, rules};
     }
-
-    return {key, sometimes, rules};
 }
 
 /**

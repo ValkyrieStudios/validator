@@ -7,6 +7,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- **perf**: Improved performance of rule parsing/validator construction thanks to precompiled regexes and favoring test over match
 - **deps**: Upgrade @valkyriestudios/utils to 12.1.0
 - **deps**: Upgrade @types/node to 10.12.4
 - **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.5.0
