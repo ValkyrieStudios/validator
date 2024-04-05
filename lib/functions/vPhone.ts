@@ -12,7 +12,7 @@
 export default function vPhone (val:string):boolean {
     if (typeof val !== 'string' || val.trim().length === 0) return false;
 
-    //  If number of digits is less than 5, return false
+    /* If number of digits is less than 5, return false */
     if ((val.match(/\d/g) || []).length < 5) return false;
 
     //  Check parts

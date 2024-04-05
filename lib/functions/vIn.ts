@@ -20,7 +20,7 @@ const memoizedHashParams = memoize((params:unknown[]) => {
 export default function vIn (val:any, params:unknown[]):boolean {
     if (!Array.isArray(params) || params.length === 0) return false;
 
-    //  Primitive check
+    /* Primitive check */
     if (
         typeof val === 'string' ||
         Number.isFinite(val) ||
@@ -28,6 +28,6 @@ export default function vIn (val:any, params:unknown[]):boolean {
         val === false
     ) return params.indexOf(val) > -1;
 
-    //  FNV Hash params
+    /* FNV Hash params */
     return memoizedHashParams(params).indexOf(fnv1A(val)) > -1;
 }

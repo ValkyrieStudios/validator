@@ -14,11 +14,11 @@ export default function vBetweenInclusive (
     lower_bound:number,
     upper_bound:number
 ):boolean {
-    //  Normalize
+    /* Normalize */
     const n_upper_bound:number = typeof upper_bound === 'string' ? parseFloat(upper_bound) : upper_bound;
     const n_lower_bound:number = typeof lower_bound === 'string' ? parseFloat(lower_bound) : lower_bound;
 
-    //  If upper or lower bound normalized is not numerical return false
+    /* If upper or lower bound normalized is not numerical return false */
     if (!Number.isFinite(n_upper_bound) || !Number.isFinite(n_lower_bound)) return false;
 
     /**

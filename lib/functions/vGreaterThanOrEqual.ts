@@ -13,10 +13,10 @@ export default function vGreaterThanOrEqual (
     val:string|number|unknown[],
     bound:number
 ):boolean {
-    //  Normalize
+    /* Normalize */
     const n_bound:number = typeof bound === 'string' ? parseFloat(bound) : bound;
 
-    //  If bound normalized is not numerical return false
+    /* If bound normalized is not numerical return false */
     if (!Number.isFinite(n_bound)) return false;
 
     /**
