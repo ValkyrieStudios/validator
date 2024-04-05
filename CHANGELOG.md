@@ -18,6 +18,13 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - **perf**: rule - email: ~50% performance improvement due to optimizing regex usage
 - **perf**: rule - guid: Improved performance by ~5-10% due to optimizing regex usage
 - **perf**: rule - phone: Improved performance by ~5-10% due to optimizing regex usage and reducing operations
+- **perf**: rule - sys_ipv4: Improved performance by ~2% due to optimizing regex usage
+- **perf**: rule - sys_ipv6: Improved performance by ~2% due to optimizing regex usage
+- **perf**: rule - sys_ipv4_or_v6: Improved performance by ~2% due to optimizing regex usage
+- **perf**: rule - sys_mac: Improved performance by ~10% due to optimizing regex usage
+- **perf**: rule - url: Improved performance by ~5-10% due to optimizing regex usage
+- **perf**: rule - url_img: Improved performance by ~5-10% due to optimizing regex usage
+- **perf**: rule - url_noquery: Improved performance by ~5-10% due to optimizing regex usage
 - **deps**: Upgrade @valkyriestudios/utils to 12.1.0
 - **deps**: Upgrade @types/node to 10.12.4
 - **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.5.0

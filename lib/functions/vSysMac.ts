@@ -9,6 +9,27 @@
  * gets inserted between the manufacturer and device digits.
  */
 
+/* MM-MM-MM-SS-SS-SS */
+const RGX_DOUBLE_DASH = /^([0-9A-Fa-f]{2}-){5}([0-9A-Fa-f]{2})$/;
+
+/* MM:MM:MM:SS:SS:SS */
+const RGX_DOUBLE_COLON = /^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$/;
+
+/* MMM.MMM.SSS.SSS */
+const RGX_TRIPLE_DOT = /^([0-9A-Fa-f]{3}\.){3}([0-9A-Fa-f]{3})$/;
+
+/* Special Case: MM:MM:MM:FF:FE:SS:SS:SS (48-bit address converted to a 64-bit) */
+const RGX_64_DOUBLE_COLON = /^([0-9A-Fa-f]{2}:){3}FF:FE:([0-9A-Fa-f]{2}:){2}[0-9A-Fa-f]{2}$/;
+
+/* Special Case: MM-MM-MM-FF-FE-SS-SS-SS (48-bit address converted to a 64-bit) */
+const RGX_64_DOUBLE_DASH = /^([0-9A-Fa-f]{2}-){3}FF-FE-([0-9A-Fa-f]{2}-){2}[0-9A-Fa-f]{2}$/;
+
+/* Special Case: MMMM:MMFF:FESS:SSSS format (48-bit address converted to a 64-bit) */
+const RGX_64_QUAD_COLON = /^[0-9A-Fa-f]{4}:[0-9A-Fa-f]{2}FF:FE[0-9A-Fa-f]{2}:[0-9A-Fa-f]{4}$/;
+
+/* Special Case: MMMM-MMFF-FESS-SSSS format (48-bit address converted to a 64-bit) */
+const RGX_64_QUAD_DASH = /^[0-9A-Fa-f]{4}-[0-9A-Fa-f]{2}FF-FE[0-9A-Fa-f]{2}-[0-9A-Fa-f]{4}$/;
+
 /**
  * Validate that a provided value is a valid MAC address
  * 
@@ -19,26 +40,13 @@
 export default function vSysMac (val:string):boolean {
     if (typeof val !== 'string') return false;
 
-    //  Check for MM-MM-MM-SS-SS-SS format
-    if (/^([0-9A-Fa-f]{2}-){5}([0-9A-Fa-f]{2})$/.test(val)) return true;
-
-    //  Check for MM:MM:MM:SS:SS:SS format
-    if (/^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$/.test(val)) return true;
-
-    //  Check for MMM.MMM.SSS.SSS format
-    if (/^([0-9A-Fa-f]{3}\.){3}([0-9A-Fa-f]{3})$/.test(val)) return true;
-
-    //  Special Case: Check for MM:MM:MM:FF:FE:SS:SS:SS (48-bit address converted to a 64-bit)
-    if (/^([0-9A-Fa-f]{2}:){3}FF:FE:([0-9A-Fa-f]{2}:){2}[0-9A-Fa-f]{2}$/.test(val)) return true;
-
-    //  Special Case: Check for MM-MM-MM-FF-FE-SS-SS-SS (48-bit address converted to a 64-bit)
-    if (/^([0-9A-Fa-f]{2}-){3}FF-FE-([0-9A-Fa-f]{2}-){2}[0-9A-Fa-f]{2}$/.test(val)) return true;
-
-    //  Special Case: Check for MMMM:MMFF:FESS:SSSS format (48-bit address converted to a 64-bit)
-    if (/^[0-9A-Fa-f]{4}:[0-9A-Fa-f]{2}FF:FE[0-9A-Fa-f]{2}:[0-9A-Fa-f]{4}$/.test(val)) return true;
-
-    //  Special Case: Check for MMMM-MMFF-FESS-SSSS format (48-bit address converted to a 64-bit)
-    if (/^[0-9A-Fa-f]{4}-[0-9A-Fa-f]{2}FF-FE[0-9A-Fa-f]{2}-[0-9A-Fa-f]{4}$/.test(val)) return true;
-
-    return false;
+    return (
+        RGX_DOUBLE_DASH.test(val) || 
+        RGX_DOUBLE_COLON.test(val) || 
+        RGX_TRIPLE_DOT.test(val) || 
+        RGX_64_DOUBLE_COLON.test(val) ||
+        RGX_64_DOUBLE_DASH.test(val) || 
+        RGX_64_QUAD_COLON.test(val) || 
+        RGX_64_QUAD_DASH.test(val)
+    );
 }

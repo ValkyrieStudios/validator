@@ -20,7 +20,7 @@ export default function vSize (
     const n_equals:number = typeof equals === 'string' ? parseFloat(equals) : equals;
 
     //  If equals is not numerical or nan, return false
-    if (!Number.isFinite(n_equals)) return false;
+    if (!Number.isInteger(n_equals)) return false;
 
     return val.length === n_equals;
 }

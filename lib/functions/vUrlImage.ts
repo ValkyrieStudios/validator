@@ -38,7 +38,7 @@ export const EXTENSIONS = new Set([
  * @returns {boolean} Whether or not it's valid
  */
 export default function vUrlImage (val:string):boolean {
-    if (typeof val !== 'string' || !vUrl(val)) return false;
+    if (!vUrl(val)) return false;
 
     /**
      * Deprotocolize -> take before query -> take before anchor -> split by /
@@ -53,8 +53,9 @@ export default function vUrlImage (val:string):boolean {
      */
     sanitized = sanitized[sanitized.length - 1].split('.');
 
-    //  Get extension
+    /* Get extension */
     const ext = sanitized.pop();
+    if (!EXTENSIONS.has(ext)) return false;
 
-    return sanitized.join('.').length && EXTENSIONS.has(ext);
+    return sanitized.join('.').length > 0;
 }
