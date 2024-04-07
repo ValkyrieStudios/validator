@@ -854,7 +854,7 @@ class Validator <T extends RulesRaw> {
 
             /* Create function and transfer key to it */
             let f = function (val:ExtEnumValInner):boolean {
-                return (typeof val === 'string' || Number.isFinite(val)) && ENUM_STORE.get(this.uid).has(val); /* eslint-disable-line no-invalid-this,max-len */
+                return ENUM_STORE.get(this.uid).has(val); /* eslint-disable-line no-invalid-this */
             };
 
             /* eslint-disable-next-line */
