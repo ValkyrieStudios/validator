@@ -235,18 +235,35 @@ function deepGet (obj:DataObject, path:string):DataVal {
     const parts = path.split('.');
 
     let cursor:DataVal = obj;
-    let key:string;
     let len:number = parts.length;
-    while (len) {
-        if (!isObject(cursor)) return undefined;
-
-        key = parts.shift();
-        if (!cursor.hasOwnProperty(key)) return undefined;
-        cursor = (cursor as DataObject)[key];
-        len--;
+    try {
+        switch (len) {
+            case 0: break;
+            case 1:
+                cursor = (cursor as DataObject)[parts[0]];
+                break;
+            case 2:
+                cursor = ((cursor as DataObject)[parts[0]] as DataObject)[parts[1]];
+                break;
+            case 3:
+                cursor = (((cursor as DataObject)[parts[0]] as DataObject)[parts[1]] as DataObject)[parts[2]];
+                break;
+            default: {
+                let key:string;
+                while (len) {
+                    if (!isObject(cursor)) return undefined;
+                    key = parts.shift();
+                    if (!cursor.hasOwnProperty(key)) return undefined;
+                    cursor = (cursor as DataObject)[key];
+                    len--;
+                }
+                break;
+            }
+        }
+        return cursor;
+    } catch (err) {
+        return undefined;
     }
-
-    return cursor;
 }
 
 /* Configuration for an iterable dictionary handler */
