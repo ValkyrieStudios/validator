@@ -562,7 +562,7 @@ let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
 
 export type TV <T> = Record<keyof T, string>;
 
-class Validator <T extends RulesRaw> {
+class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
     /* Validation plan */
     #plan:ValidationGroup[];
@@ -570,20 +570,22 @@ class Validator <T extends RulesRaw> {
     /* Whether or not the validator instance is empty */
     #is_empty:boolean;
 
-    constructor (rules:T) {
+    constructor (rules:TypedValidator) {
         /* Check for rules */
         if (!isObject(rules)) throw new TypeError('Provide an object to define the rules of this validator');
 
         /* Recursively parse our validation rules, to allow for deeply nested validation to be done */
         const plan:ValidationGroup[] = [];
-        recursor(plan, rules);
+        recursor(plan, rules as RulesRawVal);
 
         /* Set the parsed plan as a get property on our validation instance */
         this.#plan = plan;
         this.#is_empty = !plan.length;
     }
 
-    check <K extends GenericObject> (data:K):boolean {
+    /* eslint-disable-next-line */
+    /* @ts-ignore */
+    check <K extends GenericObject> (data:K):data is T {
         /* No data passed? Check if rules were set up */
         if (!isObject(data)) return this.#is_empty;
 
