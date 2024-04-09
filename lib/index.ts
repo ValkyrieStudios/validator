@@ -889,7 +889,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      *  new Validator({a: 'user', b: '?[unique|min:1]user'}).check({a: {first_name: 'Peter', last_name: 'Vermeulen'}}); true
      *  new Validator({a: '[unique|min:1]user'}).check({a: [{first_name: false, last_name: 'Vermeulen'}]}); false
      */
-    static extendSchema <K extends RulesRaw> (name:string, obj:K):void {
+    static extendSchema <K extends GenericObject, TypedKValidator = TV<K>> (name:string, obj:TypedKValidator):void {
         if (!validExtensionName(name) || !isNeObject(obj)) throw new Error('Invalid extension');
         let validator:Validator<RulesRaw>;
         try {
