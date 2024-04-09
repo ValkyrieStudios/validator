@@ -6,12 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- **dx**: Validator.check now applies a type guard when working with a typed validator. Below is an example
+```typescript
+type User = {
+    uid:string;
+    fname:string;
+};
+
+const v = new Validator<User>({uid: 'guid', fname: 'string_ne|min:1|max:128'});
+
+/* At this point 'a' is still seen as 'any' by typescript */
+const a = JSON.parse('{"uid":"80efa943-f88d-40a9-8378-39ed62287d05", "fname": "Peter"}');
+if (!v.check(a)) return;
+
+/* At this point 'a' is seen as an instance of User thanks to the type guard on check */
+a.uid;
+```
+
 ### Improved
 - **perf**: Minor performance improvement in enum behavior due to not needing internal type checks (native Set enforces strict typing)
 - **deps**: Upgrade @types/node to 20.12.6
 - **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.6.0
 - **deps**: Upgrade @typescript-eslint/parser to 7.6.0
 - **deps**: Upgrade @valkyriestudios/utils to 12.2.0
+
+### Breaking
+- **feat**: Instantiating a validator while wrapping with TV<...> will no longer work as the need for the TV<...> wrap is now gone. Instead the type can simply be passed directly. below is an example of old vs new. This change goes hand in hand with the new type-guard addition for Validator.check (see added)
+```typescript
+type User = {fname: string; lname: string};
+
+/* OLD */
+const v = new Validator<TV<User>>({fname: 'string_ne|min:1|max:128', lname: 'string_ne|min:1|max:128'});
+
+/* NEW */
+const v = new Validator<User>({fname: 'string_ne|min:1|max:128', lname: 'string_ne|min:1|max:128'});
+```
 
 ## [8.3.0] - 2024-04-05
 ### Improved
