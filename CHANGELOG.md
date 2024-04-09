@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 ### Improved
 - **perf**: Minor performance improvement in enum behavior due to not needing internal type checks (native Set enforces strict typing)
+- **deps**: Upgrade @types/node to 20.12.6
+- **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.6.0
+- **deps**: Upgrade @typescript-eslint/parser to 7.6.0
+- **deps**: Upgrade @valkyriestudios/utils to 12.2.0
 
 ## [8.3.0] - 2024-04-05
 ### Improved
