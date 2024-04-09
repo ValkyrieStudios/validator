@@ -560,7 +560,7 @@ const RULE_STORE:Map<string, RuleFn> = new Map([
 
 let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
 
-export type TV <T> = Record<keyof T, string>;
+type TV <T> = Record<keyof T, string>;
 
 class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 

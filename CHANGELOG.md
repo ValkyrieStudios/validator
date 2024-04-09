@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [9.0.0] - 2024-04-09
 ### Added
 - **dx**: Validator.check now applies a type guard when working with a typed validator. Below is an example
 ```typescript
@@ -42,6 +42,9 @@ const v = new Validator<TV<User>>({fname: 'string_ne|min:1|max:128', lname: 'str
 /* NEW */
 const v = new Validator<User>({fname: 'string_ne|min:1|max:128', lname: 'string_ne|min:1|max:128'});
 ```
+
+### Removed
+- **feat**: TV type export as no longer required (see **breaking** and **added**) 
 
 ## [8.3.0] - 2024-04-05
 ### Improved
