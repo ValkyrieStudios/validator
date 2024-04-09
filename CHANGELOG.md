@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.1.0] - 2024-04-09
+### Improved
+- **dx**: Validator.extendSchema now also allows working with a generic to register schemas, example:
+```typescript
+type User = {
+    uid: string;
+    fname: string;
+};
+
+/* linting will complain because the schema is missing the uid prop of user */
+Validator.extendSchema<User>('user', {
+    uid: 'string_ne|min:3',
+});
+```
+
 ## [9.0.0] - 2024-04-09
 ### Added
 - **dx**: Validator.check now applies a type guard when working with a typed validator. Below is an example

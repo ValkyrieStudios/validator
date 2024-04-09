@@ -471,7 +471,7 @@ Validator.rules.user({first_name: 'Peter'}); // false
 **Quicktip**: When using typescript you can also ensure that your Validator schema extensions stay aligned with your defined types and interfaces. In the following example intellisense will complain about the address schema not being aligned with the address type.
 
 ```ts
-import Validator, {TV} from '@valkyriestudios/validator';
+import Validator from '@valkyriestudios/validator';
 
 type User = {
     first_name: string;
@@ -487,14 +487,14 @@ type Address = {
     number: string;
 }
 
-Validator.extendSchema<TV<User>>('user', {
+Validator.extendSchema<User>('user', {
     first_name: 'string_ne|min:3',
     last_name: 'string_ne|min:3',
     email: 'email',
     phone: 'phone',
 });
 
-Validator.extendSchema<TV<Address>>('address', {
+Validator.extendSchema<Address>('address', {
     street: 'string_ne|min:2',
     city: 'string_ne|min:2',
     number: 'string_ne|min:2',
