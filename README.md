@@ -646,5 +646,5 @@ The following list shows you all the default rules that are provided by this lib
 | url_img | Validate that a provided value is a url linking to an image file (eg: https://mywebsite.com/123.jpg) |
 
 ## Contributors
-- [Peter Vermeulen](mailto:contact@valkyriestudios.be)
+- [Peter Vermeulen](https://www.linkedin.com/in/petervermeulen1/)
 - [SpekkoRice](https://github.com/SpekkoRice)
