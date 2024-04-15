@@ -2301,6 +2301,13 @@ describe('Validator - Core', () => {
             }
         });
 
+        it('Should throw if provided an invalid object', () => {
+            assert.throws(
+                () => Validator.extendSchema('user', {rule: false}),
+                new Error('Invalid extension')
+            );
+        });
+
         it('Should not throw and register rules if provided an object if schema is valid', () => {
             const uid = guid();
             assert.doesNotThrow(
@@ -2549,7 +2556,7 @@ describe('Validator - Core', () => {
             });
         });
 
-        it('Should be able to validate complex multidimensional objects [5]', () => {
+        it('Should be able to validate complex multidimensional objects [6]', () => {
             Validator.extend('is_type', val => ['type1', 'type2', 'type4'].indexOf(val) >= 0);
 
             const validator = new Validator({
@@ -2603,6 +2610,105 @@ describe('Validator - Core', () => {
                     'contact.email': [
                         [{msg: 'email', params: []}],
                         [{msg: 'false', params: []}],
+                    ],
+                },
+            });
+        });
+
+        it('Should be able to validate complex multidimensional objects [7]', () => {
+            Validator.extend('is_type', val => ['type1', 'type2', 'type4'].indexOf(val) >= 0);
+
+            const validator = new Validator({
+                profile: {
+                    uid: 'guid',
+                    user: {
+                        type: 'is_type',
+                        details: {
+                            first_name: 'string_ne|min:2',
+                            last_name: 'string_ne|min:2',
+                            email: 'email',
+                        },
+                    },
+                },
+            });
+
+            assert.ok(validator.check({
+                profile: {
+                    uid: guid(),
+                    user: {
+                        type: 'type1',
+                        details: {
+                            first_name: 'Peter',
+                            last_name: 'Vermeulen',
+                            email: 'contact@valkyriestudios.be',
+                        },
+                    },
+                },
+            }));
+
+            assert.equal(validator.check({
+                profile: {
+                    uid: guid(),
+                    user: {
+                        type: 'type1',
+                    },
+                },
+            }), false);
+
+            assert.equal(validator.check({
+                profile: {
+                    uid: guid(),
+                    user: false,
+                },
+            }), false);
+
+            assert.equal(validator.check({
+                profile: false,
+            }), false);
+
+            assert.deepEqual(validator.validate({
+                profile: false,
+            }), {
+                is_valid: false,
+                count: 5,
+                errors: {
+                    'profile.uid': [
+                        {msg: 'not_found', params: []},
+                    ],
+                    'profile.user.type': [
+                        {msg: 'not_found', params: []},
+                    ],
+                    'profile.user.details.email': [
+                        {msg: 'not_found', params: []},
+                    ],
+                    'profile.user.details.first_name': [
+                        {msg: 'not_found', params: []},
+                    ],
+                    'profile.user.details.last_name': [
+                        {msg: 'not_found', params: []},
+                    ],
+                },
+            });
+
+            assert.deepEqual(validator.validate({
+                profile: {
+                    uid: guid(),
+                    user: {
+                        type: 'type1',
+                        details: {
+                            first_name: false,
+                            last_name: 'Vermeulen',
+                            email: 'contact@valkyriestudios.be',
+                        },
+                    },
+                },
+            }), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    'profile.user.details.first_name': [
+                        {msg: 'string_ne', params: []},
+                        {msg: 'min', params: ['2']},
                     ],
                 },
             });
