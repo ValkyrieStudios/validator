@@ -1,7 +1,9 @@
 # @valkyriestudios/validator
 
-[![codecov](https://codecov.io/gh/ValkyrieStudios/utils/branch/master/graph/badge.svg)](https://codecov.io/gh/ValkyrieStudios/validator)
-[![codeql](https://github.com/ValkyrieStudios/validator/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/ValkyrieStudios/validator/actions/workflows/github-code-scanning/codeql)
+[![CodeCov](https://codecov.io/gh/ValkyrieStudios/validator/branch/master/graph/badge.svg)](https://codecov.io/gh/ValkyrieStudios/validator)
+[![Test](https://github.com/ValkyrieStudios/validator/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/ValkyrieStudios/validator/actions/workflows/test.yml)
+[![Lint](https://github.com/ValkyrieStudios/validator/actions/workflows/lint.yml/badge.svg?branch=master)](https://github.com/ValkyrieStudios/validator/actions/workflows/lint.yml)
+[![CodeQL](https://github.com/ValkyrieStudios/validator/actions/workflows/github-code-scanning/codeql/badge.svg?branch=master)](https://github.com/ValkyrieStudios/validator/actions/workflows/github-code-scanning/codeql)
 [![npm](https://img.shields.io/npm/v/@valkyriestudios/validator.svg)](https://www.npmjs.com/package/@valkyriestudios/validator)
 [![npm](https://img.shields.io/npm/dm/@valkyriestudios/validator.svg)](https://www.npmjs.com/package/@valkyriestudios/validator)
 
