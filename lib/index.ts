@@ -232,35 +232,28 @@ function validExtension <T> (
  * @returns {DataVal} Value at path position
  */
 function deepGet (obj:DataObject, path:string):DataVal {
-    const parts = path.split('.');
-
-    let cursor:DataVal = obj;
-    let len:number = parts.length;
+    const parts     = path.split('.');
+    let len:number  = parts.length;
     try {
         switch (len) {
-            case 0: break;
             case 1:
-                cursor = (cursor as DataObject)[parts[0]];
-                break;
+                return obj[parts[0]];
             case 2:
-                cursor = ((cursor as DataObject)[parts[0]] as DataObject)[parts[1]];
-                break;
+                return (obj[parts[0]] as DataObject)[parts[1]];
             case 3:
-                cursor = (((cursor as DataObject)[parts[0]] as DataObject)[parts[1]] as DataObject)[parts[2]];
-                break;
+                return ((obj[parts[0]] as DataObject)[parts[1]] as DataObject)[parts[2]];
             default: {
                 let key:string;
+                let cursor:DataVal = obj;
                 while (len) {
-                    if (!isObject(cursor)) return undefined;
                     key = parts.shift();
                     if (!cursor.hasOwnProperty(key)) return undefined;
                     cursor = (cursor as DataObject)[key];
                     len--;
                 }
-                break;
+                return cursor;
             }
         }
-        return cursor;
     } catch (err) {
         return undefined;
     }
