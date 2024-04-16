@@ -191,7 +191,6 @@ type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
 /* Regexes used in processing */
 const RGX_PARAM_NAME    = /^[a-zA-Z0-9_.]+$/i;
 const RGX_EXT_NAME      = /^[A-Za-z_0-9-]+$/;
-const RGX_GROUP         = /\([^()]+\)/;
 const RGX_GROUP_MATCH   = /\([^()]+\)/g;
 
 /**
@@ -344,7 +343,7 @@ function parseRule (raw:string):ValidationRules {
         let type = params.shift() as string;
 
         /* Get 'not' flag */
-        const not = type.charAt(0) === '!';
+        const not = type[0] === '!';
         if (not) type = type.slice(1);
 
         /* Get parameters */
@@ -359,7 +358,7 @@ function parseRule (raw:string):ValidationRules {
                 for (let i = 0; i < params_length; i++) {
                     let param = params[i] as string;
                     const param_len = param.length;
-                    if (param.charAt(0) === '<' && param.charAt(param_len - 1) === '>') {
+                    if (param[0] === '<' && param[param_len - 1] === '>') {
                         param = param.slice(1, param_len - 1);
                         /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
                         if (!RGX_PARAM_NAME.test(param)) {
@@ -387,13 +386,13 @@ function parseRule (raw:string):ValidationRules {
  */
 function parseGroup (key:string, raw:string):ValidationGroup {
     /* (?) Parse sometimes flag */
-    const sometimes = raw.charAt(0) === '?';
+    const sometimes = raw[0] === '?';
     if (sometimes) raw = raw.slice(1);
 
     const acc:ValidationGroup = {key, sometimes, rules: []};
 
     /* Conditional or group */
-    if (!RGX_GROUP.test(raw)) {
+    if (raw[0] !== '(') {
         acc.rules.push(parseRule(raw));
     } else {
         const conditionals = raw.match(RGX_GROUP_MATCH);
