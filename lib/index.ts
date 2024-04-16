@@ -79,6 +79,7 @@ interface ValidationIterable {
 interface ValidationRulePart {
     type:string;
     params:unknown[];
+    params_length:number;
     not:boolean;
 }
 
@@ -311,66 +312,66 @@ function getIterableConfig (val:string, dict:boolean = false):ValidationIterable
  * @returns {ValidationRules} Parsed validation rule
  */
 function parseRule (raw:string):ValidationRules {
-    /* Copy contents of raw into here as working-copy */
-    let cursor = `${raw}`;
-
     /* ([...]) Check for iterable behavior */
     let iterable:ValidationIterable|false = false;
-    if (cursor.indexOf('[') >= 0 || cursor.indexOf(']') >= 0) {
-        const start_ix  = cursor.indexOf('[');
-        const end_ix    = cursor.indexOf(']');
-        if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
 
-        iterable  = getIterableConfig(cursor.substring(0, end_ix));
-        cursor    = cursor.substring(end_ix + 1);
-    } else if (cursor.indexOf('{') >= 0 || cursor.indexOf('}') >= 0) {
-        const start_ix  = cursor.indexOf('{');
-        const end_ix    = cursor.indexOf('}');
-        if (start_ix !== 0 || end_ix < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
+    const arr_start_idx = raw.indexOf('[');
+    const arr_end_idx   = raw.indexOf(']');
+    if (arr_start_idx > -1 || arr_end_idx > -1) {
+        if (arr_start_idx !== 0 || arr_end_idx < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
 
-        iterable  = getIterableConfig(cursor.substring(0, end_ix), true);
-        cursor    = cursor.substring(end_ix + 1);
+        iterable    = getIterableConfig(raw.substring(0, arr_end_idx));
+        raw         = raw.substring(arr_end_idx + 1);
+    } else {
+        const obj_start_idx = raw.indexOf('{');
+        const obj_end_idx   = raw.indexOf('}');
+        if (obj_start_idx > -1 || obj_end_idx > -1) {
+            if (obj_start_idx !== 0 || obj_end_idx < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
+
+            iterable    = getIterableConfig(raw.substring(0, obj_end_idx), true);
+            raw         = raw.substring(obj_end_idx + 1);
+        }
     }
 
     /**
      * Accumulate all the checks that need to be run for this field
      * (eg: string_ne|min:20 will become an array with two checks)
      */
-    const list = [];
-    const cursor_parts = cursor.split('|');
-    for (const rule_part of cursor_parts) {
-        let params:string[]|string[][]|unknown[]|unknown[][] = rule_part.split(':');
-        let type    = (params.shift() as string).trim();
+    const list      = [];
+    const parts     = raw.split('|');
+    for (const part of parts) {
+        let params:string[]|string[][]|unknown[]|unknown[][] = part.split(':');
+        let type = params.shift() as string;
 
         /* Get 'not' flag */
         const not = type.charAt(0) === '!';
         if (not) type = type.substring(1);
 
         /* Get parameters */
-        if (params.length) {
-            if (type === 'in' && (params[0] as string).indexOf(',') > 0) {
-                params = [(params[0] as string).split(',')];
+        let params_length = params.length;
+        if (params_length) {
+            params = (params[0] as string).split(',');
+            params_length = params.length;
+            if (type === 'in' && params_length > 1) {
+                params = [params];
             } else {
-                params = (params[0] as string).split(',');
-
                 /* Parse parameters into callback functions */
-                for (let i = 0; i < params.length; i++) {
+                for (let i = 0; i < params_length; i++) {
                     let param = params[i] as string;
-                    if (param.charAt(0) === '<' && param.charAt(param.length - 1) === '>') {
-                        param = param.substring(1, param.length - 1);
+                    const param_len = param.length;
+                    if (param.charAt(0) === '<' && param.charAt(param_len - 1) === '>') {
+                        param = param.substring(1, param_len - 1);
                         /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
                         if (!RGX_PARAM_NAME.test(param)) {
                             throw new TypeError(`Parameterization misconfiguration, verify rule config for ${raw}`);
                         }
 
                         params[i] = (data:DataObject) => deepGet(data, param);
-                    } else {
-                        params[i] = param;
                     }
                 }
             }
         }
-        list.push({type, params, not});
+        list.push({type, params, params_length, not});
     }
 
     return {iterable, list};
@@ -385,22 +386,21 @@ function parseRule (raw:string):ValidationRules {
  * @returns Parsed validation group
  */
 function parseGroup (key:string, raw:string):ValidationGroup {
-    /* Copy contents of raw into here as working-copy */
-    let cursor = raw;
-
     /* (?) Parse sometimes flag */
-    const sometimes = cursor.charAt(0) === '?';
-    if (sometimes) cursor = cursor.substring(1);
+    const sometimes = raw.charAt(0) === '?';
+    if (sometimes) raw = raw.substring(1);
+
+    const acc:ValidationGroup = {key, sometimes, rules: []};
 
     /* Conditional or group */
-    if (!RGX_GROUP.test(cursor)) {
-        return {key, sometimes, rules: [parseRule(cursor)]};
+    if (!RGX_GROUP.test(raw)) {
+        acc.rules.push(parseRule(raw));
     } else {
-        const rules = [];
-        const conditionals = cursor.match(RGX_GROUP_MATCH);
-        for (const el of conditionals) rules.push(parseRule(el.substring(1, el.length - 1)));
-        return {key, sometimes, rules};
+        const conditionals = raw.match(RGX_GROUP_MATCH);
+        for (const el of conditionals) acc.rules.push(parseRule(el.slice(1, el.length - 1)));
     }
+
+    return acc;
 }
 
 /**
@@ -421,7 +421,8 @@ function validateField (
     is_valid:boolean;
 } {
     const errors:ValidationError[] = [];
-    for (const rule of list) {
+    for (let i = 0; i < list.length; i++) {
+        const rule = list[i];
         const rulefn = RULE_STORE.get(rule.type);
 
         /* Check if rule exists */
@@ -432,7 +433,10 @@ function validateField (
 
         /* Get params that need to be passed, each param is either a function or a primitive */
         const params = [];
-        for (const p of rule.params) params.push(typeof p === 'function' ? p(data) : p);
+        for (let x = 0; x < rule.params_length; x++) {
+            const p = rule.params[x];
+            params.push(typeof p === 'function' ? p(data) : p);
+        }
 
         /* Run rule - if check fails (not valid && not not | not && valid) push into errors */
         const rule_valid = rulefn(cursor, ...params);
@@ -458,7 +462,8 @@ function checkField (
     list:ValidationRulePart[],
     data:DataObject
 ):boolean {
-    for (const rule of list) {
+    for (let i = 0; i < list.length; i++) {
+        const rule = list[i];
         const rulefn = RULE_STORE.get(rule.type);
 
         /* Check if rule exists */
@@ -466,7 +471,10 @@ function checkField (
 
         /* Get params that need to be passed, each param is either a function or a primitive */
         const params = [];
-        for (const p of rule.params) params.push(typeof p === 'function' ? p(data) : p);
+        for (let x = 0; x < rule.params_length; x++) {
+            const p = rule.params[x];
+            params.push(typeof p === 'function' ? p(data) : p);
+        }
 
         /* Run rule - if check fails (not valid && not not | not && valid) */
         const rule_valid = rulefn(cursor, ...params);
@@ -577,8 +585,8 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
     /* Validation plan */
     #plan:ValidationGroup[];
 
-    /* Whether or not the validator instance is empty */
-    #is_empty:boolean;
+    /* Length of plan */
+    #plan_length:number;
 
     constructor (rules:TypedValidator) {
         /* Check for rules */
@@ -590,16 +598,21 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
         /* Set the parsed plan as a get property on our validation instance */
         this.#plan = plan;
-        this.#is_empty = !plan.length;
+        this.#plan_length = plan.length;
     }
 
     /* eslint-disable-next-line */
     /* @ts-ignore */
     check <K extends GenericObject> (data:K):data is T {
-        /* No data passed? Check if rules were set up */
-        if (!isObject(data)) return this.#is_empty;
+        const plan_len = this.#plan_length;
 
-        for (const part of this.#plan) {
+        /* No data passed? Check if rules were set up */
+        if (!isObject(data)) return !plan_len;
+
+        const plan = this.#plan;
+
+        for (let i = 0; i < plan_len; i++) {
+            const part = plan[i];
             /* Retrieve cursor that part is run against */
             const cursor = deepGet(data as DataObject, part.key);
 
@@ -611,7 +624,8 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
             /* Go through rules in cursor: if all of them are invalid return false immediately */
             let is_valid = false;
-            partLoop: for (const rule of part.rules) {
+            partLoop: for (let x = 0; x < part.rules.length; x++) {
+                const rule = part.rules[x];
                 /* Check for iterable config */
                 if (!rule.iterable) {
                     if (checkField(cursor, rule.list, data as DataObject)) is_valid = true;
@@ -659,18 +673,22 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
     }
 
     validate <K extends GenericObject> (data:K):ValidationResult {
+        const plan_len = this.#plan_length;
+
         /* No data passed? Check if rules were set up */
         if (!isObject(data)) {
             return {
-                is_valid: this.#is_empty,
-                count: this.#plan.length,
-                errors: this.#is_empty ? {} : 'NO_DATA',
+                is_valid: !plan_len,
+                count: plan_len,
+                errors: plan_len ? 'NO_DATA' : {},
             };
         }
 
+        const plan = this.#plan;
         const errors:{[key:string]: ValidationError[]} = {};
         let count:number = 0;
-        for (const part of this.#plan) {
+        for (let i = 0; i < plan_len; i++) {
+            const part = plan[i];
             /* Retrieve cursor that part is run against */
             const cursor = deepGet(data as DataObject, part.key);
 
@@ -685,7 +703,8 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
             let has_valid = false;
             const part_errors:(ValidationError|ValidationError[])[] = [];
-            for (const rule of part.rules) {
+            for (let x = 0; x < part.rules.length; x++) {
+                const rule = part.rules[x];
                 let error_cursor:ValidationError[] = [];
 
                 /* Check for iterable config */
@@ -717,7 +736,11 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
                             for (let idx = 0; idx < len; idx++) {
                                 cursor_value = values[idx];
                                 const evaluation = validateField(cursor_value, rule.list, data as DataObject);
-                                if (!evaluation.is_valid) for (const el of evaluation.errors) error_cursor.push({idx, ...el});
+                                if (!evaluation.is_valid) {
+                                    for (let z = 0; z < evaluation.errors.length; z++) {
+                                        error_cursor.push({idx, ...evaluation.errors[z]});
+                                    }
+                                }
 
                                 /* If no unique map or iterable unique was already turned off continue */
                                 if (!unique_set || !iterable_unique) continue;
