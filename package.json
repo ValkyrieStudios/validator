@@ -1,6 +1,6 @@
 {
   "name": "@valkyriestudios/validator",
-  "version": "9.3.0",
+  "version": "9.4.0",
   "description": "A lightweight configurable javascript validator",
   "main": "index.js",
   "author": {
@@ -14,6 +14,9 @@
     "validator",
     "js",
     "javascript",
+    "ts",
+    "typescript",
+    "web",
     "node"
   ],
   "license": "MIT",
