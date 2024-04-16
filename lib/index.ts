@@ -189,10 +189,10 @@ type CustomRuleDictionary = Record<string, RuleFn>;
 type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
 
 /* Regexes used in processing */
-const RGX_PARAM_NAME    = /^[a-zA-Z0-9_.]+?$/i;
-const RGX_EXT_NAME      = /^[A-Za-z_\-0-9]+?$/;
-const RGX_GROUP         = /\([^()]+?\)/;
-const RGX_GROUP_MATCH   = /\([^()]+?\)/g;
+const RGX_PARAM_NAME    = /^[a-zA-Z0-9_.]+$/i;
+const RGX_EXT_NAME      = /^[A-Za-z_0-9-]+$/;
+const RGX_GROUP         = /\([^()]+\)/;
+const RGX_GROUP_MATCH   = /\([^()]+\)/g;
 
 /**
  * Check whether or not a value is a valid extension name
