@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+### Improved
+- **dx**: Improve on typed validator construction by allowing both a string or object to be used, eg:
+```typescript
+type Contact = {
+    email: string;
+    phone: string;
+}
+
+type User = {
+    first_name: string;
+    last_name: string;
+    contact: Contact;
+    tags: string[]; 
+}
+
+Validator.extendSchema<Contact>('contact', {email: 'email', phone: 'phone'});
+
+/* This is valid */
+const v = new Validator<User>({
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3',
+    contact: 'contact',
+    tags: '[unique|min:1]string_ne',
+});
+
+/* This is also valid */
+const v = new Validator<User>({
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3',
+    contact: {
+        email: 'email',
+        phone: 'phone',
+    },
+    tags: '[unique|min:1]string_ne',
+});
+
+/* This is not valid */
+const v = new Validator<User>({
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3',
+    contact: {
+        email: 'email',
+    },
+    tags: '[unique|min:1]string_ne',
+});
+```
+
 ## [9.4.0] - 2024-04-16
 ### Improved
 - **dx**: It is now possible to pass multi-dimensional types as part of Validator construction for type checks/guards. eg:

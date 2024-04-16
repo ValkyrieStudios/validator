@@ -581,7 +581,7 @@ type TV<T> = {
     [K in keyof T]: T[K] extends Array<any>
         ? string
         : T[K] extends Record<string, any>
-            ? TV<T[K]>
+            ? TV<T[K]>|string
             : string;
 };
 
