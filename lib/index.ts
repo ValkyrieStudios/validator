@@ -577,7 +577,13 @@ const RULE_STORE:Map<string, RuleFn> = new Map([
 
 let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
 
-type TV <T> = Record<keyof T, string>;
+type TV<T> = {
+    [K in keyof T]: T[K] extends Array<any>
+        ? string
+        : T[K] extends Record<string, any>
+            ? TV<T[K]>
+            : string;
+};
 
 class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 

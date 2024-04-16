@@ -416,10 +416,10 @@ Example of a rule that will validate whether an integer is the double of a provi
 ```javascript
 Validator.extend('is_double', (val, param) => val === (param * 2));
 
-const v = new Validator({a: 'is_double:<meta.b>'});
+const v = new Validator({a: 'is_double:<b>'});
 
-v.check({a: 6, meta: {b: 4}}); // false
-v.check({a: 8, meta: {b: 4}}); // true
+v.check({a: 6, b: 4}); // false
+v.check({a: 8, b: 4}); // true
 ```
 
 ### Multiple rules at once?

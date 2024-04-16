@@ -7,6 +7,27 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- **dx**: It is now possible to pass multi-dimensional types as part of Validator construction for type checks/guards. eg:
+```typescript
+type User = {
+    first_name: string;
+    last_name: string;
+    contact: {
+        email: string;
+        phone: string;
+    };
+    tags: string[];
+};
+
+const v = new Validator<User>({
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3',
+    contact: {
+        email: 'email', /* Typescript will complain because the phone prop is missing here */
+    },
+    tags: '[unique|min:1]string_ne',
+});
+```
 - **perf**: Improved Validator construction time by ~7-10%
 - **perf**: Improved Coldstart Validator checks/validation by ~7-10%
 - **perf**: Improved Existing Validator checks/validation by ~2-5% 
