@@ -320,16 +320,16 @@ function parseRule (raw:string):ValidationRules {
     if (arr_start_idx > -1 || arr_end_idx > -1) {
         if (arr_start_idx !== 0 || arr_end_idx < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
 
-        iterable    = getIterableConfig(raw.substring(0, arr_end_idx));
-        raw         = raw.substring(arr_end_idx + 1);
+        iterable    = getIterableConfig(raw.slice(0, arr_end_idx));
+        raw         = raw.slice(arr_end_idx + 1);
     } else {
         const obj_start_idx = raw.indexOf('{');
         const obj_end_idx   = raw.indexOf('}');
         if (obj_start_idx > -1 || obj_end_idx > -1) {
             if (obj_start_idx !== 0 || obj_end_idx < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
 
-            iterable    = getIterableConfig(raw.substring(0, obj_end_idx), true);
-            raw         = raw.substring(obj_end_idx + 1);
+            iterable    = getIterableConfig(raw.slice(0, obj_end_idx), true);
+            raw         = raw.slice(obj_end_idx + 1);
         }
     }
 
@@ -345,7 +345,7 @@ function parseRule (raw:string):ValidationRules {
 
         /* Get 'not' flag */
         const not = type.charAt(0) === '!';
-        if (not) type = type.substring(1);
+        if (not) type = type.slice(1);
 
         /* Get parameters */
         let params_length = params.length;
@@ -360,7 +360,7 @@ function parseRule (raw:string):ValidationRules {
                     let param = params[i] as string;
                     const param_len = param.length;
                     if (param.charAt(0) === '<' && param.charAt(param_len - 1) === '>') {
-                        param = param.substring(1, param_len - 1);
+                        param = param.slice(1, param_len - 1);
                         /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
                         if (!RGX_PARAM_NAME.test(param)) {
                             throw new TypeError(`Parameterization misconfiguration, verify rule config for ${raw}`);
@@ -388,7 +388,7 @@ function parseRule (raw:string):ValidationRules {
 function parseGroup (key:string, raw:string):ValidationGroup {
     /* (?) Parse sometimes flag */
     const sometimes = raw.charAt(0) === '?';
-    if (sometimes) raw = raw.substring(1);
+    if (sometimes) raw = raw.slice(1);
 
     const acc:ValidationGroup = {key, sometimes, rules: []};
 
