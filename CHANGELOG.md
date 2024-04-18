@@ -15,6 +15,7 @@ import Validator from '@valkyriestudios/validator'
 /* Now also possible */
 import {Validator} from '@valkyriestudios/validator';
 ```
+- **deps**: Upgrade @valkyriestudios/utils to 12.4.0
 
 ## [9.5.0] - 2024-04-16
 ### Improved
