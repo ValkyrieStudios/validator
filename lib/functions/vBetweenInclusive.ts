@@ -2,14 +2,14 @@
 
 /**
  * Validate that a provided value is between two numbers, if passed a string or array this will validate on length
- * 
+ *
  * @param val - Value to verify
  * @param lower_bound - Lower bound to validate against (inclusive)
  * @param upper_bound - Upper bound to validate against (inclusive)
- * 
+ *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vBetweenInclusive (
+function vBetweenInclusive (
     val:string|number|unknown[],
     lower_bound:number,
     upper_bound:number
@@ -34,3 +34,5 @@ export default function vBetweenInclusive (
         return false;
     }
 }
+
+export {vBetweenInclusive, vBetweenInclusive as default};

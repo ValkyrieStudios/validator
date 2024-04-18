@@ -9,6 +9,8 @@ const SET = new Set(['AF', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI', 'AQ', 'AG', 'AR',
  *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vCountry (val:string):boolean {
+function vCountry (val:string):boolean {
     return SET.has(val);
 }
+
+export {vCountry, vCountry as default};

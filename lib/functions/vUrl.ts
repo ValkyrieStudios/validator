@@ -9,6 +9,8 @@ const RGX = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\
  *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vUrl (val:string):boolean {
+function vUrl (val:string):boolean {
     return typeof val === 'string' && RGX.test(val);
 }
+
+export {vUrl, vUrl as default};

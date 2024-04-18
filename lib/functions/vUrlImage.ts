@@ -1,6 +1,6 @@
 'use strict';
 
-import vUrl from './vUrl';
+import {vUrl} from './vUrl';
 
 export const EXTENSIONS = new Set([
     'jpg',
@@ -37,7 +37,7 @@ export const EXTENSIONS = new Set([
  *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vUrlImage (val:string):boolean {
+function vUrlImage (val:string):boolean {
     if (!vUrl(val)) return false;
 
     /**
@@ -59,3 +59,5 @@ export default function vUrlImage (val:string):boolean {
 
     return sanitized.join('.').length > 0;
 }
+
+export {vUrlImage, vUrlImage as default};

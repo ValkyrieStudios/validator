@@ -10,7 +10,7 @@
  *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vRequired (val:unknown):boolean {
+function vRequired (val:unknown):boolean {
     if (val === null || val === undefined || Number.isNaN(val)) return false;
 
     if (typeof val === 'string') {
@@ -21,3 +21,5 @@ export default function vRequired (val:unknown):boolean {
         return true;
     }
 }
+
+export {vRequired, vRequired as default};

@@ -9,6 +9,8 @@ const RGX = /^#([\da-f]{3}){1,2}$/i;
  *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vColorHex (val:string):boolean {
+function vColorHex (val:string):boolean {
     return typeof val === 'string' && RGX.test(val);
 }
+
+export {vColorHex, vColorHex as default};

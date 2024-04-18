@@ -8,6 +8,8 @@
  *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vSysPort (val:number):boolean {
+function vSysPort (val:number):boolean {
     return Number.isInteger(val) && val > 0 && val <= 65535;
 }
+
+export {vSysPort, vSysPort as default};

@@ -7,7 +7,7 @@
  *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vDateString (val:string):boolean {
+function vDateString (val:string):boolean {
     return (
         typeof val === 'string' &&
         val.trim().length &&
@@ -15,3 +15,5 @@ export default function vDateString (val:string):boolean {
         !isNaN(new Date(val).getTime())
     );
 }
+
+export {vDateString, vDateString as default};

@@ -2,7 +2,7 @@
 
 /**
  * Mac Address Quick summary:
- * 
+ *
  * M stands for manufacturer digits
  * S stands for device digits
  * When 48-bit addresses get converted to 64-bit addresses a hardcoded 16-bit value (FFFE)
@@ -32,21 +32,23 @@ const RGX_64_QUAD_DASH = /^[0-9A-Fa-f]{4}-[0-9A-Fa-f]{2}FF-FE[0-9A-Fa-f]{2}-[0-9
 
 /**
  * Validate that a provided value is a valid MAC address
- * 
+ *
  * @param val - Value to verify
- * 
+ *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vSysMac (val:string):boolean {
+function vSysMac (val:string):boolean {
     if (typeof val !== 'string') return false;
 
     return (
-        RGX_DOUBLE_DASH.test(val) || 
-        RGX_DOUBLE_COLON.test(val) || 
-        RGX_TRIPLE_DOT.test(val) || 
+        RGX_DOUBLE_DASH.test(val) ||
+        RGX_DOUBLE_COLON.test(val) ||
+        RGX_TRIPLE_DOT.test(val) ||
         RGX_64_DOUBLE_COLON.test(val) ||
-        RGX_64_DOUBLE_DASH.test(val) || 
-        RGX_64_QUAD_COLON.test(val) || 
+        RGX_64_DOUBLE_DASH.test(val) ||
+        RGX_64_QUAD_COLON.test(val) ||
         RGX_64_QUAD_DASH.test(val)
     );
 }
+
+export {vSysMac, vSysMac as default};

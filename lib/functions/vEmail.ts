@@ -7,14 +7,14 @@ const RGX_DOMAIN    = /^(\w{1,})([.-]?\w)*(\.\w{2,63})+$/;
  * Validate that a provided value is a valid email address
  * For more info: RFC3696 (https://datatracker.ietf.org/doc/html/rfc3696)
  * Take note: This does not validate email existence
- * 
+ *
  * @param val - Value to verify
- * 
+ *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vEmail (val:string):boolean {
+function vEmail (val:string):boolean {
     if (typeof val !== 'string') return false;
-    
+
     /* Check that string has content and does not contain spaces */
     const len = val.length;
     if (!len || val.trim().length !== len) return false;
@@ -40,3 +40,5 @@ export default function vEmail (val:string):boolean {
 
     return RGX_DOMAIN.test(domain);
 }
+
+export {vEmail, vEmail as default};

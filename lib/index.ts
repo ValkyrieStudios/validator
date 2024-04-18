@@ -2,50 +2,41 @@
 
 /* eslint-disable no-labels */
 
-import isBoolean                from '@valkyriestudios/utils/boolean/is';
-import isString                 from '@valkyriestudios/utils/string/is';
-import isNeString               from '@valkyriestudios/utils/string/isNotEmpty';
-import isDate                   from '@valkyriestudios/utils/date/is';
-import isFunction               from '@valkyriestudios/utils/function/is';
-import isAsyncFunction          from '@valkyriestudios/utils/function/isAsync';
-import isNeArray                from '@valkyriestudios/utils/array/isNotEmpty';
-import isObject                 from '@valkyriestudios/utils/object/is';
-import isNeObject               from '@valkyriestudios/utils/object/isNotEmpty';
-import isEqual                  from '@valkyriestudios/utils/equal';
-import fnv1A                    from '@valkyriestudios/utils/hash/fnv1A';
-
-import vAlphaNumSpaces          from './functions/vAlphaNumSpaces';
-import vAlphaNumSpacesMultiline from './functions/vAlphaNumSpacesMultiline';
-import vBetween                 from './functions/vBetween';
-import vBetweenInclusive        from './functions/vBetweenInclusive';
-import vColorHex                from './functions/vColorHex';
-import vContinent               from './functions/vContinent';
-import vCountry                 from './functions/vCountry';
-import vCountryAlpha3           from './functions/vCountryAlpha3';
-import vDateString              from './functions/vDateString';
-import vEmail                   from './functions/vEmail';
-import vFalse                   from './functions/vFalse';
-import vGeoLatitude             from './functions/vGeoLatitude';
-import vGeoLongitude            from './functions/vGeoLongitude';
-import vGreaterThan             from './functions/vGreaterThan';
-import vGreaterThanOrEqual      from './functions/vGreaterThanOrEqual';
-import vGuid                    from './functions/vGuid';
-import vIn                      from './functions/vIn';
-import vLessThan                from './functions/vLessThan';
-import vLessThanOrEqual         from './functions/vLessThanOrEqual';
-import vPhone                   from './functions/vPhone';
-import vTimeZone                from './functions/vTimeZone';
-import vRequired                from './functions/vRequired';
-import vSize                    from './functions/vSize';
-import vSysMac                  from './functions/vSysMac';
-import vSysIPv4                 from './functions/vSysIPv4';
-import vSysIPv6                 from './functions/vSysIPv6';
-import vSysIPv4_or_v6           from './functions/vSysIPv4_or_v6';
-import vSysPort                 from './functions/vSysPort';
-import vTrue                    from './functions/vTrue';
-import vUrl                     from './functions/vUrl';
-import vUrlNoQuery              from './functions/vUrlNoQuery';
-import vUrlImage                from './functions/vUrlImage';
+import {Is}                         from '@valkyriestudios/utils/is';
+import {equal}                      from '@valkyriestudios/utils/equal';
+import {fnv1A}                      from '@valkyriestudios/utils/hash/fnv1A';
+import {vAlphaNumSpaces}            from './functions/vAlphaNumSpaces';
+import {vAlphaNumSpacesMultiline}   from './functions/vAlphaNumSpacesMultiline';
+import {vBetween}                   from './functions/vBetween';
+import {vBetweenInclusive}          from './functions/vBetweenInclusive';
+import {vColorHex}                  from './functions/vColorHex';
+import {vContinent}                 from './functions/vContinent';
+import {vCountry}                   from './functions/vCountry';
+import {vCountryAlpha3}             from './functions/vCountryAlpha3';
+import {vDateString}                from './functions/vDateString';
+import {vEmail}                     from './functions/vEmail';
+import {vFalse}                     from './functions/vFalse';
+import {vGeoLatitude}               from './functions/vGeoLatitude';
+import {vGeoLongitude}              from './functions/vGeoLongitude';
+import {vGreaterThan}               from './functions/vGreaterThan';
+import {vGreaterThanOrEqual}        from './functions/vGreaterThanOrEqual';
+import {vGuid}                      from './functions/vGuid';
+import {vIn}                        from './functions/vIn';
+import {vLessThan}                  from './functions/vLessThan';
+import {vLessThanOrEqual}           from './functions/vLessThanOrEqual';
+import {vPhone}                     from './functions/vPhone';
+import {vTimeZone}                  from './functions/vTimeZone';
+import {vRequired}                  from './functions/vRequired';
+import {vSize}                      from './functions/vSize';
+import {vSysMac}                    from './functions/vSysMac';
+import {vSysIPv4}                   from './functions/vSysIPv4';
+import {vSysIPv6}                   from './functions/vSysIPv6';
+import {vSysIPv4_or_v6}             from './functions/vSysIPv4_or_v6';
+import {vSysPort}                   from './functions/vSysPort';
+import {vTrue}                      from './functions/vTrue';
+import {vUrl}                       from './functions/vUrl';
+import {vUrlNoQuery}                from './functions/vUrlNoQuery';
+import {vUrlImage}                  from './functions/vUrlImage';
 
 /* Raw data type for input checking */
 type DataPrimitive          = string | number | boolean | Date | symbol | null | unknown;
@@ -133,21 +124,21 @@ type DefaultRuleDictionary = {
     alpha_num_spaces: typeof vAlphaNumSpaces;
     alpha_num_spaces_multiline: typeof vAlphaNumSpaces;
     array: (val:unknown) => boolean;
-    array_ne: typeof isNeArray;
+    array_ne: typeof Is.NeArray;
     between: typeof vBetween;
     between_inc: typeof vBetweenInclusive;
-    boolean: typeof isBoolean;
+    boolean: typeof Is.Boolean;
     color_hex: typeof vColorHex;
     continent: typeof vContinent;
     country: typeof vCountry;
     country_alpha3: typeof vCountryAlpha3;
-    date: typeof isDate;
+    date: typeof Is.Date;
     date_string: typeof vDateString;
     email: typeof vEmail;
-    equal_to: typeof isEqual;
+    equal_to: typeof equal;
     false: typeof vFalse;
-    function: typeof isFunction;
-    async_function: typeof isAsyncFunction;
+    function: typeof Is.Function;
+    async_function: typeof Is.AsyncFunction;
     geo_latitude: typeof vGeoLatitude;
     geo_longitude: typeof vGeoLongitude;
     greater_than: typeof vGreaterThan;
@@ -160,13 +151,13 @@ type DefaultRuleDictionary = {
     max: typeof vLessThanOrEqual;
     min: typeof vGreaterThanOrEqual;
     number: (val:unknown) => boolean;
-    object: typeof isObject;
-    object_ne: typeof isNeObject;
+    object: typeof Is.Object;
+    object_ne: typeof Is.NeObject;
     phone: typeof vPhone;
     required: typeof vRequired;
     size: typeof vSize;
-    string: typeof isString;
-    string_ne: typeof isNeString;
+    string: typeof Is.String;
+    string_ne: typeof Is.NeString;
     sys_mac: typeof vSysMac;
     sys_ipv4: typeof vSysIPv4;
     sys_ipv6: typeof vSysIPv6;
@@ -181,7 +172,7 @@ type DefaultRuleDictionary = {
     gte: typeof vGreaterThanOrEqual;
     lt: typeof vLessThan;
     lte: typeof vLessThanOrEqual;
-    eq: typeof isEqual;
+    eq: typeof equal;
 };
 
 type CustomRuleDictionary = Record<string, RuleFn>;
@@ -215,7 +206,7 @@ function validExtension <T> (
     obj:Record<string, T>,
     valueFn:(arg0:T, key?:string) => void
 ) {
-    if (!isObject(obj)) throw new Error('Invalid extension');
+    if (!Is.Object(obj)) throw new Error('Invalid extension');
 
     for (const [key, val] of Object.entries(obj)) {
         if (!validExtensionName(key)) throw new Error('Invalid extension');
@@ -261,7 +252,7 @@ function deepGet (obj:DataObject, path:string):DataVal {
 
 /* Configuration for an iterable dictionary handler */
 const iterableDictHandler = {
-    typ: isObject,
+    typ: Is.Object,
     len: (obj:GenericObject) => Object.keys(obj).length,
     val: (obj:GenericObject) => Object.values(obj),
 };
@@ -499,7 +490,7 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
     if (typeof val === 'string') {
         if (val.trim().length === 0) throw new TypeError('Rule value is empty');
         plan.push(parseGroup(key, val));
-    } else if (isObject(val)) {
+    } else if (Is.Object(val)) {
         for (const val_key in val) recursor(plan, val[val_key], key ? `${key}.${val_key}` : val_key);
     } else {
         /* Throw a type error if neither a string nor an object */
@@ -524,21 +515,21 @@ const RULE_STORE:Map<string, RuleFn> = new Map([
     ['alpha_num_spaces', vAlphaNumSpaces],
     ['alpha_num_spaces_multiline', vAlphaNumSpacesMultiline],
     ['array', Array.isArray],
-    ['array_ne', isNeArray],
+    ['array_ne', Is.NeArray],
     ['between', vBetween],
     ['between_inc', vBetweenInclusive],
-    ['boolean', isBoolean],
+    ['boolean', Is.Boolean],
     ['color_hex', vColorHex],
     ['continent', vContinent],
     ['country', vCountry],
     ['country_alpha3', vCountryAlpha3],
-    ['date', isDate],
+    ['date', Is.Date],
     ['date_string', vDateString],
     ['email', vEmail],
-    ['equal_to', isEqual],
+    ['equal_to', equal],
     ['false', vFalse],
-    ['function', isFunction],
-    ['async_function', isAsyncFunction],
+    ['function', Is.Function],
+    ['async_function', Is.AsyncFunction],
     ['geo_latitude', vGeoLatitude],
     ['geo_longitude', vGeoLongitude],
     ['greater_than', vGreaterThan],
@@ -551,13 +542,13 @@ const RULE_STORE:Map<string, RuleFn> = new Map([
     ['max', vLessThanOrEqual],
     ['min', vGreaterThanOrEqual],
     ['number', Number.isFinite],
-    ['object', isObject],
-    ['object_ne', isNeObject],
+    ['object', Is.Object],
+    ['object_ne', Is.NeObject],
     ['phone', vPhone],
     ['required', vRequired],
     ['size', vSize],
-    ['string', isString],
-    ['string_ne', isNeString],
+    ['string', Is.String],
+    ['string_ne', Is.NeString],
     ['sys_mac', vSysMac],
     ['sys_ipv4', vSysIPv4],
     ['sys_ipv6', vSysIPv6],
@@ -572,7 +563,7 @@ const RULE_STORE:Map<string, RuleFn> = new Map([
     ['gte', vGreaterThanOrEqual],
     ['lt', vLessThan],
     ['lte', vLessThanOrEqual],
-    ['eq', isEqual],
+    ['eq', equal],
 ] as [string, RuleFn][]);
 
 let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
@@ -595,7 +586,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
     constructor (rules:TypedValidator) {
         /* Check for rules */
-        if (!isObject(rules)) throw new TypeError('Provide an object to define the rules of this validator');
+        if (!Is.Object(rules)) throw new TypeError('Provide an object to define the rules of this validator');
 
         /* Recursively parse our validation rules, to allow for deeply nested validation to be done */
         const plan:ValidationGroup[] = [];
@@ -612,7 +603,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         const plan_len = this.#plan_length;
 
         /* No data passed? Check if rules were set up */
-        if (!isObject(data)) return !plan_len;
+        if (!Is.Object(data)) return !plan_len;
 
         const plan = this.#plan;
 
@@ -681,7 +672,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         const plan_len = this.#plan_length;
 
         /* No data passed? Check if rules were set up */
-        if (!isObject(data)) {
+        if (!Is.Object(data)) {
             return {
                 is_valid: !plan_len,
                 count: plan_len,
@@ -882,7 +873,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      */
     static extendEnum (obj:ExtEnum):void {
         validExtension(obj, (val:ExtEnumVal):void => {
-            if (isNeArray(val) && val.filter(el => isNeString(el) || Number.isFinite(el)).length === val.length) return;
+            if (Is.NeArray(val) && val.filter(el => Is.NeString(el) || Number.isFinite(el)).length === val.length) return;
             throw new Error('Invalid extension');
         });
 
@@ -928,7 +919,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      *  new Validator({a: '[unique|min:1]user'}).check({a: [{first_name: false, last_name: 'Vermeulen'}]}); false
      */
     static extendSchema <K extends GenericObject, TypedKValidator = TV<K>> (name:string, obj:TypedKValidator):void {
-        if (!validExtensionName(name) || !isNeObject(obj)) throw new Error('Invalid extension');
+        if (!validExtensionName(name) || !Is.NeObject(obj)) throw new Error('Invalid extension');
         let validator:Validator<RulesRaw>;
         try {
             validator = new Validator(obj);
@@ -956,4 +947,4 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
 }
 
-export default Validator;
+export {Validator, Validator as default};

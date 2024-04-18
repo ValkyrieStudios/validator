@@ -1,7 +1,7 @@
 'use strict';
 
-import fnv1A   from '@valkyriestudios/utils/hash/fnv1A';
-import memoize from '@valkyriestudios/utils/caching/memoize';
+import {fnv1A}      from '@valkyriestudios/utils/hash/fnv1A';
+import {memoize}    from '@valkyriestudios/utils/caching/memoize';
 
 const memoizedHashParams = memoize((params:unknown[]) => {
     const hashed = [];
@@ -11,13 +11,13 @@ const memoizedHashParams = memoize((params:unknown[]) => {
 
 /**
  * Validate that a provided value is in an array of values
- * 
+ *
  * @param val - Value to verify
  * @param params - Array of possible values
- * 
+ *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vIn (val:any, params:unknown[]):boolean {
+function vIn (val:any, params:unknown[]):boolean {
     if (!Array.isArray(params) || params.length === 0) return false;
 
     /* Primitive check */
@@ -31,3 +31,5 @@ export default function vIn (val:any, params:unknown[]):boolean {
     /* FNV Hash params */
     return memoizedHashParams(params).indexOf(fnv1A(val)) > -1;
 }
+
+export {vIn, vIn as default};

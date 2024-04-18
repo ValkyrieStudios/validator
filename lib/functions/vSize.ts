@@ -3,13 +3,13 @@
 /**
  * Validate that a provided value has a specific size, this only
  * applies to strings and arrays and checks on length
- * 
+ *
  * @param val - Value to verify
  * @param size - Size to validate against
- * 
+ *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vSize (
+function vSize (
     val:string|unknown[],
     equals:number
 ):boolean {
@@ -24,3 +24,5 @@ export default function vSize (
 
     return val.length === n_equals;
 }
+
+export {vSize, vSize as default};

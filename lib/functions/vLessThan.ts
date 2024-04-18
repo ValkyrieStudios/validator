@@ -3,13 +3,13 @@
 /**
  * Validate that a provided value is lower than a provided number.
  * If passed a string or array this will validate on length
- * 
+ *
  * @param val - Value to verify
  * @param bound - Upper bound to validate against (not inclusive)
- * 
+ *
  * @returns {boolean} Whether or not it's valid
  */
-export default function vLessThan (
+function vLessThan (
     val:string|number|unknown[],
     bound:number
 ):boolean {
@@ -32,3 +32,5 @@ export default function vLessThan (
         return false;
     }
 }
+
+export {vLessThan, vLessThan as default};
