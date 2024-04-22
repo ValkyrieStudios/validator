@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **deps**: Upgrade @valkyriestudios/data-countries to 0.3.0
+- **deps**: Upgrade @valkyriestudios/data-continents to 0.3.0
+- **deps**: Upgrade @valkyriestudios/data-timezones to 0.6.0
+
 ## [9.6.0] - 2024-04-18
 ### Improved
 - sys: Validator is now exported as a named export to allow for working with non-modularized setups, for example:
