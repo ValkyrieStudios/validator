@@ -7,6 +7,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.7.1
+- **deps**: Upgrade @typescript-eslint/parser to 7.7.1
+- **deps**: Upgrade @valkyriestudios/utils to 12.5.0
 - **deps**: Upgrade @valkyriestudios/data-countries to 0.3.0
 - **deps**: Upgrade @valkyriestudios/data-continents to 0.3.0
 - **deps**: Upgrade @valkyriestudios/data-timezones to 0.6.0
