@@ -2,7 +2,12 @@
 
 /* eslint-disable no-labels */
 
-import {Is}                         from '@valkyriestudios/utils/is';
+import {isArray, isNeArray}         from '@valkyriestudios/utils/array';
+import {isBoolean}                  from '@valkyriestudios/utils/boolean';
+import {isDate}                     from '@valkyriestudios/utils/date';
+import {isFn, isAsyncFn}            from '@valkyriestudios/utils/function';
+import {isObject, isNeObject}       from '@valkyriestudios/utils/object';
+import {isString, isNeString}       from '@valkyriestudios/utils/string';
 import {equal}                      from '@valkyriestudios/utils/equal';
 import {fnv1A}                      from '@valkyriestudios/utils/hash/fnv1A';
 import {vAlphaNumSpaces}            from './functions/vAlphaNumSpaces';
@@ -123,22 +128,22 @@ type RuleFn = (...args:any[]) => boolean;
 type DefaultRuleDictionary = {
     alpha_num_spaces: typeof vAlphaNumSpaces;
     alpha_num_spaces_multiline: typeof vAlphaNumSpaces;
-    array: (val:unknown) => boolean;
-    array_ne: typeof Is.NeArray;
+    array: typeof isArray;
+    array_ne: typeof isNeArray;
     between: typeof vBetween;
     between_inc: typeof vBetweenInclusive;
-    boolean: typeof Is.Boolean;
+    boolean: typeof isBoolean;
     color_hex: typeof vColorHex;
     continent: typeof vContinent;
     country: typeof vCountry;
     country_alpha3: typeof vCountryAlpha3;
-    date: typeof Is.Date;
+    date: typeof isDate;
     date_string: typeof vDateString;
     email: typeof vEmail;
     equal_to: typeof equal;
     false: typeof vFalse;
-    function: typeof Is.Function;
-    async_function: typeof Is.AsyncFunction;
+    function: typeof isFn;
+    async_function: typeof isAsyncFn;
     geo_latitude: typeof vGeoLatitude;
     geo_longitude: typeof vGeoLongitude;
     greater_than: typeof vGreaterThan;
@@ -151,13 +156,13 @@ type DefaultRuleDictionary = {
     max: typeof vLessThanOrEqual;
     min: typeof vGreaterThanOrEqual;
     number: (val:unknown) => boolean;
-    object: typeof Is.Object;
-    object_ne: typeof Is.NeObject;
+    object: typeof isObject;
+    object_ne: typeof isNeObject;
     phone: typeof vPhone;
     required: typeof vRequired;
     size: typeof vSize;
-    string: typeof Is.String;
-    string_ne: typeof Is.NeString;
+    string: typeof isString;
+    string_ne: typeof isNeString;
     sys_mac: typeof vSysMac;
     sys_ipv4: typeof vSysIPv4;
     sys_ipv6: typeof vSysIPv6;
@@ -206,7 +211,7 @@ function validExtension <T> (
     obj:Record<string, T>,
     valueFn:(arg0:T, key?:string) => void
 ) {
-    if (!Is.Object(obj)) throw new Error('Invalid extension');
+    if (!isObject(obj)) throw new Error('Invalid extension');
 
     for (const [key, val] of Object.entries(obj)) {
         if (!validExtensionName(key)) throw new Error('Invalid extension');
@@ -252,7 +257,7 @@ function deepGet (obj:DataObject, path:string):DataVal {
 
 /* Configuration for an iterable dictionary handler */
 const iterableDictHandler = {
-    typ: Is.Object,
+    typ: isObject,
     len: (obj:GenericObject) => Object.keys(obj).length,
     val: (obj:GenericObject) => Object.values(obj),
 };
@@ -490,7 +495,7 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
     if (typeof val === 'string') {
         if (val.trim().length === 0) throw new TypeError('Rule value is empty');
         plan.push(parseGroup(key, val));
-    } else if (Is.Object(val)) {
+    } else if (isObject(val)) {
         for (const val_key in val) recursor(plan, val[val_key], key ? `${key}.${val_key}` : val_key);
     } else {
         /* Throw a type error if neither a string nor an object */
@@ -514,22 +519,22 @@ function freezeStore (dict:Map<string, RuleFn>):Readonly<RuleDictionary>  {
 const RULE_STORE:Map<string, RuleFn> = new Map([
     ['alpha_num_spaces', vAlphaNumSpaces],
     ['alpha_num_spaces_multiline', vAlphaNumSpacesMultiline],
-    ['array', Array.isArray],
-    ['array_ne', Is.NeArray],
+    ['array', isArray],
+    ['array_ne', isNeArray],
     ['between', vBetween],
     ['between_inc', vBetweenInclusive],
-    ['boolean', Is.Boolean],
+    ['boolean', isBoolean],
     ['color_hex', vColorHex],
     ['continent', vContinent],
     ['country', vCountry],
     ['country_alpha3', vCountryAlpha3],
-    ['date', Is.Date],
+    ['date', isDate],
     ['date_string', vDateString],
     ['email', vEmail],
     ['equal_to', equal],
     ['false', vFalse],
-    ['function', Is.Function],
-    ['async_function', Is.AsyncFunction],
+    ['function', isFn],
+    ['async_function', isAsyncFn],
     ['geo_latitude', vGeoLatitude],
     ['geo_longitude', vGeoLongitude],
     ['greater_than', vGreaterThan],
@@ -542,13 +547,13 @@ const RULE_STORE:Map<string, RuleFn> = new Map([
     ['max', vLessThanOrEqual],
     ['min', vGreaterThanOrEqual],
     ['number', Number.isFinite],
-    ['object', Is.Object],
-    ['object_ne', Is.NeObject],
+    ['object', isObject],
+    ['object_ne', isNeObject],
     ['phone', vPhone],
     ['required', vRequired],
     ['size', vSize],
-    ['string', Is.String],
-    ['string_ne', Is.NeString],
+    ['string', isString],
+    ['string_ne', isNeString],
     ['sys_mac', vSysMac],
     ['sys_ipv4', vSysIPv4],
     ['sys_ipv6', vSysIPv6],
@@ -586,7 +591,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
     constructor (rules:TypedValidator) {
         /* Check for rules */
-        if (!Is.Object(rules)) throw new TypeError('Provide an object to define the rules of this validator');
+        if (!isObject(rules)) throw new TypeError('Provide an object to define the rules of this validator');
 
         /* Recursively parse our validation rules, to allow for deeply nested validation to be done */
         const plan:ValidationGroup[] = [];
@@ -603,7 +608,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         const plan_len = this.#plan_length;
 
         /* No data passed? Check if rules were set up */
-        if (!Is.Object(data)) return !plan_len;
+        if (!isObject(data)) return !plan_len;
 
         const plan = this.#plan;
 
@@ -672,7 +677,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         const plan_len = this.#plan_length;
 
         /* No data passed? Check if rules were set up */
-        if (!Is.Object(data)) {
+        if (!isObject(data)) {
             return {
                 is_valid: !plan_len,
                 count: plan_len,
@@ -873,7 +878,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      */
     static extendEnum (obj:ExtEnum):void {
         validExtension(obj, (val:ExtEnumVal):void => {
-            if (Is.NeArray(val) && val.filter(el => Is.NeString(el) || Number.isFinite(el)).length === val.length) return;
+            if (isNeArray(val) && val.filter(el => isNeString(el) || Number.isFinite(el)).length === val.length) return;
             throw new Error('Invalid extension');
         });
 
@@ -919,7 +924,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      *  new Validator({a: '[unique|min:1]user'}).check({a: [{first_name: false, last_name: 'Vermeulen'}]}); false
      */
     static extendSchema <K extends GenericObject, TypedKValidator = TV<K>> (name:string, obj:TypedKValidator):void {
-        if (!validExtensionName(name) || !Is.NeObject(obj)) throw new Error('Invalid extension');
+        if (!validExtensionName(name) || !isNeObject(obj)) throw new Error('Invalid extension');
         let validator:Validator<RulesRaw>;
         try {
             validator = new Validator(obj);
