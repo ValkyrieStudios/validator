@@ -4,7 +4,14 @@
 
 import {describe, it}           from 'node:test';
 import * as assert              from 'node:assert/strict';
-import Is                       from '@valkyriestudios/utils/is';
+import {isString, isNeString}   from '@valkyriestudios/utils/string';
+import {isObject, isNeObject}   from '@valkyriestudios/utils/object';
+import {isArray, isNeArray}     from '@valkyriestudios/utils/array';
+import {isBoolean}              from '@valkyriestudios/utils/boolean';
+import {isDate}                 from '@valkyriestudios/utils/date';
+import {equal}                  from '@valkyriestudios/utils/equal';
+import {isFn, isAsyncFn}        from '@valkyriestudios/utils/function';
+import {isFormData}             from '@valkyriestudios/utils/formdata';
 import guid                     from '@valkyriestudios/utils/hash/guid';
 import CONSTANTS                from '../constants';
 import Validator                from '../../lib';
@@ -119,23 +126,23 @@ describe('Validator - Core', () => {
             assert.deepEqual(Validator.rules, {
                 alpha_num_spaces            : vAlphaNumSpaces,
                 alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
-                array                       : Array.isArray,
-                array_ne                    : Is.NeArray,
+                array                       : isArray,
+                array_ne                    : isNeArray,
                 between                     : vBetween,
                 between_inc                 : vBetweenInclusive,
-                boolean                     : Is.Boolean,
+                boolean                     : isBoolean,
                 color_hex                   : vColorHex,
                 continent                   : vContinent,
                 country                     : vCountry,
                 country_alpha3              : vCountryAlpha3,
-                date                        : Is.Date,
+                date                        : isDate,
                 date_string                 : vDateString,
                 email                       : vEmail,
-                equal_to                    : Is.Eq,
+                equal_to                    : equal,
                 false                       : vFalse,
-                formdata                    : Is.Formdata,
-                function                    : Is.Function,
-                async_function              : Is.AsyncFunction,
+                formdata                    : isFormData,
+                function                    : isFn,
+                async_function              : isAsyncFn,
                 geo_latitude                : vGeoLatitude,
                 geo_longitude               : vGeoLongitude,
                 greater_than                : vGreaterThan,
@@ -148,13 +155,13 @@ describe('Validator - Core', () => {
                 max                         : vLessThanOrEqual,
                 min                         : vGreaterThanOrEqual,
                 number                      : Number.isFinite,
-                object                      : Is.Object,
-                object_ne                   : Is.NeObject,
+                object                      : isObject,
+                object_ne                   : isNeObject,
                 phone                       : vPhone,
                 required                    : vRequired,
                 size                        : vSize,
-                string                      : Is.String,
-                string_ne                   : Is.NeString,
+                string                      : isString,
+                string_ne                   : isNeString,
                 sys_mac                     : vSysMac,
                 sys_ipv4                    : vSysIPv4,
                 sys_ipv6                    : vSysIPv6,
@@ -169,7 +176,7 @@ describe('Validator - Core', () => {
                 gte                         : vGreaterThanOrEqual,
                 lt                          : vLessThan,
                 lte                         : vLessThanOrEqual,
-                eq                          : Is.Eq,
+                eq                          : equal,
             });
         });
 

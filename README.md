@@ -13,7 +13,7 @@ An extensible blazing-fast javascript validator
 `npm install --save @valkyriestudios/validator`
 
 ## Example usage
-```javascript
+```typescript
 import Validator from '@valkyriestudios/validator';
 
 const v = new Validator({
@@ -91,7 +91,7 @@ a.uid;
 ## @validate: Running validations and checking evaluations
 After a validator instance is created, you can run it as many times as you want to validate a data object passed to it. The resultset of this is called an `evaluation` and is returned when calling the `validate` function.
 
-```javascript
+```typescript
 const myvalidator = new Validator({name: 'string_ne|min:2', age: 'integer|between:1,150'});
 
 const evaluation = myvalidator.validate({name: 'Peter', age: '250'});
@@ -119,7 +119,7 @@ An integer value defining how many fields were invalid
 An object containing the errors per validated key, each key that had errors will be represented here with an array of the rules that weren't met for the provided value.
 
 Below is an example of such behavior for a more complex validator:
-```javasript
+```typescript
 const v = new Validator({
     first_name: 'string_ne|min:2',
     last_name: 'string_ne|min:2',
@@ -167,7 +167,7 @@ In case you don't need an evaluation object and are simply interested in whether
 
 Take Note: When using typescript and working with a typed validator, (eg: `new Validator<User>({...})`) the check function also acts as a type guard for the checked data.
 
-```javascript
+```typescript
 const myvalidator = new Validator({name: 'string_ne|min:2', age: 'integer|between:1,150'});
 
 myvalidator.check({name: 'Peter', age: '250'}); // false
@@ -182,7 +182,7 @@ line. These rules can go from single dimensional kv objects to multi-dimensional
 You can create very small validators `... = new Validator({email: 'email'});` to very complex validators using a simple
 readable syntax.
 
-```javascript
+```typescript
 new Validator({
     address: {
         street: 'string|alpha_num_spaces',
@@ -226,7 +226,7 @@ Parameterization happens through the following syntax `<myparam>` where myparam 
 
 Example of a parameterized equal to rule:
 
-```javascript
+```typescript
 const v = new Validator({a: 'equal_to:<b>'});
 
 v.check({a: 'hello', b: 'world'}); // false
@@ -234,7 +234,7 @@ v.check({a: 'foo', b: 'foo'}); // true
 ```
 
 Example of a parameterized greater_than rule:
-```javascript
+```typescript
 const v = new Validator({a: 'greater_than:<b>'});
 
 v.check({a: 50, b: 40}); // true
@@ -250,7 +250,7 @@ the `?` flag.
 To make use of the `?` flag, place it at the very start of the defined rule.
 
 Example of an optional rule:
-```javascript
+```typescript
 const v = new Validator({gender: '?string|in:<genders>'});
 
 v.check({genders: ['m', 'f', 'o']}); // true
@@ -264,7 +264,7 @@ To make use of the `!` flag, place it at the very start of any condition (includ
 
 Examples of opposite validations:
 
-```javascript
+```typescript
 const v = new Validator({
     password: 'string|min:8',
     password_old: 'string|min:8|!equal_to:<password>',
@@ -279,7 +279,7 @@ Often, we have to deal with things such as validation of sets of data, good exam
 
 For example the rule: `integer|greater_than:0` will validate that the provided value is an integer greater than 0, but if we expect an array of integers that need to be greater than 0 we can use the following: `[]integer|greater_than:0`.
 
-```javascript
+```typescript
 const v = new Validator({
     ids: '[]integer|greater_than:0',
 });
@@ -291,7 +291,7 @@ v.check({ids: [5]}); // true
 ###### KV-Map (`{}`)
 In case you need to validate a KV-Map where each value needs to be valid according to the same rule swap out the `[]` prefix for `{}`.
 
-```javascript
+```typescript
 Validator.extendSchema('user', {first_name: 'string_ne|min:2'});
 
 const v = new Validator({users: '{min:1}user'});
@@ -317,7 +317,7 @@ We understand that array or KV-map validation requires just a tad more control, 
 
 These options can be combined as well. For example the following rule will ensure that only a unique array with minimum 1 and maximum 4 elements can be passed, and that each element passes a custom rule (see extending) called is\_fruit:
 
-```javascript
+```typescript
 Validator.extend('is_fruit', val => ['apple', 'orange', 'pear'].indexOf(val) >= 0);
 
 const validator = new Validator({fruits: `[unique|min:1|max:4]is_fruit`});
@@ -330,7 +330,7 @@ validator.check({fruits: ['apple', 'dog', 'orange', 'pear', 'pear']}); // false 
 
 ### OR Groups
 Every now and then we want to validate whether or not something is either A or B, for example whether or not a value is an email or its false. To tackle this notion of something being valid in multiple ways you can employ an or group, for example to validate whether or not something is either an email or false we can do the following:
-```javascript
+```typescript
 const v = new Validator({a: '(email)(false)'});
 v.check({a: false}); // true
 v.check({a: 'contact@valkyriestudios.be'}); // true
@@ -340,7 +340,7 @@ v.check({a: true}); // false
 ```
 
 OR groups can be combined with the `?` sometimes flag as well like `?(email)(false)` which would have the following behavior:
-```javascript
+```typescript
 const v = new Validator({a: '(email)(false)'});
 v.check({a: false}); // true
 v.check({a: 'contact@valkyriestudios.be'}); // true
@@ -350,7 +350,7 @@ v.check({a: true}); // false
 ```
 
 And can also be combined with other operators to form more complex rules such as:
-```javascript
+```typescript
 const v = new Validator({a: '?(integer|between:1,150|!between:50,100)(integer|between:-1,-150)'});
 v.check({a: 0}); // false
 v.check({a: 20}); // true
@@ -360,7 +360,7 @@ v.check({a: 65}); // false
 ```
 
 And even with array combinators:
-```javascript
+```typescript
 const v = new Validator({a: '(email)([unique|min:1]email)');
 v.check({a: 'contact@valkyriestudios.be'}); // true
 v.check({a: ['contact@valkyriestudios.be', 'peter@valkyriestudios.be'}); // true
@@ -368,7 +368,7 @@ v.check({a: ['contact@valkyriestudios.be', 'contact@valkyriestudios.be']}); // f
 ```
 
 **Take note:** When using the `.validate` method the evaluation result for a descriptor working with OR groups will be multi-dimensional like this:
-```javascript
+```typescript
 const v = new Validator({
     contact: {
         email: '(email)(false)',
@@ -404,7 +404,7 @@ Adding a rule to the Validator is global and shared among all other validator in
 
 Example of a rule that will validate whether a string is a user role:
 
-```javascript
+```typescript
 Validator.extend('user_role', val =>  ['admin', 'user', 'guest'].includes(val));
 
 (new Validator({a: 'user_role'})).check({a: 'owner'}); // false
@@ -413,7 +413,7 @@ Validator.extend('user_role', val =>  ['admin', 'user', 'guest'].includes(val));
 
 Example of a rule that will validate whether an integer is the double of a provided parameter
 
-```javascript
+```typescript
 Validator.extend('is_double', (val, param) => val === (param * 2));
 
 const v = new Validator({a: 'is_double:<b>'});
@@ -425,7 +425,7 @@ v.check({a: 8, b: 4}); // true
 ### Multiple rules at once?
 If you see the need to add a group of custom rules, this can also be done through `Validator.extendMulti`:
 
-```javascript
+```typescript
 Validator.extendMulti({
     ...
     is_fruit: val => ['apple', 'pear', 'orange'].indexOf(val) >= 0,
@@ -440,7 +440,7 @@ Most applications are structured around a series of models, for example a User, 
 
 For example a user model that can contain a first_name, last_name, email, phone and time zone could be registered as follows:
 
-```javascript
+```typescript
 Validator.extendSchema('user', {
     first_name: 'string_ne|min:3',
     last_name: 'string_ne|min:3',
@@ -466,13 +466,13 @@ v.check({a: {
 
 As with all other ways of extending the Validator these defined rules can also be called directly:
 
-```javascript
+```typescript
 Validator.rules.user({first_name: 'Peter'}); // false
 ```
 
 **Quicktip**: When using typescript you can also ensure that your Validator schema extensions stay aligned with your defined types and interfaces. In the following example intellisense will complain about the address schema not being aligned with the address type.
 
-```ts
+```typescript
 import Validator from '@valkyriestudios/validator';
 
 type User = {
@@ -511,7 +511,7 @@ In most real-world scenarios we often need to validate whether or not a provided
 
 This method expects a kv-map where the `key` is the name we want to validate with and the `value` is an array of strings/numbers that is our set. An example of this behavior can be found below (using the example from extendMulti):
 
-```javascript
+```typescript
 Validator.extendEnum({
     is_fruit    : ['apple', 'pear', 'orange'],
     is_animal   : ['dog', 'cat', 'horse'],
@@ -520,7 +520,7 @@ Validator.extendEnum({
 ```
 
 Of course the below would also work in case the sets are coming from somewhere else:
-```javascript
+```typescript
 import FRUITS from '...'; // Eg: FRUITS {APPLE: 'apple', PEAR: 'pear', ORANGE: 'orange'}
 import ANIMALS from '...'; // Eg: ANIMALS {DOG: 'dog', CAT: 'cat', HORSE: 'horse'}
 import PETS from '..'; // Eg: PETS {DOG: 'dog', CAT: 'cat'}
@@ -548,7 +548,7 @@ v.check('banana'); // true
 Every now and them we need to validate whether or not a provided value is valid according to a certain pattern, more often than not we employ a regex to do so. To make it easier to define/use them you can make use of the static `Validator.extendRegex` method.
 
 This method expects a kv-map where the `key` is the name we want to validate with and the `value` is a regex (either created through `/.../` syntax or `new RegExp(...);`. For example let's say we wanted to adjust our fruist/animal validation from above and turn it into a regex to also validate on whether or not they match the capitalized version of them. We could do so as follows:
-```javascript
+```typescript
 Validator.extendRegex({
     is_fruit    : /^((a|A)pple|(p|P)ear|(o|O)range)$/g,
     is_animal   : /^((d|D)og|(c|C)at|(h|H)orse)$/g,
@@ -557,7 +557,7 @@ Validator.extendRegex({
 ```
 
 **Take Note:** In most real-world use cases regexes don't tend to change at runtime, however in case this does happen you can always re-run the regex extension, for example:
-```javascript
+```typescript
 Validator.extendRegex({FRUITS: /^(apple|pear)$/g});
 
 const v = new Validator({val: 'FRUITS'});
@@ -572,14 +572,14 @@ v.check('banana'); // true
 ## Want to use the validation rules directly without a validator?
 If you see the need to directly use the validation rule functions without a validator instance, or want to check internal state you can use the `Validator.rules` static.
 
-```javascript
+```typescript
 Validator.rules.phone('+32 487 61 59 82'); // true
 Validator.rules.email('contact@valkyriestudios.be'); // true
 ```
 
 This also goes for **enumeration** and **regex** rules:
 
-```javascript
+```typescript
 Validator.extendEnum({NAMES: ['Peter', 'John']});
 Validator.extendRegex({fruits: /^(appl(e|3)|pear)$/g});
 Validator.rules.NAMES('Peter'); // true
@@ -611,6 +611,7 @@ The following list shows you all the default rules that are provided by this lib
 | eq | Alias of equal_to |
 | equal_to | Validate that a provided value is equal to another value, this can be used on primitives (string, number, boolean) but also on non-primitives (objects, arrays, dates). Equality checks for non-primitives are done through FNV1A hashing |
 | false | Validate that a provided value is strictly equal to false |
+| formdata | Validate that a provided value is an instance of formdata |
 | function | Validate that a provided value is a Function |
 | async_function | Validate that a provided value is an async function |
 | geo_latitude | Validate that a provided value is a valid latitude value |
@@ -650,3 +651,4 @@ The following list shows you all the default rules that are provided by this lib
 ## Contributors
 - [Peter Vermeulen](https://www.linkedin.com/in/petervermeulen1/)
 - [SpekkoRice](https://github.com/SpekkoRice)
+
