@@ -133,6 +133,7 @@ describe('Validator - Core', () => {
                 email                       : vEmail,
                 equal_to                    : Is.Eq,
                 false                       : vFalse,
+                formdata                    : Is.Formdata,
                 function                    : Is.Function,
                 async_function              : Is.AsyncFunction,
                 geo_latitude                : vGeoLatitude,

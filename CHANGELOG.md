@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- **feat**: `formdata` rule as a way to validate whether or not a value is an instance of FormData 
+
 ### Improved
 - **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.7.1
 - **deps**: Upgrade @typescript-eslint/parser to 7.7.1

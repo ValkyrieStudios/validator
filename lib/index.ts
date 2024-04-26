@@ -5,6 +5,7 @@
 import {isArray, isNeArray}         from '@valkyriestudios/utils/array';
 import {isBoolean}                  from '@valkyriestudios/utils/boolean';
 import {isDate}                     from '@valkyriestudios/utils/date';
+import {isFormData}                 from '@valkyriestudios/utils/formdata';
 import {isFn, isAsyncFn}            from '@valkyriestudios/utils/function';
 import {isObject, isNeObject}       from '@valkyriestudios/utils/object';
 import {isString, isNeString}       from '@valkyriestudios/utils/string';
@@ -142,6 +143,7 @@ type DefaultRuleDictionary = {
     email: typeof vEmail;
     equal_to: typeof equal;
     false: typeof vFalse;
+    formdata: typeof isFormData;
     function: typeof isFn;
     async_function: typeof isAsyncFn;
     geo_latitude: typeof vGeoLatitude;
@@ -533,6 +535,7 @@ const RULE_STORE:Map<string, RuleFn> = new Map([
     ['email', vEmail],
     ['equal_to', equal],
     ['false', vFalse],
+    ['formdata', isFormData],
     ['function', isFn],
     ['async_function', isAsyncFn],
     ['geo_latitude', vGeoLatitude],
