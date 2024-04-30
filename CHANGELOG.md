@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.8.0
+- **deps**: Upgrade @typescript-eslint/parser to 7.8.0
+- **deps**: Upgrade @valkyriestudios/utils to 12.6.0
+
 ## [9.7.0] - 2024-04-26
 ### Added
 - **feat**: `formdata` rule as a way to validate whether or not a value is an instance of FormData 
