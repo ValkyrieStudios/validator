@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/ValkyrieStudios/validator#readme",
   "dependencies": {
-    "@valkyriestudios/utils": "^12.6.0"
+    "@valkyriestudios/utils": "^12.6.1"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
