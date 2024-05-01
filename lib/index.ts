@@ -709,10 +709,11 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
             const part_errors:(ValidationError|ValidationError[])[] = [];
             for (let x = 0; x < part.rules.length; x++) {
                 const rule = part.rules[x];
-                let error_cursor:ValidationError[] = [];
 
                 /* Check for iterable config */
                 if (rule.iterable) {
+                    const error_cursor:ValidationError[] = [];
+
                     /* Check type */
                     if (!rule.iterable.handler.typ(cursor)) {
                         error_cursor.push({msg: 'iterable', params: []});
@@ -733,8 +734,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
                              * If rule.iterable.unique is set create map to store hashes and keep tabs
                              * on uniqueness as we run through the array
                              */
-                            let iterable_unique = true;
-                            const unique_set = iterable_unique && rule.iterable.unique ? new Set() : false;
+                            let unique_set = rule.iterable.unique ? new Set() : false;
                             const values = rule.iterable.handler.val(cursor);
                             let cursor_value;
                             for (let idx = 0; idx < len; idx++) {
@@ -746,31 +746,34 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
                                     }
                                 }
 
-                                /* If no unique map or iterable unique was already turned off continue */
-                                if (!unique_set || !iterable_unique) continue;
-
                                 /**
                                  * Compute fnv hash if uniqueness needs to be checked, if map size differs from
                                  * our current point in the iteration add uniqueness error
                                  */
-                                unique_set.add(fnv1A(cursor_value));
-                                if (unique_set.size !== (idx + 1)) {
-                                    iterable_unique = false;
-                                    error_cursor.unshift({msg: 'iterable_unique', params: []});
+                                if (unique_set) {
+                                    unique_set.add(fnv1A(cursor_value));
+                                    if (unique_set.size !== (idx + 1)) {
+                                        unique_set = false;
+                                        error_cursor.unshift({msg: 'iterable_unique', params: []});
+                                    }
                                 }
                             }
                         }
                     }
+
+                    if (!error_cursor.length) {
+                        has_valid = true;
+                        break;
+                    }
+
+                    part_errors.push(error_cursor);
                 } else {
                     const evaluation = validateField(cursor, rule.list, data as DataObject);
-                    if (!evaluation.is_valid) error_cursor = evaluation.errors;
-                }
-
-                if (!error_cursor.length) {
-                    has_valid = true;
-                    break;
-                } else {
-                    part_errors.push(error_cursor);
+                    if (evaluation.is_valid) {
+                        has_valid = true;
+                        break;
+                    }
+                    part_errors.push(evaluation.errors);
                 }
             }
 
