@@ -7,6 +7,11 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [9.9.0] - 2024-05-01
 ### Improved
+- **perf**: minor ~3% improvement in validator construction
+- **perf**: minor ~3% improvement in coldstart validation
+- **perf**: minor ~3% improvement in coldstart checks
+- **perf**: minor ~5% improvement in non-coldstart validation
+- **perf**: minor ~5% improvement in non-coldstart checks
 - **deps**: Upgrade @valkyriestudios/utils to 12.7.0
 
 ## [9.8.1] - 2024-04-30
