@@ -83,6 +83,7 @@ interface ValidationRulePart {
 interface ValidationRules {
     iterable:ValidationIterable|false;
     list: ValidationRulePart[];
+    list_length:number;
 }
 
 interface ValidationGroup {
@@ -371,7 +372,7 @@ function parseRule (raw:string):ValidationRules {
         list.push({type, params, params_length, not});
     }
 
-    return {iterable, list};
+    return {iterable, list, list_length: list.length};
 }
 
 /**
@@ -411,34 +412,34 @@ function parseGroup (key:string, raw:string):ValidationGroup {
  */
 function validateField (
     cursor:DataVal,
-    list:ValidationRulePart[],
+    rule:ValidationRules,
     data:DataObject
 ):{
     errors:ValidationError[];
     is_valid:boolean;
 } {
     const errors:ValidationError[] = [];
-    for (let i = 0; i < list.length; i++) {
-        const rule = list[i];
-        const rulefn = RULE_STORE.get(rule.type);
+    for (let i = 0; i < rule.list_length; i++) {
+        const {type, not, params, params_length} = rule.list[i];
+        const rulefn = RULE_STORE.get(type);
 
         /* Check if rule exists */
         if (!rulefn) {
-            errors.push({msg: 'rule_not_found', params: [rule.type]});
+            errors.push({msg: 'rule_not_found', params: [type]});
             continue;
         }
 
         /* Get params that need to be passed, each param is either a function or a primitive */
-        const params = [];
-        for (let x = 0; x < rule.params_length; x++) {
-            const p = rule.params[x];
-            params.push(typeof p === 'function' ? p(data) : p);
+        const n_params = [];
+        for (let x = 0; x < params_length; x++) {
+            const p = params[x];
+            n_params.push(typeof p === 'function' ? p(data) : p);
         }
 
         /* Run rule - if check fails (not valid && not not | not && valid) push into errors */
-        const rule_valid = rulefn(cursor, ...params);
-        if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) {
-            errors.push({msg: `${rule.not ? 'not_' : ''}${rule.type}`, params});
+        const rule_valid = rulefn(cursor, ...n_params);
+        if ((!rule_valid && !not) || (rule_valid && not)) {
+            errors.push({msg: `${not ? 'not_' : ''}${type}`, params: n_params});
         }
     }
 
@@ -449,33 +450,84 @@ function validateField (
  * Check a rule list against a certain field cursor
  *
  * @param cursor - Cursor value to run the rule list against
- * @param list - List of rules to run against the cursor
+ * @param rule - Rule to validate against the cursor
  * @param data - Original data object (used in param checks)
  *
  * @returns {boolean} Whether or not the value is valid
  */
-function checkField (
-    cursor:DataVal,
-    list:ValidationRulePart[],
+function checkRule (
+    cursor:unknown,
+    rule:ValidationRules,
     data:DataObject
 ):boolean {
-    for (let i = 0; i < list.length; i++) {
-        const rule = list[i];
-        const rulefn = RULE_STORE.get(rule.type);
+    if (!rule.iterable) {
+        for (let i = 0; i < rule.list_length; i++) {
+            const {type, not, params, params_length} = rule.list[i];
+            const rulefn = RULE_STORE.get(type);
+            if (!rulefn) return false;
 
-        /* Check if rule exists */
-        if (!rulefn) return false;
+            /* Get params that need to be passed, each param is either a function or a primitive */
+            const n_params = [];
+            for (let x = 0; x < params_length; x++) {
+                const p = params[x];
+                n_params.push(typeof p === 'function' ? p(data) : p);
+            }
 
-        /* Get params that need to be passed, each param is either a function or a primitive */
-        const params = [];
-        for (let x = 0; x < rule.params_length; x++) {
-            const p = rule.params[x];
-            params.push(typeof p === 'function' ? p(data) : p);
+            /* Run rule - if check fails (not valid && not not | not && valid) */
+            const rule_valid = rulefn(cursor, ...n_params);
+            if ((!rule_valid && !not) || (rule_valid && not)) return false;
         }
+    } else {
+        /* If not a valid type for the iterable -> invalid */
+        if (!rule.iterable.handler.typ(cursor)) return false;
 
-        /* Run rule - if check fails (not valid && not not | not && valid) */
-        const rule_valid = rulefn(cursor, ...params);
-        if ((!rule_valid && !rule.not) || (rule_valid && rule.not)) return false;
+        /* Get len of cursor and check with min/max */
+        const len = rule.iterable.handler.len(cursor);
+        if (
+            /* rule.iterable.min is set and len is below the min -> invalid */
+            (Number.isFinite(rule.iterable.min) && len < (rule.iterable.min as number)) ||
+            /* rule.iterable.max is set and len is above max -> invalid */
+            (Number.isFinite(rule.iterable.max) && len > (rule.iterable.max as number))
+        ) return false;
+
+        /**
+         * If rule.iterable.unique is set create map to store hashes and keep tabs
+         * on uniqueness as we run through the array
+         */
+        const unique_set    = new Set();
+        const values        = rule.iterable.handler.val(cursor);
+        const param_acc     = [];
+        let cursor_value;
+        for (let idx = 0; idx < len; idx++) {
+            cursor_value = values[idx];
+            for (let i = 0; i < rule.list_length; i++) {
+                const {type, not, params, params_length} = rule.list[i];
+                const rulefn = RULE_STORE.get(type);
+
+                /* Check if rule exists */
+                if (!rulefn) return false;
+
+                /* Get params that need to be passed, each param is either a function or a primitive */
+                if (!param_acc[i]) {
+                    const n_params = [];
+                    for (let x = 0; x < params_length; x++) {
+                        const p = params[x];
+                        n_params.push(typeof p === 'function' ? p(data) : p);
+                    }
+                    param_acc[i] = n_params;
+                }
+
+                /* Run rule - if check fails (not valid && not not | not && valid) */
+                const rule_valid = rulefn(cursor_value, ...param_acc[i]);
+                if ((!rule_valid && !not) || (rule_valid && not)) return false;
+            }
+
+            /* Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique */
+            if (rule.iterable.unique) {
+                unique_set.add(fnv1A(cursor_value));
+                if (unique_set.size !== (idx + 1)) return false;
+            }
+        }
     }
 
     return true;
@@ -627,50 +679,18 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
             }
 
             /* Go through rules in cursor: if all of them are invalid return false immediately */
-            let is_valid = false;
-            partLoop: for (let x = 0; x < part.rules.length; x++) {
-                const rule = part.rules[x];
-                /* Check for iterable config */
-                if (!rule.iterable) {
-                    if (checkField(cursor, rule.list, data as DataObject)) is_valid = true;
-                    continue;
+            const rule_len = part.rules.length;
+            if (rule_len === 1) {
+                if (!checkRule(cursor, part.rules[0], data)) return false;
+            } else {
+                let is_valid = false;
+                for (let x = 0; x < rule_len; x++) {
+                    is_valid = checkRule(cursor, part.rules[x], data);
+                    if (is_valid) break;
                 }
 
-                /* If not a valid type for the iterable -> invalid */
-                if (!rule.iterable.handler.typ(cursor)) continue;
-
-                /* Get len of cursor and check with min/max */
-                const len = rule.iterable.handler.len(cursor);
-                if (
-                    /* rule.iterable.min is set and len is below the min -> invalid */
-                    (Number.isFinite(rule.iterable.min) && len < (rule.iterable.min as number)) ||
-                    /* rule.iterable.max is set and len is above max -> invalid */
-                    (Number.isFinite(rule.iterable.max) && len > (rule.iterable.max as number))
-                ) continue;
-
-                /**
-                 * If rule.iterable.unique is set create map to store hashes and keep tabs
-                 * on uniqueness as we run through the array
-                 */
-                const unique_set    = new Set();
-                const values        = rule.iterable.handler.val(cursor);
-                let cursor_value;
-                for (let idx = 0; idx < len; idx++) {
-                    cursor_value = values[idx];
-                    if (!checkField(cursor_value, rule.list, data as DataObject)) continue partLoop;
-
-                    /* Continue if no uniqueness checks need to happen */
-                    if (!rule.iterable.unique) continue;
-
-                    /* Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique */
-                    unique_set.add(fnv1A(cursor_value));
-                    if (unique_set.size !== (idx + 1)) continue partLoop;
-                }
-
-                is_valid = true;
+                if (!is_valid) return false;
             }
-
-            if (!is_valid) return false;
         }
 
         return true;
@@ -739,7 +759,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
                             let cursor_value;
                             for (let idx = 0; idx < len; idx++) {
                                 cursor_value = values[idx];
-                                const evaluation = validateField(cursor_value, rule.list, data as DataObject);
+                                const evaluation = validateField(cursor_value, rule, data as DataObject);
                                 if (!evaluation.is_valid) {
                                     for (let z = 0; z < evaluation.errors.length; z++) {
                                         error_cursor.push({idx, ...evaluation.errors[z]});
@@ -768,7 +788,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
                     part_errors.push(error_cursor);
                 } else {
-                    const evaluation = validateField(cursor, rule.list, data as DataObject);
+                    const evaluation = validateField(cursor, rule, data as DataObject);
                     if (evaluation.is_valid) {
                         has_valid = true;
                         break;
