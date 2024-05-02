@@ -9,7 +9,7 @@ const RGX = /^[\w ]*$/;
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vAlphaNumSpaces (val:string):boolean {
+function vAlphaNumSpaces (val:unknown):val is string {
     return typeof val === 'string' && RGX.test(val);
 }
 

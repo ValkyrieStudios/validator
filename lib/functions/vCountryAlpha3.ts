@@ -9,8 +9,8 @@ const SET = new Set(['AFG', 'ALB', 'DZA', 'ASM', 'AND', 'AGO', 'AIA', 'ATA', 'AT
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vCountryAlpha3 (val:string):boolean {
-    return SET.has(val);
+function vCountryAlpha3 (val:unknown):val is string {
+    return SET.has(val as string);
 }
 
 export {vCountryAlpha3, vCountryAlpha3 as default};

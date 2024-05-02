@@ -78,8 +78,8 @@ const SET = new Set([
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vTimeZone (val:string):boolean {
-    return SET.has(val);
+function vTimeZone (val:unknown):val is string {
+    return SET.has(val as string);
 }
 
 export {vTimeZone, vTimeZone as default};

@@ -9,7 +9,7 @@ const RGX = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vUrl (val:string):boolean {
+function vUrl (val:unknown):val is string {
     return typeof val === 'string' && RGX.test(val);
 }
 

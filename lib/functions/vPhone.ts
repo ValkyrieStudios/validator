@@ -11,7 +11,7 @@ const RGX = /^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vPhone (val:string):boolean {
+function vPhone (val:unknown):val is string {
     if (typeof val !== 'string' || val.trim().length === 0) return false;
 
     /* If number of digits is less than 5, return false */

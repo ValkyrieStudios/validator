@@ -9,7 +9,7 @@ const RGX = /^(([0-9a-f]{1,4}:){7,7}[0-9a-f]{1,4}|([0-9a-f]{1,4}:){1,7}:|([0-9a-
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vSysIPv6 (val:string):boolean {
+function vSysIPv6 (val:unknown):val is string {
     return typeof val === 'string' && RGX.test(val);
 }
 

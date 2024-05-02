@@ -7,7 +7,7 @@
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vGeoLatitude (val:number):boolean {
+function vGeoLatitude (val:unknown):val is number {
     return typeof val === 'number' && Number.isFinite(val) && val >= -90 && val <= 90;
 }
 

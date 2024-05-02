@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **dx**: functions/vAlphaNumSpaces now acts as a typeguard
+- **dx**: functions/vAlphaNumSpacesMultiline now acts as a typeguard
+- **dx**: functions/vColorHex now acts as a typeguard
+- **dx**: functions/vContinent now acts as a typeguard
+- **dx**: functions/vCountry now acts as a typeguard
+- **dx**: functions/vCountryAlpha3 now acts as a typeguard
+- **dx**: functions/vDateString now acts as a typeguard
+- **dx**: functions/vEmail now acts as a typeguard
+- **dx**: functions/vFalse now acts as a typeguard
+- **dx**: functions/vGeoLatitude now acts as a typeguard
+- **dx**: functions/vGeoLongitude now acts as a typeguard
+- **dx**: functions/vGuid now acts as a typeguard
+- **dx**: functions/vPhone now acts as a typeguard
+- **dx**: functions/vSysIPv4 now acts as a typeguard
+- **dx**: functions/vSysIPv4_or_v6 now acts as a typeguard
+- **dx**: functions/vSysIPv6 now acts as a typeguard
+- **dx**: functions/vSysMac now acts as a typeguard
+- **dx**: functions/vSysPort now acts as a typeguard
+- **dx**: functions/vTimeZone now acts as a typeguard
+- **dx**: functions/vTrue now acts as a typeguard
+- **dx**: functions/vUrl now acts as a typeguard
+- **dx**: functions/vUrlImage now acts as a typeguard
+- **dx**: functions/vUrlNoQuery now acts as a typeguard
+
 ## [9.9.0] - 2024-05-01
 ### Improved
 - **perf**: minor ~3% improvement in validator construction
@@ -26,7 +52,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [9.7.0] - 2024-04-26
 ### Added
-- **feat**: `formdata` rule as a way to validate whether or not a value is an instance of FormData 
+- **feat**: `formdata` rule as a way to validate whether or not a value is an instance of FormData
 
 ### Improved
 - **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.7.1
@@ -61,7 +87,7 @@ type User = {
     first_name: string;
     last_name: string;
     contact: Contact;
-    tags: string[]; 
+    tags: string[];
 }
 
 Validator.extendSchema<Contact>('contact', {email: 'email', phone: 'phone'});
@@ -121,7 +147,7 @@ const v = new Validator<User>({
 ```
 - **perf**: Improved Validator construction time by ~7-10%
 - **perf**: Improved Coldstart Validator checks/validation by ~7-10%
-- **perf**: Improved Existing Validator checks/validation by ~2-5% 
+- **perf**: Improved Existing Validator checks/validation by ~2-5%
 - **deps**: Upgrade @types/node to 20.12.7
 - **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.7.0
 - **deps**: Upgrade @typescript-eslint/parser to 7.7.0
@@ -190,7 +216,7 @@ const v = new Validator<User>({fname: 'string_ne|min:1|max:128', lname: 'string_
 ```
 
 ### Removed
-- **feat**: TV type export as no longer required (see **breaking** and **added**) 
+- **feat**: TV type export as no longer required (see **breaking** and **added**)
 
 ## [8.3.0] - 2024-04-05
 ### Improved
@@ -260,7 +286,7 @@ const v = new Validator<User>({fname: 'string_ne|min:1|max:128', lname: 'string_
 
 ## [7.9.0] - 2024-02-23
 ### Improved
-- **Validator@check**: Slight performance improvement when doing array validation by implementing alternative early escape mechanic using parent loop breaker 
+- **Validator@check**: Slight performance improvement when doing array validation by implementing alternative early escape mechanic using parent loop breaker
 - **deps**: Upgrade @valkyriestudios/utils to 11.6.0
 
 ## [7.8.0] - 2024-02-22
@@ -583,7 +609,7 @@ new Validator({myfield: 'string_ne|min:20'}).validate({myotherfield: 'hello'});
 - **deps**: Upgrade @valkyriestudios/utils to 9.0.0
 - **deps**: Upgrade @babel/cli to 7.23.4
 - **deps**: Upgrade @babel/core to 7.23.5
-- **deps**: Upgrade @babel/preset-env to 7.23.5 
+- **deps**: Upgrade @babel/preset-env to 7.23.5
 - **deps**: Upgrade eslint to 8.55.0
 - **misc**: Switch from using chai/mocha to node native test runner
 - **misc**: Switch internals to .mjs format
@@ -688,7 +714,7 @@ new Validator({myfield: 'string_ne|min:20'}).validate({myotherfield: 'hello'});
 ### Improved
 - **deps**: Upgrade @valkyriestudios/utils to 6.2.0
 - **deps**: Upgrade @babel/core to 7.21.5
-- **deps**: Upgrade @babel/preset-env to 7.21.5 
+- **deps**: Upgrade @babel/preset-env to 7.21.5
 
 ## [3.5.0] - 2023-04-23
 ### Improved
@@ -753,7 +779,7 @@ new Validator({myfield: 'string_ne|min:20'}).validate({myotherfield: 'hello'});
 ## [3.0.0] - 2022-10-09
 ### Added
 - **Validator@extendMulti**: Extend the validator by passing an object, each key should have a function as its value
-- **Validator Not Flag (!)**: allow reverse validating, eg: !equal_to:foo would validate false if value is passed as foo. Can be applied on all rules (including custom ones) 
+- **Validator Not Flag (!)**: allow reverse validating, eg: !equal_to:foo would validate false if value is passed as foo. Can be applied on all rules (including custom ones)
 - **Validator Iterable Flag**: Allow validating an array of values against a set of rules, eg: {a: '[]integer|between:5,10'} would validate 'a' as an array of integers between 5 and 10. (also works with parameterization, custom rules and new not flag).
 
 ### Improved

@@ -37,7 +37,7 @@ export const EXTENSIONS = new Set([
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vUrlImage (val:string):boolean {
+function vUrlImage (val:unknown):val is string {
     if (!vUrl(val)) return false;
 
     /**

@@ -12,7 +12,7 @@ const RGX_DOMAIN    = /^(\w{1,})([.-]?\w)*(\.\w{2,63})+$/;
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vEmail (val:string):boolean {
+function vEmail (val:unknown):val is string {
     if (typeof val !== 'string') return false;
 
     /* Check that string has content and does not contain spaces */

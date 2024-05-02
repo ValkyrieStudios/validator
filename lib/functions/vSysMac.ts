@@ -37,7 +37,7 @@ const RGX_64_QUAD_DASH = /^[0-9A-Fa-f]{4}-[0-9A-Fa-f]{2}FF-FE[0-9A-Fa-f]{2}-[0-9
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vSysMac (val:string):boolean {
+function vSysMac (val:unknown):val is string {
     if (typeof val !== 'string') return false;
 
     return (

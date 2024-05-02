@@ -9,7 +9,7 @@ const RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vGuid (val:string):boolean {
+function vGuid (val:unknown):val is string {
     return typeof val === 'string' &&
         val.length === 36 && /* A RFC-4122 GUID is 36 characters in length */
         RGX.test(val); /* Verify according to the RFC4122 spec (case-insensitive) */

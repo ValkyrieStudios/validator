@@ -9,8 +9,8 @@ const SET = new Set(['AF', 'AN', 'AS', 'EU', 'NA', 'OC', 'SA']);
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vContinent (val:string):boolean {
-    return SET.has(val);
+function vContinent (val:unknown):val is string {
+    return SET.has(val as string);
 }
 
 export {vContinent, vContinent as default};

@@ -9,7 +9,7 @@ const RGX = /^#([\da-f]{3}){1,2}$/i;
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vColorHex (val:string):boolean {
+function vColorHex (val:unknown):val is string {
     return typeof val === 'string' && RGX.test(val);
 }
 

@@ -7,7 +7,7 @@
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vTrue (val:boolean):boolean {
+function vTrue (val:unknown):val is true {
     return val === true;
 }
 

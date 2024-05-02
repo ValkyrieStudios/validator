@@ -9,7 +9,7 @@ const RGX = /^[\w\s]*$/m;
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vAlphaNumSpacesMultiline (val:string):boolean {
+function vAlphaNumSpacesMultiline (val:unknown):val is string {
     return typeof val === 'string' && RGX.test(val);
 }
 

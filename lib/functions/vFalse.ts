@@ -7,7 +7,7 @@
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vFalse (val:boolean):boolean {
+function vFalse (val:unknown):val is false {
     return val === false;
 }
 

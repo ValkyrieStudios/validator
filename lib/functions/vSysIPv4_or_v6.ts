@@ -10,7 +10,7 @@ import {vSysIPv6} from './vSysIPv6';
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vSysIPv4_or_v6 (val:string):boolean {
+function vSysIPv4_or_v6 (val:unknown):val is string {
     return vSysIPv4(val) || vSysIPv6(val);
 }
 

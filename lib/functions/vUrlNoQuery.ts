@@ -9,7 +9,7 @@ import {vUrl} from './vUrl';
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vUrlNoQuery (val:string):boolean {
+function vUrlNoQuery (val:unknown):val is string {
     return vUrl(val) && val.indexOf('?') < 0 && val.indexOf('&') < 0;
 }
 

@@ -7,7 +7,7 @@
  *
  * @returns {boolean} Whether or not it's valid
  */
-function vDateString (val:string):boolean {
+function vDateString (val:unknown):val is string {
     return (
         typeof val === 'string' &&
         val.trim().length &&
