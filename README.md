@@ -205,7 +205,7 @@ descriptor can contain multiple rules.
 
 The syntax for this is best shown with a good example `integer|between:1000,9999|!equal_to:5`.
 
-##### Rule delimiter: `|` 
+##### Rule delimiter: `|`
 The `|` symbol is a delimiter to show where a rule ends and another rule starts. eg: `integer|min:10` will evaluate the integer rule and the minimum rule with param 10
 
 ##### Parameter start: `:`
@@ -598,6 +598,7 @@ The following list shows you all the default rules that are provided by this lib
 | alpha_num_spaces_multiline | Ditto alpha_num_spaces but with the addition of allowing linebreak and carriage returns |
 | array | Validate that a provided value is an array |
 | array_ne | Same behavior as `array`, with the additional check that empty arrays will not be seen as valid |
+| base64 | Validate that a provided value is a valid base64 encoded string |
 | between | Validate that a provided value is between two numbers, if passed a string or array this will validate on length |
 | between_inc | Validate that a provided value is between or equal to two numbers, if passed a string or array this will validate on length |
 | boolean | Validate that a provided value is a boolean |
@@ -638,10 +639,10 @@ The following list shows you all the default rules that are provided by this lib
 | string | Validate that a provided value is a string |
 | string_ne | Same behavior as `string`, with the additional check that empty strings (after trimming) will not be seen as valid |
 | sys_ipv4 | Validate that a provided value is a valid IPv4 address |
-| sys_ipv6 | Validate that a provided value is a valid IPv6 address | 
+| sys_ipv6 | Validate that a provided value is a valid IPv6 address |
 | sys_ipv4_or_v6 | Validate that a provided value is either a valid IPv4 or a valid IPv6 address |
 | sys_mac | Validate that a provided value is a valid MAC address |
-| sys_port | Validate that a provided value is a valid port number (between 1 and 65535) | 
+| sys_port | Validate that a provided value is a valid port number (between 1 and 65535) |
 | time_zone | Validate that a provided value is a time_zone string |
 | true | Validate that a provided value is strictly equal to true |
 | url | Validate that a provided value is a url, this allows for query string values as well |
