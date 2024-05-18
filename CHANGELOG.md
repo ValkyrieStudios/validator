@@ -9,6 +9,12 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - **feat**: `base64` rule as a way to validate whether or not a value is a valid base64 encoded string
 
+### Improved
+- **deps**: Upgrade @types/node to 20.12.2
+- **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.9.0
+- **deps**: Upgrade @typescript-eslint/parser to 7.9.0
+- **deps**: Upgrade @valkyriestudios/utils to 12.8.0
+
 ## [9.10.0] - 2024-05-02
 ### Improved
 - **dx**: functions/vAlphaNumSpaces now acts as a typeguard
