@@ -17,6 +17,7 @@ import CONSTANTS                from '../constants';
 import Validator                from '../../lib';
 import vAlphaNumSpaces          from '../../lib/functions/vAlphaNumSpaces';
 import vAlphaNumSpacesMultiline from '../../lib/functions/vAlphaNumSpacesMultiline';
+import vBase64                  from '../../lib/functions/vBase64';
 import vBetween                 from '../../lib/functions/vBetween';
 import vBetweenInclusive        from '../../lib/functions/vBetweenInclusive';
 import vColorHex                from '../../lib/functions/vColorHex';
@@ -128,6 +129,7 @@ describe('Validator - Core', () => {
                 alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
                 array                       : isArray,
                 array_ne                    : isNeArray,
+                base64                      : vBase64,
                 between                     : vBetween,
                 between_inc                 : vBetweenInclusive,
                 boolean                     : isBoolean,

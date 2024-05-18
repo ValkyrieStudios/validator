@@ -13,6 +13,7 @@ import {equal}                      from '@valkyriestudios/utils/equal';
 import {fnv1A}                      from '@valkyriestudios/utils/hash/fnv1A';
 import {vAlphaNumSpaces}            from './functions/vAlphaNumSpaces';
 import {vAlphaNumSpacesMultiline}   from './functions/vAlphaNumSpacesMultiline';
+import {vBase64}                    from './functions/vBase64';
 import {vBetween}                   from './functions/vBetween';
 import {vBetweenInclusive}          from './functions/vBetweenInclusive';
 import {vColorHex}                  from './functions/vColorHex';
@@ -132,6 +133,7 @@ type DefaultRuleDictionary = {
     alpha_num_spaces_multiline: typeof vAlphaNumSpaces;
     array: typeof isArray;
     array_ne: typeof isNeArray;
+    base64: typeof vBase64;
     between: typeof vBetween;
     between_inc: typeof vBetweenInclusive;
     boolean: typeof isBoolean;
@@ -575,6 +577,7 @@ const RULE_STORE:Map<string, RuleFn> = new Map([
     ['alpha_num_spaces_multiline', vAlphaNumSpacesMultiline],
     ['array', isArray],
     ['array_ne', isNeArray],
+    ['base64', vBase64],
     ['between', vBetween],
     ['between_inc', vBetweenInclusive],
     ['boolean', isBoolean],

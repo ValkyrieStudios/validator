@@ -7,6 +7,7 @@ import * as fs from 'node:fs';
 import vAlphaNumSpaces          from '../lib/functions/vAlphaNumSpaces';
 import vAlphaNumSpacesMultiline from '../lib/functions/vAlphaNumSpacesMultiline';
 import vBetween                 from '../lib/functions/vBetween';
+import vBase64                  from '../lib/functions/vBase64';
 import vBetweenInclusive        from '../lib/functions/vBetweenInclusive';
 import vColorHex                from '../lib/functions/vColorHex';
 import vContinent               from '../lib/functions/vContinent';
@@ -750,6 +751,15 @@ for (const el of [
     {
         lbl: 'functions/vAlphaNumSpacesMultiline - not valid',
         fn: () => vAlphaNumSpacesMultiline('this$shouldnotbevalid'),
+    },
+    //  vBase64
+    {
+        lbl: 'functions/vBase64 - valid',
+        fn: () => vBase64('SGVsbG8gd29ybGQ='),
+    },
+    {
+        lbl: 'functions/vBase64 - invalid',
+        fn: () => vBase64('U29tZSBzdHJpbmcg*'),
     },
     //  vBetween
     {
