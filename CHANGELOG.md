@@ -10,6 +10,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - **feat**: `base64` rule as a way to validate whether or not a value is a valid base64 encoded string
 
 ### Improved
+- **perf**: ~6-8% performance improvement in phone validation rule thanks to reduction in unnecessary internal operations
 - **deps**: Upgrade @types/node to 20.12.2
 - **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.9.0
 - **deps**: Upgrade @typescript-eslint/parser to 7.9.0

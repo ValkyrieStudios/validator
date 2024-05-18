@@ -12,7 +12,7 @@ const RGX = /^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\
  * @returns {boolean} Whether or not it's valid
  */
 function vPhone (val:unknown):val is string {
-    if (typeof val !== 'string' || val.trim().length === 0) return false;
+    if (typeof val !== 'string') return false;
 
     /* If number of digits is less than 5, return false */
     if ((val.match(/\d/g) || []).length < 5) return false;
@@ -20,10 +20,10 @@ function vPhone (val:unknown):val is string {
     /* Check parts */
     const sparts = val.replace(/(\.|-)/g, ' ').split(' ');
     for (const el of sparts) {
-        const s_el      = el.trim();
-        const last_ix   = s_el.length - 1;
-        if (s_el[0] === '(' && s_el[last_ix] !== ')') return false;
-        if (s_el[last_ix] === ')' && s_el[0] !== '(') return false;
+        const first = el[0];
+        const last  = el[el.length - 1];
+        if (first === '(' && last !== ')') return false;
+        if (last === ')' && first !== '(') return false;
     }
 
     /* Will match phone numbers entered with delimiters (spaces, dots, brackets and dashes) */
