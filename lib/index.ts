@@ -1,7 +1,5 @@
 'use strict';
 
-/* eslint-disable no-labels */
-
 import {isArray, isNeArray}         from '@valkyriestudios/utils/array';
 import {isBoolean}                  from '@valkyriestudios/utils/boolean';
 import {isDate}                     from '@valkyriestudios/utils/date';
