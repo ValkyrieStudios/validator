@@ -36,8 +36,13 @@ import vTimeZone                from '../lib/functions/vTimeZone';
 import vTrue                    from '../lib/functions/vTrue';
 import vUrl                     from '../lib/functions/vUrl';
 import vUrlNoQuery              from '../lib/functions/vUrlNoQuery';
-import vUrlImage                from '../lib/functions/vUrlImage';
 import Validator                from '../lib/index';
+import {
+    vUrlImage,
+    vUrlVideo,
+    vUrlAudio,
+    vUrlMedia,
+} from '../lib/functions/vUrlExtensions';
 
 const ROW_TEST_WIDTH    = 60;
 const ROW_OPS_WIDTH     = 20;
@@ -1051,7 +1056,33 @@ for (const el of [
         lbl: 'functions/vUrlImage - invalid',
         fn: () => vUrlImage('https://www.myfancyimage.com/jpg?aquery=true'),
     },
-
+    //  vUrlAudio
+    {
+        lbl: 'functions/vUrlAudio - valid',
+        fn: () => vUrlAudio('https://www.myfancyimage.com/123.mp3'),
+    },
+    {
+        lbl: 'functions/vUrlAudio - invalid',
+        fn: () => vUrlAudio('https://www.myfancyimage.com/mp3?aquery=true'),
+    },
+    //  vUrlVideo
+    {
+        lbl: 'functions/vUrlVideo - valid',
+        fn: () => vUrlVideo('https://www.myfancyimage.com/123.mp4'),
+    },
+    {
+        lbl: 'functions/vUrlVideo - invalid',
+        fn: () => vUrlVideo('https://www.myfancyimage.com/mp4?aquery=true'),
+    },
+    //  vUrlMedia
+    {
+        lbl: 'functions/vUrlMedia - valid',
+        fn: () => vUrlMedia('https://www.myfancyimage.com/123.jpg'),
+    },
+    {
+        lbl: 'functions/vUrlMedia - invalid',
+        fn: () => vUrlMedia('https://www.myfancyimage.com/jpg?aquery=true'),
+    },
 ]) bench(el, 500000);
 
 fs.writeFileSync('./test/benchmarks/latest.json', JSON.stringify(EXPORT_COLLECTOR, null, 4), 'utf8');
