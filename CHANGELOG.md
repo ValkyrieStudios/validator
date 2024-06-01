@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- **dx**: functions/vContinent now exports a Continent type
+- **dx**: functions/vCountry now exports a CountryAlpha2 type
+- **dx**: functions/vCountryAlpha3 now exports a CountryAlpha3 type
+- **dx**: functions/vTimeZone now exports a TimeZone type
+
+### Improved
+- **dx**: functions/vContinent now has a more refined typeguard working with a union type
+- **dx**: functions/vCountry now has a more refined typeguard working with a union type
+- **dx**: functions/vCountryAlpha3 now has a more refined typeguard working with a union type
+- **dx**: functions/vTimeZone now has a more refined typeguard working with a union type
+
 ## [9.12.0] - 2024-05-27
 ### Improved
 - **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.10.0
