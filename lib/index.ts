@@ -155,12 +155,12 @@ type DefaultRuleDictionary = {
     greater_than_or_equal: typeof vGreaterThanOrEqual;
     guid: typeof vGuid;
     in: typeof vIn;
-    integer: (val:unknown) => boolean;
+    integer: (val:unknown) => val is number;
     less_than: typeof vLessThan;
     less_than_or_equal: typeof vLessThanOrEqual;
     max: typeof vLessThanOrEqual;
     min: typeof vGreaterThanOrEqual;
-    number: (val:unknown) => boolean;
+    number: (val:unknown) => val is number;
     object: typeof isObject;
     object_ne: typeof isNeObject;
     phone: typeof vPhone;

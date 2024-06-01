@@ -17,6 +17,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - **dx**: functions/vCountry now has a more refined typeguard working with a union type
 - **dx**: functions/vCountryAlpha3 now has a more refined typeguard working with a union type
 - **dx**: functions/vTimeZone now has a more refined typeguard working with a union type
+- **dx**: Validator.rules.integer now has a typeguard behind it
+- **dx**: Validator.rules.number now has a typeguard behind it
 
 ## [9.12.0] - 2024-05-27
 ### Improved
