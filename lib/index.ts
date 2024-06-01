@@ -41,7 +41,12 @@ import {vSysPort}                   from './functions/vSysPort';
 import {vTrue}                      from './functions/vTrue';
 import {vUrl}                       from './functions/vUrl';
 import {vUrlNoQuery}                from './functions/vUrlNoQuery';
-import {vUrlImage}                  from './functions/vUrlImage';
+import {
+    vUrlImage,
+    vUrlAudio,
+    vUrlVideo,
+    vUrlMedia,
+} from './functions/vUrlExtensions';
 
 /* Raw data type for input checking */
 type DataPrimitive          = string | number | boolean | Date | symbol | null | unknown;
@@ -176,6 +181,9 @@ type DefaultRuleDictionary = {
     url: typeof vUrl;
     url_noquery: typeof vUrlNoQuery;
     url_img: typeof vUrlImage;
+    url_vid: typeof vUrlVideo;
+    url_aud: typeof vUrlAudio;
+    url_med: typeof vUrlMedia;
     gt: typeof vGreaterThan;
     gte: typeof vGreaterThanOrEqual;
     lt: typeof vLessThan;
@@ -620,6 +628,9 @@ const RULE_STORE:Map<string, RuleFn> = new Map([
     ['url', vUrl],
     ['url_noquery', vUrlNoQuery],
     ['url_img', vUrlImage],
+    ['url_vid', vUrlVideo],
+    ['url_aud', vUrlAudio],
+    ['url_med', vUrlMedia],
     ['gt', vGreaterThan],
     ['gte', vGreaterThanOrEqual],
     ['lt', vLessThan],

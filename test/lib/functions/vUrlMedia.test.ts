@@ -1,21 +1,19 @@
 'use strict';
 
-import {describe, it}   from 'node:test';
-import * as assert      from 'node:assert/strict';
-import guid             from '@valkyriestudios/utils/hash/guid';
-import CONSTANTS        from '../../constants';
-import Validator        from '../../../lib';
+import {describe, it}       from 'node:test';
+import * as assert          from 'node:assert/strict';
+import guid                 from '@valkyriestudios/utils/hash/guid';
+import CONSTANTS            from '../../constants';
+import Validator            from '../../../lib';
 import {
-    AUDIO_EXTENSIONS,
-    VIDEO_EXTENSIONS,
-    IMAGE_EXTENSIONS,
+    MEDIA_EXTENSIONS,
 } from '../../../lib/functions/vUrlExtensions';
 
-describe('vUrlImage', () => {
-    it('Should validate a url string that is a valid url and an image url as valid', () => {
-        const v = new Validator({a: 'url_img'});
+describe('vUrlMedia', () => {
+    it('Should validate a url string that is a valid url and a media url as valid', () => {
+        const v = new Validator({a: 'url_med'});
 
-        IMAGE_EXTENSIONS.forEach(ext => {
+        MEDIA_EXTENSIONS.forEach(ext => {
             for (const el of [
                 `http://foo.com/blah_blah/${guid()}.${ext}`,
                 `http://foo.com/blah_blah_(wikipedia).${ext}`,
@@ -55,57 +53,8 @@ describe('vUrlImage', () => {
         });
     });
 
-    it('Should validate a url string that is a valid media url but not an image url as invalid', () => {
-        const v = new Validator({a: 'url_img'});
-
-        for (const ext of [...VIDEO_EXTENSIONS, ...AUDIO_EXTENSIONS]) {
-            for (const el of [
-                `http://foo.com/blah_blah/${guid()}.${ext}`,
-                `http://foo.com/blah_blah_(wikipedia).${ext}`,
-                `http://foo.com/blah_blah_(wikipedia)_(again)/${guid()}.${ext}`,
-                `http://www.example.com/wpstyle/hello.${ext}?p=364`,
-                `https://www.example.com/foo/1.${ext}?bar=baz&inga=42&quux`,
-                `http://✪df.ws/123.${ext}`,
-                `http://userid:password@example.com:8080/${guid()}.${ext}`,
-                `http://userid:password@example.com:8080/index.${ext}`,
-                `http://userid@example.com:8080/me.${ext}`,
-                `http://➡.ws/䨹.${ext}`,
-                `http://⌘.ws/me.${ext}`,
-                `http://foo.com/blah_(wikipedia)/avatar.${ext}#cite-1`,
-                `http://foo.com/blah_(wikipedia)_blah.${ext}#cite-1`,
-                `http://foo.com/unicode_(✪)_in_parens.${ext}`,
-                `http://foo.com/(something).${ext}?after=parens`,
-                `http://☺.damowmow.com/file.${ext}`,
-                `http://code.google.com/events.${ext}#&product=browser`,
-                `ftp://foo.bar/baz.${ext}`,
-                `http://foo.bar/index.${ext}?q=Test%20URL-encoded%20stuff`,
-                `http://مثال.إختبار/hello.${ext}`,
-                `http://例子.测试/${guid()}.${ext}`,
-                `http://-.~_!$&'()*+,;=:%40:80%2f::::::@example.com/${guid()}.${ext}`,
-                `http://me.com//123.${ext}`, // Double slashes are valid according to RFC 2396
-                `http://223.255.255.254/why.${ext}`,
-                `https://www.valkyriestudios.com/queryhere.${ext}?a=1&b=2`,
-                `https://www.valkyriestudios.com/this.something.${ext}#4802394`,
-                `https://www.valkyriestudios.com/myawesome_avatar.${ext}#inbox?a=2`,
-                `https://valkyriestudios.com/coulditbe.${ext}#floo_bar?a=2&c=foo`,
-                `https://www.valkyriestudios.co.uk:3000/eweqweeqwe/ewqeeqweqe.${ext}`,
-                `https://www.valkyriestudios.co.uk/eweqweeqwe/ewqeeqweqe.${ext}`,
-                `https://valkyriestudios.com/afile.${ext}?a=1&b=2#eweqweqwewqeqweweqweqweqweqwewopqieqwoeqweipqwoeiqweiqwpoeiqwieqwopeiqwpooeqwieiqwoeiqwoeiqweiqwopeiqwpeiqweiqweoiwqopepwoqiepqwoieoiwqeipqwoeiowqieoipoeiwqoiepowiqoieqw&ewquie`, // eslint-disable-line max-len
-            ]) {
-                const evaluation = v.validate({a: el});
-                assert.deepEqual(evaluation, {
-                    is_valid: false,
-                    count: 1,
-                    errors: {
-                        a: [{msg: 'url_img', params: []}],
-                    },
-                });
-            }
-        }
-    });
-
-    it('Should not validate a url string that is a valid url but not an image url as valid', () => {
-        const v = new Validator({a: 'url_img'});
+    it('Should not validate a url string that is a valid url but not a media url as valid', () => {
+        const v = new Validator({a: 'url_med'});
 
         for (const el of [
             'http://foo.com/blah_blah',
@@ -160,21 +109,21 @@ describe('vUrlImage', () => {
             'https://valkyriestudios.com/?a=1&b=2#eweqweqwewqeqweweqweqweqweqwewopqieqwoeqweipqwoeiqweiqwpoeiqwieqwopeiqwpooeqwieiqwoeiqwoeiqweiqwopeiqwpeiqweiqweoiwqopepwoqiepqwoieoiwqeipqwoeiowqieoipoeiwqoiepowiqoieqw&ewquie', // eslint-disable-line max-len
             'https://valkyriestudios.com:3000/?a=1&b=2#eweqweqwewqeqweweqweqweqweqwewopqieqwoeqweipqwoeiqweiqwpoeiqwieqwopeiqwpooeqwieiqwoeiqwoeiqweiqwopeiqwpeiqweiqweoiwqopepwoqiepqwoieoiwqeipqwoeiowqieoipoeiwqoiepowiqoieqw&ewquie', // eslint-disable-line max-len
             'http://x.comddfsdfsdf.', // Trailing dots in tlds are valid
-            'http://bla/.jpg',
+            'https://bla/.mp3',
         ]) {
             const evaluation = v.validate({a: el});
             assert.deepEqual(evaluation, {
                 is_valid: false,
                 count: 1,
                 errors: {
-                    a: [{msg: 'url_img', params: []}],
+                    a: [{msg: 'url_med', params: []}],
                 },
             });
         }
     });
 
     it('Should not validate other types as valid urls', () => {
-        const v = new Validator({a: 'url_img'});
+        const v = new Validator({a: 'url_med'});
 
         for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
             const evaluation = v.validate({a: el});
@@ -182,14 +131,14 @@ describe('vUrlImage', () => {
                 is_valid: false,
                 count: 1,
                 errors: {
-                    a: [{msg: el === undefined ? 'not_found' : 'url_img', params: []}],
+                    a: [{msg: el === undefined ? 'not_found' : 'url_med', params: []}],
                 },
             });
         }
     });
 
-    it('Should not validate strings that are image urls after trimming as valid', () => {
-        const v = new Validator({a: 'url_img'});
+    it('Should not validate strings that are media urls after trimming as valid', () => {
+        const v = new Validator({a: 'url_med'});
 
         for (const el of [
             'https://www.myfancylink.com/123.jpg   ',
@@ -201,14 +150,14 @@ describe('vUrlImage', () => {
                 is_valid: false,
                 count: 1,
                 errors: {
-                    a: [{msg: 'url_img', params: []}],
+                    a: [{msg: 'url_med', params: []}],
                 },
             });
         }
     });
 
     it('Should not validate improper strings as valid urls', () => {
-        const v = new Validator({a: 'url_img'});
+        const v = new Validator({a: 'url_med'});
 
         for (const el of [
             'http://',
@@ -254,7 +203,7 @@ describe('vUrlImage', () => {
                 is_valid: false,
                 count: 1,
                 errors: {
-                    a: [{msg: 'url_img', params: []}],
+                    a: [{msg: 'url_med', params: []}],
                 },
             });
         }

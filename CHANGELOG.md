@@ -7,6 +7,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Added
+- **feat**: `url_vid` rule as a way to validate whether or not a value is a valid video url
+- **feat**: `url_aud` rule as a way to validate whether or not a value is a valid audio url
+- **feat**: `url_med` rule as a way to validate whether or not a value is either a valid video/image/audio url
 - **dx**: functions/vContinent now exports a Continent type
 - **dx**: functions/vCountry now exports a CountryAlpha2 type
 - **dx**: functions/vCountryAlpha3 now exports a CountryAlpha3 type

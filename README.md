@@ -648,6 +648,9 @@ The following list shows you all the default rules that are provided by this lib
 | url | Validate that a provided value is a url, this allows for query string values as well |
 | url_noquery | Validate that a provided value is a url without any query string values |
 | url_img | Validate that a provided value is a url linking to an image file (eg: https://mywebsite.com/123.jpg) |
+| url_vid | Validate that a provided value is a url linking to a video file (eg: https://mywebsite.com/123.mp4) |
+| url_aud | Validate that a provided value is a url linking to an audio file (eg: https://mywebsite.com/123.mp3) |
+| url_med | Validate that a provided value is a url linking to an audio/image or video file (eg: https://mywebsite.com/123.mp3) |
 
 ## Contributors
 - [Peter Vermeulen](https://www.linkedin.com/in/petervermeulen1/)

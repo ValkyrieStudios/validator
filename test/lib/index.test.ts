@@ -47,7 +47,12 @@ import vTimeZone                from '../../lib/functions/vTimeZone';
 import vTrue                    from '../../lib/functions/vTrue';
 import vUrl                     from '../../lib/functions/vUrl';
 import vUrlNoQuery              from '../../lib/functions/vUrlNoQuery';
-import vUrlImage                from '../../lib/functions/vUrlImage';
+import {
+    vUrlImage,
+    vUrlVideo,
+    vUrlMedia,
+    vUrlAudio,
+} from '../../lib/functions/vUrlExtensions';
 
 describe('Validator - Core', () => {
     it('Should instantiate to a validator object', () => {
@@ -174,6 +179,9 @@ describe('Validator - Core', () => {
                 url                         : vUrl,
                 url_noquery                 : vUrlNoQuery,
                 url_img                     : vUrlImage,
+                url_vid                     : vUrlVideo,
+                url_aud                     : vUrlAudio,
+                url_med                     : vUrlMedia,
                 gt                          : vGreaterThan,
                 gte                         : vGreaterThanOrEqual,
                 lt                          : vLessThan,
