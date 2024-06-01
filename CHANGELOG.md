@@ -19,6 +19,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - **dx**: functions/vTimeZone now has a more refined typeguard working with a union type
 - **dx**: Validator.rules.integer now has a typeguard behind it
 - **dx**: Validator.rules.number now has a typeguard behind it
+- **deps**: Upgrade @types/node to 20.13.0
+- **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.11.0
+- **deps**: Upgrade @typescript-eslint/parser to 7.11.0
 
 ## [9.12.0] - 2024-05-27
 ### Improved
