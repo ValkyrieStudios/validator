@@ -254,7 +254,9 @@ function deepGet (obj:DataObject, path:string):DataVal {
                 let cursor:DataVal = obj;
                 while (len) {
                     key = parts.shift();
-                    if (!cursor.hasOwnProperty(key)) return undefined;
+                    /* eslint-disable-next-line */
+                    /* @ts-ignore */
+                    if (cursor[key] === undefined) return undefined;
                     cursor = (cursor as DataObject)[key];
                     len--;
                 }
@@ -343,10 +345,10 @@ function parseRule (raw:string):ValidationRules {
      * Accumulate all the checks that need to be run for this field
      * (eg: string_ne|min:20 will become an array with two checks)
      */
-    const list      = [];
-    const parts     = raw.split('|');
-    for (const part of parts) {
-        let params:string[]|string[][]|unknown[]|unknown[][] = part.split(':');
+    const list  = [];
+    const parts = raw.split('|');
+    for (let y = 0; y < parts.length; y++) {
+        let params:string[]|string[][]|unknown[]|unknown[][] = parts[y].split(':');
         let type = params.shift() as string;
 
         /* Get 'not' flag */
@@ -366,7 +368,7 @@ function parseRule (raw:string):ValidationRules {
                     let param = params[i] as string;
                     const param_len = param.length;
                     if (param[0] === '<' && param[param_len - 1] === '>') {
-                        param = param.slice(1, param_len - 1);
+                        param = param.slice(1, -1);
                         /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
                         if (!RGX_PARAM_NAME.test(param)) {
                             throw new TypeError(`Parameterization misconfiguration, verify rule config for ${raw}`);
@@ -403,7 +405,9 @@ function parseGroup (key:string, raw:string):ValidationGroup {
         acc.rules.push(parseRule(raw));
     } else {
         const conditionals = raw.match(RGX_GROUP_MATCH);
-        for (const el of conditionals) acc.rules.push(parseRule(el.slice(1, el.length - 1)));
+        for (let i = 0; i < conditionals.length; i++) {
+            acc.rules.push(parseRule(conditionals[i].slice(1, -1)));
+        }
     }
 
     return acc;

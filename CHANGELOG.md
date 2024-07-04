@@ -7,6 +7,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- **perf**: ~5-10% performance improvement for coldstart validate/check validators
+- **perf**: ~5% performance improvement on validate with existing validator instances
 - **deps**: Upgrade @valkyriestudios/utils to 12.11.0
 - **deps**: Upgrade @types/node to 20.14.9
 - **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.15.0
