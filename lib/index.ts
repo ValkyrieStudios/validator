@@ -433,7 +433,7 @@ function validateField (
     const errors:ValidationError[] = [];
     for (let i = 0; i < rule.list_length; i++) {
         const {type, not, params, params_length} = rule.list[i];
-        const rulefn = RULE_STORE.get(type);
+        const rulefn = RULE_STORE[type];
 
         /* Check if rule exists */
         if (!rulefn) {
@@ -475,7 +475,7 @@ function checkRule (
     if (!rule.iterable) {
         for (let i = 0; i < rule.list_length; i++) {
             const {type, not, params, params_length} = rule.list[i];
-            const rulefn = RULE_STORE.get(type);
+            const rulefn = RULE_STORE[type];
             if (!rulefn) return false;
 
             /* Get params that need to be passed, each param is either a function or a primitive */
@@ -514,7 +514,7 @@ function checkRule (
             cursor_value = values[idx];
             for (let i = 0; i < rule.list_length; i++) {
                 const {type, not, params, params_length} = rule.list[i];
-                const rulefn = RULE_STORE.get(type);
+                const rulefn = RULE_STORE[type];
 
                 /* Check if rule exists */
                 if (!rulefn) return false;
@@ -576,71 +576,73 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
  *
  * @returns Frozen rule store
  */
-function freezeStore (dict:Map<string, RuleFn>):Readonly<RuleDictionary>  {
+function freezeStore (dict:Record<string, RuleFn>):Readonly<RuleDictionary>  {
     const store = {} as RuleDictionary;
-    for (const [key, value] of dict.entries()) store[key] = value;
+    for (const key in dict) {
+        if (dict.hasOwnProperty(key)) store[key] = dict[key];
+    }
     return Object.freeze(store);
 }
 
-const RULE_STORE:Map<string, RuleFn> = new Map([
-    ['alpha_num_spaces', vAlphaNumSpaces],
-    ['alpha_num_spaces_multiline', vAlphaNumSpacesMultiline],
-    ['array', isArray],
-    ['array_ne', isNeArray],
-    ['base64', vBase64],
-    ['between', vBetween],
-    ['between_inc', vBetweenInclusive],
-    ['boolean', isBoolean],
-    ['color_hex', vColorHex],
-    ['continent', vContinent],
-    ['country', vCountry],
-    ['country_alpha3', vCountryAlpha3],
-    ['date', isDate],
-    ['date_string', vDateString],
-    ['email', vEmail],
-    ['equal_to', equal],
-    ['false', vFalse],
-    ['formdata', isFormData],
-    ['function', isFn],
-    ['async_function', isAsyncFn],
-    ['geo_latitude', vGeoLatitude],
-    ['geo_longitude', vGeoLongitude],
-    ['greater_than', vGreaterThan],
-    ['greater_than_or_equal', vGreaterThanOrEqual],
-    ['guid', vGuid],
-    ['in', vIn],
-    ['integer', Number.isInteger],
-    ['less_than', vLessThan],
-    ['less_than_or_equal', vLessThanOrEqual],
-    ['max', vLessThanOrEqual],
-    ['min', vGreaterThanOrEqual],
-    ['number', Number.isFinite],
-    ['object', isObject],
-    ['object_ne', isNeObject],
-    ['phone', vPhone],
-    ['required', vRequired],
-    ['size', vSize],
-    ['string', isString],
-    ['string_ne', isNeString],
-    ['sys_mac', vSysMac],
-    ['sys_ipv4', vSysIPv4],
-    ['sys_ipv6', vSysIPv6],
-    ['sys_ipv4_or_v6', vSysIPv4_or_v6],
-    ['sys_port', vSysPort],
-    ['time_zone', vTimeZone],
-    ['true', vTrue],
-    ['url', vUrl],
-    ['url_noquery', vUrlNoQuery],
-    ['url_img', vUrlImage],
-    ['url_vid', vUrlVideo],
-    ['url_aud', vUrlAudio],
-    ['url_med', vUrlMedia],
-    ['gt', vGreaterThan],
-    ['gte', vGreaterThanOrEqual],
-    ['lt', vLessThan],
-    ['lte', vLessThanOrEqual],
-    ['eq', equal],
-] as [string, RuleFn][]);
+const RULE_STORE:Record<string, RuleFn> = {
+    alpha_num_spaces: vAlphaNumSpaces,
+    alpha_num_spaces_multiline: vAlphaNumSpacesMultiline,
+    array: isArray,
+    array_ne: isNeArray,
+    base64: vBase64,
+    between: vBetween,
+    between_inc: vBetweenInclusive,
+    boolean: isBoolean,
+    color_hex: vColorHex,
+    continent: vContinent,
+    country: vCountry,
+    country_alpha3: vCountryAlpha3,
+    date: isDate,
+    date_string: vDateString,
+    email: vEmail,
+    equal_to: equal,
+    false: vFalse,
+    formdata: isFormData,
+    function: isFn,
+    async_function: isAsyncFn,
+    geo_latitude: vGeoLatitude,
+    geo_longitude: vGeoLongitude,
+    greater_than: vGreaterThan,
+    greater_than_or_equal: vGreaterThanOrEqual,
+    guid: vGuid,
+    in: vIn,
+    integer: Number.isInteger,
+    less_than: vLessThan,
+    less_than_or_equal: vLessThanOrEqual,
+    max: vLessThanOrEqual,
+    min: vGreaterThanOrEqual,
+    number: Number.isFinite,
+    object: isObject,
+    object_ne: isNeObject,
+    phone: vPhone,
+    required: vRequired,
+    size: vSize,
+    string: isString,
+    string_ne: isNeString,
+    sys_mac: vSysMac,
+    sys_ipv4: vSysIPv4,
+    sys_ipv6: vSysIPv6,
+    sys_ipv4_or_v6: vSysIPv4_or_v6,
+    sys_port: vSysPort,
+    time_zone: vTimeZone,
+    true: vTrue,
+    url: vUrl,
+    url_noquery: vUrlNoQuery,
+    url_img: vUrlImage,
+    url_vid: vUrlVideo,
+    url_aud: vUrlAudio,
+    url_med: vUrlMedia,
+    gt: vGreaterThan,
+    gte: vGreaterThanOrEqual,
+    lt: vLessThan,
+    lte: vLessThanOrEqual,
+    eq: equal,
+};
 
 let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
 
@@ -856,7 +858,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         });
 
         /* Register each rule */
-        for (const [key, value] of Object.entries(obj)) RULE_STORE.set(key, value);
+        for (const [key, value] of Object.entries(obj)) RULE_STORE[key] = value;
 
         /* Freeze Rule store */
         FROZEN_RULE_STORE = freezeStore(RULE_STORE);
