@@ -1,5 +1,3 @@
-'use strict';
-
 import {vSysIPv4} from './vSysIPv4';
 import {vSysIPv6} from './vSysIPv6';
 

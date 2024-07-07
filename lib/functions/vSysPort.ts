@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Validate that a provided value is a valid port number, a port number needs
  * to be between 0 and 65535 with 0 being a reserved port (hence not allowed here)

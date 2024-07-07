@@ -1,5 +1,3 @@
-'use strict';
-
 const RGX_USERNAME  = /^(")?[A-Z0-9&._%+-]+(")?$/i;
 const RGX_DOMAIN    = /^(\w{1,})([.-]?\w)*(\.\w{2,63})+$/;
 

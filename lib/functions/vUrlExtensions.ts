@@ -1,5 +1,3 @@
-'use strict';
-
 import {vUrl} from './vUrl';
 
 export const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'jpe', 'jif', 'jfif', 'jfi', 'png', 'ico', 'cur', 'tiff', 'tif', 'gif', 'webp', 'bmp', 'dib', 'svg', 'svgz', 'heif', 'heifs', 'heic', 'heics', 'avci', 'avcs', 'avif', 'hif']); /* eslint-disable-line max-len */

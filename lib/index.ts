@@ -1,5 +1,3 @@
-'use strict';
-
 import {isArray, isNeArray}         from '@valkyriestudios/utils/array';
 import {isBoolean}                  from '@valkyriestudios/utils/boolean';
 import {isDate}                     from '@valkyriestudios/utils/date';

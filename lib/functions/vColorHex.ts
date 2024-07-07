@@ -1,5 +1,3 @@
-'use strict';
-
 const RGX = /^#([\da-f]{3}){1,2}$/i;
 
 /**

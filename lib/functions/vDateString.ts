@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Validate that a provided value is a valid date string
  *

@@ -1,5 +1,3 @@
-'use strict';
-
 import {fnv1A}      from '@valkyriestudios/utils/hash/fnv1A';
 import {memoize}    from '@valkyriestudios/utils/caching/memoize';
 

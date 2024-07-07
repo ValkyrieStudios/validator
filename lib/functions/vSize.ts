@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Validate that a provided value has a specific size, this only
  * applies to strings and arrays and checks on length

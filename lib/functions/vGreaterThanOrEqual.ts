@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Validate that a provided value is greater than or equal a provided number.
  * If passed a string or array this will validate on length

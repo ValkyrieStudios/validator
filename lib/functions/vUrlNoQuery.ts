@@ -1,5 +1,3 @@
-'use strict';
-
 import {vUrl} from './vUrl';
 
 /**

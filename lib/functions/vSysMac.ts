@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Mac Address Quick summary:
  *

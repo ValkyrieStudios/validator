@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Validate that a provided value is between two numbers, if passed a string or array this will validate on length
  *

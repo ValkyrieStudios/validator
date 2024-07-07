@@ -1,5 +1,3 @@
-'use strict';
-
 /* eslint-disable max-len */
 
 function pre<P extends string, Z extends string> (prefix: P, zones: Z[]): `${P}/${Z}`[] {

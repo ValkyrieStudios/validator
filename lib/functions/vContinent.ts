@@ -1,5 +1,3 @@
-'use strict';
-
 const CODES = ['AF', 'AN', 'AS', 'EU', 'NA', 'OC', 'SA'] as const;
 
 export type Continent = (typeof CODES)[number];

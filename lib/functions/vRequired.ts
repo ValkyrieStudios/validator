@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Validate that a provided value is not empty.
  * Take note: arrays will be seen as valid if at least 1 element is present
