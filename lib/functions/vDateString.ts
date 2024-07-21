@@ -11,7 +11,7 @@ function vDateString (val:unknown):val is string {
         val.trim().length &&
         !isNaN(Date.parse(val)) &&
         !isNaN(new Date(val).getTime())
-    );
+    ) as boolean;
 }
 
 export {vDateString, vDateString as default};

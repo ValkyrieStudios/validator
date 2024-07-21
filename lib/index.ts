@@ -69,9 +69,9 @@ interface ValidationIterable {
     max: number|boolean;
     min: number|boolean;
     handler: {
-        typ: (obj:unknown) => boolean;
-        len: (obj:unknown) => number;
-        val: (obj:unknown) => any[];
+        typ: (obj:any) => boolean;
+        len: (obj:any) => number;
+        val: (obj:any) => any[];
     };
 }
 
@@ -251,7 +251,7 @@ function deepGet (obj:DataObject, path:string):DataVal {
                 let key:string;
                 let cursor:DataVal = obj;
                 while (len) {
-                    key = parts.shift();
+                    key = parts.shift() as string;
                     /* eslint-disable-next-line */
                     /* @ts-ignore */
                     if (cursor[key] === undefined) return undefined;
@@ -402,7 +402,7 @@ function parseGroup (key:string, raw:string):ValidationGroup {
     if (raw[0] !== '(') {
         acc.rules.push(parseRule(raw));
     } else {
-        const conditionals = raw.match(RGX_GROUP_MATCH);
+        const conditionals = raw.match(RGX_GROUP_MATCH) as string[];
         for (let i = 0; i < conditionals.length; i++) {
             acc.rules.push(parseRule(conditionals[i].slice(1, -1)));
         }
@@ -558,7 +558,7 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
      */
     if (typeof val === 'string') {
         if (val.trim().length === 0) throw new TypeError('Rule value is empty');
-        plan.push(parseGroup(key, val));
+        plan.push(parseGroup(key || '', val));
     } else if (isObject(val)) {
         for (const val_key in val) recursor(plan, val[val_key], key ? `${key}.${val_key}` : val_key);
     } else {
@@ -886,6 +886,8 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         for (const key in obj) {
             /* Create function and transfer key to it */
             let f = function (val:string):boolean {
+                /* eslint-disable-next-line */
+                /* @ts-ignore */
                 return typeof val === 'string' && val.match(REGEX_STORE.get(this.uid)) !== null; /* eslint-disable-line no-invalid-this */
             };
 
@@ -932,7 +934,9 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
             /* Create function and transfer key to it */
             let f = function (val:ExtEnumValInner):boolean {
-                return ENUM_STORE.get(this.uid).has(val); /* eslint-disable-line no-invalid-this */
+                /* eslint-disable-next-line */
+                /* @ts-ignore */
+                return ENUM_STORE.get(this.uid)!.has(val); /* eslint-disable-line no-invalid-this */
             };
 
             /* eslint-disable-next-line */
@@ -975,7 +979,9 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         }
 
         let f = function (val:GenericObject):boolean {
-            return SCHEMA_STORE.get(this.uid).check(val); /* eslint-disable-line no-invalid-this */
+            /* eslint-disable-next-line */
+            /* @ts-ignore */
+            return SCHEMA_STORE.get(this.uid)!.check(val); /* eslint-disable-line no-invalid-this */
         };
 
         /* eslint-disable-next-line */

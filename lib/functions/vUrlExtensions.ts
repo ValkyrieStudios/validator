@@ -26,7 +26,7 @@ function vUrlWithExtension (val:unknown, EXTENSIONS:Set<string>):val is string {
 
     /* Get extension */
     const ext = sanitized.pop();
-    if (!EXTENSIONS.has(ext)) return false;
+    if (!ext || !EXTENSIONS.has(ext)) return false;
 
     return sanitized.join('.').length > 0;
 }
