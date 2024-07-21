@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **deps**: Upgrade @valkyriestudios/utils to 12.17.0
+- **deps**: Upgrade @types/node to 20.14.11
+- **deps**: Upgrade @typescript-eslint/eslint-plugin to 7.16.1
+- **deps**: Upgrade @typescript-eslint/parser to 7.16.1
+
 ## [9.18.0] - 2024-07-16
 ### Improved
 - **deps**: Upgrade @valkyriestudios/utils to 12.14.0
