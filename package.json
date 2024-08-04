@@ -40,18 +40,18 @@
   },
   "homepage": "https://github.com/ValkyrieStudios/validator#readme",
   "dependencies": {
-    "@valkyriestudios/utils": "^12.17.1"
+    "@valkyriestudios/utils": "^12.18.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.11",
-    "@typescript-eslint/eslint-plugin": "^7.16.1",
-    "@typescript-eslint/parser": "^7.16.1",
+    "@types/node": "^20.14.14",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "@valkyriestudios/data-continents": "^0.3.0",
     "@valkyriestudios/data-countries": "^0.3.0",
     "@valkyriestudios/data-timezones": "^0.6.0",
-    "esbuild-register": "^3.5.0",
+    "esbuild-register": "^3.6.0",
     "eslint": "^8.57.0",
     "nyc": "^17.0.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   }
 }
