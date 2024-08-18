@@ -452,7 +452,7 @@ function validateField (
         /* Run rule - if check fails (not valid && not not | not && valid) push into errors */
         const rule_valid = rulefn(cursor, ...n_params);
         if ((!rule_valid && !not) || (rule_valid && not)) {
-            errors.push({msg: `${not ? 'not_' : ''}${type}`, params: n_params});
+            errors.push({msg: (not ? 'not_' : '') + type, params: n_params});
         }
     }
 
@@ -563,7 +563,7 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
         if (val.trim().length === 0) throw new TypeError('Rule value is empty');
         plan.push(parseGroup(key || '', val));
     } else if (isObject(val)) {
-        for (const val_key in val) recursor(plan, val[val_key], key ? `${key}.${val_key}` : val_key);
+        for (const val_key in val) recursor(plan, val[val_key], key ? key + '.' + val_key : val_key);
     } else {
         /* Throw a type error if neither a string nor an object */
         throw new TypeError('Invalid rule value');
