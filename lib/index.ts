@@ -240,33 +240,15 @@ function validExtension <T> (
  * @returns {DataVal} Value at path position
  */
 function deepGet (obj:DataObject, path:string):DataVal {
-    const parts     = path.split('.');
-    let len:number  = parts.length;
-    try {
-        switch (len) {
-            case 1:
-                return obj[parts[0]];
-            case 2:
-                return (obj[parts[0]] as DataObject)[parts[1]];
-            case 3:
-                return ((obj[parts[0]] as DataObject)[parts[1]] as DataObject)[parts[2]];
-            default: {
-                let key:string;
-                let cursor:DataVal = obj;
-                while (len) {
-                    key = parts.shift() as string;
-                    /* eslint-disable-next-line */
-                    /* @ts-ignore */
-                    if (cursor[key] === undefined) return undefined;
-                    cursor = (cursor as DataObject)[key];
-                    len--;
-                }
-                return cursor;
-            }
-        }
-    } catch (err) {
-        return undefined;
+    const parts = path.split('.');
+    let cursor: DataVal = obj;
+
+    for (let i = 0; i < parts.length; i++) {
+        if (cursor === undefined) return undefined;
+        cursor = (cursor as DataObject)?.[parts[i]];
     }
+
+    return cursor;
 }
 
 /* Configuration for an iterable dictionary handler */
