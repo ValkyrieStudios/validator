@@ -5,8 +5,7 @@ const RGX = /^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\
  * delimiters such as spaces, dots, brackets, etc, and supports international phone numbers)
  * Take Note: Does not check that the phone number is in use
  *
- * @param {string} val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vPhone (val:unknown):val is string {

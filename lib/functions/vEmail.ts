@@ -6,8 +6,7 @@ const RGX_DOMAIN    = /^(\w{1,})([.-]?\w)*(\.\w{2,63})+$/;
  * For more info: RFC3696 (https://datatracker.ietf.org/doc/html/rfc3696)
  * Take note: This does not validate email existence
  *
- * @param val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vEmail (val:unknown):val is string {

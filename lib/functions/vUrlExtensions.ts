@@ -8,6 +8,9 @@ export const AUDIO_EXTENSIONS = new Set(['mp3', 'aac', 'ogg', 'oga', 'wav', 'fla
 
 export const MEDIA_EXTENSIONS = new Set([...IMAGE_EXTENSIONS, ...VIDEO_EXTENSIONS, ...AUDIO_EXTENSIONS]);
 
+const RGX_PROTO = /^(https?|ftp):\/\//;
+const RGX_QUERY = /(\?|#)/g;
+
 function vUrlWithExtension (val:unknown, EXTENSIONS:Set<string>):val is string {
     if (!vUrl(val)) return false;
 
@@ -15,7 +18,7 @@ function vUrlWithExtension (val:unknown, EXTENSIONS:Set<string>):val is string {
      * Deprotocolize -> take before query -> take before anchor -> split by /
      * eg: 'https://mysite.com/123.jpg#hello?this=iscool' -> ['mysite.com', '123.jpg']
      */
-    let sanitized = val.replace(/^(https?|ftp):\/\//g, '').split(/(\?|#)/g, 1)[0].split('/');
+    let sanitized = val.replace(RGX_PROTO, '').split(RGX_QUERY, 1)[0].split('/');
     if (sanitized.length < 2) return false;
 
     /**
@@ -34,8 +37,7 @@ function vUrlWithExtension (val:unknown, EXTENSIONS:Set<string>):val is string {
 /**
  * Validate that a provided value is a url linking to an image file (eg: https://mywebsite.com/123.jpg)
  *
- * @param val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vUrlImage (val: unknown) {
@@ -46,8 +48,7 @@ function vUrlImage (val: unknown) {
  * Validate that a provided value is a url linking to a video file
  * (eg: https://mywebsite.com/123.mp4)
  *
- * @param val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vUrlVideo (val: unknown): val is string {
@@ -58,8 +59,7 @@ function vUrlVideo (val: unknown): val is string {
  * Validate that a provided value is a url linking to an audio file
  * (eg: https://mywebsite.com/123.mp4)
  *
- * @param val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vUrlAudio (val: unknown): val is string {
@@ -70,8 +70,7 @@ function vUrlAudio (val: unknown): val is string {
  * Validate that a provided value is a url linking to an audio/video/image file
  * (eg: https://mywebsite.com/123.mp4)
  *
- * @param val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vUrlMedia (val: unknown): val is string {

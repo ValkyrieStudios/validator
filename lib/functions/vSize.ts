@@ -2,9 +2,8 @@
  * Validate that a provided value has a specific size, this only
  * applies to strings and arrays and checks on length
  *
- * @param val - Value to verify
- * @param size - Size to validate against
- *
+ * @param {string|unknown[]} val - Value to verify
+ * @param {number} equals - Size to validate against
  * @returns {boolean} Whether or not it's valid
  */
 function vSize (

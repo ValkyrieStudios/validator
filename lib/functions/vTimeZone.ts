@@ -13,8 +13,7 @@ const SET = new Set(TIMEZONES);
 /**
  * Validate that a provided value is a time_zone string
  *
- * @param val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vTimeZone (val:unknown):val is TimeZone {

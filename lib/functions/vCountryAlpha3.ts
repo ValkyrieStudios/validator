@@ -7,8 +7,7 @@ const SET = new Set(CODES);
 /**
  * Validate that a provided value is an alpha-3 code according to ISO 3166-1
  *
- * @param val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vCountryAlpha3 (val:unknown):val is CountryAlpha3 {

@@ -4,8 +4,7 @@
  * Take note: strings will be seen as valid if when trimmed the length is bigger than 0
  * Take note: null, undefined and NaN will not be valid
  *
- * @param val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vRequired (val:unknown):boolean {

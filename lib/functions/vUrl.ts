@@ -3,8 +3,7 @@ const RGX = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\
 /**
  * Validate that a provided value is a url, this allows for query string values as well
  *
- * @param val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vUrl (val:unknown):val is string {

@@ -2,9 +2,8 @@
  * Validate that a provided value is lower than or equal a provided number.
  * If passed a string or array this will validate on length
  *
- * @param val - Value to verify
- * @param bound - Upper bound to validate against (inclusive)
- *
+ * @param {string|number|unknown[]} val - Value to verify
+ * @param {number} bound - Upper bound to validate against (inclusive)
  * @returns {boolean} Whether or not it's valid
  */
 function vLessThanOrEqual (
@@ -17,18 +16,10 @@ function vLessThanOrEqual (
     /* If bound normalized is not numerical return false */
     if (!Number.isFinite(n_bound)) return false;
 
-    /**
-     * If   value is string or array, use length for validation
-     * Elif number use value for validation
-     * El   return false
-     */
-    if (typeof val === 'string' || Array.isArray(val)) {
-        return val.length <= n_bound;
-    } else if (typeof val === 'number' && Number.isFinite(val)) {
-        return val <= n_bound;
-    } else {
-        return false;
-    }
+    /* Check on string or array */
+    if (typeof val === 'string' || Array.isArray(val)) return val.length <= n_bound;
+
+    return Number.isFinite(val) && val <= n_bound;
 }
 
 export {vLessThanOrEqual, vLessThanOrEqual as default};

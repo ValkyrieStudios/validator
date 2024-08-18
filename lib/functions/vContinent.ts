@@ -7,8 +7,7 @@ const SET = new Set(CODES);
 /**
  * Validate that a provided value is a continent code
  *
- * @param val - Value to verify
- *
+ * @param {unknown} val - Value to verify
  * @returns {boolean} Whether or not it's valid
  */
 function vContinent (val:unknown):val is Continent {

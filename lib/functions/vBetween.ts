@@ -1,10 +1,9 @@
 /**
  * Validate that a provided value is between two numbers, if passed a string or array this will validate on length
  *
- * @param val - Value to verify
- * @param lower_bound - Lower bound to validate against (not inclusive)
- * @param upper_bound - Upper bound to validate against (not inclusive)
- *
+ * @param {string|number|unknown[]} val - Value to verify
+ * @param {number} lower_bound - Lower bound to validate against (not inclusive)
+ * @param {number} upper_bound - Upper bound to validate against (not inclusive)
  * @returns {boolean} Whether or not it's valid
  */
 function vBetween (
@@ -19,18 +18,13 @@ function vBetween (
     /* If upper or lower bound normalized is not numerical return false */
     if (!Number.isFinite(n_upper_bound) || !Number.isFinite(n_lower_bound)) return false;
 
-    /**
-     * If   value is string or array, use length for validation
-     * Elif number use value for validation
-     * El   return false
-     */
+    /* Check on string or array */
     if (typeof val === 'string' || Array.isArray(val)) {
-        return val.length > n_lower_bound && val.length < n_upper_bound;
-    } else if (typeof val === 'number' && Number.isFinite(val)) {
-        return val > n_lower_bound && val < n_upper_bound;
-    } else {
-        return false;
+        const len = val.length;
+        return len > n_lower_bound && len < n_upper_bound;
     }
+
+    return Number.isFinite(val) && val > n_lower_bound && val < n_upper_bound;
 }
 
 export {vBetween, vBetween as default};
