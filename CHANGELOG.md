@@ -17,6 +17,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - **perf**: ~2-5% improvement in `url_img` validation thanks to precompiled regexes
 - **perf**: ~2-5% improvement in `sys_ipv4_or_v6` validation thanks to removal of redundant typeof check and simplification of ops
 - **perf**: ~5% improvement in `lt`, `less_than`, `lte`, `less_than_or_equal`, `gt`, `greater_than`, `gte`, `greater_than_or_equal`,  `between`, `between_inc` when using numerical checks thanks to removal of typeof check and simplification of operations
+- **sys**: Automated test runs are now run against node 18.x, 20.x and 22.x instead of only 20.x
 - **deps**: Upgrade @valkyriestudios/utils to 12.20.0
 - **deps**: Upgrade @types/node to 20.16.0
 
