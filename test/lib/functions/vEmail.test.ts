@@ -1,5 +1,3 @@
-'use strict';
-
 import {describe, it}   from 'node:test';
 import * as assert      from 'node:assert/strict';
 import CONSTANTS        from '../../constants';
@@ -98,7 +96,7 @@ describe('vEmail', () => {
             for (let i = 0; i < 62; i++) {
                 c = `${c}c`;
                 const evaluation = new Validator({a: 'email'}).validate({a: `email@cof.${c}`});
-                assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});    
+                assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
             }
         });
     });

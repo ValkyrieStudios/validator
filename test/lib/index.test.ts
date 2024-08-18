@@ -1,5 +1,3 @@
-'use strict';
-
 /* eslint-disable max-lines,max-statements,id-denylist */
 
 import {describe, it}           from 'node:test';
