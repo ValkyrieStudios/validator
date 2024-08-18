@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [9.23.0] - 2024-08-18
 ### Added
 - **feat**: Rule 'date_iso' - Validates that a provided value is a date string in the iso format of `YYYY-MM-DDTHH:mm:ss.SSSZ`
 - **feat**: Rule 'date_day' - Validates that a provided value is a date string in the format of `YYYY-MM-DD`
