@@ -17,6 +17,7 @@ import {vContinent}                 from './functions/vContinent';
 import {vCountry}                   from './functions/vCountry';
 import {vCountryAlpha3}             from './functions/vCountryAlpha3';
 import {vDateString}                from './functions/vDateString';
+import {vDateISO, vDateDay}         from './functions/vDateSpecs';
 import {vEmail}                     from './functions/vEmail';
 import {vFalse}                     from './functions/vFalse';
 import {vGeoLatitude}               from './functions/vGeoLatitude';
@@ -144,6 +145,8 @@ type DefaultRuleDictionary = {
     country_alpha3: typeof vCountryAlpha3;
     date: typeof isDate;
     date_string: typeof vDateString;
+    date_day: typeof vDateDay;
+    date_iso: typeof vDateISO;
     email: typeof vEmail;
     equal_to: typeof equal;
     false: typeof vFalse;
@@ -576,9 +579,7 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
  */
 function freezeStore (dict:Record<string, RuleFn>):Readonly<RuleDictionary>  {
     const store = {} as RuleDictionary;
-    for (const key in dict) {
-        if (dict.hasOwnProperty(key)) store[key] = dict[key];
-    }
+    for (const key in dict) store[key] = dict[key];
     return Object.freeze(store);
 }
 
@@ -596,6 +597,8 @@ const RULE_STORE:Record<string, RuleFn> = {
     country: vCountry,
     country_alpha3: vCountryAlpha3,
     date: isDate,
+    date_day: vDateDay,
+    date_iso: vDateISO,
     date_string: vDateString,
     email: vEmail,
     equal_to: equal,

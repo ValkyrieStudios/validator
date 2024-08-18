@@ -25,6 +25,7 @@ import vContinent               from '../../lib/functions/vContinent';
 import vCountry                 from '../../lib/functions/vCountry';
 import vCountryAlpha3           from '../../lib/functions/vCountryAlpha3';
 import vDateString              from '../../lib/functions/vDateString';
+import {vDateISO, vDateDay}     from '../../lib/functions/vDateSpecs';
 import vEmail                   from '../../lib/functions/vEmail';
 import vFalse                   from '../../lib/functions/vFalse';
 import vGeoLatitude             from '../../lib/functions/vGeoLatitude';
@@ -143,6 +144,8 @@ describe('Validator - Core', () => {
                 country                     : vCountry,
                 country_alpha3              : vCountryAlpha3,
                 date                        : isDate,
+                date_day                    : vDateDay,
+                date_iso                    : vDateISO,
                 date_string                 : vDateString,
                 email                       : vEmail,
                 equal_to                    : equal,

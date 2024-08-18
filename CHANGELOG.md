@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- **feat**: Rule 'date_iso' - Validates that a provided value is a date string in the iso format of `YYYY-MM-DDTHH:mm:ss.SSSZ`
+- **feat**: Rule 'date_day' - Validates that a provided value is a date string in the format of `YYYY-MM-DD`
+
 ### Improved
 - **perf**: ~2-5% improvement in `url_med` validation thanks to precompiled regexes
 - **perf**: ~2-5% improvement in `url_vid` validation thanks to precompiled regexes
