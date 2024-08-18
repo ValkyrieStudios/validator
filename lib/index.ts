@@ -67,8 +67,8 @@ interface ValidationError {
 
 interface ValidationIterable {
     unique: boolean;
-    max: number|boolean;
-    min: number|boolean;
+    max: number;
+    min: number;
     handler: {
         typ: (obj:any) => boolean;
         len: (obj:any) => number;
@@ -292,25 +292,29 @@ const iterableArrayHandler = {
  */
 function getIterableConfig (val:string, dict:boolean = false):ValidationIterable {
     const unique = val.includes('unique');
-    let max:number|boolean = false;
-    let min:number|boolean = false;
     const len = val.length;
 
     // Extracting max and min values
     const max_ix = val.indexOf('max:');
     const min_ix = val.indexOf('min:');
+    const rslt:ValidationIterable = {
+        unique,
+        max: Number.MAX_SAFE_INTEGER,
+        min: -1,
+        handler: dict ? iterableDictHandler : iterableArrayHandler,
+    };
 
     if (max_ix !== -1) {
         const end_ix = val.indexOf('|', max_ix);
-        max = parseInt(val.slice(max_ix + 4, end_ix !== -1 ? end_ix : len));
+        rslt.max = parseInt(val.slice(max_ix + 4, end_ix !== -1 ? end_ix : len), 10);
     }
 
     if (min_ix !== -1) {
         const end_ix = val.indexOf('|', min_ix);
-        min = parseInt(val.slice(min_ix + 4, end_ix !== -1 ? end_ix : len));
+        rslt.min = parseInt(val.slice(min_ix + 4, end_ix !== -1 ? end_ix : len), 10);
     }
 
-    return {unique, max, min, handler: dict ? iterableDictHandler : iterableArrayHandler};
+    return rslt;
 }
 
 /**
@@ -496,12 +500,7 @@ function checkRule (
 
         /* Get len of cursor and check with min/max */
         const len = rule.iterable.handler.len(cursor);
-        if (
-            /* rule.iterable.min is set and len is below the min -> invalid */
-            (Number.isFinite(rule.iterable.min) && len < (rule.iterable.min as number)) ||
-            /* rule.iterable.max is set and len is above max -> invalid */
-            (Number.isFinite(rule.iterable.max) && len > (rule.iterable.max as number))
-        ) return false;
+        if (len < rule.iterable.min || len > rule.iterable.max) return false;
 
         /**
          * If rule.iterable.unique is set create map to store hashes and keep tabs
@@ -764,9 +763,9 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
                          * Elif rule.iterable.max is set and len is above max -> invalid
                          * El   iterable validation
                          */
-                        if (Number.isFinite(rule.iterable.min) && len < (rule.iterable.min as number)) {
+                        if (len < rule.iterable.min) {
                             error_cursor.push({msg: 'iterable_min', params: [rule.iterable.min]});
-                        } else if (Number.isFinite(rule.iterable.max) && len > (rule.iterable.max as number)) {
+                        } else if (len > rule.iterable.max) {
                             error_cursor.push({msg: 'iterable_max', params: [rule.iterable.max]});
                         } else {
                             /**
