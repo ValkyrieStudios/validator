@@ -227,6 +227,11 @@ describe('Validator - Core', () => {
             const validator = new Validator({a: {b: {c: 'string_ne'}}});
             assert.equal(validator.check({a: 'hello'}), false);
         });
+
+        it('Should validate to false if a validator with an undefined rule was passed', () => {
+            const validator = new Validator({a: {b: {c: 'string_no'}}});
+            assert.equal(validator.check({a: {b: {c: 'hello'}}}), false);
+        });
     });
 
     describe('@check FN - lexer: flag:sometimes (?)', () => {
@@ -367,6 +372,11 @@ describe('Validator - Core', () => {
             assert.ok(validator.check({a: ['bob', 'john'], genders: ['male', 'female', 'other']}));
             assert.equal(validator.check({a: ['male', 'female', 'female'], genders: ['male', 'female', 'other']}), false);
             assert.equal(validator.check({a: ['chicken', 'dog', 'female', 'dog'], genders: ['male', 'female', 'other']}), false);
+        });
+
+        it('Should return false if passed an array of values but a non-existing rule', () => {
+            const validator = new Validator({a: '[unique]string_no'});
+            assert.ok(!validator.check({a: ['bob', 'john']}));
         });
     });
 

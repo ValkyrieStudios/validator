@@ -454,8 +454,7 @@ function validateField (
         }
 
         /* Run rule - if check fails (not valid && not not | not && valid) push into errors */
-        const rule_valid = rulefn(cursor, ...n_params);
-        if ((!rule_valid && !not) || (rule_valid && not)) {
+        if (rulefn(cursor, ...n_params) === not) {
             errors.push({msg: (not ? 'not_' : '') + type, params: n_params});
         }
     }
@@ -491,8 +490,7 @@ function checkRule (
             }
 
             /* Run rule - if check fails (not valid && not not | not && valid) */
-            const rule_valid = rulefn(cursor, ...n_params);
-            if ((!rule_valid && !not) || (rule_valid && not)) return false;
+            if (rulefn(cursor, ...n_params) === not) return false;
         }
     } else {
         /* If not a valid type for the iterable -> invalid */
@@ -530,8 +528,7 @@ function checkRule (
                 }
 
                 /* Run rule - if check fails (not valid && not not | not && valid) */
-                const rule_valid = rulefn(cursor_value, ...param_acc[i]);
-                if ((!rule_valid && !not) || (rule_valid && not)) return false;
+                if (rulefn(cursor_value, ...param_acc[i]) === not) return false;
             }
 
             /* Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique */
@@ -697,18 +694,13 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
             }
 
             /* Go through rules in cursor: if all of them are invalid return false immediately */
-            const rule_len = part.rules.length;
-            if (rule_len === 1) {
-                if (!checkRule(cursor, part.rules[0], data)) return false;
-            } else {
-                let is_valid = false;
-                for (let x = 0; x < rule_len; x++) {
-                    is_valid = checkRule(cursor, part.rules[x], data);
-                    if (is_valid) break;
-                }
-
-                if (!is_valid) return false;
+            let is_valid = false;
+            for (let x = 0; x < part.rules.length; x++) {
+                is_valid = checkRule(cursor, part.rules[x], data);
+                if (is_valid) break;
             }
+
+            if (!is_valid) return false;
         }
 
         return true;
