@@ -7,7 +7,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
-- **deps**: Upgrade @valkyriestudios/utils to 12.21.0
+- **deps**: Upgrade @valkyriestudios/utils to 12.22.0
 - **deps**: Upgrade @types/node to 20.16.5
 
 ## [9.23.0] - 2024-08-18
