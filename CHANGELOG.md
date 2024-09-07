@@ -6,6 +6,55 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- **feat**: Validator@checkForm - Instance function which checks if a FormData instance is valid and returns it as an object if it is. Perfect for middleware situations in backend endpoints
+```typescript
+type User = {
+    age: number;
+    name: string;
+};
+const v = new Validator<User>({
+    name: 'string_ne|min:2',
+    age: 'integer|between:1,150',
+});
+
+const form = new FormData();
+form.append('name', 'Peter');
+form.append('age', '34');
+const result = v.checkForm(form);
+if (!result) return;
+
+... // result is typed as User here and will be {name: "Peter", age: 34}
+```
+- **feat**: Validator@check now supports FormData validation
+```typescript
+const v = new Validator({
+    name: 'string_ne|min:2',
+    age: 'integer|between:1,150',
+});
+
+const form = new FormData();
+form.append('name', 'Peter');
+v.check(form); // false
+
+form.append('age', '40');
+v.check(form); // true
+```
+- **feat**: Validator@validate now supports FormData validation
+```typescript
+const v = new Validator({
+    name: 'string_ne|min:2',
+    age: 'integer|between:1,150',
+});
+
+const form = new FormData();
+form.append('name', 'Peter');
+console.log(v.validate(form).is_valid); // false
+
+form.append('age', '40');
+console.log(v.validate(form).is_valid); // true
+```
+
 ### Improved
 - **deps**: Upgrade @valkyriestudios/utils to 12.22.0
 - **deps**: Upgrade @types/node to 20.16.5

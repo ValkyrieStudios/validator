@@ -459,7 +459,7 @@ describe('Validator - Core', () => {
             assert.equal(validator.check({a: [1, 2, 'a', 2]}), false);
         });
 
-        it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+        it('Should return invalid when array is not unique, doesnt match rules and should only insert invalidity once', () => {
             const validator = new Validator({a: '[unique]integer'});
             assert.equal(validator.check({a: [1, 2, 'a', 2, 2, 2.2]}), false);
         });
@@ -648,7 +648,7 @@ describe('Validator - Core', () => {
             assert.equal(validator.check({a: {b: 1, c: 2, d: 'a', e: 2}}), false);
         });
 
-        it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+        it('Should return invalid when array is not unique, doesnt match rules and should only insert invalidity once', () => {
             const validator = new Validator({a: '{unique}integer'});
             assert.equal(validator.check({a: {b: 1, c: 2, d: 'a', e: 2, f: 2, g: 2.2}}), false);
         });
@@ -1104,7 +1104,7 @@ describe('Validator - Core', () => {
                 assert.equal(validator.check(form), false);
             });
 
-            it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+            it('Should return invalid when array is not unique, doesnt match rules and should only insert invalidity once', () => {
                 const validator = new Validator({a: '[unique]integer'});
                 const form = new FormData();
                 form.append('a[0]', '1');
@@ -1353,7 +1353,7 @@ describe('Validator - Core', () => {
                 assert.equal(validator.check(form), false);
             });
 
-            it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+            it('Should return invalid when array is not unique, doesnt match rules and should only insert invalidity once', () => {
                 const validator = new Validator({a: '{unique}integer'});
                 const form = new FormData();
                 form.append('a.b', '1');
@@ -1960,7 +1960,7 @@ describe('Validator - Core', () => {
             });
         });
 
-        it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+        it('Should return invalid when array is not unique, doesnt match rules and should only insert invalidity once', () => {
             const validator = new Validator({a: '[unique]integer'});
             const evaluation = validator.validate({a: [1, 2, 'a', 2, 2, 2.2]});
             assert.deepEqual(evaluation, {
@@ -2329,7 +2329,7 @@ describe('Validator - Core', () => {
             assert.equal(validator.validate({a: {b: 1, c: 2, d: 'a', e: 2}}).is_valid, false);
         });
 
-        it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+        it('Should return invalid when array is not unique, doesnt match rules and should only insert invalidity once', () => {
             const validator = new Validator({a: '{unique}integer'});
             assert.equal(validator.validate({a: {b: 1, c: 2, d: 'a', e: 2, f: 2, g: 2.2}}).is_valid, false);
         });
@@ -2856,7 +2856,7 @@ describe('Validator - Core', () => {
                 assert.equal(validator.validate(form).is_valid, false);
             });
 
-            it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+            it('Should return invalid when array is not unique, doesnt match rules and should only insert invalidity once', () => {
                 const validator = new Validator({a: '[unique]integer'});
                 const form = new FormData();
                 form.append('a[0]', '1');
@@ -3105,7 +3105,7 @@ describe('Validator - Core', () => {
                 assert.equal(validator.validate(form).is_valid, false);
             });
 
-            it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+            it('Should return invalid when array is not unique, doesnt match rules and should only insert invalidity once', () => {
                 const validator = new Validator({a: '{unique}integer'});
                 const form = new FormData();
                 form.append('a.b', '1');

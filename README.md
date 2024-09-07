@@ -195,7 +195,9 @@ Let's say you're working on backend validation and you're receiving FormData ins
 
 **checkForm** is a utility allowing you to check if a FormData instance is valid AND automatically convert it to an object if it is
 
-Take Note: When using typescript and working with a typed validator, (eg: `new Validator<User>({...})`) the checkForm function will return an Object of type User if valid.
+Take Note:
+- When using typescript and working with a typed validator, (eg: `new Validator<User>({...})`) the checkForm function will return an Object of type User if valid.
+- checkForm is perfect for usage inside of middleware on backend endpoints
 
 ```typescript
 type User = {
