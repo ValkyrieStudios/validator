@@ -40,10 +40,10 @@
   },
   "homepage": "https://github.com/ValkyrieStudios/validator#readme",
   "dependencies": {
-    "@valkyriestudios/utils": "^12.20.0"
+    "@valkyriestudios/utils": "^12.21.0"
   },
   "devDependencies": {
-    "@types/node": "^20.16.0",
+    "@types/node": "^20.16.5",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@valkyriestudios/data-continents": "^0.3.0",
