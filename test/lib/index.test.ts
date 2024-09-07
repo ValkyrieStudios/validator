@@ -4,7 +4,7 @@ import {describe, it}           from 'node:test';
 import * as assert              from 'node:assert/strict';
 import {isString, isNeString}   from '@valkyriestudios/utils/string';
 import {isObject, isNeObject}   from '@valkyriestudios/utils/object';
-import {isArray, isNeArray}     from '@valkyriestudios/utils/array';
+import {isNeArray}              from '@valkyriestudios/utils/array';
 import {isBoolean}              from '@valkyriestudios/utils/boolean';
 import {isDate}                 from '@valkyriestudios/utils/date';
 import {equal}                  from '@valkyriestudios/utils/equal';
@@ -131,7 +131,7 @@ describe('Validator - Core', () => {
             assert.deepEqual(Validator.rules, {
                 alpha_num_spaces            : vAlphaNumSpaces,
                 alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
-                array                       : isArray,
+                array                       : Array.isArray,
                 array_ne                    : isNeArray,
                 base64                      : vBase64,
                 between                     : vBetween,
@@ -731,6 +731,701 @@ describe('Validator - Core', () => {
             assert.equal(validator.check({a: 'foobar', nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}), false);
             assert.ok(validator.check({a: 2, nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}));
             assert.ok(validator.check({a: ['other'], nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}));
+        });
+    });
+
+    describe('@check:FormData', () => {
+        describe('FN', () => {
+            it('Should return false when invalid', () => {
+                const form = new FormData();
+                form.append('a', 20);
+                form.append('b', false);
+                assert.equal(new Validator({a: 'number', b: 'number'}).check(form), false);
+            });
+
+            it('Should return true when valid', () => {
+                const form = new FormData();
+                form.append('a', 20);
+                form.append('b', 42);
+                assert.ok(new Validator({a: 'number', b: 'number'}).check(form));
+            });
+        });
+
+        describe('FN - lexer: flag:sometimes (?)', () => {
+            it('Should validate correctly if set and no value is passed', () => {
+                assert.ok(new Validator({a: '?number'}).check(new FormData()));
+            });
+
+            it('Should not interfere with other validation rules', () => {
+                assert.equal(new Validator({
+                    a: '?number',
+                    b: 'number|less_than:20',
+                }).check(new FormData()), false);
+
+                const form = new FormData();
+                form.append('a', '20');
+                form.append('b', 'false');
+                assert.equal(new Validator({
+                    a: '?number',
+                    b: 'number|less_than:20',
+                }).check(form), false);
+
+                const form2 = new FormData();
+                form2.append('b', '15');
+                assert.ok(new Validator({
+                    a: '?number',
+                    b: 'number|less_than:20',
+                }).check(form2));
+            });
+        });
+
+        describe('FN - lexer: flag:parameter (<...>)', () => {
+            it('Should allow link to passed parameter', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('foo', 'hello');
+                assert.ok(new Validator({a: 'equal_to:<foo>'}).check(form));
+            });
+
+            it('Should fail if parameter is not passed', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('foobar', 'hello');
+                assert.equal(new Validator({a: 'equal_to:<foo>'}).check(form), false);
+            });
+
+            it('Should allow multiple parameters inside the same ruleset', () => {
+                const form = new FormData();
+                form.append('a', '5');
+                form.append('min', '3');
+                form.append('max', '7');
+                assert.ok(new Validator({a: 'between:<min>,<max>'}).check(form));
+            });
+
+            it('Should allow multiple parameters inside the same config', () => {
+                const form = new FormData();
+                form.append('a', '3');
+                form.append('b', '2');
+                form.append('arr1', '1');
+                form.append('arr1', '3');
+                form.append('arr1', '5');
+                form.append('arr2', '2');
+                form.append('arr2', '4');
+                form.append('arr2', '6');
+                assert.ok(new Validator({a: 'in:<arr1>', b: 'in:<arr2>'}).check(form));
+            });
+
+            it('Should allow the same parameter on multiple rules inside the same config', () => {
+                const form = new FormData();
+                form.append('a', '1');
+                form.append('b', '2');
+                form.append('arr1', '1');
+                form.append('arr1', '2');
+                form.append('arr1', '3');
+                assert.ok(new Validator({a: 'in:<arr1>', b: 'in:<arr1>'}).check(form));
+            });
+        });
+
+        describe('FN - lexer: flag:not (!)', () => {
+            it('Should validate correct if set and no value is passed', () => {
+                assert.equal(new Validator({a: '!number'}).check(new FormData()), false);
+            });
+
+            it('Should validate correct if set and value is passed when using standard rule', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                assert.ok(new Validator({a: '!number'}).check(form));
+
+                const form2 = new FormData();
+                form2.append('a', 4);
+                assert.equal(new Validator({a: '!number'}).check(form2), false);
+                assert.ok(new Validator({a: '!between:5,10'}).check(form2));
+
+                const form3 = new FormData();
+                form3.append('a', '6');
+                assert.equal(new Validator({a: '!between:5,10'}).check(form3), false);
+            });
+
+            it('Should validate correct if set and value is passed when using parameter flag', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('foo', 'hello');
+                assert.equal(new Validator({a: '!equal_to:<foo>'}).check(form), false);
+            });
+
+            it('Should validate correct if set and value is passed when using multiple validation rules', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('foo', 'hello');
+                assert.equal(new Validator({a: '!string|!equal_to:<foo>'}).check(form), false);
+
+                const form2 = new FormData();
+                form2.append('a', 'hello');
+                form2.append('foo', 'foo');
+                assert.equal(new Validator({a: '!string|!equal_to:<foo>'}).check(form2), false);
+            });
+        });
+
+        describe('FN - lexer: iterable array', () => {
+            it('Should return invalid when passing a non-array to an iterable', () => {
+                const validator = new Validator({a: '[]string'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should allow validating an array of values', () => {
+                const validator = new Validator({a: '[]string'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'there');
+                assert.ok(validator.check(form));
+
+                const form2 = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'false');
+                assert.equal(validator.check(form2), false);
+            });
+
+            it('Should allow validating an array of values with a \'?\' sometimes flag', () => {
+                const validator = new Validator({a: '?[]string'});
+
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'there');
+                assert.ok(validator.check(form));
+                assert.ok(validator.check(new FormData()));
+            });
+
+            it('Should allow validating an array of values with a \'?\' sometimes flag and parameter pass', () => {
+                const validator = new Validator({a: '?[]string|in:<genders>'});
+                const form = new FormData();
+                form.append('a', 'male');
+                form.append('a', 'male');
+                form.append('a', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.check(form));
+
+                const form2 = new FormData();
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.ok(validator.check(form2));
+
+                const form3 = new FormData();
+                form3.append('a', 'dog');
+                form3.append('a', 'male');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.check(form3), false);
+            });
+
+            it('Should allow validating an array of values with a \'?\' sometimes flag, uniqueness and parameter pass', () => {
+                const validator = new Validator({a: '?[unique]string|in:<genders>'});
+                const form = new FormData();
+                form.append('a', 'male');
+                form.append('a', 'male');
+                form.append('a', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.equal(validator.check(form), false);
+
+                const form2 = new FormData();
+                form.append('a', 'male');
+                form.append('a', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.check(form2));
+            });
+
+            it('Should allow validating an array of values with a \'!\' not flag and parameter pass', () => {
+                const validator = new Validator({a: '[]string|!in:<genders>'});
+
+                const form = new FormData();
+                form.append('a', 'bob');
+                form.append('a', 'john');
+                form.append('a', 'bob');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.check(form));
+
+                const form2 = new FormData();
+                form2.append('a', 'male');
+                form2.append('a', 'male');
+                form2.append('a', 'female');
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.equal(validator.check(form2), false);
+
+                const form3 = new FormData();
+                form3.append('a', 'chicken');
+                form3.append('a', 'dog');
+                form3.append('a', 'female');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.check(form3), false);
+            });
+
+            it('Should allow validating an array of values with a \'!\' not flag, uniqueness and parameter pass', () => {
+                const validator = new Validator({a: '[unique]string|!in:<genders>'});
+                const form = new FormData();
+                form.append('a', 'bob');
+                form.append('a', 'john');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.check(form));
+
+                const form2 = new FormData();
+                form2.append('a', 'male');
+                form2.append('a', 'female');
+                form2.append('a', 'female');
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.equal(validator.check(form2), false);
+
+                const form3 = new FormData();
+                form3.append('a', 'chicken');
+                form3.append('a', 'dog');
+                form3.append('a', 'chicken');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.check(form3), false);
+            });
+        });
+
+        describe('FN - lexer: iterable array:unique', () => {
+            it('Should return valid when array is unique', () => {
+                const validator = new Validator({a: '[unique]string'});
+                const form = new FormData();
+                form.append('a[0]', 'a');
+                form.append('a[1]', 'b');
+                form.append('a[2]', 'c');
+                assert.ok(validator.check(form));
+            });
+
+            it('Should return invalid when array is not unique', () => {
+                const validator = new Validator({a: '[unique]string'});
+                const form = new FormData();
+                form.append('a[0]', 'a');
+                form.append('a[1]', 'b');
+                form.append('a[2]', 'a');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return invalid when array is not unique when using numbers', () => {
+                const validator = new Validator({a: '[unique]number'});
+                const form = new FormData();
+                form.append('a[0]', '1');
+                form.append('a[1]', '2');
+                form.append('a[2]', '2');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return invalid when array is not unique when using objects', () => {
+                const validator = new Validator({a: '[unique]object'});
+                const form = new FormData();
+                form.append('a[0].a', '1');
+                form.append('a[1].b', '2');
+                form.append('a[2].b', '2');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return invalid when array is not unique and doesnt match rules', () => {
+                const validator = new Validator({a: '[unique]integer'});
+                const form = new FormData();
+                form.append('a[0]', '1');
+                form.append('a[1]', '2');
+                form.append('a[2]', 'a');
+                form.append('a[3]', '2');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+                const validator = new Validator({a: '[unique]integer'});
+                const form = new FormData();
+                form.append('a[0]', '1');
+                form.append('a[1]', '2');
+                form.append('a[2]', 'a');
+                form.append('a[3]', '2');
+                form.append('a[4]', '2.2');
+                assert.equal(validator.check(form), false);
+            });
+        });
+
+        describe('FN - lexer: iterable array:max+min', () => {
+            it('Should return valid when within boundaries', () => {
+                const validator = new Validator({a: '[max:5|min:2]string'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'there');
+                form.append('a', 'cool');
+                assert.ok(validator.check(form));
+            });
+
+            it('Should return valid when at top boundary', () => {
+                const validator = new Validator({a: '[max:5|min:2]string'});
+                const form = new FormData();
+                form.append('a', 'a1');
+                form.append('a', 'a2');
+                form.append('a', 'a3');
+                form.append('a', 'a4');
+                form.append('a', 'a5');
+                assert.ok(validator.check(form));
+            });
+
+            it('Should return invalid when above top boundary', () => {
+                const validator = new Validator({a: '[max:5|min:2]string'});
+                const form = new FormData();
+                form.append('a', 'a1');
+                form.append('a', 'a2');
+                form.append('a', 'a3');
+                form.append('a', 'a4');
+                form.append('a', 'a5');
+                form.append('a', 'a6');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return valid when at bottom boundary', () => {
+                const validator = new Validator({a: '[max:5|min:2]string'});
+                const form = new FormData();
+                form.append('a', 'a1');
+                form.append('a', 'a2');
+                assert.ok(validator.check(form));
+            });
+
+            it('Should return invalid when below bottom boundary', () => {
+                const validator = new Validator({a: '[max:5|min:2]string'});
+                const form = new FormData();
+                form.append('a', 'a1');
+                assert.equal(validator.check(form), false);
+            });
+        });
+
+        describe('FN - lexer: iterable object', () => {
+            it('Should return invalid when passing a non-object to an iterable', () => {
+                const validator = new Validator({a: '{}string'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should allow validating an object', () => {
+                const validator = new Validator({a: '{}string'});
+                const form = new FormData();
+                form.append('a.b', 'hello');
+                form.append('a.c', 'there');
+                assert.ok(validator.check(form));
+
+                const form2 = new FormData();
+                form2.append('a.b', 'hello');
+                form2.append('a.c', 'false');
+                assert.equal(validator.check(form2), false);
+            });
+
+            it('Should allow validating an object with a \'?\' sometimes flag', () => {
+                const validator = new Validator({a: '?{}string'});
+                const form = new FormData();
+                form.append('a.b', 'hello');
+                form.append('a.c', 'there');
+                assert.ok(validator.check(form));
+                assert.ok(validator.check(new FormData()));
+
+                const form2 = new FormData();
+                form2.append('a.b', 'hello');
+                form2.append('a.c', 'false');
+                assert.equal(validator.check(form2), false);
+            });
+
+            it('Should allow validating an object with a \'?\' sometimes flag and parameter pass', () => {
+                const validator = new Validator({a: '?{}string|in:<genders>'});
+                const form = new FormData();
+                form.append('a.b', 'male');
+                form.append('a.c', 'male');
+                form.append('a.d', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.check(form));
+
+                const form2 = new FormData();
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.ok(validator.check(form2));
+
+                const form3 = new FormData();
+                form3.append('a.b', 'dog');
+                form3.append('a.c', 'male');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.check(form3), false);
+            });
+
+            it('Should allow validating an object with a \'?\' sometimes flag, uniqueness and parameter pass', () => {
+                const validator = new Validator({a: '?{unique}string|in:<genders>'});
+                const form = new FormData();
+                form.append('a.b', 'male');
+                form.append('a.c', 'male');
+                form.append('a.d', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.equal(validator.check(form), false);
+
+                const form2 = new FormData();
+                form.append('a.b', 'male');
+                form.append('a.c', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.check(form2));
+            });
+
+            it('Should allow validating an object with a \'!\' not flag and parameter pass', () => {
+                const validator = new Validator({a: '{}string|!in:<genders>'});
+                const form = new FormData();
+                form.append('a.b', 'bob');
+                form.append('a.c', 'john');
+                form.append('a.d', 'bob');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.check(form));
+
+                const form2 = new FormData();
+                form2.append('a.b', 'male');
+                form2.append('a.c', 'male');
+                form2.append('a.d', 'female');
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.equal(validator.check(form2), false);
+
+                const form3 = new FormData();
+                form3.append('a.b', 'chicken');
+                form3.append('a.c', 'dog');
+                form3.append('a.d', 'female');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.check(form3), false);
+            });
+
+            it('Should allow validating an object with a \'!\' not flag, uniqueness and parameter pass', () => {
+                const validator = new Validator({a: '{unique}string|!in:<genders>'});
+                const form = new FormData();
+                form.append('a.b', 'bob');
+                form.append('a.c', 'john');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.check(form));
+
+                const form2 = new FormData();
+                form2.append('a.b', 'male');
+                form2.append('a.c', 'female');
+                form2.append('a.d', 'female');
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.equal(validator.check(form2), false);
+
+                const form3 = new FormData();
+                form3.append('a.b', 'chicken');
+                form3.append('a.c', 'dog');
+                form3.append('a.d', 'chicken');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.check(form3), false);
+            });
+        });
+
+        describe('FN - lexer: iterable object:unique', () => {
+            it('Should return valid when array is unique', () => {
+                const validator = new Validator({a: '{unique}string'});
+                const form = new FormData();
+                form.append('a.b', 'a');
+                form.append('a.c', 'b');
+                form.append('a.d', 'c');
+                assert.ok(validator.check(form));
+            });
+
+            it('Should return invalid when array is not unique', () => {
+                const validator = new Validator({a: '{unique}string'});
+                const form = new FormData();
+                form.append('a.b', 'a');
+                form.append('a.c', 'b');
+                form.append('a.d', 'a');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return invalid when array is not unique when using numbers', () => {
+                const validator = new Validator({a: '{unique}number'});
+                const form = new FormData();
+                form.append('a.b', '1');
+                form.append('a.c', '2');
+                form.append('a.d', '2');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return invalid when array is not unique when using objects', () => {
+                const validator = new Validator({a: '{unique}object'});
+                const form = new FormData();
+                form.append('a.b.a', '1');
+                form.append('a.c.b', '2');
+                form.append('a.d.a', '1');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return invalid when array is not unique and doesnt match rules', () => {
+                const validator = new Validator({a: '{unique}integer'});
+                const form = new FormData();
+                form.append('a.b', '1');
+                form.append('a.c', '2');
+                form.append('a.d', 'a');
+                form.append('a.e', '2');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+                const validator = new Validator({a: '{unique}integer'});
+                const form = new FormData();
+                form.append('a.b', '1');
+                form.append('a.c', '2');
+                form.append('a.d', 'a');
+                form.append('a.e', '2');
+                form.append('a.f', '2.2');
+                assert.equal(validator.check(form), false);
+            });
+        });
+
+        describe('FN - lexer: iterable object:max+min', () => {
+            it('Should return valid when within boundaries', () => {
+                const validator = new Validator({a: '{max:5|min:2}string'});
+                const form = new FormData();
+                form.append('a.b', 'hello');
+                form.append('a.c', 'there');
+                form.append('a.d', 'cool');
+                assert.ok(validator.check(form));
+            });
+
+            it('Should return valid when at top boundary', () => {
+                const validator = new Validator({a: '{max:5|min:2}string'});
+                const form = new FormData();
+                form.append('a.b', 'a1');
+                form.append('a.c', 'a2');
+                form.append('a.d', 'a3');
+                form.append('a.e', 'a4');
+                form.append('a.f', 'a5');
+                assert.ok(validator.check(form));
+            });
+
+            it('Should return invalid when above top boundary', () => {
+                const validator = new Validator({a: '{max:5|min:2}string'});
+                const form = new FormData();
+                form.append('a.b', 'a1');
+                form.append('a.c', 'a2');
+                form.append('a.d', 'a3');
+                form.append('a.e', 'a4');
+                form.append('a.f', 'a5');
+                form.append('a.g', 'a6');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return valid when at bottom boundary', () => {
+                const validator = new Validator({a: '{max:5|min:2}string'});
+                const form = new FormData();
+                form.append('a.b', 'a1');
+                form.append('a.c', 'a2');
+                assert.ok(validator.check(form));
+            });
+
+            it('Should return invalid when below bottom boundary', () => {
+                const validator = new Validator({a: '{max:5|min:2}string'});
+                const form = new FormData();
+                form.append('a.b', 'a1');
+                assert.equal(validator.check(form), false);
+            });
+        });
+
+        describe('FN - lexer: groups', () => {
+            it('Should return valid when one of both rules are valid', () => {
+                const validator = new Validator({a: '([max:5|min:2]string)(false)'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'there');
+                form.append('a', 'cool');
+                assert.ok(validator.check(form));
+
+                const form2 = new FormData();
+                form2.append('a', 'false');
+                assert.ok(validator.check(form2));
+            });
+
+            it('Should return valid when using rules with an underscore in them and one of them is valid', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).check(form));
+
+                const form2 = new FormData();
+                form2.append('a', 'false');
+                assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).check(form2));
+            });
+
+            it('Should return valid when using rules with a dash in them and one of them is valid', () => {
+                Validator.extend('my-test-rule', val => val === true);
+                const form = new FormData();
+                form.append('a', 'true');
+                assert.ok(new Validator({a: '(my-test-rule)(false)'}).check(form));
+            });
+
+            it('Should return valid when all rules are valid', () => {
+                const validator = new Validator({a: '([max:5|min:2]string)([max:5|min:3]string_ne)'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'there');
+                form.append('a', 'cool');
+                assert.ok(validator.check(form));
+            });
+
+            it('Should return valid when no rules are valid but sometimes flag is set and its the only rule', () => {
+                const validator = new Validator({a: '?(guid)(false)'});
+                assert.ok(validator.check(new FormData()));
+            });
+
+            it('Should return valid when no rules are valid but sometimes flag is set and multiple fields but those are valid too', () => {
+                const validator = new Validator({a: '?(guid)(false)', b: 'integer|between:10,50'});
+                const form = new FormData();
+                form.append('b', '42');
+                assert.ok(validator.check(form));
+            });
+
+            it('Should return invalid when both rules are invalid and correctly set error messages as multi-dimensional array', () => {
+                const validator = new Validator({a: '(guid)(false)'});
+                const form = new FormData();
+                form.append('a', 'foobar');
+                assert.equal(validator.check(form), false);
+            });
+
+            it('Should return invalid and correctly set error messages as multi-dimensional array with multiple rules to a group', () => {
+                const validator = new Validator({a: '(integer|between:20,42)(false)'});
+                const form = new FormData();
+                form.append('a', 'foobar');
+                assert.equal(validator.check(form), false);
+            });
         });
     });
 
@@ -1789,6 +2484,703 @@ describe('Validator - Core', () => {
             );
         });
     });
+
+
+    describe('@check:FormData', () => {
+        describe('FN', () => {
+            it('Should return false when invalid', () => {
+                const form = new FormData();
+                form.append('a', 20);
+                form.append('b', false);
+                assert.equal(new Validator({a: 'number', b: 'number'}).validate(form).is_valid, false);
+            });
+
+            it('Should return true when valid', () => {
+                const form = new FormData();
+                form.append('a', 20);
+                form.append('b', 42);
+                assert.ok(new Validator({a: 'number', b: 'number'}).validate(form).is_valid);
+            });
+        });
+
+        describe('FN - lexer: flag:sometimes (?)', () => {
+            it('Should validate correctly if set and no value is passed', () => {
+                assert.ok(new Validator({a: '?number'}).validate(new FormData()).is_valid);
+            });
+
+            it('Should not interfere with other validation rules', () => {
+                assert.equal(new Validator({
+                    a: '?number',
+                    b: 'number|less_than:20',
+                }).validate(new FormData()).is_valid, false);
+
+                const form = new FormData();
+                form.append('a', '20');
+                form.append('b', 'false');
+                assert.equal(new Validator({
+                    a: '?number',
+                    b: 'number|less_than:20',
+                }).validate(form).is_valid, false);
+
+                const form2 = new FormData();
+                form2.append('b', '15');
+                assert.ok(new Validator({
+                    a: '?number',
+                    b: 'number|less_than:20',
+                }).validate(form2).is_valid);
+            });
+        });
+
+        describe('FN - lexer: flag:parameter (<...>)', () => {
+            it('Should allow link to passed parameter', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('foo', 'hello');
+                assert.ok(new Validator({a: 'equal_to:<foo>'}).validate(form).is_valid);
+            });
+
+            it('Should fail if parameter is not passed', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('foobar', 'hello');
+                assert.equal(new Validator({a: 'equal_to:<foo>'}).validate(form).is_valid, false);
+            });
+
+            it('Should allow multiple parameters inside the same ruleset', () => {
+                const form = new FormData();
+                form.append('a', '5');
+                form.append('min', '3');
+                form.append('max', '7');
+                assert.ok(new Validator({a: 'between:<min>,<max>'}).validate(form).is_valid);
+            });
+
+            it('Should allow multiple parameters inside the same config', () => {
+                const form = new FormData();
+                form.append('a', '3');
+                form.append('b', '2');
+                form.append('arr1', '1');
+                form.append('arr1', '3');
+                form.append('arr1', '5');
+                form.append('arr2', '2');
+                form.append('arr2', '4');
+                form.append('arr2', '6');
+                assert.ok(new Validator({a: 'in:<arr1>', b: 'in:<arr2>'}).validate(form).is_valid);
+            });
+
+            it('Should allow the same parameter on multiple rules inside the same config', () => {
+                const form = new FormData();
+                form.append('a', '1');
+                form.append('b', '2');
+                form.append('arr1', '1');
+                form.append('arr1', '2');
+                form.append('arr1', '3');
+                assert.ok(new Validator({a: 'in:<arr1>', b: 'in:<arr1>'}).validate(form).is_valid);
+            });
+        });
+
+        describe('FN - lexer: flag:not (!)', () => {
+            it('Should validate correct if set and no value is passed', () => {
+                assert.equal(new Validator({a: '!number'}).validate(new FormData()).is_valid, false);
+            });
+
+            it('Should validate correct if set and value is passed when using standard rule', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                assert.ok(new Validator({a: '!number'}).validate(form).is_valid);
+
+                const form2 = new FormData();
+                form2.append('a', 4);
+                assert.equal(new Validator({a: '!number'}).validate(form2).is_valid, false);
+                assert.ok(new Validator({a: '!between:5,10'}).validate(form2).is_valid);
+
+                const form3 = new FormData();
+                form3.append('a', '6');
+                assert.equal(new Validator({a: '!between:5,10'}).validate(form3).is_valid, false);
+            });
+
+            it('Should validate correct if set and value is passed when using parameter flag', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('foo', 'hello');
+                assert.equal(new Validator({a: '!equal_to:<foo>'}).validate(form).is_valid, false);
+            });
+
+            it('Should validate correct if set and value is passed when using multiple validation rules', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('foo', 'hello');
+                assert.equal(new Validator({a: '!string|!equal_to:<foo>'}).validate(form).is_valid, false);
+
+                const form2 = new FormData();
+                form2.append('a', 'hello');
+                form2.append('foo', 'foo');
+                assert.equal(new Validator({a: '!string|!equal_to:<foo>'}).validate(form2).is_valid, false);
+            });
+        });
+
+        describe('FN - lexer: iterable array', () => {
+            it('Should return invalid when passing a non-array to an iterable', () => {
+                const validator = new Validator({a: '[]string'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should allow validating an array of values', () => {
+                const validator = new Validator({a: '[]string'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'there');
+                assert.ok(validator.validate(form).is_valid);
+
+                const form2 = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'false');
+                assert.equal(validator.validate(form2).is_valid, false);
+            });
+
+            it('Should allow validating an array of values with a \'?\' sometimes flag', () => {
+                const validator = new Validator({a: '?[]string'});
+
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'there');
+                assert.ok(validator.validate(form).is_valid);
+                assert.ok(validator.validate(new FormData()).is_valid);
+            });
+
+            it('Should allow validating an array of values with a \'?\' sometimes flag and parameter pass', () => {
+                const validator = new Validator({a: '?[]string|in:<genders>'});
+                const form = new FormData();
+                form.append('a', 'male');
+                form.append('a', 'male');
+                form.append('a', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.validate(form).is_valid);
+
+                const form2 = new FormData();
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.ok(validator.validate(form2).is_valid);
+
+                const form3 = new FormData();
+                form3.append('a', 'dog');
+                form3.append('a', 'male');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.validate(form3).is_valid, false);
+            });
+
+            it('Should allow validating an array of values with a \'?\' sometimes flag, uniqueness and parameter pass', () => {
+                const validator = new Validator({a: '?[unique]string|in:<genders>'});
+                const form = new FormData();
+                form.append('a', 'male');
+                form.append('a', 'male');
+                form.append('a', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.equal(validator.validate(form).is_valid, false);
+
+                const form2 = new FormData();
+                form.append('a', 'male');
+                form.append('a', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.validate(form2).is_valid);
+            });
+
+            it('Should allow validating an array of values with a \'!\' not flag and parameter pass', () => {
+                const validator = new Validator({a: '[]string|!in:<genders>'});
+
+                const form = new FormData();
+                form.append('a', 'bob');
+                form.append('a', 'john');
+                form.append('a', 'bob');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.validate(form).is_valid);
+
+                const form2 = new FormData();
+                form2.append('a', 'male');
+                form2.append('a', 'male');
+                form2.append('a', 'female');
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.equal(validator.validate(form2).is_valid, false);
+
+                const form3 = new FormData();
+                form3.append('a', 'chicken');
+                form3.append('a', 'dog');
+                form3.append('a', 'female');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.validate(form3).is_valid, false);
+            });
+
+            it('Should allow validating an array of values with a \'!\' not flag, uniqueness and parameter pass', () => {
+                const validator = new Validator({a: '[unique]string|!in:<genders>'});
+                const form = new FormData();
+                form.append('a', 'bob');
+                form.append('a', 'john');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.validate(form).is_valid);
+
+                const form2 = new FormData();
+                form2.append('a', 'male');
+                form2.append('a', 'female');
+                form2.append('a', 'female');
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.equal(validator.validate(form2).is_valid, false);
+
+                const form3 = new FormData();
+                form3.append('a', 'chicken');
+                form3.append('a', 'dog');
+                form3.append('a', 'chicken');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.validate(form3).is_valid, false);
+            });
+        });
+
+        describe('FN - lexer: iterable array:unique', () => {
+            it('Should return valid when array is unique', () => {
+                const validator = new Validator({a: '[unique]string'});
+                const form = new FormData();
+                form.append('a[0]', 'a');
+                form.append('a[1]', 'b');
+                form.append('a[2]', 'c');
+                assert.ok(validator.validate(form).is_valid);
+            });
+
+            it('Should return invalid when array is not unique', () => {
+                const validator = new Validator({a: '[unique]string'});
+                const form = new FormData();
+                form.append('a[0]', 'a');
+                form.append('a[1]', 'b');
+                form.append('a[2]', 'a');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return invalid when array is not unique when using numbers', () => {
+                const validator = new Validator({a: '[unique]number'});
+                const form = new FormData();
+                form.append('a[0]', '1');
+                form.append('a[1]', '2');
+                form.append('a[2]', '2');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return invalid when array is not unique when using objects', () => {
+                const validator = new Validator({a: '[unique]object'});
+                const form = new FormData();
+                form.append('a[0].a', '1');
+                form.append('a[1].b', '2');
+                form.append('a[2].b', '2');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return invalid when array is not unique and doesnt match rules', () => {
+                const validator = new Validator({a: '[unique]integer'});
+                const form = new FormData();
+                form.append('a[0]', '1');
+                form.append('a[1]', '2');
+                form.append('a[2]', 'a');
+                form.append('a[3]', '2');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+                const validator = new Validator({a: '[unique]integer'});
+                const form = new FormData();
+                form.append('a[0]', '1');
+                form.append('a[1]', '2');
+                form.append('a[2]', 'a');
+                form.append('a[3]', '2');
+                form.append('a[4]', '2.2');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+        });
+
+        describe('FN - lexer: iterable array:max+min', () => {
+            it('Should return valid when within boundaries', () => {
+                const validator = new Validator({a: '[max:5|min:2]string'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'there');
+                form.append('a', 'cool');
+                assert.ok(validator.validate(form).is_valid);
+            });
+
+            it('Should return valid when at top boundary', () => {
+                const validator = new Validator({a: '[max:5|min:2]string'});
+                const form = new FormData();
+                form.append('a', 'a1');
+                form.append('a', 'a2');
+                form.append('a', 'a3');
+                form.append('a', 'a4');
+                form.append('a', 'a5');
+                assert.ok(validator.validate(form).is_valid);
+            });
+
+            it('Should return invalid when above top boundary', () => {
+                const validator = new Validator({a: '[max:5|min:2]string'});
+                const form = new FormData();
+                form.append('a', 'a1');
+                form.append('a', 'a2');
+                form.append('a', 'a3');
+                form.append('a', 'a4');
+                form.append('a', 'a5');
+                form.append('a', 'a6');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return valid when at bottom boundary', () => {
+                const validator = new Validator({a: '[max:5|min:2]string'});
+                const form = new FormData();
+                form.append('a', 'a1');
+                form.append('a', 'a2');
+                assert.ok(validator.validate(form).is_valid);
+            });
+
+            it('Should return invalid when below bottom boundary', () => {
+                const validator = new Validator({a: '[max:5|min:2]string'});
+                const form = new FormData();
+                form.append('a', 'a1');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+        });
+
+        describe('FN - lexer: iterable object', () => {
+            it('Should return invalid when passing a non-object to an iterable', () => {
+                const validator = new Validator({a: '{}string'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should allow validating an object', () => {
+                const validator = new Validator({a: '{}string'});
+                const form = new FormData();
+                form.append('a.b', 'hello');
+                form.append('a.c', 'there');
+                assert.ok(validator.validate(form).is_valid);
+
+                const form2 = new FormData();
+                form2.append('a.b', 'hello');
+                form2.append('a.c', 'false');
+                assert.equal(validator.validate(form2).is_valid, false);
+            });
+
+            it('Should allow validating an object with a \'?\' sometimes flag', () => {
+                const validator = new Validator({a: '?{}string'});
+                const form = new FormData();
+                form.append('a.b', 'hello');
+                form.append('a.c', 'there');
+                assert.ok(validator.validate(form).is_valid);
+                assert.ok(validator.validate(new FormData()).is_valid);
+
+                const form2 = new FormData();
+                form2.append('a.b', 'hello');
+                form2.append('a.c', 'false');
+                assert.equal(validator.validate(form2).is_valid, false);
+            });
+
+            it('Should allow validating an object with a \'?\' sometimes flag and parameter pass', () => {
+                const validator = new Validator({a: '?{}string|in:<genders>'});
+                const form = new FormData();
+                form.append('a.b', 'male');
+                form.append('a.c', 'male');
+                form.append('a.d', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.validate(form).is_valid);
+
+                const form2 = new FormData();
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.ok(validator.validate(form2).is_valid);
+
+                const form3 = new FormData();
+                form3.append('a.b', 'dog');
+                form3.append('a.c', 'male');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.validate(form3).is_valid, false);
+            });
+
+            it('Should allow validating an object with a \'?\' sometimes flag, uniqueness and parameter pass', () => {
+                const validator = new Validator({a: '?{unique}string|in:<genders>'});
+                const form = new FormData();
+                form.append('a.b', 'male');
+                form.append('a.c', 'male');
+                form.append('a.d', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.equal(validator.validate(form).is_valid, false);
+
+                const form2 = new FormData();
+                form.append('a.b', 'male');
+                form.append('a.c', 'female');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.validate(form2).is_valid);
+            });
+
+            it('Should allow validating an object with a \'!\' not flag and parameter pass', () => {
+                const validator = new Validator({a: '{}string|!in:<genders>'});
+                const form = new FormData();
+                form.append('a.b', 'bob');
+                form.append('a.c', 'john');
+                form.append('a.d', 'bob');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.validate(form).is_valid);
+
+                const form2 = new FormData();
+                form2.append('a.b', 'male');
+                form2.append('a.c', 'male');
+                form2.append('a.d', 'female');
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.equal(validator.validate(form2).is_valid, false);
+
+                const form3 = new FormData();
+                form3.append('a.b', 'chicken');
+                form3.append('a.c', 'dog');
+                form3.append('a.d', 'female');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.validate(form3).is_valid, false);
+            });
+
+            it('Should allow validating an object with a \'!\' not flag, uniqueness and parameter pass', () => {
+                const validator = new Validator({a: '{unique}string|!in:<genders>'});
+                const form = new FormData();
+                form.append('a.b', 'bob');
+                form.append('a.c', 'john');
+                form.append('genders', 'male');
+                form.append('genders', 'female');
+                form.append('genders', 'other');
+                assert.ok(validator.validate(form).is_valid);
+
+                const form2 = new FormData();
+                form2.append('a.b', 'male');
+                form2.append('a.c', 'female');
+                form2.append('a.d', 'female');
+                form2.append('genders', 'male');
+                form2.append('genders', 'female');
+                form2.append('genders', 'other');
+                assert.equal(validator.validate(form2).is_valid, false);
+
+                const form3 = new FormData();
+                form3.append('a.b', 'chicken');
+                form3.append('a.c', 'dog');
+                form3.append('a.d', 'chicken');
+                form3.append('genders', 'male');
+                form3.append('genders', 'female');
+                form3.append('genders', 'other');
+                assert.equal(validator.validate(form3).is_valid, false);
+            });
+        });
+
+        describe('FN - lexer: iterable object:unique', () => {
+            it('Should return valid when array is unique', () => {
+                const validator = new Validator({a: '{unique}string'});
+                const form = new FormData();
+                form.append('a.b', 'a');
+                form.append('a.c', 'b');
+                form.append('a.d', 'c');
+                assert.ok(validator.validate(form).is_valid);
+            });
+
+            it('Should return invalid when array is not unique', () => {
+                const validator = new Validator({a: '{unique}string'});
+                const form = new FormData();
+                form.append('a.b', 'a');
+                form.append('a.c', 'b');
+                form.append('a.d', 'a');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return invalid when array is not unique when using numbers', () => {
+                const validator = new Validator({a: '{unique}number'});
+                const form = new FormData();
+                form.append('a.b', '1');
+                form.append('a.c', '2');
+                form.append('a.d', '2');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return invalid when array is not unique when using objects', () => {
+                const validator = new Validator({a: '{unique}object'});
+                const form = new FormData();
+                form.append('a.b.a', '1');
+                form.append('a.c.b', '2');
+                form.append('a.d.a', '1');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return invalid when array is not unique and doesnt match rules', () => {
+                const validator = new Validator({a: '{unique}integer'});
+                const form = new FormData();
+                form.append('a.b', '1');
+                form.append('a.c', '2');
+                form.append('a.d', 'a');
+                form.append('a.e', '2');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return invalid when array is not unique, doesnt match rules and should only insert uniqueness invalidity once', () => {
+                const validator = new Validator({a: '{unique}integer'});
+                const form = new FormData();
+                form.append('a.b', '1');
+                form.append('a.c', '2');
+                form.append('a.d', 'a');
+                form.append('a.e', '2');
+                form.append('a.f', '2.2');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+        });
+
+        describe('FN - lexer: iterable object:max+min', () => {
+            it('Should return valid when within boundaries', () => {
+                const validator = new Validator({a: '{max:5|min:2}string'});
+                const form = new FormData();
+                form.append('a.b', 'hello');
+                form.append('a.c', 'there');
+                form.append('a.d', 'cool');
+                assert.ok(validator.validate(form).is_valid);
+            });
+
+            it('Should return valid when at top boundary', () => {
+                const validator = new Validator({a: '{max:5|min:2}string'});
+                const form = new FormData();
+                form.append('a.b', 'a1');
+                form.append('a.c', 'a2');
+                form.append('a.d', 'a3');
+                form.append('a.e', 'a4');
+                form.append('a.f', 'a5');
+                assert.ok(validator.validate(form).is_valid);
+            });
+
+            it('Should return invalid when above top boundary', () => {
+                const validator = new Validator({a: '{max:5|min:2}string'});
+                const form = new FormData();
+                form.append('a.b', 'a1');
+                form.append('a.c', 'a2');
+                form.append('a.d', 'a3');
+                form.append('a.e', 'a4');
+                form.append('a.f', 'a5');
+                form.append('a.g', 'a6');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return valid when at bottom boundary', () => {
+                const validator = new Validator({a: '{max:5|min:2}string'});
+                const form = new FormData();
+                form.append('a.b', 'a1');
+                form.append('a.c', 'a2');
+                assert.ok(validator.validate(form).is_valid);
+            });
+
+            it('Should return invalid when below bottom boundary', () => {
+                const validator = new Validator({a: '{max:5|min:2}string'});
+                const form = new FormData();
+                form.append('a.b', 'a1');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+        });
+
+        describe('FN - lexer: groups', () => {
+            it('Should return valid when one of both rules are valid', () => {
+                const validator = new Validator({a: '([max:5|min:2]string)(false)'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'there');
+                form.append('a', 'cool');
+                assert.ok(validator.validate(form).is_valid);
+
+                const form2 = new FormData();
+                form2.append('a', 'false');
+                assert.ok(validator.validate(form2).is_valid);
+            });
+
+            it('Should return valid when using rules with an underscore in them and one of them is valid', () => {
+                const form = new FormData();
+                form.append('a', 'hello');
+                assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).validate(form).is_valid);
+
+                const form2 = new FormData();
+                form2.append('a', 'false');
+                assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).validate(form2).is_valid);
+            });
+
+            it('Should return valid when using rules with a dash in them and one of them is valid', () => {
+                Validator.extend('my-test-rule', val => val === true);
+                const form = new FormData();
+                form.append('a', 'true');
+                assert.ok(new Validator({a: '(my-test-rule)(false)'}).validate(form).is_valid);
+            });
+
+            it('Should return valid when all rules are valid', () => {
+                const validator = new Validator({a: '([max:5|min:2]string)([max:5|min:3]string_ne)'});
+                const form = new FormData();
+                form.append('a', 'hello');
+                form.append('a', 'there');
+                form.append('a', 'cool');
+                assert.ok(validator.validate(form).is_valid);
+            });
+
+            it('Should return valid when no rules are valid but sometimes flag is set and its the only rule', () => {
+                const validator = new Validator({a: '?(guid)(false)'});
+                assert.ok(validator.validate(new FormData()).is_valid);
+            });
+
+            it('Should return valid when no rules are valid but sometimes flag is set and multiple fields but those are valid too', () => {
+                const validator = new Validator({a: '?(guid)(false)', b: 'integer|between:10,50'});
+                const form = new FormData();
+                form.append('b', '42');
+                assert.ok(validator.validate(form).is_valid);
+            });
+
+            it('Should return invalid when both rules are invalid and correctly set error messages as multi-dimensional array', () => {
+                const validator = new Validator({a: '(guid)(false)'});
+                const form = new FormData();
+                form.append('a', 'foobar');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+
+            it('Should return invalid and correctly set error messages as multi-dimensional array with multiple rules to a group', () => {
+                const validator = new Validator({a: '(integer|between:20,42)(false)'});
+                const form = new FormData();
+                form.append('a', 'foobar');
+                assert.equal(validator.validate(form).is_valid, false);
+            });
+        });
+    });
+
 
     describe('@extend FN', () => {
         it('Should throw if not provided anything', () => {

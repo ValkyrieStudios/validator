@@ -1,10 +1,14 @@
-import {isArray, isNeArray}         from '@valkyriestudios/utils/array';
-import {isBoolean}                  from '@valkyriestudios/utils/boolean';
-import {isDate}                     from '@valkyriestudios/utils/date';
-import {isFormData}                 from '@valkyriestudios/utils/formdata';
-import {isFn, isAsyncFn}            from '@valkyriestudios/utils/function';
-import {isObject, isNeObject}       from '@valkyriestudios/utils/object';
-import {isString, isNeString}       from '@valkyriestudios/utils/string';
+import {isNotEmptyArray}            from '@valkyriestudios/utils/array/isNotEmpty';
+import {isBoolean}                  from '@valkyriestudios/utils/boolean/is';
+import {isDate}                     from '@valkyriestudios/utils/date/is';
+import {isFormData}                 from '@valkyriestudios/utils/formdata/is';
+import {toObject}                   from '@valkyriestudios/utils/formdata/toObject';
+import {isFunction}                 from '@valkyriestudios/utils/function/is';
+import {isAsyncFunction}            from '@valkyriestudios/utils/function/isAsync';
+import {isObject}                   from '@valkyriestudios/utils/object/is';
+import {isNotEmptyObject}           from '@valkyriestudios/utils/object/isNotEmpty';
+import {isString}                   from '@valkyriestudios/utils/string/is';
+import {isNotEmptyString}           from '@valkyriestudios/utils/string/isNotEmpty';
 import {equal}                      from '@valkyriestudios/utils/equal';
 import {fnv1A}                      from '@valkyriestudios/utils/hash/fnv1A';
 import {vAlphaNumSpaces}            from './functions/vAlphaNumSpaces';
@@ -133,8 +137,8 @@ type RuleFn = (...args:any[]) => boolean;
 type DefaultRuleDictionary = {
     alpha_num_spaces: typeof vAlphaNumSpaces;
     alpha_num_spaces_multiline: typeof vAlphaNumSpaces;
-    array: typeof isArray;
-    array_ne: typeof isNeArray;
+    array: (val:unknown) => val is unknown[];
+    array_ne: typeof isNotEmptyArray;
     base64: typeof vBase64;
     between: typeof vBetween;
     between_inc: typeof vBetweenInclusive;
@@ -151,8 +155,8 @@ type DefaultRuleDictionary = {
     equal_to: typeof equal;
     false: typeof vFalse;
     formdata: typeof isFormData;
-    function: typeof isFn;
-    async_function: typeof isAsyncFn;
+    function: typeof isFunction;
+    async_function: typeof isAsyncFunction;
     geo_latitude: typeof vGeoLatitude;
     geo_longitude: typeof vGeoLongitude;
     greater_than: typeof vGreaterThan;
@@ -166,12 +170,12 @@ type DefaultRuleDictionary = {
     min: typeof vGreaterThanOrEqual;
     number: (val:unknown) => val is number;
     object: typeof isObject;
-    object_ne: typeof isNeObject;
+    object_ne: typeof isNotEmptyObject;
     phone: typeof vPhone;
     required: typeof vRequired;
     size: typeof vSize;
     string: typeof isString;
-    string_ne: typeof isNeString;
+    string_ne: typeof isNotEmptyString;
     sys_mac: typeof vSysMac;
     sys_ipv4: typeof vSysIPv4;
     sys_ipv6: typeof vSysIPv6;
@@ -564,8 +568,8 @@ function freezeStore (dict:Record<string, RuleFn>):Readonly<RuleDictionary>  {
 const RULE_STORE:Record<string, RuleFn> = {
     alpha_num_spaces: vAlphaNumSpaces,
     alpha_num_spaces_multiline: vAlphaNumSpacesMultiline,
-    array: isArray,
-    array_ne: isNeArray,
+    array: Array.isArray,
+    array_ne: isNotEmptyArray,
     base64: vBase64,
     between: vBetween,
     between_inc: vBetweenInclusive,
@@ -582,8 +586,8 @@ const RULE_STORE:Record<string, RuleFn> = {
     equal_to: equal,
     false: vFalse,
     formdata: isFormData,
-    function: isFn,
-    async_function: isAsyncFn,
+    function: isFunction,
+    async_function: isAsyncFunction,
     geo_latitude: vGeoLatitude,
     geo_longitude: vGeoLongitude,
     greater_than: vGreaterThan,
@@ -597,12 +601,12 @@ const RULE_STORE:Record<string, RuleFn> = {
     min: vGreaterThanOrEqual,
     number: Number.isFinite,
     object: isObject,
-    object_ne: isNeObject,
+    object_ne: isNotEmptyObject,
     phone: vPhone,
     required: vRequired,
     size: vSize,
     string: isString,
-    string_ne: isNeString,
+    string_ne: isNotEmptyString,
     sys_mac: vSysMac,
     sys_ipv4: vSysIPv4,
     sys_ipv6: vSysIPv6,
@@ -654,31 +658,52 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         this.#plan_length = plan.length;
     }
 
+    /**
+     * Checks if a FormData instance is valid against the validator and returns its parsed
+     * content as an object if it is
+     *
+     * @param {FormData} raw - FormData instance to check
+     * @returns {T|false} Returns the formdata as an object if valid or false if not valid
+     */
+    formCheck (raw:FormData):T|false {
+        if (!(raw instanceof FormData)) return false;
+        const data = toObject<GenericObject>(raw);
+        return this.check(data) ? data as T : false;
+    }
+
+    /**
+     * Checks if the provided data is valid against the validator's rules
+     *
+     * @param {GenericObject|FormData} raw - Raw object or FormData instance to check
+     * @returns {boolean} Whether or not it's valid
+     */
     /* eslint-disable-next-line */
     /* @ts-ignore */
-    check <K extends GenericObject> (data:K):data is T {
+    check <K extends GenericObject|FormData> (raw:K):data is T {
         const plan_len = this.#plan_length;
 
         /* No data passed? Check if rules were set up */
+        const data = raw instanceof FormData ? toObject<GenericObject>(raw) : raw as GenericObject;
         if (!isObject(data)) return !plan_len;
 
         const plan = this.#plan;
 
         for (let i = 0; i < plan_len; i++) {
-            const part = plan[i];
+            const {key, sometimes, rules} = plan[i];
+
             /* Retrieve cursor that part is run against */
-            const cursor = deepGet(data as DataObject, part.key);
+            const cursor = deepGet(data as DataObject, key);
 
             /* If we cant find cursor we need to validate for the 'sometimes' flag */
             if (cursor === undefined) {
-                if (!part.sometimes) return false;
+                if (!sometimes) return false;
                 continue;
             }
 
             /* Go through rules in cursor: if all of them are invalid return false immediately */
             let is_valid = false;
-            for (let x = 0; x < part.rules.length; x++) {
-                is_valid = checkRule(cursor, part.rules[x], data);
+            for (let x = 0; x < rules.length; x++) {
+                is_valid = checkRule(cursor, rules[x], data);
                 if (is_valid) break;
             }
 
@@ -688,10 +713,17 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         return true;
     }
 
-    validate <K extends GenericObject> (data:K):ValidationResult {
+    /**
+     * Fully validates the provided data against the validator's rules
+     *
+     * @param {GenericObject|FormData} raw - Raw object or FormData instance to check
+     * @returns {ValidationResult}
+     */
+    validate <K extends GenericObject|FormData> (raw:K):ValidationResult {
         const plan_len = this.#plan_length;
 
         /* No data passed? Check if rules were set up */
+        const data = raw instanceof FormData ? toObject<GenericObject>(raw) : raw as GenericObject;
         if (!isObject(data)) {
             return {
                 is_valid: !plan_len,
@@ -807,8 +839,8 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
     /**
      * Extend validator rule set with a new rule
      *
-     * @param name - Name of the rule you want to add
-     * @param fn - Rule Function (function that returns a boolean and as its first value will get the value being validated)
+     * @param {string} name - Name of the rule you want to add
+     * @param {RuleFn} fn - Rule Function (function that returns a boolean and as its first value will get the value being validated)
      */
     static extend (name:string, fn:RuleFn):void {
         if (!validExtensionName(name)) throw new Error('Invalid extension');
@@ -824,7 +856,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      *      is_pet: val => ['dog', 'cat'].indexOf(val) >= 0,
      *  });
      *
-     * @param obj - Function kv-map to extend the validator with
+     * @param {CustomRuleDictionary} obj - Function kv-map to extend the validator with
      */
     static extendMulti<K extends CustomRuleDictionary> (obj:K):void {
         validExtension(obj, val => {
@@ -850,7 +882,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'});  false
      *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'aPple', b: 'Dog'}); true
      *
-     * @param obj - RegExp kv-map to extend the validator with
+     * @param {ExtRegExp} obj - RegExp kv-map to extend the validator with
      */
     static extendRegex (obj:ExtRegExp):void {
         validExtension(obj, (val:ExtRegExpVal) => {
@@ -894,11 +926,11 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'}); false
      *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'apple', b: 'dog'}); true
      *
-     * @param obj - Enumeration kv-map to extend the validator with
+     * @param {ExtEnum} obj - Enumeration kv-map to extend the validator with
      */
     static extendEnum (obj:ExtEnum):void {
         validExtension(obj, (val:ExtEnumVal):void => {
-            if (isNeArray(val) && val.filter(el => isNeString(el) || Number.isFinite(el)).length === val.length) return;
+            if (isNotEmptyArray(val) && val.filter(el => isNotEmptyString(el) || Number.isFinite(el)).length === val.length) return;
             throw new Error('Invalid extension');
         });
 
@@ -944,9 +976,12 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      * Usage:
      *  new Validator({a: 'user', b: '?[unique|min:1]user'}).check({a: {first_name: 'Peter', last_name: 'Vermeulen'}}); true
      *  new Validator({a: '[unique|min:1]user'}).check({a: [{first_name: false, last_name: 'Vermeulen'}]}); false
+     *
+     * @param {string} name - Name for the schema
+     * @param {TypedKValidator} obj - Rule object for the schema
      */
     static extendSchema <K extends GenericObject, TypedKValidator = TV<K>> (name:string, obj:TypedKValidator):void {
-        if (!validExtensionName(name) || !isNeObject(obj)) throw new Error('Invalid extension');
+        if (!validExtensionName(name) || !isNotEmptyObject(obj)) throw new Error('Invalid extension');
         let validator:Validator<RulesRaw>;
         try {
             validator = new Validator(obj);
