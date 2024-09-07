@@ -70,6 +70,18 @@ const NOT_DATE:any[] = [
     ...IS_FUNCTION,
     ...IS_NULLABLE,
 ];
+const NOT_FORM_DATA:any[] = [
+    ...IS_NUMERIC,
+    ...IS_INTEGER,
+    ...IS_BOOLEAN,
+    ...IS_STRING,
+    ...IS_REGEXP,
+    ...IS_ARRAY,
+    ...IS_OBJECT,
+    ...IS_DATE,
+    ...IS_FUNCTION,
+    ...IS_NULLABLE,
+];
 const NOT_FUNCTION:any[] = [
     ...IS_NUMERIC,
     ...IS_INTEGER,
@@ -132,6 +144,7 @@ const CONSTANTS = {
     NOT_BOOLEAN,
     NOT_DATE,
     NOT_DATE_STRING,
+    NOT_FORM_DATA,
     NOT_FUNCTION,
     NOT_INTEGER: [...NOT_NUMERIC, -5.2, 4.6, -150.3, Math.PI, new Number(1.12345), new Number(Number.EPSILON)],
     NOT_NUMERIC,

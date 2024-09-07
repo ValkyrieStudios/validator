@@ -659,19 +659,6 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
     }
 
     /**
-     * Checks if a FormData instance is valid against the validator and returns its parsed
-     * content as an object if it is
-     *
-     * @param {FormData} raw - FormData instance to check
-     * @returns {T|false} Returns the formdata as an object if valid or false if not valid
-     */
-    formCheck (raw:FormData):T|false {
-        if (!(raw instanceof FormData)) return false;
-        const data = toObject<GenericObject>(raw);
-        return this.check(data) ? data as T : false;
-    }
-
-    /**
      * Checks if the provided data is valid against the validator's rules
      *
      * @param {GenericObject|FormData} raw - Raw object or FormData instance to check
@@ -711,6 +698,19 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         }
 
         return true;
+    }
+
+    /**
+     * Checks if a FormData instance is valid against the validator and returns its parsed
+     * content as an object if it is
+     *
+     * @param {FormData} raw - FormData instance to check
+     * @returns {T|false} Returns the formdata as an object if valid or false if not valid
+     */
+    checkForm (raw:FormData):T|false {
+        if (!(raw instanceof FormData)) return false;
+        const data = toObject<GenericObject>(raw);
+        return this.check(data) ? data as T : false;
     }
 
     /**

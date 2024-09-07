@@ -57,6 +57,12 @@ describe('Validator - Core', () => {
     it('Should instantiate to a validator object', () => {
         const validator = new Validator({});
 
+        //  It should have a check function on its instance
+        assert.equal(typeof validator.check, 'function');
+
+        //  It should have a checkForm function on its instance
+        assert.equal(typeof validator.checkForm, 'function');
+
         //  It should have a validate function on its instance
         assert.equal(typeof validator.validate, 'function');
 
@@ -71,6 +77,24 @@ describe('Validator - Core', () => {
 
         //  It should not have a extendMulti function on its instance
         assert.equal(Object.prototype.hasOwnProperty.call(validator, 'extendMulti'), false);
+
+        //  It should have a extendRegex function on the class
+        assert.equal(typeof Validator.extendRegex, 'function');
+
+        //  It should not have a extendRegex function on its instance
+        assert.equal(Object.prototype.hasOwnProperty.call(validator, 'extendRegex'), false);
+
+        //  It should have a extendEnum function on the class
+        assert.equal(typeof Validator.extendEnum, 'function');
+
+        //  It should not have a extendEnum function on its instance
+        assert.equal(Object.prototype.hasOwnProperty.call(validator, 'extendEnum'), false);
+
+        //  It should have a extendSchema function on the class
+        assert.equal(typeof Validator.extendSchema, 'function');
+
+        //  It should not have a extendSchema function on its instance
+        assert.equal(Object.prototype.hasOwnProperty.call(validator, 'extendSchema'), false);
     });
 
     it('Should throw a type error when passed wrong configuration options', () => {
@@ -200,6 +224,35 @@ describe('Validator - Core', () => {
             const fn = () => true;
             Validator.extend('myfunction', fn);
             assert.equal(Validator.rules.myfunction, fn);
+        });
+    });
+
+    describe('@checkForm FN', () => {
+        it('Should return false when passed a value that is not an instance of FormData', () => {
+            for (const el of CONSTANTS.NOT_FORM_DATA) {
+                assert.equal(new Validator({a: 'number', b: 'number'}).checkForm(el), false);
+            }
+        });
+
+        it('Should call check and return false if that returns false', () => {
+            const v = new Validator({a: 'number', b: 'number'});
+            v.check = () => false;
+            const form = new FormData();
+            form.append('a', '50');
+            form.append('b', '49');
+            assert.equal(v.checkForm(form), false);
+        });
+
+        it('Should call check and return the parsed form data if that returns true', () => {
+            const v = new Validator({a: 'number', b: 'number'});
+            v.check = () => true;
+            const form = new FormData();
+            form.append('a', '50');
+            form.append('b', '49');
+            assert.deepEqual(v.checkForm(form), {
+                a: 50,
+                b: 49,
+            });
         });
     });
 
