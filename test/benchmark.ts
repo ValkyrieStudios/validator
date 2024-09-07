@@ -130,6 +130,16 @@ const vsimple_schema = new Validator({a: 'small'});
 const vmedium_schema = new Validator({a: 'medium'});
 const vlarge_schema = new Validator({a: 'large'});
 
+const vFormValid = new FormData();
+vFormValid.append('first_name', 'Peter');
+vFormValid.append('last_name', 'Vermeulen');
+vFormValid.append('email', 'contact@valkyriestudios.be');
+
+const vFormInvalid = new FormData();
+vFormInvalid.append('first_name', 'Peter');
+vFormInvalid.append('last_name', 'Vermeulen');
+vFormInvalid.append('email', 'contact.valkyriestudios.be');
+
 //  Run benchmarks
 for (const el of [
     //  Baseline
@@ -723,6 +733,15 @@ for (const el of [
     {
         lbl: 'Validator@check - existing - regex - invalid',
         fn: () => vregex.check({a: 'Helo'}),
+    },
+    //  Baseline - checkForm
+    {
+        lbl: 'Validator@checkForm - valid',
+        fn: () => vsimple.checkForm(vFormValid),
+    },
+    {
+        lbl: 'Validator@checkForm - invalid',
+        fn: () => vsimple.checkForm(vFormInvalid),
     },
     //  rules.* (testing with string_ne as baseline)
     {
