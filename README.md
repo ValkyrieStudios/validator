@@ -105,6 +105,14 @@ const evaluation = myvalidator.validate({name: 'Peter', age: '250'});
 //        ],
 //    },
 // }
+
+// Also supports forms
+const form = new FormData();
+form.append('name', 'Peter');
+console.log(v.validate(form).is_valid); // false
+
+form.append('age', '40');
+console.log(v.validate(form).is_valid); // true
 ```
 
 The evaluation object consists of two keys that can be used to determine the result of the validation:
@@ -168,10 +176,41 @@ In case you don't need an evaluation object and are simply interested in whether
 Take Note: When using typescript and working with a typed validator, (eg: `new Validator<User>({...})`) the check function also acts as a type guard for the checked data.
 
 ```typescript
-const myvalidator = new Validator({name: 'string_ne|min:2', age: 'integer|between:1,150'});
+const v = new Validator({name: 'string_ne|min:2', age: 'integer|between:1,150'});
 
-myvalidator.check({name: 'Peter', age: '250'}); // false
-myvalidator.check({name: 'Peter', age: 20}); // true
+v.check({name: 'Peter', age: '250'}); // false
+v.check({name: 'Peter', age: 20}); // true
+
+// Also supports forms
+const form = new FormData();
+form.append('name', 'Peter');
+v.check(form); // false
+
+form.append('age', '40');
+v.check(form); // true
+```
+
+## @checkForm: FormData validity check and conversion to object
+Let's say you're working on backend validation and you're receiving FormData instances with Files and other raw data ... we all know that validating those can get quite complex, and then there's the conversion as well to more easily work with it server-side.
+
+**checkForm** is a utility allowing you to check if a FormData instance is valid AND automatically convert it to an object if it is
+
+Take Note: When using typescript and working with a typed validator, (eg: `new Validator<User>({...})`) the checkForm function will return an Object of type User if valid.
+
+```typescript
+type User = {
+    age: number;
+    name: string;
+};
+const v = new Validator<User>({name: 'string_ne|min:2', age: 'integer|between:1,150'});
+
+const form = new FormData();
+form.append('name', 'Peter');
+form.append('age', '34');
+const result = v.checkForm(form);
+if (!result) return;
+
+... // result is typed as User here and will be {name: "Peter", age: 34}
 ```
 
 ## How does this work?
