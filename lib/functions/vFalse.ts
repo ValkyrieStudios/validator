@@ -2,7 +2,6 @@
  * Validate that a provided value is strictly equal to false
  *
  * @param {unknown} val - Value to verify
- * @returns {boolean} Whether or not it's valid
  */
 function vFalse (val:unknown):val is false {
     return val === false;

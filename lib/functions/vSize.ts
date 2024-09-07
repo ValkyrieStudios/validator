@@ -4,7 +4,6 @@
  *
  * @param {string|unknown[]} val - Value to verify
  * @param {number} equals - Size to validate against
- * @returns {boolean} Whether or not it's valid
  */
 function vSize (
     val:string|unknown[],

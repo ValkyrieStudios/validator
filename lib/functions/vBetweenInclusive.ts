@@ -4,7 +4,6 @@
  * @param {string|number|unknown[]} val - Value to verify
  * @param {number} lower_bound - Lower bound to validate against (inclusive)
  * @param {number} upper_bound - Upper bound to validate against (inclusive)
- * @returns {boolean} Whether or not it's valid
  */
 function vBetweenInclusive (
     val:string|number|unknown[],

@@ -5,7 +5,6 @@
  * Take note: null, undefined and NaN will not be valid
  *
  * @param {unknown} val - Value to verify
- * @returns {boolean} Whether or not it's valid
  */
 function vRequired (val:unknown):boolean {
     if (val === null || val === undefined || Number.isNaN(val)) return false;

@@ -12,7 +12,6 @@ const memoizedHashParams = memoize((params:unknown[]) => {
  *
  * @param {unknown} val - Value to verify
  * @param {unknown[]} params - Array of possible values
- * @returns {boolean} Whether or not it's valid
  */
 function vIn (val:unknown, params:unknown[]):boolean {
     if (!Array.isArray(params) || params.length === 0) return false;

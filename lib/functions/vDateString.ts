@@ -2,7 +2,6 @@
  * Validate that a provided value is a valid date string
  *
  * @param {unknown} val - Value to verify
- * @returns {boolean} Whether or not it's valid
  */
 function vDateString (val:unknown):val is string {
     return (

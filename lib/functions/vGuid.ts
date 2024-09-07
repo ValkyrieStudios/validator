@@ -4,7 +4,6 @@ const RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  * Validate that a provided value is a valid guid according to rfc 4122
  *
  * @param {unknown} val - Value to verify
- * @returns {boolean} Whether or not it's valid
  */
 function vGuid (val:unknown):val is string {
     return typeof val === 'string' &&

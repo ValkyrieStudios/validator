@@ -6,7 +6,6 @@ const RGX = /^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\
  * Take Note: Does not check that the phone number is in use
  *
  * @param {unknown} val - Value to verify
- * @returns {boolean} Whether or not it's valid
  */
 function vPhone (val:unknown):val is string {
     if (typeof val !== 'string') return false;

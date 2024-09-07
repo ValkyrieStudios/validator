@@ -4,7 +4,6 @@
  *
  * @param {string|number|unknown[]} val - Value to verify
  * @param {number} bound - Lower bound to validate against (not inclusive)
- * @returns {boolean} Whether or not it's valid
  */
 function vGreaterThan (
     val:string|number|unknown[],

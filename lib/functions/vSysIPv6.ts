@@ -4,7 +4,6 @@ export const RGX = /^(([0-9a-f]{1,4}:){7,7}[0-9a-f]{1,4}|([0-9a-f]{1,4}:){1,7}:|
  * Validate that a provided value is a valid IPv6 address
  *
  * @param {unknown} val - Value to verify
- * @returns {boolean} Whether or not it's valid
  */
 function vSysIPv6 (val:unknown):val is string {
     return typeof val === 'string' && RGX.test(val);

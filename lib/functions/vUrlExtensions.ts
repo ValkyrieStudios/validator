@@ -38,7 +38,6 @@ function vUrlWithExtension (val:unknown, EXTENSIONS:Set<string>):val is string {
  * Validate that a provided value is a url linking to an image file (eg: https://mywebsite.com/123.jpg)
  *
  * @param {unknown} val - Value to verify
- * @returns {boolean} Whether or not it's valid
  */
 function vUrlImage (val: unknown) {
     return vUrlWithExtension(val, IMAGE_EXTENSIONS);
@@ -49,7 +48,6 @@ function vUrlImage (val: unknown) {
  * (eg: https://mywebsite.com/123.mp4)
  *
  * @param {unknown} val - Value to verify
- * @returns {boolean} Whether or not it's valid
  */
 function vUrlVideo (val: unknown): val is string {
     return vUrlWithExtension(val, VIDEO_EXTENSIONS);
@@ -60,7 +58,6 @@ function vUrlVideo (val: unknown): val is string {
  * (eg: https://mywebsite.com/123.mp4)
  *
  * @param {unknown} val - Value to verify
- * @returns {boolean} Whether or not it's valid
  */
 function vUrlAudio (val: unknown): val is string {
     return vUrlWithExtension(val, AUDIO_EXTENSIONS);
@@ -71,7 +68,6 @@ function vUrlAudio (val: unknown): val is string {
  * (eg: https://mywebsite.com/123.mp4)
  *
  * @param {unknown} val - Value to verify
- * @returns {boolean} Whether or not it's valid
  */
 function vUrlMedia (val: unknown): val is string {
     return vUrlWithExtension(val, MEDIA_EXTENSIONS);

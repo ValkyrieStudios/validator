@@ -4,7 +4,6 @@
  *
  * @param {string|number|unknown[]} val - Value to verify
  * @param {number} bound - Upper bound to validate against (inclusive)
- * @returns {boolean} Whether or not it's valid
  */
 function vLessThanOrEqual (
     val:string|number|unknown[],
