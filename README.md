@@ -667,8 +667,8 @@ The following list shows you all the default rules that are provided by this lib
 | guid | Validate that a provided value is a valid guid according to rfc 4122 |
 | in | Validate that a provided value is in a set of values, this requires parameterization (see above) |
 | integer | Validate that a provided value is an integer, this will see NaN as invalid |
-| less_than | Validate that a provided value is less than a provided number, if passed a string or array this will validate on length |
 | less_than_or_equal | Validate that a provided value is less than or equal to a provided number, if passed a string or array this will validate on length |
+| less_than | Validate that a provided value is less than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
 | lt | Alias of less_than |
 | lte | Alias of less_than_or_equal |
 | max | Alias of less_than_or_equal |

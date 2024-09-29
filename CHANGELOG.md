@@ -17,6 +17,7 @@ v.check({a: "Hello world"}); /* true */
 - **deps**: typescript-eslint (dev dep)
 
 ### Improved
+- **feat**: `less_than` and `lt` now support Blob and File to verify their size is below a certain number of bytes
 - **deps**: Upgrade @valkyriestudios/utils to 12.24.0
 - **deps**: Upgrade eslint to 9.11.1
 - **deps**: Upgrade nyc to 17.1.0
