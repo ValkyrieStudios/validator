@@ -1,12 +1,11 @@
 /**
  * Validate that a provided value is greater than a provided number.
- * If passed a string or array this will validate on length
  *
- * @param {string|number|unknown[]} val - Value to verify
+ * @param {string|number|unknown[]|File|Blob} val - Value to verify
  * @param {number} bound - Lower bound to validate against (not inclusive)
  */
 function vGreaterThan (
-    val:string|number|unknown[],
+    val:string|number|unknown[]|File|Blob,
     bound:number
 ):boolean {
     /* Normalize */
@@ -15,10 +14,13 @@ function vGreaterThan (
     /* If bound normalized is not numerical return false */
     if (!Number.isFinite(n_bound)) return false;
 
-    /* Check on string or array */
-    if (typeof val === 'string' || Array.isArray(val)) return val.length > n_bound;
-
-    return Number.isFinite(val) && val > n_bound;
+    if (typeof val === 'string' || Array.isArray(val)) {
+        return val.length > n_bound;
+    } else if (val instanceof File || val instanceof Blob) {
+        return val.size > n_bound;
+    } else {
+        return Number.isFinite(val) && val > n_bound;
+    }
 }
 
 export {vGreaterThan, vGreaterThan as default};

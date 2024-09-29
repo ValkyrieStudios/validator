@@ -660,8 +660,8 @@ The following list shows you all the default rules that are provided by this lib
 | async_function | Validate that a provided value is an async function |
 | geo_latitude | Validate that a provided value is a valid latitude value |
 | geo_longitude | Validate that a provided value is a valid longitude value |
-| greater_than | Validate that a provided value is greater than a provided number, if passed a string or array this will validate on length |
 | greater_than_or_equal | Validate that a provided value is greater than or equal than a provided number, if passed a string or array this will validate on length |
+| greater_than | Validate that a provided value is greater than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
 | gt | Alias of greater_than |
 | gte | Alias of greater_than_or_equal |
 | guid | Validate that a provided value is a valid guid according to rfc 4122 |
