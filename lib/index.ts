@@ -32,6 +32,7 @@ import {vGuid}                      from './functions/vGuid';
 import {vIn}                        from './functions/vIn';
 import {vLessThan}                  from './functions/vLessThan';
 import {vLessThanOrEqual}           from './functions/vLessThanOrEqual';
+import {vNull}                      from './functions/vNull';
 import {vPhone}                     from './functions/vPhone';
 import {vTimeZone}                  from './functions/vTimeZone';
 import {vRequired}                  from './functions/vRequired';
@@ -169,6 +170,7 @@ type DefaultRuleDictionary = {
     less_than_or_equal: typeof vLessThanOrEqual;
     max: typeof vLessThanOrEqual;
     min: typeof vGreaterThanOrEqual;
+    null: typeof vNull;
     number: (val:unknown) => val is number;
     object: typeof isObject;
     object_ne: typeof isNotEmptyObject;
@@ -240,6 +242,7 @@ const RULE_STORE:Record<string, RuleFn> = {
     less_than_or_equal: vLessThanOrEqual,
     max: vLessThanOrEqual,
     min: vGreaterThanOrEqual,
+    null: vNull,
     number: Number.isFinite,
     object: isObject,
     object_ne: isNotEmptyObject,

@@ -7,6 +7,13 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Added
+- **feat**: `null` as a rule to validate that a value is null, take note this can be used in tandem with conditional groups, for example:
+```typescript
+const v = new Validator({a: '(string_ne)(null)'});
+v.check({a: null}); /* true */
+v.check({a: false}); /* false */
+v.check({a: "Hello world"}); /* true */
+```
 - **deps**: typescript-eslint (dev dep)
 
 ### Improved

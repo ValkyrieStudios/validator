@@ -673,6 +673,7 @@ The following list shows you all the default rules that are provided by this lib
 | lte | Alias of less_than_or_equal |
 | max | Alias of less_than_or_equal |
 | min | Alias of greater_than_or_equal |
+| null | Validate that a provided value is null |
 | number | Validate that a provided value is a number, this will see NaN as invalid |
 | object | Validate that a provided value is an object, arrays will not be seen as objects by this rule |
 | object_ne | Same behavior as `object`, with the additional check that empty objects will not be seen as valid |

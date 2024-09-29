@@ -34,6 +34,7 @@ import vGuid                    from '../../lib/functions/vGuid';
 import vIn                      from '../../lib/functions/vIn';
 import vLessThan                from '../../lib/functions/vLessThan';
 import vLessThanOrEqual         from '../../lib/functions/vLessThanOrEqual';
+import vNull                    from '../../lib/functions/vNull';
 import vPhone                   from '../../lib/functions/vPhone';
 import vRequired                from '../../lib/functions/vRequired';
 import vSize                    from '../../lib/functions/vSize';
@@ -186,6 +187,7 @@ describe('Validator - Core', () => {
                 less_than_or_equal          : vLessThanOrEqual,
                 max                         : vLessThanOrEqual,
                 min                         : vGreaterThanOrEqual,
+                null                        : vNull,
                 number                      : Number.isFinite,
                 object                      : isObject,
                 object_ne                   : isNeObject,
