@@ -18,6 +18,7 @@ import vAlphaNumSpacesMultiline from '../../lib/functions/vAlphaNumSpacesMultili
 import vBase64                  from '../../lib/functions/vBase64';
 import vBetween                 from '../../lib/functions/vBetween';
 import vBetweenInclusive        from '../../lib/functions/vBetweenInclusive';
+import vBlob                    from '../../lib/functions/vBlob';
 import vColorHex                from '../../lib/functions/vColorHex';
 import vContinent               from '../../lib/functions/vContinent';
 import vCountry                 from '../../lib/functions/vCountry';
@@ -162,6 +163,7 @@ describe('Validator - Core', () => {
                 between                     : vBetween,
                 between_inc                 : vBetweenInclusive,
                 boolean                     : isBoolean,
+                blob                        : vBlob,
                 color_hex                   : vColorHex,
                 continent                   : vContinent,
                 country                     : vCountry,

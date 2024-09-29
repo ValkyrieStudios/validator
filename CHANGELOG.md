@@ -14,6 +14,7 @@ v.check({a: null}); /* true */
 v.check({a: false}); /* false */
 v.check({a: "Hello world"}); /* true */
 ```
+- **feat**: `blob` as a rule to validate that a value is an instance of Blob
 - **deps**: typescript-eslint (dev dep)
 
 ### Improved

@@ -642,6 +642,7 @@ The following list shows you all the default rules that are provided by this lib
 | base64 | Validate that a provided value is a valid base64 encoded string |
 | between | Validate that a provided value is between two numbers, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
 | between_inc | Validate that a provided value is between or equal to two numbers, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
+| blob | Validate that a provided value is an instance of Blob |
 | boolean | Validate that a provided value is a boolean |
 | color_hex | Validate that a provided value is a hex color (with the # included) |
 | continent | Validate that a provided value is a continent code |

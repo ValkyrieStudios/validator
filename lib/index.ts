@@ -16,6 +16,7 @@ import {vAlphaNumSpacesMultiline}   from './functions/vAlphaNumSpacesMultiline';
 import {vBase64}                    from './functions/vBase64';
 import {vBetween}                   from './functions/vBetween';
 import {vBetweenInclusive}          from './functions/vBetweenInclusive';
+import {vBlob}                      from './functions/vBlob';
 import {vColorHex}                  from './functions/vColorHex';
 import {vContinent}                 from './functions/vContinent';
 import {vCountry}                   from './functions/vCountry';
@@ -144,6 +145,7 @@ type DefaultRuleDictionary = {
     base64: typeof vBase64;
     between: typeof vBetween;
     between_inc: typeof vBetweenInclusive;
+    blob: typeof vBlob;
     boolean: typeof isBoolean;
     color_hex: typeof vColorHex;
     continent: typeof vContinent;
@@ -216,6 +218,7 @@ const RULE_STORE:Record<string, RuleFn> = {
     base64: vBase64,
     between: vBetween,
     between_inc: vBetweenInclusive,
+    blob: vBlob,
     boolean: isBoolean,
     color_hex: vColorHex,
     continent: vContinent,
