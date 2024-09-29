@@ -157,6 +157,50 @@ describe('vGreaterThanOrEqual', () => {
         });
     });
 
+    describe('Blob and File', () => {
+        it('Should validate a Blob whose size is greater than or equal to the provided parameter as valid', () => {
+            const largeBlob = new Blob(['This is a large blob with a significant amount of content.']);
+            assert.ok(new Validator({a: 'greater_than_or_equal:10'}).check({a: largeBlob}));
+        });
+
+        it('Should validate a Blob whose size is equal to the provided parameter as valid', () => {
+            const exactBlob = new Blob(['Exactly 27 bytes of content']);
+            assert.ok(new Validator({a: 'greater_than_or_equal:27'}).check({a: exactBlob}));
+        });
+
+        it('Should validate a Blob whose size is smaller than the provided parameter as invalid', () => {
+            const smallBlob = new Blob(['Short']);
+            assert.deepEqual(new Validator({a: 'greater_than_or_equal:20'}).validate({a: smallBlob}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'greater_than_or_equal', params: ['20']}],
+                },
+            });
+        });
+
+        it('Should validate a File whose size is greater than or equal to the provided parameter as valid', () => {
+            const largeFile = new File(['This file content is quite large'], 'largeFile.txt', {type: 'text/plain'});
+            assert.ok(new Validator({a: 'greater_than_or_equal:10'}).check({a: largeFile}));
+        });
+
+        it('Should validate a File whose size is equal to the provided parameter as valid', () => {
+            const exactFile = new File(['This file is exactly 25 bytes'], 'exactFile.txt', {type: 'text/plain'});
+            assert.ok(new Validator({a: 'greater_than_or_equal:25'}).check({a: exactFile}));
+        });
+
+        it('Should validate a File whose size is smaller than the provided parameter as invalid', () => {
+            const smallFile = new File(['Tiny file'], 'smallFile.txt', {type: 'text/plain'});
+            assert.deepEqual(new Validator({a: 'greater_than_or_equal:20'}).validate({a: smallFile}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'greater_than_or_equal', params: ['20']}],
+                },
+            });
+        });
+    });
+
     describe('Number', () => {
         it('Should validate a number greater than the provided parameter as valid', () => {
             assert.ok(new Validator({a: 'greater_than_or_equal:1000'}).check({a: 10425}));

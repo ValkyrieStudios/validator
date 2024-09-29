@@ -20,6 +20,7 @@ v.check({a: "Hello world"}); /* true */
 - **feat**: `less_than` and `lt` now support Blob and File to verify their size is below a certain number of bytes
 - **feat**: `less_than_or_equal` and `lte` now support Blob and File to verify their size is below or equal to a certain number of bytes
 - **feat**: `greater_than` and `lt` now support Blob and File to verify their size is above a certain number of bytes
+- **feat**: `greater_than_or_equal` and `lte` now support Blob and File to verify their size is above or equal to a certain number of bytes
 - **deps**: Upgrade @valkyriestudios/utils to 12.24.0
 - **deps**: Upgrade eslint to 9.11.1
 - **deps**: Upgrade nyc to 17.1.0
