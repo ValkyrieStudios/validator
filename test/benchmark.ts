@@ -1,4 +1,4 @@
-/* eslint-disable max-len,max-lines,no-console,no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import * as fs from 'node:fs';
 

@@ -1,4 +1,4 @@
-/* eslint-disable max-len,no-new-wrappers,no-array-constructor,no-new-object,@typescript-eslint/no-array-constructor */
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-array-constructor */
 
 function testFunction () {}
 const testArrowFunction = () => {};

@@ -53,13 +53,14 @@ import {
 
 /* Raw data type for input checking */
 type DataPrimitive          = string | number | boolean | Date | symbol | null | unknown;
-type DataVal                = DataPrimitive | DataObject | DataArray;
+
+type DataVal                = DataPrimitive | DataObject | DataArray; /* eslint-disable-line */
 type DataArray              = Array<DataVal>;
 type DataObject             = {[key:string]: DataVal};
 export type GenericObject   = {[key:string]:any};
 
 /* Validation rule input data types */
-type RulesRawVal            = string | RulesRaw;
+type RulesRawVal            = string | RulesRaw; /* eslint-disable-line */
 export type RulesRaw        = {[key:string]: RulesRawVal};
 
 /* Validation components */
@@ -130,7 +131,7 @@ type ExtRegExp      = Record<string, ExtRegExpVal>;
 const REGEX_STORE:Map<string, ExtRegExpVal> = new Map();
 
 /* Used for schema storage using extendSchema */
-const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map();
+const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map(); /* eslint-disable-line */
 
 /* Rule storage */
 type RuleFn = (...args:any[]) => boolean;
@@ -204,6 +205,68 @@ type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
 const RGX_PARAM_NAME    = /^[a-zA-Z0-9_.]+$/i;
 const RGX_EXT_NAME      = /^[A-Za-z_0-9-]+$/;
 const RGX_GROUP_MATCH   = /\([^()]+\)/g;
+
+const RULE_STORE:Record<string, RuleFn> = {
+    alpha_num_spaces: vAlphaNumSpaces,
+    alpha_num_spaces_multiline: vAlphaNumSpacesMultiline,
+    array: Array.isArray,
+    array_ne: isNotEmptyArray,
+    base64: vBase64,
+    between: vBetween,
+    between_inc: vBetweenInclusive,
+    boolean: isBoolean,
+    color_hex: vColorHex,
+    continent: vContinent,
+    country: vCountry,
+    country_alpha3: vCountryAlpha3,
+    date: isDate,
+    date_day: vDateDay,
+    date_iso: vDateISO,
+    date_string: vDateString,
+    email: vEmail,
+    equal_to: equal,
+    false: vFalse,
+    formdata: isFormData,
+    function: isFunction,
+    async_function: isAsyncFunction,
+    geo_latitude: vGeoLatitude,
+    geo_longitude: vGeoLongitude,
+    greater_than: vGreaterThan,
+    greater_than_or_equal: vGreaterThanOrEqual,
+    guid: vGuid,
+    in: vIn,
+    integer: Number.isInteger,
+    less_than: vLessThan,
+    less_than_or_equal: vLessThanOrEqual,
+    max: vLessThanOrEqual,
+    min: vGreaterThanOrEqual,
+    number: Number.isFinite,
+    object: isObject,
+    object_ne: isNotEmptyObject,
+    phone: vPhone,
+    required: vRequired,
+    size: vSize,
+    string: isString,
+    string_ne: isNotEmptyString,
+    sys_mac: vSysMac,
+    sys_ipv4: vSysIPv4,
+    sys_ipv6: vSysIPv6,
+    sys_ipv4_or_v6: vSysIPv4_or_v6,
+    sys_port: vSysPort,
+    time_zone: vTimeZone,
+    true: vTrue,
+    url: vUrl,
+    url_noquery: vUrlNoQuery,
+    url_img: vUrlImage,
+    url_vid: vUrlVideo,
+    url_aud: vUrlAudio,
+    url_med: vUrlMedia,
+    gt: vGreaterThan,
+    gte: vGreaterThanOrEqual,
+    lt: vLessThan,
+    lte: vLessThanOrEqual,
+    eq: equal,
+};
 
 /**
  * Check whether or not a value is a valid extension name
@@ -565,68 +628,6 @@ function freezeStore (dict:Record<string, RuleFn>):Readonly<RuleDictionary>  {
     return Object.freeze(store);
 }
 
-const RULE_STORE:Record<string, RuleFn> = {
-    alpha_num_spaces: vAlphaNumSpaces,
-    alpha_num_spaces_multiline: vAlphaNumSpacesMultiline,
-    array: Array.isArray,
-    array_ne: isNotEmptyArray,
-    base64: vBase64,
-    between: vBetween,
-    between_inc: vBetweenInclusive,
-    boolean: isBoolean,
-    color_hex: vColorHex,
-    continent: vContinent,
-    country: vCountry,
-    country_alpha3: vCountryAlpha3,
-    date: isDate,
-    date_day: vDateDay,
-    date_iso: vDateISO,
-    date_string: vDateString,
-    email: vEmail,
-    equal_to: equal,
-    false: vFalse,
-    formdata: isFormData,
-    function: isFunction,
-    async_function: isAsyncFunction,
-    geo_latitude: vGeoLatitude,
-    geo_longitude: vGeoLongitude,
-    greater_than: vGreaterThan,
-    greater_than_or_equal: vGreaterThanOrEqual,
-    guid: vGuid,
-    in: vIn,
-    integer: Number.isInteger,
-    less_than: vLessThan,
-    less_than_or_equal: vLessThanOrEqual,
-    max: vLessThanOrEqual,
-    min: vGreaterThanOrEqual,
-    number: Number.isFinite,
-    object: isObject,
-    object_ne: isNotEmptyObject,
-    phone: vPhone,
-    required: vRequired,
-    size: vSize,
-    string: isString,
-    string_ne: isNotEmptyString,
-    sys_mac: vSysMac,
-    sys_ipv4: vSysIPv4,
-    sys_ipv6: vSysIPv6,
-    sys_ipv4_or_v6: vSysIPv4_or_v6,
-    sys_port: vSysPort,
-    time_zone: vTimeZone,
-    true: vTrue,
-    url: vUrl,
-    url_noquery: vUrlNoQuery,
-    url_img: vUrlImage,
-    url_vid: vUrlVideo,
-    url_aud: vUrlAudio,
-    url_med: vUrlMedia,
-    gt: vGreaterThan,
-    gte: vGreaterThanOrEqual,
-    lt: vLessThan,
-    lte: vLessThanOrEqual,
-    eq: equal,
-};
-
 let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
 
 type TV<T> = {
@@ -985,7 +986,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         let validator:Validator<RulesRaw>;
         try {
             validator = new Validator(obj);
-        } catch (err) {
+        } catch {
             throw new Error('Invalid extension');
         }
 
