@@ -640,8 +640,8 @@ The following list shows you all the default rules that are provided by this lib
 | array | Validate that a provided value is an array |
 | array_ne | Same behavior as `array`, with the additional check that empty arrays will not be seen as valid |
 | base64 | Validate that a provided value is a valid base64 encoded string |
-| between | Validate that a provided value is between two numbers, if passed a string or array this will validate on length |
-| between_inc | Validate that a provided value is between or equal to two numbers, if passed a string or array this will validate on length |
+| between | Validate that a provided value is between two numbers, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
+| between_inc | Validate that a provided value is between or equal to two numbers, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
 | boolean | Validate that a provided value is a boolean |
 | color_hex | Validate that a provided value is a hex color (with the # included) |
 | continent | Validate that a provided value is a continent code |
