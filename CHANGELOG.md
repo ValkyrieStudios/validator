@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- **deps**: typescript-eslint (dev dep)
+
+### Improved
+- **deps**: Upgrade @valkyriestudios/utils to 12.24.0
+- **deps**: Upgrade eslint to 9.11.1
+- **deps**: Upgrade nyc to 17.1.0
+- **deps**: Upgrade typescript to 5.6.2
+- **deps**: Upgrade @types/node to 20.16.10
+
+### Removed
+- **deps**: @typescript-eslint/eslint-plugin
+- **deps**: @typescript-eslint/parser
+
 ## [9.24.0] - 2024-09-07
 ### Added
 - **feat**: Validator@checkForm - Instance function which checks if a FormData instance is valid and returns it as an object if it is. Perfect for middleware situations in backend endpoints
