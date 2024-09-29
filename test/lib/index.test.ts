@@ -27,6 +27,7 @@ import vDateString              from '../../lib/functions/vDateString';
 import {vDateISO, vDateDay}     from '../../lib/functions/vDateSpecs';
 import vEmail                   from '../../lib/functions/vEmail';
 import vFalse                   from '../../lib/functions/vFalse';
+import vFile                    from '../../lib/functions/vFile';
 import vGeoLatitude             from '../../lib/functions/vGeoLatitude';
 import vGeoLongitude            from '../../lib/functions/vGeoLongitude';
 import vGreaterThan             from '../../lib/functions/vGreaterThan';
@@ -175,6 +176,7 @@ describe('Validator - Core', () => {
                 email                       : vEmail,
                 equal_to                    : equal,
                 false                       : vFalse,
+                file                        : vFile,
                 formdata                    : isFormData,
                 function                    : isFn,
                 async_function              : isAsyncFn,

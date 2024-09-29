@@ -25,6 +25,7 @@ import {vDateString}                from './functions/vDateString';
 import {vDateISO, vDateDay}         from './functions/vDateSpecs';
 import {vEmail}                     from './functions/vEmail';
 import {vFalse}                     from './functions/vFalse';
+import {vFile}                      from './functions/vFile';
 import {vGeoLatitude}               from './functions/vGeoLatitude';
 import {vGeoLongitude}              from './functions/vGeoLongitude';
 import {vGreaterThan}               from './functions/vGreaterThan';
@@ -158,6 +159,7 @@ type DefaultRuleDictionary = {
     email: typeof vEmail;
     equal_to: typeof equal;
     false: typeof vFalse;
+    file: typeof vFile;
     formdata: typeof isFormData;
     function: typeof isFunction;
     async_function: typeof isAsyncFunction;
@@ -231,6 +233,7 @@ const RULE_STORE:Record<string, RuleFn> = {
     email: vEmail,
     equal_to: equal,
     false: vFalse,
+    file: vFile,
     formdata: isFormData,
     function: isFunction,
     async_function: isAsyncFunction,
