@@ -213,6 +213,106 @@ describe('vBetween', () => {
         });
     });
 
+    describe('Blob and File', () => {
+        it('Should validate a Blob whose size is between the provided parameters as valid', () => {
+            const mediumBlob = new Blob(['This is a medium-sized blob.']);
+            assert.ok(new Validator({a: 'between:10,100'}).check({a: mediumBlob}));
+        });
+
+        it('Should validate a Blob whose size is equal to the start parameter as invalid', () => {
+            const exactBlob = new Blob(['Exactly 31 bytes of content']);
+            assert.deepEqual(new Validator({a: 'between:31,100'}).validate({a: exactBlob}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'between', params: ['31', '100']}],
+                },
+            });
+        });
+
+        it('Should validate a Blob whose size is equal to the end parameter as invalid', () => {
+            const exactBlob = new Blob(new Array(100).fill('a'));
+            assert.deepEqual(new Validator({a: 'between:10,100'}).validate({a: exactBlob}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'between', params: ['10', '100']}],
+                },
+            });
+        });
+
+        it('Should validate a Blob whose size is smaller than the start parameter as invalid', () => {
+            const smallBlob = new Blob(['Short']);
+            assert.deepEqual(new Validator({a: 'between:10,100'}).validate({a: smallBlob}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'between', params: ['10', '100']}],
+                },
+            });
+        });
+
+        it('Should validate a Blob whose size is larger than the end parameter as invalid', () => {
+            const largeBlob = new Blob(new Array(100).fill('a'));
+            assert.deepEqual(new Validator({a: 'between:10,50'}).validate({a: largeBlob}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'between', params: ['10', '50']}],
+                },
+            });
+        });
+
+        it('Should validate a File whose size is between the provided parameters as valid', () => {
+            const mediumFile = new File(['This file is a decent size'], 'mediumFile.txt', {type: 'text/plain'});
+            assert.ok(new Validator({a: 'between:10,100'}).check({a: mediumFile}));
+        });
+
+        it('Should validate a File whose size is equal to the start parameter as invalid', () => {
+            const exactFile = new File(['Exactly 25 bytes'], 'exactFile.txt', {type: 'text/plain'});
+            assert.deepEqual(new Validator({a: 'between:25,100'}).validate({a: exactFile}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'between', params: ['25', '100']}],
+                },
+            });
+        });
+
+        it('Should validate a File whose size is equal to the end parameter as invalid', () => {
+            const exactFile = new File(new Array(100).fill('a'), 'exactFile.txt', {type: 'text/plain'});
+            assert.deepEqual(new Validator({a: 'between:10,100'}).validate({a: exactFile}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'between', params: ['10', '100']}],
+                },
+            });
+        });
+
+        it('Should validate a File whose size is smaller than the start parameter as invalid', () => {
+            const smallFile = new File(['Tiny file'], 'smallFile.txt', {type: 'text/plain'});
+            assert.deepEqual(new Validator({a: 'between:20,50'}).validate({a: smallFile}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'between', params: ['20', '50']}],
+                },
+            });
+        });
+
+        it('Should validate a File whose size is larger than the end parameter as invalid', () => {
+            const largeFile = new File(['This file content is too large'], 'largeFile.txt', {type: 'text/plain'});
+            assert.deepEqual(new Validator({a: 'between:10,30'}).validate({a: largeFile}), {
+                is_valid: false,
+                count: 1,
+                errors: {
+                    a: [{msg: 'between', params: ['10', '30']}],
+                },
+            });
+        });
+    });
+
     describe('Number', () => {
         it('Should validate a number greater than the provided parameter as valid', () => {
             const evaluation = new Validator({a: 'between:1000,100000'}).validate({a: 10425});

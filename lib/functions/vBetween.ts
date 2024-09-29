@@ -1,12 +1,12 @@
 /**
- * Validate that a provided value is between two numbers, if passed a string or array this will validate on length
+ * Validate that a provided value is between two numbers
  *
- * @param {string|number|unknown[]} val - Value to verify
+ * @param {string|number|unknown[]|File|Blob} val - Value to verify
  * @param {number} lower_bound - Lower bound to validate against (not inclusive)
  * @param {number} upper_bound - Upper bound to validate against (not inclusive)
  */
 function vBetween (
-    val:string|number|unknown[],
+    val:string|number|unknown[]|File|Blob,
     lower_bound:number,
     upper_bound:number
 ):boolean {
@@ -17,13 +17,15 @@ function vBetween (
     /* If upper or lower bound normalized is not numerical return false */
     if (!Number.isFinite(n_upper_bound) || !Number.isFinite(n_lower_bound)) return false;
 
-    /* Check on string or array */
     if (typeof val === 'string' || Array.isArray(val)) {
         const len = val.length;
         return len > n_lower_bound && len < n_upper_bound;
+    } else if (val instanceof File || val instanceof Blob) {
+        const len = val.size;
+        return len > n_lower_bound && len < n_upper_bound;
+    } else {
+        return Number.isFinite(val) && val > n_lower_bound && val < n_upper_bound;
     }
-
-    return Number.isFinite(val) && val > n_lower_bound && val < n_upper_bound;
 }
 
 export {vBetween, vBetween as default};
