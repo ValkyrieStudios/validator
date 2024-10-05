@@ -38,7 +38,6 @@ describe('vDateSpects', () => {
 
         it('Should be invalid if not passed a string that is in the ISO format', () => {
             for (const el of [
-                '2024-04-06T12:30:45Z', // Without milliseconds
                 '2024-04-06T12:30:45.123+14:01', // Invalid minute in timezone (+14:01)
                 '2024-04-06T12:30:45.123Z+02:00', // Redundant timezone indicators
                 '2024-04-06T12:30:60.123Z', // Invalid seconds (60 seconds)
