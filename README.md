@@ -650,7 +650,7 @@ The following list shows you all the default rules that are provided by this lib
 | country_alpha3 | Validate that a provided value is an alpha-3 code according to ISO 3166-1 |
 | date | Validate that a provided value is a date object |
 | date_day | Validate that a provided value is a valid date string in format of 'YYYY-MM-DD' |
-| date_iso | Validate that a provided value is a valid ISO formatted date string in format of 'YYYY-MM-DDTHH:mm:ss.SSSZ' |
+| date_iso | Validate that a provided value is a valid ISO formatted date string in format of 'YYYY-MM-DDTHH:mm:ss.SSSZ' or 'YYYY-MM-DDTHH:mm:ssZ' |
 | date_string | Validate that a provided value is a valid date string |
 | email | Validate that a provided value is an email, take note: this only structurally tests if an email is good, it doesn't test whether an email actually exists |
 | eq | Alias of equal_to |

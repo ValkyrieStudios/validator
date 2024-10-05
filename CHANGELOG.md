@@ -7,6 +7,13 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- **feat**: `date_iso` rule now sees ISO formatted date strings without milliseconds as valid too
+```typescript
+const v = new Validator({a: 'date_iso'});
+v.check({a: '2024-02-07T19:35:00Z'}); // true
+v.check({a: '2024-02-07T19:35:00.010Z'}); // true
+v.check({a: '2024-02-07T19:35:00.Z'}); // false
+```
 - **deps**: Upgrade @valkyriestudios/utils to 12.25.0
 - **deps**: Upgrade eslint to 9.12.0
 - **deps**: Upgrade typescript-eslint to 8.8.0
