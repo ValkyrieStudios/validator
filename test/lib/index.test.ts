@@ -60,6 +60,7 @@ import {
     vEAN8,
     vEAN13,
 } from '../../lib/functions/vEAN';
+import {vUlid}                      from '../../lib/functions/vUlid';
 import {
     vUuid,
     vUuidV1,
@@ -233,6 +234,7 @@ describe('Validator - Core', () => {
                 sys_port                    : vSysPort,
                 time_zone                   : vTimeZone,
                 true                        : vTrue,
+                ulid                        : vUlid,
                 url                         : vUrl,
                 url_noquery                 : vUrlNoQuery,
                 url_img                     : vUrlImage,

@@ -56,6 +56,7 @@ import {
     vEAN8,
     vEAN13,
 } from './functions/vEAN';
+import {vUlid}                      from './functions/vUlid';
 import {
     vUuid,
     vUuidV1,
@@ -216,6 +217,7 @@ type DefaultRuleDictionary = {
     sys_port: typeof vSysPort;
     time_zone: typeof vTimeZone;
     true: typeof vTrue;
+    ulid: typeof vUlid;
     url: typeof vUrl;
     url_noquery: typeof vUrlNoQuery;
     url_img: typeof vUrlImage;
@@ -303,6 +305,7 @@ const RULE_STORE:Record<string, RuleFn> = {
     sys_port: vSysPort,
     time_zone: vTimeZone,
     true: vTrue,
+    ulid: vUlid,
     url: vUrl,
     url_noquery: vUrlNoQuery,
     url_img: vUrlImage,

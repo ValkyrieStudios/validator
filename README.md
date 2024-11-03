@@ -704,6 +704,7 @@ The following list shows you all the default rules that are provided by this lib
 | url_vid | Validate that a provided value is a url linking to a video file (eg: https://mywebsite.com/123.mp4) |
 | url_aud | Validate that a provided value is a url linking to an audio file (eg: https://mywebsite.com/123.mp3) |
 | url_med | Validate that a provided value is a url linking to an audio/image or video file (eg: https://mywebsite.com/123.mp3) |
+| ulid | Validate that a provided value is a correctly formatted ulid |
 | uuid | Validate that a provided value is either a v1, v2, v3, v4, v5 UUID |
 | uuid_v1 | Validate that a provided value is a valid v1 UUID |
 | uuid_v2 | Validate that a provided value is a valid v2 UUID |

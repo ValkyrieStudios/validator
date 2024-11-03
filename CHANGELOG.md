@@ -13,6 +13,7 @@ const v = new Validator({a: 'ssn'});
 v.check({a: '987-65-4321'}); /* true */
 v.check({a: '123-45-678'}); /* false */
 ```
+- **feat**: `ulid` rule to verify that a provided value is a correctly formatted ULID
 - **feat**: `uuid` rule to verify that a provided value is a correctly formatted UUID (v1,v2,v3,v4,v5)
 - **feat**: `uuid_v1` rule to verify that a provided value is a correctly formatted UUID V1
 - **feat**: `uuid_v2` rule to verify that a provided value is a correctly formatted UUID V2
