@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- **feat**: `ssn` rule to verify that a provided value is a correctly formatted US Social Security Number
+```typescript
+const v = new Validator({a: 'ssn'});
+v.check({a: '987-65-4321'}); /* true */
+v.check({a: '123-45-678'}); /* false */
+```
+
 ### Improved
 - **dx**: `color_hex` rule now works with a branded ColorHex type as typeguard instead of string
 - **dx**: `email` rule now works with a branded Email type as typeguard instead of string

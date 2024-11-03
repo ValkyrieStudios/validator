@@ -49,6 +49,7 @@ import vTimeZone                from '../../lib/functions/vTimeZone';
 import vTrue                    from '../../lib/functions/vTrue';
 import vUrl                     from '../../lib/functions/vUrl';
 import vUrlNoQuery              from '../../lib/functions/vUrlNoQuery';
+import {vSSN}                       from '../../lib/functions/vSSN';
 import {
     vUrlImage,
     vUrlVideo,
@@ -198,6 +199,7 @@ describe('Validator - Core', () => {
                 phone                       : vPhone,
                 required                    : vRequired,
                 size                        : vSize,
+                ssn                         : vSSN,
                 string                      : isString,
                 string_ne                   : isNeString,
                 sys_mac                     : vSysMac,

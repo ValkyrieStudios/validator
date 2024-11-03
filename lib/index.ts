@@ -45,6 +45,7 @@ import {vSysIPv6}                   from './functions/vSysIPv6';
 import {vSysIPv4_or_v6}             from './functions/vSysIPv4_or_v6';
 import {vSysPort}                   from './functions/vSysPort';
 import {vTrue}                      from './functions/vTrue';
+import {vSSN}                       from './functions/vSSN';
 import {vUrl}                       from './functions/vUrl';
 import {vUrlNoQuery}                from './functions/vUrlNoQuery';
 import {
@@ -183,6 +184,7 @@ type DefaultRuleDictionary = {
     size: typeof vSize;
     string: typeof isString;
     string_ne: typeof isNotEmptyString;
+    ssn: typeof vSSN;
     sys_mac: typeof vSysMac;
     sys_ipv4: typeof vSysIPv4;
     sys_ipv6: typeof vSysIPv6;
@@ -255,6 +257,7 @@ const RULE_STORE:Record<string, RuleFn> = {
     phone: vPhone,
     required: vRequired,
     size: vSize,
+    ssn: vSSN,
     string: isString,
     string_ne: isNotEmptyString,
     sys_mac: vSysMac,
