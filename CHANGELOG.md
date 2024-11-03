@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [9.28.0] - 2024-11-03
 ### Added
-- **feat**: `ssn` rule to verify that a provided value is a correctly formatted US Social Security Number
+- **feat**: `ssn` rule - Validates U.S. Social Security Numbers (SSN), ensuring the format XXX-XX-XXXX where each "X" is a digit
 ```typescript
 const v = new Validator({a: 'ssn'});
 v.check({a: '987-65-4321'}); /* true */

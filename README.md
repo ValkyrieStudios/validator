@@ -690,7 +690,7 @@ The following list shows you all the default rules that are provided by this lib
 | size | Validate that a provided value has a specific size, this only applies to strings and arrays and checks on length |
 | string | Validate that a provided value is a string |
 | string_ne | Same behavior as `string`, with the additional check that empty strings (after trimming) will not be seen as valid |
-| ssn | Validate that a provided value is a correctly formatted US Social Security Number |
+| ssn | Validates U.S. Social Security Numbers (SSN), ensuring the format XXX-XX-XXXX where each "X" is a digit |
 | sys_ipv4 | Validate that a provided value is a valid IPv4 address |
 | sys_ipv6 | Validate that a provided value is a valid IPv6 address |
 | sys_ipv4_or_v6 | Validate that a provided value is either a valid IPv4 or a valid IPv6 address |
