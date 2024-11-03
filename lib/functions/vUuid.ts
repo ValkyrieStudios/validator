@@ -7,12 +7,12 @@ const UUID_V4_RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-
 const UUID_V5_RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UUID_RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-type UUID_1 = Brand<string, 'UUID_V1'>;
-type UUID_2 = Brand<string, 'UUID_V2'>;
-type UUID_3 = Brand<string, 'UUID_V3'>;
-type UUID_4 = Brand<string, 'UUID_V4'>;
-type UUID_5 = Brand<string, 'UUID_V5'>;
-type UUID = UUID_1 | UUID_2 | UUID_3 | UUID_4 | UUID_5;
+export type UUID_1 = Brand<string, 'UUID_V1'>;
+export type UUID_2 = Brand<string, 'UUID_V2'>;
+export type UUID_3 = Brand<string, 'UUID_V3'>;
+export type UUID_4 = Brand<string, 'UUID_V4'>;
+export type UUID_5 = Brand<string, 'UUID_V5'>;
+export type UUID = UUID_1 | UUID_2 | UUID_3 | UUID_4 | UUID_5;
 
 /**
  * Validate that a provided value is a valid UUID according to RFC 4122
