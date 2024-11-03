@@ -1,6 +1,8 @@
 const RGX_USERNAME  = /^(")?[A-Z0-9&._%+-]+(")?$/i;
 const RGX_DOMAIN    = /^(\w{1,})([.-]?\w)*(\.\w{2,63})+$/;
 
+export type Email = string & {readonly brand: unique symbol};
+
 /**
  * Validate that a provided value is a valid email address
  * For more info: RFC3696 (https://datatracker.ietf.org/doc/html/rfc3696)
@@ -8,7 +10,7 @@ const RGX_DOMAIN    = /^(\w{1,})([.-]?\w)*(\.\w{2,63})+$/;
  *
  * @param {unknown} val - Value to verify
  */
-function vEmail (val:unknown):val is string {
+function vEmail (val:unknown):val is Email {
     if (typeof val !== 'string') return false;
 
     /* Check that string has content and does not contain spaces */

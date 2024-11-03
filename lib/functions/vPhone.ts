@@ -1,5 +1,7 @@
 const RGX = /^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
 
+export type Phone = string & {readonly brand: unique symbol};
+
 /**
  * Validate that a string is a valid phone number (will match phone numbers entered with
  * delimiters such as spaces, dots, brackets, etc, and supports international phone numbers)
@@ -7,7 +9,7 @@ const RGX = /^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\
  *
  * @param {unknown} val - Value to verify
  */
-function vPhone (val:unknown):val is string {
+function vPhone (val:unknown):val is Phone {
     if (typeof val !== 'string') return false;
 
     /* If number of digits is less than 5, return false */

@@ -7,6 +7,14 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- **dx**: `color_hex` rule now works with a branded ColorHex type as typeguard instead of string
+- **dx**: `email` rule now works with a branded Email type as typeguard instead of string
+- **dx**: `guid` rule now works with a branded Guid type as typeguard instead of string
+- **dx**: `phone` rule now works with a branded Phone type as typeguard instead of string
+- **dx**: `sys_ipv4` rule now works with a branded IP_V4 type as typeguard instead of string
+- **dx**: `sys_ipv6` rule now works with a branded IP_V6 type as typeguard instead of string
+- **dx**: `sys_ipv4_or_v6` rule now works with a branded IP type as typeguard instead of string
+- **dx**: `sys_mac` rule now works with a branded MAC type as typeguard instead of string
 - **deps**: Upgrade @valkyriestudios/utils to 12.27.1
 - **deps**: Upgrade @types/node to 22.8.7
 - **deps**: Upgrade eslint to 9.14.0
