@@ -13,6 +13,18 @@ const v = new Validator({a: 'ssn'});
 v.check({a: '987-65-4321'}); /* true */
 v.check({a: '123-45-678'}); /* false */
 ```
+- **feat**: `uuid` rule to verify that a provided value is a correctly formatted UUID (v1,v2,v3,v4,v5)
+- **feat**: `uuid_v1` rule to verify that a provided value is a correctly formatted UUID V1
+- **feat**: `uuid_v2` rule to verify that a provided value is a correctly formatted UUID V2
+- **feat**: `uuid_v3` rule to verify that a provided value is a correctly formatted UUID V3
+- **feat**: `uuid_v4` rule to verify that a provided value is a correctly formatted UUID V4
+- **feat**: `uuid_v5` rule to verify that a provided value is a correctly formatted UUID V5
+```typescript
+const v = new Validator({a: 'uuid'});
+v.check({a: '550e8400-e29b-11d4-a716-446655440000'}); /* true */
+v.check({a: 'bla'}); /* false */
+v.check({a: '550e8400-e29b-61d4-a716-446655440000'}); /* false, v6 does not exist */
+```
 
 ### Improved
 - **dx**: `color_hex` rule now works with a branded ColorHex type as typeguard instead of string

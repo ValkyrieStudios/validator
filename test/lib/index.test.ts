@@ -51,6 +51,14 @@ import vUrl                     from '../../lib/functions/vUrl';
 import vUrlNoQuery              from '../../lib/functions/vUrlNoQuery';
 import {vSSN}                       from '../../lib/functions/vSSN';
 import {
+    vUuid,
+    vUuidV1,
+    vUuidV2,
+    vUuidV3,
+    vUuidV4,
+    vUuidV5,
+} from '../../lib/functions/vUuid';
+import {
     vUrlImage,
     vUrlVideo,
     vUrlMedia,
@@ -215,6 +223,12 @@ describe('Validator - Core', () => {
                 url_vid                     : vUrlVideo,
                 url_aud                     : vUrlAudio,
                 url_med                     : vUrlMedia,
+                uuid                        : vUuid,
+                uuid_v1                     : vUuidV1,
+                uuid_v2                     : vUuidV2,
+                uuid_v3                     : vUuidV3,
+                uuid_v4                     : vUuidV4,
+                uuid_v5                     : vUuidV5,
                 gt                          : vGreaterThan,
                 gte                         : vGreaterThanOrEqual,
                 lt                          : vLessThan,

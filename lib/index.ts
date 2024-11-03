@@ -46,6 +46,14 @@ import {vSysIPv4_or_v6}             from './functions/vSysIPv4_or_v6';
 import {vSysPort}                   from './functions/vSysPort';
 import {vTrue}                      from './functions/vTrue';
 import {vSSN}                       from './functions/vSSN';
+import {
+    vUuid,
+    vUuidV1,
+    vUuidV2,
+    vUuidV3,
+    vUuidV4,
+    vUuidV5,
+} from './functions/vUuid';
 import {vUrl}                       from './functions/vUrl';
 import {vUrlNoQuery}                from './functions/vUrlNoQuery';
 import {
@@ -198,6 +206,12 @@ type DefaultRuleDictionary = {
     url_vid: typeof vUrlVideo;
     url_aud: typeof vUrlAudio;
     url_med: typeof vUrlMedia;
+    uuid: typeof vUuid;
+    uuid_v1: typeof vUuidV1;
+    uuid_v2: typeof vUuidV2;
+    uuid_v3: typeof vUuidV3;
+    uuid_v4: typeof vUuidV4;
+    uuid_v5: typeof vUuidV5;
     gt: typeof vGreaterThan;
     gte: typeof vGreaterThanOrEqual;
     lt: typeof vLessThan;
@@ -273,6 +287,12 @@ const RULE_STORE:Record<string, RuleFn> = {
     url_vid: vUrlVideo,
     url_aud: vUrlAudio,
     url_med: vUrlMedia,
+    uuid: vUuid,
+    uuid_v1: vUuidV1,
+    uuid_v2: vUuidV2,
+    uuid_v3: vUuidV3,
+    uuid_v4: vUuidV4,
+    uuid_v5: vUuidV5,
     gt: vGreaterThan,
     gte: vGreaterThanOrEqual,
     lt: vLessThan,
