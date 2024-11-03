@@ -25,6 +25,12 @@ v.check({a: '550e8400-e29b-11d4-a716-446655440000'}); /* true */
 v.check({a: 'bla'}); /* false */
 v.check({a: '550e8400-e29b-61d4-a716-446655440000'}); /* false, v6 does not exist */
 ```
+- **feat**: `isbn` rule to verify that a provided value is either a 13 or 10 character ISBN
+- **feat**: `isbn_10` rule to verify that a provided value is a correctly formatted 10 character ISBN
+- **feat**: `isbn_13` rule to verify that a provided value is a correctly formatted 13 character ISBN
+- **feat**: `ean` rule to verify that a provided value is either a 13 or 8 character EAN
+- **feat**: `ean_8` rule to verify that a provided value is a correctly formatted 8 character EAN
+- **feat**: `ean_13` rule to verify that a provided value is a correctly formatted 13 character EAN
 
 ### Improved
 - **dx**: `color_hex` rule now works with a branded ColorHex type as typeguard instead of string

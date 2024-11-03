@@ -45,7 +45,17 @@ import {vSysIPv6}                   from './functions/vSysIPv6';
 import {vSysIPv4_or_v6}             from './functions/vSysIPv4_or_v6';
 import {vSysPort}                   from './functions/vSysPort';
 import {vTrue}                      from './functions/vTrue';
+import {
+    vISBN,
+    vISBN10,
+    vISBN13,
+} from './functions/vISBN';
 import {vSSN}                       from './functions/vSSN';
+import {
+    vEAN,
+    vEAN8,
+    vEAN13,
+} from './functions/vEAN';
 import {
     vUuid,
     vUuidV1,
@@ -165,6 +175,9 @@ type DefaultRuleDictionary = {
     date_string: typeof vDateString;
     date_day: typeof vDateDay;
     date_iso: typeof vDateISO;
+    ean: typeof vEAN;
+    ean_8: typeof vEAN8;
+    ean_13: typeof vEAN13;
     email: typeof vEmail;
     equal_to: typeof equal;
     false: typeof vFalse;
@@ -179,6 +192,9 @@ type DefaultRuleDictionary = {
     guid: typeof vGuid;
     in: typeof vIn;
     integer: (val:unknown) => val is number;
+    isbn: typeof vISBN;
+    isbn_10: typeof vISBN10;
+    isbn_13: typeof vISBN13;
     less_than: typeof vLessThan;
     less_than_or_equal: typeof vLessThanOrEqual;
     max: typeof vLessThanOrEqual;
@@ -246,6 +262,9 @@ const RULE_STORE:Record<string, RuleFn> = {
     date_day: vDateDay,
     date_iso: vDateISO,
     date_string: vDateString,
+    ean: vEAN,
+    ean_8: vEAN8,
+    ean_13: vEAN13,
     email: vEmail,
     equal_to: equal,
     false: vFalse,
@@ -260,6 +279,9 @@ const RULE_STORE:Record<string, RuleFn> = {
     guid: vGuid,
     in: vIn,
     integer: Number.isInteger,
+    isbn: vISBN,
+    isbn_10: vISBN10,
+    isbn_13: vISBN13,
     less_than: vLessThan,
     less_than_or_equal: vLessThanOrEqual,
     max: vLessThanOrEqual,

@@ -652,6 +652,9 @@ The following list shows you all the default rules that are provided by this lib
 | date_day | Validate that a provided value is a valid date string in format of 'YYYY-MM-DD' |
 | date_iso | Validate that a provided value is a valid ISO formatted date string in format of 'YYYY-MM-DDTHH:mm:ss.SSSZ' or 'YYYY-MM-DDTHH:mm:ssZ' |
 | date_string | Validate that a provided value is a valid date string |
+| ean | Validate that a provided value is either a 8 or 13 character EAN |
+| ean_8 | Validate that a provided value is a 8-character EAN |
+| ean_13 | Validate that a provided value is a 13-character EAN |
 | email | Validate that a provided value is an email, take note: this only structurally tests if an email is good, it doesn't test whether an email actually exists |
 | eq | Alias of equal_to |
 | equal_to | Validate that a provided value is equal to another value, this can be used on primitives (string, number, boolean) but also on non-primitives (objects, arrays, dates). Equality checks for non-primitives are done through FNV1A hashing |
@@ -669,6 +672,9 @@ The following list shows you all the default rules that are provided by this lib
 | guid | Validate that a provided value is a valid guid according to rfc 4122 |
 | in | Validate that a provided value is in a set of values, this requires parameterization (see above) |
 | integer | Validate that a provided value is an integer, this will see NaN as invalid |
+| isbn | Validate that a provided value is either a 10 or 13 character ISBN |
+| isbn_10 | Validate that a provided value is a 10-character ISBN |
+| isbn_13 | Validate that a provided value is a 13-character ISBN |
 | less_than | Validate that a provided value is less than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
 | less_than_or_equal | Validate that a provided value is less than or equal to a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
 | lt | Alias of less_than |

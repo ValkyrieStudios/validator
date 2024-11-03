@@ -49,7 +49,17 @@ import vTimeZone                from '../../lib/functions/vTimeZone';
 import vTrue                    from '../../lib/functions/vTrue';
 import vUrl                     from '../../lib/functions/vUrl';
 import vUrlNoQuery              from '../../lib/functions/vUrlNoQuery';
+import {
+    vISBN,
+    vISBN10,
+    vISBN13,
+} from '../../lib/functions/vISBN';
 import {vSSN}                       from '../../lib/functions/vSSN';
+import {
+    vEAN,
+    vEAN8,
+    vEAN13,
+} from '../../lib/functions/vEAN';
 import {
     vUuid,
     vUuidV1,
@@ -182,6 +192,9 @@ describe('Validator - Core', () => {
                 date_day                    : vDateDay,
                 date_iso                    : vDateISO,
                 date_string                 : vDateString,
+                ean                         : vEAN,
+                ean_8                       : vEAN8,
+                ean_13                      : vEAN13,
                 email                       : vEmail,
                 equal_to                    : equal,
                 false                       : vFalse,
@@ -196,6 +209,9 @@ describe('Validator - Core', () => {
                 guid                        : vGuid,
                 in                          : vIn,
                 integer                     : Number.isInteger,
+                isbn                        : vISBN,
+                isbn_10                     : vISBN10,
+                isbn_13                     : vISBN13,
                 less_than                   : vLessThan,
                 less_than_or_equal          : vLessThanOrEqual,
                 max                         : vLessThanOrEqual,
