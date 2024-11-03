@@ -34,6 +34,26 @@ import vTimeZone                from '../lib/functions/vTimeZone';
 import vTrue                    from '../lib/functions/vTrue';
 import vUrl                     from '../lib/functions/vUrl';
 import vUrlNoQuery              from '../lib/functions/vUrlNoQuery';
+import {
+    vISBN,
+    vISBN10,
+    vISBN13,
+} from '../lib/functions/vISBN';
+import {vSSN}                       from '../lib/functions/vSSN';
+import {
+    vEAN,
+    vEAN8,
+    vEAN13,
+} from '../lib/functions/vEAN';
+import {vUlid}                      from '../lib/functions/vUlid';
+import {
+    vUuid,
+    vUuidV1,
+    vUuidV2,
+    vUuidV3,
+    vUuidV4,
+    vUuidV5,
+} from '../lib/functions/vUuid';
 import Validator                from '../lib/index';
 import {
     vUrlImage,
@@ -1099,6 +1119,132 @@ for (const el of [
     {
         lbl: 'functions/vUrlMedia - invalid',
         fn: () => vUrlMedia('https://www.myfancyimage.com/jpg?aquery=true'),
+    },
+    //  vISBN
+    {
+        lbl: 'functions/vISBN - valid',
+        fn: () => vISBN('123456789X'),
+    },
+    {
+        lbl: 'functions/vISBN - invalid',
+        fn: () => vISBN('12345678912X'),
+    },
+    //  vISBN-10
+    {
+        lbl: 'functions/vISBN10 - valid',
+        fn: () => vISBN10('123456789X'),
+    },
+    {
+        lbl: 'functions/vISBN10 - invalid',
+        fn: () => vISBN10('12345678912X'),
+    },
+    //  vISBN-13
+    {
+        lbl: 'functions/vISBN13 - valid',
+        fn: () => vISBN13('9781234567897'),
+    },
+    {
+        lbl: 'functions/vISBN10 - invalid',
+        fn: () => vISBN13('12345678912X'),
+    },
+    //  vEAN
+    {
+        lbl: 'functions/vEAN - valid',
+        fn: () => vEAN('1234567890128'),
+    },
+    {
+        lbl: 'functions/vEAN - invalid',
+        fn: () => vEAN('12345678901234'),
+    },
+    //  vEAN-8
+    {
+        lbl: 'functions/vEAN8 - valid',
+        fn: () => vEAN8('12345670'),
+    },
+    {
+        lbl: 'functions/vEAN8 - invalid',
+        fn: () => vEAN8('12345678912X'),
+    },
+    //  vEAN-13
+    {
+        lbl: 'functions/vEAN13 - valid',
+        fn: () => vEAN13('9781234567897'),
+    },
+    {
+        lbl: 'functions/vEAN13 - invalid',
+        fn: () => vEAN13('12345678901234'),
+    },
+    //  vSSN
+    {
+        lbl: 'functions/vSSN - valid',
+        fn: () => vSSN('123-45-6789'),
+    },
+    {
+        lbl: 'functions/vSSN - invalid',
+        fn: () => vSSN('12345678901234'),
+    },
+    //  vULID
+    {
+        lbl: 'functions/vULID - valid',
+        fn: () => vUlid('01ARZ3NDEKTSV4RRFFQ69G5FAV'),
+    },
+    {
+        lbl: 'functions/vULID - invalid',
+        fn: () => vUlid('12345678901234'),
+    },
+    //  vUUID_V1
+    {
+        lbl: 'functions/vUUID_V1 - valid',
+        fn: () => vUuidV1('550e8400-e29b-11d4-a716-446655440000'),
+    },
+    {
+        lbl: 'functions/vUUID_V1 - invalid',
+        fn: () => vUuidV1('12345678901234'),
+    },
+    //  vUUID_V2
+    {
+        lbl: 'functions/vUUID_V2 - valid',
+        fn: () => vUuidV2('550e8400-e29b-21d4-a716-446655440000'),
+    },
+    {
+        lbl: 'functions/vUUID_V2 - invalid',
+        fn: () => vUuidV2('12345678901234'),
+    },
+    //  vUUID_V3
+    {
+        lbl: 'functions/vUUID_V3 - valid',
+        fn: () => vUuidV3('550e8400-e29b-31d4-a716-446655440000'),
+    },
+    {
+        lbl: 'functions/vUUID_V3 - invalid',
+        fn: () => vUuidV3('12345678901234'),
+    },
+    //  vUUID_V4
+    {
+        lbl: 'functions/vUUID_V4 - valid',
+        fn: () => vUuidV4('550e8400-e29b-41d4-a716-446655440000'),
+    },
+    {
+        lbl: 'functions/vUUID_V4 - invalid',
+        fn: () => vUuidV4('12345678901234'),
+    },
+    //  vUUID_V5
+    {
+        lbl: 'functions/vUUID_V5 - valid',
+        fn: () => vUuidV5('550e8400-e29b-51d4-a716-446655440000'),
+    },
+    {
+        lbl: 'functions/vUUID_V5 - invalid',
+        fn: () => vUuidV5('12345678901234'),
+    },
+    //  vUUID
+    {
+        lbl: 'functions/vUUID - valid',
+        fn: () => vUuid('550e8400-e29b-51d4-a716-446655440000'),
+    },
+    {
+        lbl: 'functions/vUUID - invalid',
+        fn: () => vUuid('12345678901234'),
     },
 ]) bench(el, 500000);
 
