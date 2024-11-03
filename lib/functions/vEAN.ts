@@ -1,8 +1,10 @@
+import {type Brand} from './_types';
+
 const EAN_8_RGX = /^\d{8}$/;
 const EAN_13_RGX = /^\d{13}$/;
 
-export type EAN_8 = string & {readonly brand: unique symbol};
-export type EAN_13 = string & {readonly brand: unique symbol};
+export type EAN_8 = Brand<string, 'EAN_8'>;
+export type EAN_13 = Brand<string, 'EAN_13'>;
 export type EAN = EAN_8 | EAN_13;
 
 /* https://euro-chamber.eu/product/european-article-number-ean/ */

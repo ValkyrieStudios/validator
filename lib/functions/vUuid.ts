@@ -1,3 +1,5 @@
+import {type Brand} from './_types';
+
 const UUID_V1_RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UUID_V2_RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-2[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UUID_V3_RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-3[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -5,11 +7,11 @@ const UUID_V4_RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-
 const UUID_V5_RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UUID_RGX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-type UUID_1 = string & {readonly brand: unique symbol};
-type UUID_2 = string & {readonly brand: unique symbol};
-type UUID_3 = string & {readonly brand: unique symbol};
-type UUID_4 = string & {readonly brand: unique symbol};
-type UUID_5 = string & {readonly brand: unique symbol};
+type UUID_1 = Brand<string, 'UUID_V1'>;
+type UUID_2 = Brand<string, 'UUID_V2'>;
+type UUID_3 = Brand<string, 'UUID_V3'>;
+type UUID_4 = Brand<string, 'UUID_V4'>;
+type UUID_5 = Brand<string, 'UUID_V5'>;
 type UUID = UUID_1 | UUID_2 | UUID_3 | UUID_4 | UUID_5;
 
 /**

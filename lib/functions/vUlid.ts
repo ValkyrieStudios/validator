@@ -1,6 +1,8 @@
-const RGX = /^[0-9A-Z]{26}$/;
+import {type Brand} from './_types';
 
-type ULID = string & {readonly brand: unique symbol};
+const RGX = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
+
+export type ULID = Brand<string, 'ULID'>;
 
 /**
  * Validate that a provided value is a valid ulid

@@ -1,8 +1,10 @@
+import {type Brand} from './_types';
+
 const ISBN_10_RGX = /^(?:\d{9}X|\d{10})$/;
 const ISBN_13_RGX = /^(?:\d{13})$/;
 
-export type ISBN_10 = string & {readonly brand: unique symbol};
-export type ISBN_13 = string & {readonly brand: unique symbol};
+export type ISBN_10 = Brand<string, 'ISBN_10'>;
+export type ISBN_13 = Brand<string, 'ISBN_13'>;
 export type ISBN = ISBN_10 | ISBN_13;
 
 /**
