@@ -13,8 +13,19 @@ const v = new Validator({a: 'ssn'});
 v.check({a: '987-65-4321'}); /* true */
 v.check({a: '123-45-678'}); /* false */
 ```
-- **feat**: `ulid` rule to verify that a provided value is a correctly formatted ULID
-- **feat**: `uuid` rule to verify that a provided value is a correctly formatted UUID (v1,v2,v3,v4,v5)
+- **feat**: `ulid` rule - Validates ULIDs (Universally Unique Lexicographically Sortable Identifiers), ensuring a 26-character uppercase alphanumeric format.
+```typescript
+const v = new Validator({ a: 'ulid' });
+v.check({ a: '01ARZ3NDEKTSV4RRFFQ69G5FAV' }); // true
+v.check({ a: '01ARZ3NDEKTSV4RRFFQ69G5FA' }); // false (too short)
+```
+- **feat**: `uuid` rule - Validates general UUIDs, supporting versions 1 through 5
+```typescript
+const v = new Validator({ a: 'uuid' });
+v.check({ a: '550e8400-e29b-11d4-a716-446655440000' }); // true
+v.check({ a: 'bla' }); // false
+v.check({ a: '550e8400-e29b-61d4-a716-446655440000' }); // false, version 6 does not exist
+```
 - **feat**: `uuid_v1` rule to verify that a provided value is a correctly formatted UUID V1
 - **feat**: `uuid_v2` rule to verify that a provided value is a correctly formatted UUID V2
 - **feat**: `uuid_v3` rule to verify that a provided value is a correctly formatted UUID V3
@@ -26,10 +37,23 @@ v.check({a: '550e8400-e29b-11d4-a716-446655440000'}); /* true */
 v.check({a: 'bla'}); /* false */
 v.check({a: '550e8400-e29b-61d4-a716-446655440000'}); /* false, v6 does not exist */
 ```
-- **feat**: `isbn` rule to verify that a provided value is either a 13 or 10 character ISBN
+- **feat**: `isbn` rule - Validates International Standard Book Numbers (ISBNs), supporting both ISBN-10 and ISBN-13 formats.
+```typescript
+const v = new Validator({ a: 'isbn' });
+v.check({ a: '123456789X' }); // true (ISBN-10)
+v.check({ a: '9781234567897' }); // true (ISBN-13)
+v.check({ a: '1234567890' }); // true (ISBN-10)
+v.check({ a: '1234567890123' }); // false (invalid ISBN)
+```
 - **feat**: `isbn_10` rule to verify that a provided value is a correctly formatted 10 character ISBN
 - **feat**: `isbn_13` rule to verify that a provided value is a correctly formatted 13 character ISBN
-- **feat**: `ean` rule to verify that a provided value is either a 13 or 8 character EAN
+- **feat**: `ean` rule - Validates European Article Numbers (EANs), supporting both 8-character (EAN-8) and 13-character (EAN-13) formats.
+```typescript
+const v = new Validator({ a: 'ean' });
+v.check({ a: '12345670' }); // true (EAN-8)
+v.check({ a: '1234567890128' }); // true (EAN-13)
+v.check({ a: '1234567' }); // false (too short for EAN-8)
+```
 - **feat**: `ean_8` rule to verify that a provided value is a correctly formatted 8 character EAN
 - **feat**: `ean_13` rule to verify that a provided value is a correctly formatted 13 character EAN
 
