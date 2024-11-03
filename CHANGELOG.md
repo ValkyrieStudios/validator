@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.29.0] - 2024-11-03
+### Improved
+- **dx**: Branded Types now internally work with a cleaner type allowing for easier usage in eg IDEs such as VS Code
+- **dx**: SSN rule now has a branded type behind it
+- **dx**: ULID rule now has a branded type behind it
+- **dx**: date_string rule now has a branded type behind it
+- **dx**: date_iso and date_day rules now have the same branded type as date_string
+- **dx**: All uuid rules now have a branded type behind them
+
+### Fixed
+- Fix an issue where ulid regex was including non-base32 characters
+
 ## [9.28.0] - 2024-11-03
 ### Added
 - **feat**: `ssn` rule - Validates U.S. Social Security Numbers (SSN), ensuring the format XXX-XX-XXXX where each "X" is a digit
