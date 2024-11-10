@@ -1,8 +1,6 @@
-import {type Brand} from './_types';
+import {type SSN} from '../types';
 
 const RGX = /^\d{3}-\d{2}-\d{4}$/;
-
-export type SSN = Brand<string, 'SSN'>;
 
 /**
  * Validate that a provided value is a valid format for a Social Security Number

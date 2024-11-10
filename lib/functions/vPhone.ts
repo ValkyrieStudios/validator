@@ -1,8 +1,6 @@
-import {type Brand} from './_types';
+import {type Phone} from '../types';
 
 const RGX = /^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
-
-export type Phone = Brand<string, 'Phone'>;
 
 /**
  * Validate that a string is a valid phone number (will match phone numbers entered with

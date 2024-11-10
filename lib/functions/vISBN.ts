@@ -1,11 +1,11 @@
-import {type Brand} from './_types';
+import {
+    type ISBN_10,
+    type ISBN_13,
+    type ISBN,
+} from '../types';
 
 const ISBN_10_RGX = /^(?:\d{9}X|\d{10})$/;
 const ISBN_13_RGX = /^(?:\d{13})$/;
-
-export type ISBN_10 = Brand<string, 'ISBN_10'>;
-export type ISBN_13 = Brand<string, 'ISBN_13'>;
-export type ISBN = ISBN_10 | ISBN_13;
 
 /**
  * Validate that a provided value is a valid ISBN-10 identifier

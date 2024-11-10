@@ -1,4 +1,4 @@
-import {type Brand} from './_types';
+import {type MAC} from '../types';
 
 /**
  * Mac Address Quick summary:
@@ -29,8 +29,6 @@ const RGX_64_QUAD_COLON = /^[0-9A-Fa-f]{4}:[0-9A-Fa-f]{2}FF:FE[0-9A-Fa-f]{2}:[0-
 
 /* Special Case: MMMM-MMFF-FESS-SSSS format (48-bit address converted to a 64-bit) */
 const RGX_64_QUAD_DASH = /^[0-9A-Fa-f]{4}-[0-9A-Fa-f]{2}FF-FE[0-9A-Fa-f]{2}-[0-9A-Fa-f]{4}$/;
-
-export type MAC = Brand<string, 'MAC'>;
 
 /**
  * Validate that a provided value is a valid MAC address

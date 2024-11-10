@@ -1,8 +1,6 @@
-import {type Brand} from './_types';
+import {type ColorHex} from '../types';
 
 const RGX = /^#([\da-f]{3}){1,2}$/i;
-
-export type ColorHex = Brand<string, 'ColorHex'>;
 
 /**
  * Validate that a provided value is a hexadecimal color string (with the # included)

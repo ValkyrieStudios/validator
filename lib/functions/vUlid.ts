@@ -1,8 +1,6 @@
-import {type Brand} from './_types';
+import {type ULID} from '../types';
 
 const RGX = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
-
-export type ULID = Brand<string, 'ULID'>;
 
 /**
  * Validate that a provided value is a valid ulid

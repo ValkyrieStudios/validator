@@ -1,9 +1,7 @@
-import {type Brand} from './_types';
+import {type Email} from '../types';
 
 const RGX_USERNAME  = /^(")?[A-Z0-9&._%+-]+(")?$/i;
 const RGX_DOMAIN    = /^(\w{1,})([.-]?\w)*(\.\w{2,63})+$/;
-
-export type Email = Brand<string, 'Email'>;
 
 /**
  * Validate that a provided value is a valid email address

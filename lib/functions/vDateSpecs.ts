@@ -1,5 +1,5 @@
 import {isDateFormat} from '@valkyriestudios/utils/date/isFormat';
-import {type DateString} from './vDateString';
+import {type DateString} from '../types';
 
 /**
  * Validate that a provided value is a valid ISO date string WITH milliseconds

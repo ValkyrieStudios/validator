@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **dx**: A branded `GeoLatitude` type is now available for the `geo_latitude` rule as its typeguard
+- **dx**: A branded `GeoLongitude` type is now available for the `geo_longitude` rule as its typeguard
+- **dx**: All branded types are now exported from a root-level types file (for easy access)
+```typescript
+import {type Continent, type GeoLatitude, type GeoLongitude} from '@valkyriestudios/validator/types';
+
+...
+```
+
 ## [9.29.0] - 2024-11-03
 ### Improved
 - **dx**: Branded Types now internally work with a cleaner type allowing for easier usage in eg IDEs such as VS Code

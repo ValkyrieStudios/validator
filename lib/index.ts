@@ -724,7 +724,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      */
     /* eslint-disable-next-line */
     /* @ts-ignore */
-    check <K extends GenericObject|FormData> (raw:K):data is T {
+    check <K extends GenericObject|FormData> (raw:K):raw is T {
         const plan_len = this.#plan_length;
 
         /* No data passed? Check if rules were set up */

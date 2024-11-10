@@ -1,6 +1,4 @@
-import {type Brand} from './_types';
-
-export type DateString = Brand<string, 'DateString'>;
+import {type DateString} from '../types';
 
 /**
  * Validate that a provided value is a valid date string

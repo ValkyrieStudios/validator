@@ -1,8 +1,6 @@
-const CODES = ['AF', 'AN', 'AS', 'EU', 'NA', 'OC', 'SA'] as const;
+import {type Continent, CONTINENTS} from '../types';
 
-export type Continent = (typeof CODES)[number];
-
-const SET = new Set(CODES);
+const SET = new Set(CONTINENTS);
 
 /**
  * Validate that a provided value is a continent code

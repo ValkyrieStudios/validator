@@ -1,7 +1,7 @@
-import {RGX as RGX_IPV4, type IP_V4} from './vSysIPv4';
-import {RGX as RGX_IPV6, type IP_V6} from './vSysIPv6';
+import {type IP} from '../types';
 
-export type IP = IP_V4 | IP_V6;
+import {RGX as RGX_IPV4} from './vSysIPv4';
+import {RGX as RGX_IPV6} from './vSysIPv6';
 
 /**
  * Validate that a provided value is either a valid IPv4 or a valid IPv6 address
