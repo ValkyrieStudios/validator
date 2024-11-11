@@ -45,17 +45,9 @@ import {vSysIPv6}                   from './functions/vSysIPv6';
 import {vSysIPv4_or_v6}             from './functions/vSysIPv4_or_v6';
 import {vSysPort}                   from './functions/vSysPort';
 import {vTrue}                      from './functions/vTrue';
-import {
-    vISBN,
-    vISBN10,
-    vISBN13,
-} from './functions/vISBN';
+import {vISBN, vISBN10, vISBN13}    from './functions/vISBN';
 import {vSSN}                       from './functions/vSSN';
-import {
-    vEAN,
-    vEAN8,
-    vEAN13,
-} from './functions/vEAN';
+import {vEAN, vEAN8, vEAN13}        from './functions/vEAN';
 import {vUlid}                      from './functions/vUlid';
 import {
     vUuid,
@@ -85,6 +77,18 @@ export type GenericObject   = {[key:string]:any};
 /* Validation rule input data types */
 type RulesRawVal            = string | RulesRaw; /* eslint-disable-line */
 export type RulesRaw        = {[key:string]: RulesRawVal};
+
+/* Validator components */
+type TV<T> = {
+    [K in keyof T]: T[K] extends Array<any>
+        ? string
+        : T[K] extends Record<string, any>
+            ? TV<T[K]>|string
+            : string;
+};
+
+type RuleFn = (...args:any[]) => boolean;
+type RuleExtension = RuleFn | RegExp | (string|number)[] | TV<GenericObject>;
 
 /* Validation components */
 interface ValidationError {
@@ -142,111 +146,17 @@ interface ValidationResult {
     errors: 'NO_DATA' | {[key:string]:ValidationError[]};
 }
 
-/* Used for enum storage using extendEnum */
-type ExtEnumValInner    = string | number;
-type ExtEnumVal         = ExtEnumValInner[];
-type ExtEnum            = Record<string, ExtEnumVal>;
-const ENUM_STORE:Map<string, Set<ExtEnumValInner>> = new Map();
-
-/* Used for regex storage using extendRegex */
-type ExtRegExpVal   = RegExp;
-type ExtRegExp      = Record<string, ExtRegExpVal>;
-const REGEX_STORE:Map<string, ExtRegExpVal> = new Map();
-
-/* Used for schema storage using extendSchema */
+/* Used for enum storage */
+const ENUM_STORE:Map<string, Set<string | number>> = new Map();
+const REGEX_STORE:Map<string, RegExp> = new Map();
 const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map(); /* eslint-disable-line */
-
-/* Rule storage */
-type RuleFn = (...args:any[]) => boolean;
-type DefaultRuleDictionary = {
-    alpha_num_spaces: typeof vAlphaNumSpaces;
-    alpha_num_spaces_multiline: typeof vAlphaNumSpaces;
-    array: (val:unknown) => val is unknown[];
-    array_ne: typeof isNotEmptyArray;
-    base64: typeof vBase64;
-    between: typeof vBetween;
-    between_inc: typeof vBetweenInclusive;
-    blob: typeof vBlob;
-    boolean: typeof isBoolean;
-    color_hex: typeof vColorHex;
-    continent: typeof vContinent;
-    country: typeof vCountry;
-    country_alpha3: typeof vCountryAlpha3;
-    date: typeof isDate;
-    date_string: typeof vDateString;
-    date_day: typeof vDateDay;
-    date_iso: typeof vDateISO;
-    ean: typeof vEAN;
-    ean_8: typeof vEAN8;
-    ean_13: typeof vEAN13;
-    email: typeof vEmail;
-    equal_to: typeof equal;
-    false: typeof vFalse;
-    file: typeof vFile;
-    formdata: typeof isFormData;
-    function: typeof isFunction;
-    async_function: typeof isAsyncFunction;
-    geo_latitude: typeof vGeoLatitude;
-    geo_longitude: typeof vGeoLongitude;
-    greater_than: typeof vGreaterThan;
-    greater_than_or_equal: typeof vGreaterThanOrEqual;
-    guid: typeof vGuid;
-    in: typeof vIn;
-    integer: (val:unknown) => val is number;
-    isbn: typeof vISBN;
-    isbn_10: typeof vISBN10;
-    isbn_13: typeof vISBN13;
-    less_than: typeof vLessThan;
-    less_than_or_equal: typeof vLessThanOrEqual;
-    max: typeof vLessThanOrEqual;
-    min: typeof vGreaterThanOrEqual;
-    null: typeof vNull;
-    number: (val:unknown) => val is number;
-    object: typeof isObject;
-    object_ne: typeof isNotEmptyObject;
-    phone: typeof vPhone;
-    required: typeof vRequired;
-    size: typeof vSize;
-    string: typeof isString;
-    string_ne: typeof isNotEmptyString;
-    ssn: typeof vSSN;
-    sys_mac: typeof vSysMac;
-    sys_ipv4: typeof vSysIPv4;
-    sys_ipv6: typeof vSysIPv6;
-    sys_ipv4_or_v6: typeof vSysIPv4_or_v6;
-    sys_port: typeof vSysPort;
-    time_zone: typeof vTimeZone;
-    true: typeof vTrue;
-    ulid: typeof vUlid;
-    url: typeof vUrl;
-    url_noquery: typeof vUrlNoQuery;
-    url_img: typeof vUrlImage;
-    url_vid: typeof vUrlVideo;
-    url_aud: typeof vUrlAudio;
-    url_med: typeof vUrlMedia;
-    uuid: typeof vUuid;
-    uuid_v1: typeof vUuidV1;
-    uuid_v2: typeof vUuidV2;
-    uuid_v3: typeof vUuidV3;
-    uuid_v4: typeof vUuidV4;
-    uuid_v5: typeof vUuidV5;
-    gt: typeof vGreaterThan;
-    gte: typeof vGreaterThanOrEqual;
-    lt: typeof vLessThan;
-    lte: typeof vLessThanOrEqual;
-    eq: typeof equal;
-};
-
-type CustomRuleDictionary = Record<string, RuleFn>;
-
-type RuleDictionary = DefaultRuleDictionary & CustomRuleDictionary;
 
 /* Regexes used in processing */
 const RGX_PARAM_NAME    = /^[a-zA-Z0-9_.]+$/i;
 const RGX_EXT_NAME      = /^[A-Za-z_0-9-]+$/;
 const RGX_GROUP_MATCH   = /\([^()]+\)/g;
 
-const RULE_STORE:Record<string, RuleFn> = {
+const RULE_STORE = {
     alpha_num_spaces: vAlphaNumSpaces,
     alpha_num_spaces_multiline: vAlphaNumSpacesMultiline,
     array: Array.isArray,
@@ -323,37 +233,11 @@ const RULE_STORE:Record<string, RuleFn> = {
     lt: vLessThan,
     lte: vLessThanOrEqual,
     eq: equal,
-};
+} as const;
 
-/**
- * Check whether or not a value is a valid extension name
- *
- * @param {string} val - Value to verify
- * @returns {boolean} Whether or not the extension name is valid
- */
-function validExtensionName (val:string):boolean {
-    return typeof val === 'string' && RGX_EXT_NAME.test(val);
-}
+type CustomRuleDictionary = Record<string, RuleFn>;
 
-/**
- * Validate whether or not a passed object has valid names/values
- *
- * @param obj - Object to validate
- * @param valueFn - Function to use for value checks
- *
- * @throws {Error} Will throw if the extension is invalid
- */
-function validExtension <T> (
-    obj:Record<string, T>,
-    valueFn:(arg0:T, key?:string) => void
-) {
-    if (!isObject(obj)) throw new Error('Invalid extension');
-
-    for (const [key, val] of Object.entries(obj)) {
-        if (!validExtensionName(key)) throw new Error('Invalid extension');
-        valueFn(val, key);
-    }
-}
+type RuleDictionary = typeof RULE_STORE & CustomRuleDictionary;
 
 /**
  * Get a value from a path in a json-like structure
@@ -544,7 +428,7 @@ function validateField (
     const errors:ValidationError[] = [];
     for (let i = 0; i < rule.list_length; i++) {
         const {type, not, params, params_length} = rule.list[i];
-        const rulefn = RULE_STORE[type];
+        const rulefn = RULE_STORE[type as keyof typeof RULE_STORE];
 
         /* Check if rule exists */
         if (!rulefn) {
@@ -560,6 +444,8 @@ function validateField (
         }
 
         /* Run rule - if check fails (not valid && not not | not && valid) push into errors */
+        /* eslint-disable-next-line */
+        /* @ts-ignore */
         if (rulefn(cursor, ...n_params) === not) {
             errors.push({msg: (not ? 'not_' : '') + type, params: n_params});
         }
@@ -585,7 +471,7 @@ function checkRule (
     if (!rule.iterable) {
         for (let i = 0; i < rule.list_length; i++) {
             const {type, not, params, params_length} = rule.list[i];
-            const rulefn = RULE_STORE[type];
+            const rulefn = RULE_STORE[type as keyof typeof RULE_STORE];
             if (!rulefn) return false;
 
             /* Get params that need to be passed, each param is either a function or a primitive */
@@ -596,6 +482,8 @@ function checkRule (
             }
 
             /* Run rule - if check fails (not valid && not not | not && valid) */
+            /* eslint-disable-next-line */
+            /* @ts-ignore */
             if (rulefn(cursor, ...n_params) === not) return false;
         }
     } else {
@@ -618,7 +506,7 @@ function checkRule (
             cursor_value = values[idx];
             for (let i = 0; i < rule.list_length; i++) {
                 const {type, not, params, params_length} = rule.list[i];
-                const rulefn = RULE_STORE[type];
+                const rulefn = RULE_STORE[type as keyof typeof RULE_STORE];
 
                 /* Check if rule exists */
                 if (!rulefn) return false;
@@ -634,6 +522,8 @@ function checkRule (
                 }
 
                 /* Run rule - if check fails (not valid && not not | not && valid) */
+                /* eslint-disable-next-line */
+                /* @ts-ignore */
                 if (rulefn(cursor_value, ...param_acc[i]) === not) return false;
             }
 
@@ -687,13 +577,6 @@ function freezeStore (dict:Record<string, RuleFn>):Readonly<RuleDictionary>  {
 
 let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
 
-type TV<T> = {
-    [K in keyof T]: T[K] extends Array<any>
-        ? string
-        : T[K] extends Record<string, any>
-            ? TV<T[K]>|string
-            : string;
-};
 
 class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
@@ -898,11 +781,11 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      * Extend validator rule set with a new rule
      *
      * @param {string} name - Name of the rule you want to add
-     * @param {RuleFn} fn - Rule Function (function that returns a boolean and as its first value will get the value being validated)
+     * @param {RuleExtension} ext - Rule Extension
      */
-    static extend (name:string, fn:RuleFn):void {
-        if (!validExtensionName(name)) throw new Error('Invalid extension');
-        Validator.extendMulti({[name]: fn});
+    static extend (name:string, ext:RuleExtension):void {
+        if (typeof name !== 'string' || !RGX_EXT_NAME.test(name)) throw new Error('Invalid extension');
+        Validator.extendMulti({[name]: ext});
     }
 
     /**
@@ -910,158 +793,95 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      *
      * Example:
      *  Validator.extendMulti({
-     *      is_fruit: val => ['apple', 'pear', 'orange'].indexOf(val) >= 0,
-     *      is_pet: val => ['dog', 'cat'].indexOf(val) >= 0,
+     *      is_fruit: ['apple', 'pear', 'orange'],
+     *      ...
      *  });
      *
-     * @param {CustomRuleDictionary} obj - Function kv-map to extend the validator with
+     * @param {Record<string, RuleExtension>} obj - KV Map of rule extensions
      */
-    static extendMulti<K extends CustomRuleDictionary> (obj:K):void {
-        validExtension(obj, val => {
-            if (typeof val !== 'function') throw new Error('Invalid extension');
-        });
+    static extendMulti (obj:Record<string, RuleExtension>):void {
+        /* Check if rules are valid */
+        if (!isObject(obj)) throw new Error('Invalid extension');
+
+        const schemas_map:Record<string, Validator<RulesRaw>> = {};
+        for (const [key, val] of Object.entries(obj)) {
+            if (typeof key !== 'string' || !RGX_EXT_NAME.test(key)) throw new Error('Invalid extension');
+
+            /* RegExp/Enum/Fn extensions */
+            if (
+                val instanceof RegExp ||
+                (isNotEmptyArray(val) && val.filter(el => isNotEmptyString(el) || Number.isFinite(el)).length === val.length) ||
+                (isFunction(val) && !isAsyncFunction(val))
+            ) continue;
+
+            /* Schema-like extension */
+            if (isNotEmptyObject(val)) {
+                try {
+                    schemas_map[key] = new Validator(val);
+                    continue;
+                } catch {
+                    throw new Error('Invalid extension');
+                }
+            }
+
+            throw new Error('Invalid extension');
+        }
 
         /* Register each rule */
-        for (const [key, value] of Object.entries(obj)) RULE_STORE[key] = value;
+        for (const [key, value] of Object.entries(obj)) {
+            let builtValue:RuleFn;
+            if (value instanceof RegExp) {
+                /* Create function and transfer key to it */
+                builtValue = function (val:string):boolean {
+                    /* eslint-disable-next-line */
+                    /* @ts-ignore */
+                    return typeof val === 'string' && val.match(REGEX_STORE.get(this.uid)) !== null; /* eslint-disable-line no-invalid-this,max-len */
+                };
 
-        /* Freeze Rule store */
-        FROZEN_RULE_STORE = freezeStore(RULE_STORE);
-    }
-
-    /**
-     * Extend the validation using a regex kv-map
-     *
-     * Example:
-     *  Validator.extendRegex({
-     *      is_fruit    : /^((a|A)pple|(p|P)ear|(o|O)range)$/g,
-     *      is_animal   : /^((d|D)og|(c|C)at|(h|H)orse)$/g,
-     *  });
-     * Usage:
-     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'});  false
-     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'aPple', b: 'Dog'}); true
-     *
-     * @param {ExtRegExp} obj - RegExp kv-map to extend the validator with
-     */
-    static extendRegex (obj:ExtRegExp):void {
-        validExtension(obj, (val:ExtRegExpVal) => {
-            if (val instanceof RegExp) return;
-            throw new Error('Invalid extension');
-        });
-
-        /* For each key in object, check if its value is a function */
-        for (const key in obj) {
-            /* Create function and transfer key to it */
-            let f = function (val:string):boolean {
                 /* eslint-disable-next-line */
                 /* @ts-ignore */
-                return typeof val === 'string' && val.match(REGEX_STORE.get(this.uid)) !== null; /* eslint-disable-line no-invalid-this */
-            };
+                builtValue.uid = key;
 
-            /* eslint-disable-next-line */
-            /* @ts-ignore */
-            f.uid = key;
+                builtValue = builtValue.bind(builtValue);
+                REGEX_STORE.set(key, new RegExp(value)); /* Copy regex */
+            } else if (Array.isArray(value)) {
+                /* Convert array to set (also dedupes) */
+                const enum_set:Set<string|number> = new Set([...value]);
 
-            f = f.bind(f);
-            REGEX_STORE.set(key, new RegExp(obj[key])); /* Copy regex */
+                /* Create function and transfer key to it */
+                builtValue = function (val:string|number):boolean {
+                    /* eslint-disable-next-line */
+                    /* @ts-ignore */
+                    return ENUM_STORE.get(this.uid)!.has(val); /* eslint-disable-line no-invalid-this */
+                };
 
-            /* Store on map */
-            Validator.extendMulti({[key]: f});
-        }
-
-        /* Freeze Rule store */
-        FROZEN_RULE_STORE = freezeStore(RULE_STORE);
-    }
-
-    /**
-     * Extend the validation using an enum rule kv-map
-     *
-     * Example:
-     *  Validator.extendEnum({
-     *      is_fruit: ['apple', 'banana', 'pear'],
-     *      is_pet: ['dog', 'cat'],
-     *  });
-     * Usage:
-     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'kiwi', b: 'dog'}); false
-     *  new Validator({a: 'is_fruit', b: 'is_pet'}).check({a: 'apple', b: 'dog'}); true
-     *
-     * @param {ExtEnum} obj - Enumeration kv-map to extend the validator with
-     */
-    static extendEnum (obj:ExtEnum):void {
-        validExtension(obj, (val:ExtEnumVal):void => {
-            if (isNotEmptyArray(val) && val.filter(el => isNotEmptyString(el) || Number.isFinite(el)).length === val.length) return;
-            throw new Error('Invalid extension');
-        });
-
-        /* For each key in object, check if its value is a function */
-        for (const key in obj) {
-            /* Convert array to set (also dedupes) */
-            const enum_set:Set<ExtEnumValInner> = new Set();
-            for (const el of obj[key]) enum_set.add(el);
-
-            /* Create function and transfer key to it */
-            let f = function (val:ExtEnumValInner):boolean {
                 /* eslint-disable-next-line */
                 /* @ts-ignore */
-                return ENUM_STORE.get(this.uid)!.has(val); /* eslint-disable-line no-invalid-this */
-            };
+                builtValue.uid = key;
+
+                builtValue = builtValue.bind(builtValue);
+                ENUM_STORE.set(key, enum_set);
+            } else if (isObject(value)) {
+                builtValue = function (val:GenericObject):boolean {
+                    /* eslint-disable-next-line */
+                    /* @ts-ignore */
+                    return SCHEMA_STORE.get(this.uid)!.check(val); /* eslint-disable-line no-invalid-this */
+                };
+
+                /* eslint-disable-next-line */
+                /* @ts-ignore */
+                builtValue.uid = key;
+
+                builtValue = builtValue.bind(builtValue);
+                SCHEMA_STORE.set(key, schemas_map[key]);
+            } else {
+                builtValue = value;
+            }
 
             /* eslint-disable-next-line */
             /* @ts-ignore */
-            f.uid = key;
-
-            f = f.bind(f);
-            ENUM_STORE.set(key, enum_set);
-
-            /* Store on map */
-            Validator.extendMulti({[key]: f});
+            RULE_STORE[key] = builtValue;
         }
-
-        /* Freeze Rule store */
-        FROZEN_RULE_STORE = freezeStore(RULE_STORE);
-    }
-
-    /**
-     * Extend the validator using a schema kv-map
-     *
-     * Example:
-     *  Validator.extendSchema('user', {
-     *      first_name: 'string_ne|min:3',
-     *      last_name: 'string_ne|min:3',
-     *      email: '?email',
-     *      phone: '?phone',
-     *  });
-     *
-     * Usage:
-     *  new Validator({a: 'user', b: '?[unique|min:1]user'}).check({a: {first_name: 'Peter', last_name: 'Vermeulen'}}); true
-     *  new Validator({a: '[unique|min:1]user'}).check({a: [{first_name: false, last_name: 'Vermeulen'}]}); false
-     *
-     * @param {string} name - Name for the schema
-     * @param {TypedKValidator} obj - Rule object for the schema
-     */
-    static extendSchema <K extends GenericObject, TypedKValidator = TV<K>> (name:string, obj:TypedKValidator):void {
-        if (!validExtensionName(name) || !isNotEmptyObject(obj)) throw new Error('Invalid extension');
-        let validator:Validator<RulesRaw>;
-        try {
-            validator = new Validator(obj);
-        } catch {
-            throw new Error('Invalid extension');
-        }
-
-        let f = function (val:GenericObject):boolean {
-            /* eslint-disable-next-line */
-            /* @ts-ignore */
-            return SCHEMA_STORE.get(this.uid)!.check(val); /* eslint-disable-line no-invalid-this */
-        };
-
-        /* eslint-disable-next-line */
-        /* @ts-ignore */
-        f.uid = name;
-
-        f = f.bind(f);
-        SCHEMA_STORE.set(name, validator);
-
-        /* Store on map */
-        Validator.extendMulti({[name]: f});
 
         /* Freeze Rule store */
         FROZEN_RULE_STORE = freezeStore(RULE_STORE);

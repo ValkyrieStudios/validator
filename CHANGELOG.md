@@ -5,8 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] - 10.x
 ### Improved
+- **feat**: Validator@extend now also allows RegExp values
+- **feat**: Validator@extend now also allows string/number arrays
+- **feat**: Validator@extend now also allows schema extension objects
+- **feat**: Validator@extendMulti now also allows RegExp values on its kv-map (previously Validator@extendRegex)
+- **feat**: Validator@extendMulti now also allows string/number arrays on its kv-map (previously Validator@extendEnum)
+- **feat**: Validator@extendMulti now also allows schema extension objects (previously Validator@extendSchema)
 - **dx**: A branded `GeoLatitude` type is now available for the `geo_latitude` rule as its typeguard
 - **dx**: A branded `GeoLongitude` type is now available for the `geo_longitude` rule as its typeguard
 - **dx**: All branded types are now exported from a root-level types file (for easy access)
@@ -17,6 +23,11 @@ import {type Continent, type GeoLatitude, type GeoLongitude} from '@valkyriestud
 ```
 - **deps**: Upgrade @types/node to 22.9.0
 - **deps**: Upgrade typescript-eslint to 8.13.0
+
+### Removed
+- Validator@extendEnum (see Validator@extendMulti and Validator@extend changes)
+- Validator@extendRegex (see Validator@extendMulti and Validator@extend changes)
+- Validator@extendSchema (see Validator@extendMulti and Validator@extend changes)
 
 ## [9.29.0] - 2024-11-03
 ### Improved
