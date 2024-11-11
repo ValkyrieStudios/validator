@@ -10,9 +10,44 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - **feat**: Validator@extend now also allows RegExp values
 - **feat**: Validator@extend now also allows string/number arrays
 - **feat**: Validator@extend now also allows schema extension objects
+```typescript
+/* Would define an enum-like rule */
+Validator.extend('is_fruit', ['apple', 'pear', 'orange']);
+
+/* Function */
+Validator.extend('multipleOf2', val => Number.isFinite(val) && val % 2 === 0);
+
+/* RegEx rule */
+Validator.extend('contains_hello', /((h|H)ello|(o|O)la)/);
+
+/* Schema extension */
+Validator.extend('user', {
+    first_name: 'string_ne|min:3',
+    last_name: 'string_ne|min:3',
+    email: 'email',
+    phone: 'phone',
+});
+```
 - **feat**: Validator@extendMulti now also allows RegExp values on its kv-map (previously Validator@extendRegex)
 - **feat**: Validator@extendMulti now also allows string/number arrays on its kv-map (previously Validator@extendEnum)
 - **feat**: Validator@extendMulti now also allows schema extension objects (previously Validator@extendSchema)
+```typescript
+Validator.extendMulti({
+    /* Would define an enum-like rule */
+    is_fruit: ['apple', 'pear', 'orange'],
+    /* Function */
+    multipleOf2: val => Number.isFinite(val) && val % 2 === 0,
+    /* RegEx rule */
+    contains_hello: /((h|H)ello|(o|O)la)/,
+    /* Schema extension */
+    user: {
+        first_name: 'string_ne|min:3',
+        last_name: 'string_ne|min:3',
+        email: 'email',
+        phone: 'phone',
+    },
+});
+```
 - **dx**: A branded `GeoLatitude` type is now available for the `geo_latitude` rule as its typeguard
 - **dx**: A branded `GeoLongitude` type is now available for the `geo_longitude` rule as its typeguard
 - **dx**: All branded types are now exported from a root-level types file (for easy access)
