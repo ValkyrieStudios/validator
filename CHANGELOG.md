@@ -56,6 +56,7 @@ import {type Continent, type GeoLatitude, type GeoLongitude} from '@valkyriestud
 
 ...
 ```
+- **deps**: Upgrade @valkyriestudios/utils to 12.28.0
 - **deps**: Upgrade @types/node to 22.9.0
 - **deps**: Upgrade typescript-eslint to 8.13.0
 
