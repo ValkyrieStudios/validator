@@ -56,11 +56,11 @@ import {type Continent, type GeoLatitude, type GeoLongitude} from '@valkyriestud
 
 ...
 ```
-- **deps**: Upgrade @valkyriestudios/utils to 12.29.0
-- **deps**: Upgrade @types/node to 22.10.2
-- **deps**: Upgrade eslint to 9.17.0
-- **deps**: Upgrade typescript to 5.7.2
-- **deps**: Upgrade typescript-eslint to 8.18.1
+- **deps**: Upgrade @valkyriestudios/utils to 12.31.1
+- **deps**: Upgrade @types/node to 22.13.1
+- **deps**: Upgrade eslint to 9.20.0
+- **deps**: Upgrade typescript to 5.7.3
+- **deps**: Upgrade typescript-eslint to 8.23.0
 
 ### Removed
 - Validator@extendEnum (see Validator@extendMulti and Validator@extend changes)
