@@ -154,7 +154,6 @@ const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map(); /* eslint-disab
 
 /* Regexes used in processing */
 const RGX_PARAM_NAME    = /^[a-zA-Z0-9_.]+$/i;
-const RGX_EXT_NAME      = /^[A-Za-z_0-9-]+$/;
 
 const RULE_STORE = {
     alpha_num_spaces: vAlphaNumSpaces,
@@ -560,13 +559,12 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
  * @returns Frozen rule store
  */
 function freezeStore (dict:Record<string, RuleFn>):Readonly<RuleDictionary>  {
-    const store = {} as RuleDictionary;
-    for (const key in dict) store[key] = dict[key];
-    return Object.freeze(store);
+    const store:{[key:string]:RuleFn} = {};
+    for (const key in dict) store[key as string] = dict[key];
+    return Object.freeze(store) as Readonly<RuleDictionary>;
 }
 
 let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
-
 
 class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
@@ -768,34 +766,23 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
     }
 
     /**
-     * Extend validator rule set with a new rule
-     *
-     * @param {string} name - Name of the rule you want to add
-     * @param {RuleExtension} ext - Rule Extension
-     */
-    static extend (name:string, ext:RuleExtension):void {
-        if (typeof name !== 'string' || !RGX_EXT_NAME.test(name)) throw new Error('Invalid extension');
-        Validator.extendMulti({[name]: ext});
-    }
-
-    /**
-     * Run multiple validator extends using a function kv-map
+     * Extend the Validator
      *
      * Example:
-     *  Validator.extendMulti({
+     *  Validator.extend({
      *      is_fruit: ['apple', 'pear', 'orange'],
      *      ...
      *  });
      *
      * @param {Record<string, RuleExtension>} obj - KV Map of rule extensions
      */
-    static extendMulti (obj:Record<string, RuleExtension>):void {
+    static extend (obj:Record<string, RuleExtension>):void {
         /* Check if rules are valid */
         if (!isObject(obj)) throw new Error('Invalid extension');
 
         const schemas_map:Record<string, Validator<RulesRaw>> = {};
         for (const [key, val] of Object.entries(obj)) {
-            if (typeof key !== 'string' || !RGX_EXT_NAME.test(key)) throw new Error('Invalid extension');
+            if (typeof key !== 'string' || !/^[A-Za-z_0-9-]+$/.test(key)) throw new Error('Invalid extension');
 
             /* RegExp/Enum/Fn extensions */
             if (

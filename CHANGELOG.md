@@ -7,32 +7,12 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - 10.x
 ### Improved
-- **feat**: Validator@extend now also allows RegExp values
-- **feat**: Validator@extend now also allows string/number arrays
-- **feat**: Validator@extend now also allows schema extension objects
+- **feat**: Validator@extend now works with kv-map setup
+- **feat**: Validator@extend now also allows RegExp values on its kv-map (previously Validator@extendRegex)
+- **feat**: Validator@extend now also allows string/number arrays on its kv-map (previously Validator@extendEnum)
+- **feat**: Validator@extend now also allows schema extension objects (previously Validator@extendSchema)
 ```typescript
-/* Would define an enum-like rule */
-Validator.extend('is_fruit', ['apple', 'pear', 'orange']);
-
-/* Function */
-Validator.extend('multipleOf2', val => Number.isFinite(val) && val % 2 === 0);
-
-/* RegEx rule */
-Validator.extend('contains_hello', /((h|H)ello|(o|O)la)/);
-
-/* Schema extension */
-Validator.extend('user', {
-    first_name: 'string_ne|min:3',
-    last_name: 'string_ne|min:3',
-    email: 'email',
-    phone: 'phone',
-});
-```
-- **feat**: Validator@extendMulti now also allows RegExp values on its kv-map (previously Validator@extendRegex)
-- **feat**: Validator@extendMulti now also allows string/number arrays on its kv-map (previously Validator@extendEnum)
-- **feat**: Validator@extendMulti now also allows schema extension objects (previously Validator@extendSchema)
-```typescript
-Validator.extendMulti({
+Validator.extend({
     /* Would define an enum-like rule */
     is_fruit: ['apple', 'pear', 'orange'],
     /* Function */
@@ -92,9 +72,10 @@ const v = new Validator({
 ```
 
 ### Removed
-- Validator@extendEnum (see Validator@extendMulti and Validator@extend changes)
-- Validator@extendRegex (see Validator@extendMulti and Validator@extend changes)
-- Validator@extendSchema (see Validator@extendMulti and Validator@extend changes)
+- Validator@extendMulti (see Validator@extend change)
+- Validator@extendEnum (see Validator@extend change)
+- Validator@extendRegex (see Validator@extend change)
+- Validator@extendSchema (see Validator@extend change)
 
 ## [9.29.0] - 2024-11-03
 ### Improved

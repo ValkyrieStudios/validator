@@ -96,11 +96,8 @@ describe('Validator - Core', () => {
         //  It should not have a extend function on its instance
         assert.equal(Object.prototype.hasOwnProperty.call(validator, 'extend'), false);
 
-        //  It should have a extendMulti function on the class
-        assert.equal(typeof Validator.extendMulti, 'function');
-
-        //  It should not have a extendMulti function on its instance
-        assert.equal(Object.prototype.hasOwnProperty.call(validator, 'extendMulti'), false);
+        //  It should have a extend function on the class
+        assert.equal(typeof Validator.extend, 'function');
     });
 
     it('Should throw a type error when passed wrong configuration options', () => {
@@ -252,7 +249,7 @@ describe('Validator - Core', () => {
 
         it('Should take into account extended rules', () => {
             const fn = () => true;
-            Validator.extend('myfunction', fn);
+            Validator.extend({myfunction: fn});
             assert.equal(Validator.rules.myfunction, fn);
         });
     });
@@ -782,7 +779,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should return valid when using rules with a dash in them and one of them is valid', () => {
-            Validator.extend('my-test-rule', val => val === true);
+            Validator.extend({'my-test-rule': val => val === true});
             assert.ok(new Validator({a: ['my-test-rule', 'false']}).check({a: true}));
         });
 
@@ -1471,7 +1468,7 @@ describe('Validator - Core', () => {
             });
 
             it('Should return valid when using rules with a dash in them and one of them is valid', () => {
-                Validator.extend('my-test-rule', val => val === true);
+                Validator.extend({'my-test-rule': val => val === true});
                 const form = new FormData();
                 form.append('a', 'true');
                 assert.ok(new Validator({a: ['my-test-rule', 'false']}).check(form));
@@ -2470,7 +2467,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should return valid when using rules with a dash in them and one of them is valid', () => {
-            Validator.extend('my-test-rule', val => val === true);
+            Validator.extend({'my-test-rule': val => val === true});
             assert.deepEqual(new Validator({
                 a: ['my-test-rule', 'false'],
             }).validate({a: true}), {is_valid: true, count: 0, errors: {}});
@@ -3223,7 +3220,9 @@ describe('Validator - Core', () => {
             });
 
             it('Should return valid when using rules with a dash in them and one of them is valid', () => {
-                Validator.extend('my-test-rule', val => val === true);
+                Validator.extend({
+                    'my-test-rule': val => val === true
+                });
                 const form = new FormData();
                 form.append('a', 'true');
                 assert.ok(new Validator({a: ['my-test-rule', 'false']}).validate(form).is_valid);
@@ -3266,7 +3265,6 @@ describe('Validator - Core', () => {
         });
     });
 
-
     describe('@extend FN', () => {
         it('Should throw if not provided anything', () => {
             assert.throws(
@@ -3276,367 +3274,17 @@ describe('Validator - Core', () => {
             );
         });
 
-        it('Should throw if not provided a string', () => {
-            for (const el of CONSTANTS.NOT_STRING_WITH_EMPTY) {
-                assert.throws(
-                    () => Validator.extend(el, () => true),
-                    new Error('Invalid extension')
-                );
-            }
-        });
-
-        it('Should throw if not provided a valid string', () => {
-            for (const el of [
-                ' foo ',
-                'foo.a.b',
-                'foo(a)',
-                'foo)b',
-                'foo[a]',
-                'foo a',
-                'foo_}',
-            ]) {
-                assert.throws(
-                    () => Validator.extend(el, () => true),
-                    new Error('Invalid extension')
-                );
-            }
-        });
-
-        it('Should throw if not provided a valid value', () => {
-            for (const el of CONSTANTS.NOT_FUNCTION) {
-                if (el instanceof RegExp || isNeObject(el) || isNeArray(el)) continue;
-                assert.throws(
-                    () => Validator.extend('rule', el),
-                    new Error('Invalid extension')
-                );
-            }
-        });
-
-        it('Should work', () => {
-            Validator.extend('trick', (val, p1) => {
-                if (p1 === 'treat') return val === 'trick';
-                if (p1 === 'trick') return val === 'treat';
-                return false;
-            });
-
-            const evaluation = new Validator({a: 'trick:<b>'}).validate({a: 'trick', b: 'treat'});
-            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
-        });
-
-        it('Should work with multiple parameters', () => {
-            Validator.extend('sum', (val, p1, p2) => val === (p1 + p2));
-
-            const evaluation = new Validator({a: 'sum:<b>,<c>'}).validate({a: 4, b: 1, c: 3});
-            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
-        });
-
-        it('Should work across multiple instances', () => {
-            Validator.extend('double', (val, p1) => val === (p1 * 2));
-
-            //  Evaluation
-            const evaluation = new Validator({a: 'double:<b>'}).validate({a: 4, b: 2});
-            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
-
-            //  Second evaluation
-            const evaluation2 = new Validator({a: 'double:<b>'}).validate({a: 4, b: 2});
-            assert.deepEqual(evaluation2, {is_valid: true, count: 0, errors: {}});
-        });
-
-        it('Should allow redefining the same validity function', () => {
-            Validator.extend('ismyname', val => val === 'peter');
-
-            //  Evaluation
-            const evaluation = new Validator({name: 'ismyname'}).validate({name: 'peter'});
-            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
-
-            //  Redefine
-            Validator.extend('ismyname', val => val === 'josh');
-
-            //  Second evaluation
-            const evaluation2 = new Validator({name: 'ismyname'}).validate({name: 'peter'});
-            assert.deepEqual(evaluation2, {
-                is_valid: false,
-                count: 1,
-                errors: {
-                    name: [{msg: 'ismyname', params: []}],
-                },
-            });
-        });
-
-        describe('regex', () => {
-            it('Should work', () => {
-                Validator.extend('contains_hello', /hello/);
-                Validator.extend('contains_hello_insensitive', new RegExp('hello', 'i'));
-
-                assert.ok(new Validator({a: 'contains_hello'}).check({a: 'When i say hello this should work'}));
-                assert.ok(new Validator({
-                    a: 'contains_hello_insensitive',
-                    b: 'contains_hello',
-                }).check({
-                    a: 'When i say heLlo this should work',
-                    b: 'When i say hello this should work',
-                }));
-                assert.equal(new Validator({a: 'contains_hello'}).check({a: 'This helo should not work'}), false);
-                assert.equal(new Validator({a: 'contains_hello'}).check({a: 'This helLo should not work'}), false);
-                assert.equal(new Validator({a: 'contains_hello_insensitive'}).check({a: 'This helo should not work'}), false);
-            });
-
-            it('Extensions should also show up as functions in rules', () => {
-                Validator.extend('contains_hello', /hello/);
-                Validator.extend('contains_hello_insensitive', new RegExp('hello', 'i'));
-
-                assert.ok(Validator.rules.contains_hello instanceof Function);
-                assert.ok(Validator.rules.contains_hello('When i say hello this should work'));
-                assert.equal(Validator.rules.contains_hello('This helo should not work'), false);
-
-                assert.ok(Validator.rules.contains_hello_insensitive instanceof Function);
-                assert.ok(Validator.rules.contains_hello_insensitive('When i say heLlo this should work'));
-                assert.equal(Validator.rules.contains_hello_insensitive('This helo should not work'), false);
-            });
-
-            it('Should allow redefining the same rules', () => {
-                Validator.extend('contains_hello', /Hello/);
-
-                assert.ok(Validator.rules.contains_hello instanceof Function);
-                assert.ok(Validator.rules.contains_hello('Hello there'));
-                assert.equal(Validator.rules.contains_hello('hello there'), false);
-                assert.equal(Validator.rules.contains_hello('ola amigos'), false);
-                assert.equal(Validator.rules.contains_hello('Ola amigos'), false);
-
-                Validator.extend('contains_hello', /((h|H)ello|(o|O)la)/);
-
-                assert.ok(Validator.rules.contains_hello('Hello there'));
-                assert.ok(Validator.rules.contains_hello('hello there'));
-                assert.ok(Validator.rules.contains_hello('ola amigos'));
-                assert.ok(Validator.rules.contains_hello('Ola amigos'));
-            });
-
-            it('Should allow working with not/sometimes flags', () => {
-                Validator.extend('contains_hello', /((h|H)ello|(o|O)la)/);
-
-                assert.ok(new Validator({a: 'contains_hello'}).check({a: 'Hello there'}));
-                assert.ok(new Validator({a: 'contains_hello'}).check({a: 'hello there'}));
-                assert.ok(new Validator({a: 'contains_hello'}).check({a: 'ola amigos'}));
-                assert.ok(new Validator({a: 'contains_hello'}).check({a: 'Ola amigos'}));
-
-                assert.equal(new Validator({a: '!contains_hello'}).check({a: 'Hello there'}), false);
-                assert.equal(new Validator({a: '!contains_hello'}).check({a: 'hello there'}), false);
-                assert.equal(new Validator({a: '!contains_hello'}).check({a: 'ola amigos'}), false);
-                assert.equal(new Validator({a: '!contains_hello'}).check({a: 'Ola amigos'}), false);
-
-                assert.ok(new Validator({a: '?contains_hello', b: 'integer'}).check({b: 42}));
-            });
-        });
-
-        describe('enum', () => {
-            it('Should work', () => {
-                Validator.extend('enum1', ['foo', 'bar', 'foobar']);
-                Validator.extend('ENUM_2', [1, 2, 3]);
-
-                assert.ok(new Validator({a: 'enum1'}).check({a: 'foo'}));
-                assert.ok(new Validator({a: 'ENUM_2', b: 'enum1'}).check({a: 2, b: 'foobar'}));
-                assert.equal(new Validator({a: 'enum1'}).check({a: 'fuo'}), false);
-                assert.equal(new Validator({a: 'ENUM_2', b: 'enum1'}).check({a: 42, b: 'foobar'}), false);
-            });
-
-            it('Extensions should also show up as functions in rules', () => {
-                Validator.extend('enum1', ['foo', 'bar', 'foobar']);
-                Validator.extend('ENUM_2', [1, 2, 3]);
-
-                assert.ok(Validator.rules.enum1 instanceof Function);
-                assert.ok(Validator.rules.enum1('foo'));
-                assert.equal(Validator.rules.enum1('fooo'), false);
-
-                assert.ok(Validator.rules.ENUM_2 instanceof Function);
-                assert.ok(Validator.rules.ENUM_2(1));
-                assert.equal(Validator.rules.ENUM_2(42), false);
-            });
-
-            it('Should allow redefining the same enum rule', () => {
-                Validator.extend('enum1', ['foo', 'bar', 'foobar']);
-                Validator.extend('ENUM_2', [1, 2, 3]);
-
-                assert.ok(Validator.rules.enum1 instanceof Function);
-                assert.ok(Validator.rules.enum1('foo'));
-                assert.equal(Validator.rules.enum1('fooo'), false);
-
-                assert.ok(Validator.rules.ENUM_2 instanceof Function);
-                assert.ok(Validator.rules.ENUM_2(1));
-                assert.equal(Validator.rules.ENUM_2(42), false);
-
-                Validator.extend('ENUM_2', [2, 3, 42]);
-
-                assert.equal(Validator.rules.ENUM_2(1), false);
-                assert.ok(Validator.rules.ENUM_2(42));
-            });
-
-            it('Should throw if provided an object where certain arrays contain more than just primitive strings or numbers', () => {
-                assert.throws(
-                    //  @ts-ignore
-                    () => Validator.extend('enum_1', ['foo', false, 'bar']),
-                    new Error('Invalid extension')
-                );
-
-                assert.throws(
-                    //  @ts-ignore
-                    () => Validator.extend('enum_1', ['foo', {a: 1}, 'bar']),
-                    new Error('Invalid extension')
-                );
-
-                assert.throws(
-                    //  @ts-ignore
-                    () => Validator.extend('enum_1', ['foo', new Date(), 'bar']),
-                    new Error('Invalid extension')
-                );
-
-                assert.throws(
-                    //  @ts-ignore
-                    () => Validator.extend('enum_1', ['foo', ['foo'], 'bar']),
-                    new Error('Invalid extension')
-                );
-            });
-
-            it('Should allow working with not/sometimes flags', () => {
-                Validator.extend('FRUITS', ['apple', 'pear', 'banana']);
-                Validator.extend('ANIMALS', ['dog', 'cat', 'parrot']);
-                Validator.extend('AGE_13_18', [13, 14, 15, 16, 17, 18]);
-                Validator.extend('AGE_19_25', [19, 20, 21, 22, 23, 24, 25]);
-
-                assert.ok(new Validator({age: 'AGE_13_18'}).check({age: 15}));
-                assert.ok(new Validator({age: '!AGE_13_18'}).check({age: 19}));
-                assert.ok(Validator.rules.AGE_13_18(15));
-                assert.ok(new Validator({
-                    age: '?AGE_13_18',
-                    pet: 'ANIMALS',
-                    fave_fruit: 'FRUITS',
-                }).check({pet: 'dog', fave_fruit: 'banana'}));
-            });
-        });
-
-        describe('schema', () => {
-            it('Should not throw and register rules if provided an object if schema is valid', () => {
-                const uid = guid();
-                assert.doesNotThrow(
-                    () => Validator.extend(uid, {
-                        first_name: 'string_ne|min:3',
-                        last_name: 'string_ne|min:3',
-                        email: 'email',
-                    })
-                );
-
-                assert.ok(Object.prototype.hasOwnProperty.call(Validator.rules, uid));
-            });
-
-            it('Should work', () => {
-                const uid = guid();
-                const uid2 = guid();
-                Validator.extend(uid, {
-                    first_name: 'string_ne|min:3',
-                    last_name: 'string_ne|min:3',
-                    email: 'email',
-                });
-                Validator.extend(uid2, {
-                    first_name: 'string_ne|min:3',
-                    last_name: 'string_ne|min:3',
-                    email: 'email',
-                    phone: 'phone',
-                });
-
-                assert.ok(new Validator({a: `${uid}`}).check({a: {
-                    first_name: 'Peter',
-                    last_name: 'Vermeulen',
-                    email: 'contact@valkyriestudios.be',
-                }}));
-                assert.ok(new Validator({a: `${uid}`}).check({a: {
-                    first_name: 'Peter',
-                    last_name: 'Vermeulen',
-                    email: false,
-                }}) === false);
-                assert.ok(new Validator({a: `${uid2}`}).check({a: {
-                    first_name: 'Peter',
-                    last_name: 'Vermeulen',
-                    email: 'contact@valkyriestudios.be',
-                }}) === false);
-                assert.ok(new Validator({a: `${uid2}`}).check({a: {
-                    first_name: 'Peter',
-                    last_name: 'Vermeulen',
-                    email: 'contact@valkyriestudios.be',
-                    phone: '+32 487 61 59 82',
-                }}));
-            });
-
-            it('Extensions should also show up as functions in rules', () => {
-                const uid = guid();
-                const uid2 = guid();
-                Validator.extend(uid, {
-                    first_name: 'string_ne|min:3',
-                    last_name: 'string_ne|min:3',
-                    email: 'email',
-                });
-                Validator.extend(uid2, {
-                    first_name: 'string_ne|min:3',
-                    last_name: 'string_ne|min:3',
-                    email: 'email',
-                    phone: 'phone',
-                });
-
-                assert.ok(Validator.rules[uid] instanceof Function);
-                assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen', email: 'contact@valkyriestudios.be'}));
-                assert.equal(Validator.rules[uid]('fooo'), false);
-
-                assert.ok(Validator.rules[uid2] instanceof Function);
-                assert.ok(Validator.rules[uid2]({
-                    first_name: 'Peter',
-                    last_name: 'Vermeulen',
-                    email: 'contact@valkyriestudios.be',
-                    phone: false,
-                }) === false);
-            });
-
-            it('Should allow redefining the same rule', () => {
-                const uid = guid();
-                Validator.extend(uid, {
-                    first_name: 'string_ne|min:3',
-                    last_name: 'string_ne|min:3',
-                    email: 'email',
-                });
-
-                assert.ok(Validator.rules[uid] instanceof Function);
-                assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen', email: 'contact@valkyriestudios.be'}));
-                assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen'}) === false);
-
-                Validator.extend(uid, {
-                    first_name: 'string_ne|min:3',
-                    last_name: 'string_ne|min:3',
-                });
-
-                assert.ok(Validator.rules[uid] instanceof Function);
-                assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen', email: 'contact@valkyriestudios.be'}));
-                assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen'}));
-            });
-        });
-    });
-
-    describe('@extendMulti FN', () => {
-        it('Should throw if not provided anything', () => {
-            assert.throws(
-                //  @ts-ignore
-                () => Validator.extendMulti(),
-                new Error('Invalid extension')
-            );
-        });
-
         it('Should throw if not provided an object', () => {
             for (const el of CONSTANTS.NOT_OBJECT) {
                 assert.throws(
-                    () => Validator.extendMulti(el),
+                    () => Validator.extend(el),
                     new Error('Invalid extension')
                 );
             }
         });
 
         it('Should not throw if provided an empty object', () => {
-            assert.doesNotThrow(() => Validator.extendMulti({}));
+            assert.doesNotThrow(() => Validator.extend({}));
         });
 
         it('Should throw if provided an object where certain values do not have a valid name', () => {
@@ -3650,7 +3298,7 @@ describe('Validator - Core', () => {
                 'foo_}',
             ]) {
                 assert.throws(
-                    () => Validator.extendMulti({[el]: val => val === true}),
+                    () => Validator.extend({[el]: val => val === true}),
                     new Error('Invalid extension')
                 );
 
@@ -3663,7 +3311,7 @@ describe('Validator - Core', () => {
                 if (el instanceof RegExp || isNeObject(el) || isNeArray(el)) continue;
                 const uid = guid();
                 assert.throws(
-                    () => Validator.extendMulti({[uid]: el}),
+                    () => Validator.extend({[uid]: el}),
                     new Error('Invalid extension')
                 );
 
@@ -3672,7 +3320,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should work', () => {
-            Validator.extendMulti({
+            Validator.extend({
                 trick: function (val, p1) {
                     return p1 === 'treat' ? val === 'trick' : p1 === 'trick' ? val === 'treat' : false;
                 },
@@ -3683,7 +3331,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should work with multiple parameters', () => {
-            Validator.extendMulti({
+            Validator.extend({
                 sum: function (val, p1, p2) {
                     return val === (p1 + p2);
                 },
@@ -3694,7 +3342,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should work across multiple instances', () => {
-            Validator.extendMulti({
+            Validator.extend({
                 double: function (val:number, p1:number) {
                     return val === (p1 * 2);
                 },
@@ -3710,7 +3358,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should allow redefining the same validity function', () => {
-            Validator.extendMulti({
+            Validator.extend({
                 ismyname: function (val) {
                     return val === 'peter';
                 },
@@ -3721,7 +3369,7 @@ describe('Validator - Core', () => {
             assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
 
             //  Redefine
-            Validator.extendMulti({
+            Validator.extend({
                 ismyname: function (val) {
                     return val === 'josh';
                 },
@@ -3739,7 +3387,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should allow defining multiple rules at the same time', () => {
-            Validator.extendMulti({
+            Validator.extend({
                 ismyname: function (val) {
                     return val === 'peter';
                 },
@@ -3765,7 +3413,7 @@ describe('Validator - Core', () => {
 
         describe('regex', () => {
             it('Should work', () => {
-                Validator.extendMulti({
+                Validator.extend({
                     contains_hello: /hello/,
                     contains_hello_insensitive: new RegExp('hello', 'i'),
                 });
@@ -3784,7 +3432,7 @@ describe('Validator - Core', () => {
             });
 
             it('Extensions should also show up as functions in rules', () => {
-                Validator.extendMulti({
+                Validator.extend({
                     contains_hello: /hello/,
                     contains_hello_insensitive: /hello/i,
                 });
@@ -3799,7 +3447,10 @@ describe('Validator - Core', () => {
             });
 
             it('Should allow redefining the same rules', () => {
-                Validator.extendMulti({contains_hello: /Hello/});
+                Validator.extend({
+                    contains_hello: /Hello/,
+                    contains_hollo: /((h|H)ollo|(o|O)la)/,
+                });
 
                 assert.ok(Validator.rules.contains_hello instanceof Function);
                 assert.ok(Validator.rules.contains_hello('Hello there'));
@@ -3807,7 +3458,10 @@ describe('Validator - Core', () => {
                 assert.equal(Validator.rules.contains_hello('ola amigos'), false);
                 assert.equal(Validator.rules.contains_hello('Ola amigos'), false);
 
-                Validator.extendMulti({contains_hello: /((h|H)ello|(o|O)la)/});
+                Validator.extend({
+                    contains_hello: /((h|H)ello|(o|O)la)/,
+                    contains_hallo: /((h|H)allo|(o|O)la)/,
+                });
 
                 assert.ok(Validator.rules.contains_hello('Hello there'));
                 assert.ok(Validator.rules.contains_hello('hello there'));
@@ -3816,7 +3470,7 @@ describe('Validator - Core', () => {
             });
 
             it('Should allow working with not/sometimes flags', () => {
-                Validator.extendMulti({contains_hello: /((h|H)ello|(o|O)la)/});
+                Validator.extend({contains_hello: /((h|H)ello|(o|O)la)/});
 
                 assert.ok(new Validator({a: 'contains_hello'}).check({a: 'Hello there'}));
                 assert.ok(new Validator({a: 'contains_hello'}).check({a: 'hello there'}));
@@ -3834,7 +3488,7 @@ describe('Validator - Core', () => {
 
         describe('enum', () => {
             it('Should work', () => {
-                Validator.extendMulti({
+                Validator.extend({
                     enum1: ['foo', 'bar', 'foobar'],
                     ENUM_2: [1, 2, 3],
                 });
@@ -3846,7 +3500,7 @@ describe('Validator - Core', () => {
             });
 
             it('Extensions should also show up as functions in rules', () => {
-                Validator.extendMulti({
+                Validator.extend({
                     enum1: ['foo', 'bar', 'foobar'],
                     ENUM_2: [1, 2, 3],
                 });
@@ -3861,7 +3515,7 @@ describe('Validator - Core', () => {
             });
 
             it('Should allow redefining the same enum rule', () => {
-                Validator.extendMulti({
+                Validator.extend({
                     enum1: ['foo', 'bar', 'foobar'],
                     ENUM_2: [1, 2, 3],
                 });
@@ -3874,7 +3528,7 @@ describe('Validator - Core', () => {
                 assert.ok(Validator.rules.ENUM_2(1));
                 assert.equal(Validator.rules.ENUM_2(42), false);
 
-                Validator.extendMulti({
+                Validator.extend({
                     ENUM_2: [2, 3, 42],
                 });
 
@@ -3885,31 +3539,31 @@ describe('Validator - Core', () => {
             it('Should throw if provided an object where certain arrays contain more than just primitive strings or numbers', () => {
                 assert.throws(
                     //  @ts-ignore
-                    () => Validator.extendMulti({enum_1: ['foo', false, 'bar']}),
+                    () => Validator.extend({enum_1: ['foo', false, 'bar']}),
                     new Error('Invalid extension')
                 );
 
                 assert.throws(
                     //  @ts-ignore
-                    () => Validator.extendMulti({enum_1: ['foo', {a: 1}, 'bar']}),
+                    () => Validator.extend({enum_1: ['foo', {a: 1}, 'bar']}),
                     new Error('Invalid extension')
                 );
 
                 assert.throws(
                     //  @ts-ignore
-                    () => Validator.extendMulti({enum_1: ['foo', new Date(), 'bar']}),
+                    () => Validator.extend({enum_1: ['foo', new Date(), 'bar']}),
                     new Error('Invalid extension')
                 );
 
                 assert.throws(
                     //  @ts-ignore
-                    () => Validator.extendMulti({enum_1: ['foo', ['foo'], 'bar']}),
+                    () => Validator.extend({enum_1: ['foo', ['foo'], 'bar']}),
                     new Error('Invalid extension')
                 );
             });
 
             it('Should allow working with not/sometimes flags', () => {
-                Validator.extendMulti({
+                Validator.extend({
                     FRUITS: ['apple', 'pear', 'banana'],
                     ANIMALS: ['dog', 'cat', 'parrot'],
                     AGE_13_18: [13, 14, 15, 16, 17, 18],
@@ -3931,7 +3585,7 @@ describe('Validator - Core', () => {
             it('Should not throw and register rules if provided an object if schema is valid', () => {
                 const uid = guid();
                 assert.doesNotThrow(
-                    () => Validator.extendMulti({
+                    () => Validator.extend({
                         [uid]: {
                             first_name: 'string_ne|min:3',
                             last_name: 'string_ne|min:3',
@@ -3946,7 +3600,7 @@ describe('Validator - Core', () => {
             it('Should work', () => {
                 const uid = guid();
                 const uid2 = guid();
-                Validator.extendMulti({
+                Validator.extend({
                     [uid]: {
                         first_name: 'string_ne|min:3',
                         last_name: 'string_ne|min:3',
@@ -3986,7 +3640,7 @@ describe('Validator - Core', () => {
             it('Extensions should also show up as functions in rules', () => {
                 const uid = guid();
                 const uid2 = guid();
-                Validator.extendMulti({
+                Validator.extend({
                     [uid]: {
                         first_name: 'string_ne|min:3',
                         last_name: 'string_ne|min:3',
@@ -4015,7 +3669,7 @@ describe('Validator - Core', () => {
 
             it('Should allow redefining the same rule', () => {
                 const uid = guid();
-                Validator.extendMulti({
+                Validator.extend({
                     [uid]: {
                         first_name: 'string_ne|min:3',
                         last_name: 'string_ne|min:3',
@@ -4027,7 +3681,7 @@ describe('Validator - Core', () => {
                 assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen', email: 'contact@valkyriestudios.be'}));
                 assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen'}) === false);
 
-                Validator.extendMulti({
+                Validator.extend({
                     [uid]: {
                         first_name: 'string_ne|min:3',
                         last_name: 'string_ne|min:3',
@@ -4132,7 +3786,9 @@ describe('Validator - Core', () => {
         });
 
         it('Should be able to validate complex multidimensional objects [5]', () => {
-            Validator.extend('is_type', val => ['type1', 'type2', 'type4'].indexOf(val) >= 0);
+            Validator.extend({
+                is_type: val => ['type1', 'type2', 'type4'].indexOf(val) >= 0
+            });
 
             const validator = new Validator({
                 filters: {
@@ -4188,7 +3844,9 @@ describe('Validator - Core', () => {
         });
 
         it('Should be able to validate complex multidimensional objects [6]', () => {
-            Validator.extend('is_type', val => ['type1', 'type2', 'type4'].indexOf(val) >= 0);
+            Validator.extend({
+                is_type: ['type1', 'type2', 'type4'],
+            });
 
             const validator = new Validator({
                 filters: {
@@ -4247,7 +3905,9 @@ describe('Validator - Core', () => {
         });
 
         it('Should be able to validate complex multidimensional objects [7]', () => {
-            Validator.extend('is_type', val => ['type1', 'type2', 'type4'].indexOf(val) >= 0);
+            Validator.extend({
+                is_type: ['type1', 'type2', 'type4'],
+            });
 
             const validator = new Validator({
                 profile: {
