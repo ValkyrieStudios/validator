@@ -49,6 +49,7 @@ import {vISBN, vISBN10, vISBN13}    from './functions/vISBN';
 import {vSSN}                       from './functions/vSSN';
 import {vEAN, vEAN8, vEAN13}        from './functions/vEAN';
 import {vUlid}                      from './functions/vUlid';
+import {vUndefined}                 from './functions/vUndefined';
 import {
     vUuid,
     vUuidV1,
@@ -75,7 +76,7 @@ type DataObject             = {[key:string]: DataVal};
 export type GenericObject   = {[key:string]:any};
 
 /* Validation rule input data types */
-type RulesRawVal            = string | RulesRaw; /* eslint-disable-line */
+type RulesRawVal            = string | string[] | RulesRaw; /* eslint-disable-line */
 export type RulesRaw        = {[key:string]: RulesRawVal};
 
 /* Validator components */
@@ -154,7 +155,6 @@ const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map(); /* eslint-disab
 /* Regexes used in processing */
 const RGX_PARAM_NAME    = /^[a-zA-Z0-9_.]+$/i;
 const RGX_EXT_NAME      = /^[A-Za-z_0-9-]+$/;
-const RGX_GROUP_MATCH   = /\([^()]+\)/g;
 
 const RULE_STORE = {
     alpha_num_spaces: vAlphaNumSpaces,
@@ -233,6 +233,7 @@ const RULE_STORE = {
     lt: vLessThan,
     lte: vLessThanOrEqual,
     eq: equal,
+    '?': vUndefined,
 } as const;
 
 type CustomRuleDictionary = Record<string, RuleFn>;
@@ -381,34 +382,6 @@ function parseRule (raw:string):ValidationRules {
 }
 
 /**
- * Parse a rule into a validation group (X OR Y OR Z)
- *
- * @param key - Name of the group (key path on the validator)
- * @param raw - Full rule string with possible or groups
- *
- * @returns Parsed validation group
- */
-function parseGroup (key:string, raw:string):ValidationGroup {
-    /* (?) Parse sometimes flag */
-    const sometimes = raw[0] === '?';
-    if (sometimes) raw = raw.slice(1);
-
-    const acc:ValidationGroup = {key, sometimes, rules: []};
-
-    /* Conditional or group */
-    if (raw[0] !== '(') {
-        acc.rules.push(parseRule(raw));
-    } else {
-        const conditionals = raw.match(RGX_GROUP_MATCH) as string[];
-        for (let i = 0; i < conditionals.length; i++) {
-            acc.rules.push(parseRule(conditionals[i].slice(1, -1)));
-        }
-    }
-
-    return acc;
-}
-
-/**
  * Fully validate a rule list against a certain field cursor
  *
  * @param cursor - Cursor value to run the rule list against
@@ -551,9 +524,26 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
      * Elif the cursor is an object -> recurse
      * El   throw error as misconfiguration
      */
-    if (typeof val === 'string') {
-        if (val.trim().length === 0) throw new TypeError('Rule value is empty');
-        plan.push(parseGroup(key || '', val));
+    if (isNotEmptyString(val)) {
+        const sometimes = val[0] === '?';
+        let raw = val;
+        if (sometimes) raw = raw.slice(1);
+        plan.push({key: key || '', sometimes, rules: [parseRule(raw)]});
+    } else if (isNotEmptyArray(val)) {
+        const group:ValidationGroup = {key: key || '', sometimes: false, rules: []};
+        for (let i = 0; i < val.length; i++) {
+            const branch = val[i];
+            if (!isNotEmptyString(branch)) throw new TypeError('Conditional group alternatives must be strings');
+
+            /* Special case: If the branch is exactly '?' we treat the entire group as optional */
+            if (branch === '?') {
+                group.sometimes = true;
+                continue;
+            }
+
+            group.rules.push(parseRule(branch));
+        }
+        plan.push(group);
     } else if (isObject(val)) {
         for (const val_key in val) recursor(plan, val[val_key], key ? key + '.' + val_key : val_key);
     } else {

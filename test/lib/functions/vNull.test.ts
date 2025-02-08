@@ -29,12 +29,12 @@ describe('vNull', () => {
 
     it('Should be valid if passed null when working in a conditional group', () => {
         assert.deepEqual(
-            new Validator({a: '(true)(null)'}).validate({a: null}),
+            new Validator({a: ['true', 'null']}).validate({a: null}),
             {is_valid: true, count: 0, errors: {}}
         );
 
         assert.deepEqual(
-            new Validator({a: '(true)(null)'}).validate({a: true}),
+            new Validator({a: ['true', 'null']}).validate({a: true}),
             {is_valid: true, count: 0, errors: {}}
         );
     });

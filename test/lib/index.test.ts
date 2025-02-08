@@ -54,13 +54,14 @@ import {
     vISBN10,
     vISBN13,
 } from '../../lib/functions/vISBN';
-import {vSSN}                       from '../../lib/functions/vSSN';
+import {vSSN}                   from '../../lib/functions/vSSN';
 import {
     vEAN,
     vEAN8,
     vEAN13,
 } from '../../lib/functions/vEAN';
-import {vUlid}                      from '../../lib/functions/vUlid';
+import {vUlid}                  from '../../lib/functions/vUlid';
+import {vUndefined}             from '../../lib/functions/vUndefined';
 import {
     vUuid,
     vUuidV1,
@@ -142,7 +143,13 @@ describe('Validator - Core', () => {
         assert.throws(
             //  @ts-ignore
             () => new Validator({a: {b: ' '}}),
-            new TypeError('Rule value is empty')
+            new TypeError('Invalid rule value')
+        );
+
+        assert.throws(
+            //  @ts-ignore
+            () => new Validator({foo: ['string_ne', '', '   ', '?']}),
+            new TypeError('Conditional group alternatives must be strings')
         );
 
         assert.throws(
@@ -234,6 +241,7 @@ describe('Validator - Core', () => {
                 lt                          : vLessThan,
                 lte                         : vLessThanOrEqual,
                 eq                          : equal,
+                '?'                         : vUndefined,
             });
         });
 
@@ -763,48 +771,48 @@ describe('Validator - Core', () => {
 
     describe('@check FN - lexer: groups', () => {
         it('Should return valid when one of both rules are valid', () => {
-            const validator = new Validator({a: '([max:5|min:2]string)(false)'});
+            const validator = new Validator({a: ['[max:5|min:2]string', 'false']});
             assert.ok(validator.check({a: ['hello', 'there', 'cool']}));
             assert.ok(validator.check({a: false}));
         });
 
         it('Should return valid when using rules with an underscore in them and one of them is valid', () => {
-            assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).check({a: 'hello'}));
-            assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).check({a: false}));
+            assert.ok(new Validator({a: ['string_ne|min:1|max:128', 'false']}).check({a: 'hello'}));
+            assert.ok(new Validator({a: ['string_ne|min:1|max:128', 'false']}).check({a: false}));
         });
 
         it('Should return valid when using rules with a dash in them and one of them is valid', () => {
             Validator.extend('my-test-rule', val => val === true);
-            assert.ok(new Validator({a: '(my-test-rule)(false)'}).check({a: true}));
+            assert.ok(new Validator({a: ['my-test-rule', 'false']}).check({a: true}));
         });
 
         it('Should return valid when all rules are valid', () => {
-            const validator = new Validator({a: '([max:5|min:2]string)([max:5|min:3]string_ne)'});
+            const validator = new Validator({a: ['[max:5|min:2]string', '[max:5|min:3]string_ne']});
             assert.ok(validator.check({a: ['hello', 'there', 'cool']}));
         });
 
         it('Should return valid when no rules are valid but sometimes flag is set and its the only rule', () => {
-            const validator = new Validator({a: '?(guid)(false)'});
+            const validator = new Validator({a: ['?', 'guid', 'false']});
             assert.ok(validator.check({}));
         });
 
         it('Should return valid when no rules are valid but sometimes flag is set and multiple fields but those are valid too', () => {
-            const validator = new Validator({a: '?(guid)(false)', b: 'integer|between:10,50'});
+            const validator = new Validator({a: ['?', 'guid', 'false'], b: 'integer|between:10,50'});
             assert.ok(validator.check({b: 42}));
         });
 
         it('Should return invalid when both rules are invalid and correctly set error messages as multi-dimensional array', () => {
-            const validator = new Validator({a: '(guid)(false)'});
+            const validator = new Validator({a: ['guid', 'false']});
             assert.equal(validator.check({a: 'foobar'}), false);
         });
 
         it('Should return invalid and correctly set error messages as multi-dimensional array with multiple rules to a group', () => {
-            const validator = new Validator({a: '(integer|between:20,42)(false)'});
+            const validator = new Validator({a: ['integer|between:20,42', 'false']});
             assert.equal(validator.check({a: 'foobar'}), false);
         });
 
         it('Should check correctly with parameterization', () => {
-            const validator = new Validator({a: '(in:<nums>)([unique|min:1|max:10]in:<meta.strings>)'});
+            const validator = new Validator({a: ['in:<nums>', '[unique|min:1|max:10]in:<meta.strings>']});
             assert.equal(validator.check({a: 'foobar', nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}), false);
             assert.ok(validator.check({a: 2, nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}));
             assert.ok(validator.check({a: ['other'], nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}));
@@ -815,15 +823,15 @@ describe('Validator - Core', () => {
         describe('FN', () => {
             it('Should return false when invalid', () => {
                 const form = new FormData();
-                form.append('a', 20);
-                form.append('b', false);
+                form.append('a', '20');
+                form.append('b', 'false');
                 assert.equal(new Validator({a: 'number', b: 'number'}).check(form), false);
             });
 
             it('Should return true when valid', () => {
                 const form = new FormData();
-                form.append('a', 20);
-                form.append('b', 42);
+                form.append('a', '20');
+                form.append('b', '42');
                 assert.ok(new Validator({a: 'number', b: 'number'}).check(form));
             });
         });
@@ -914,7 +922,7 @@ describe('Validator - Core', () => {
                 assert.ok(new Validator({a: '!number'}).check(form));
 
                 const form2 = new FormData();
-                form2.append('a', 4);
+                form2.append('a', '4');
                 assert.equal(new Validator({a: '!number'}).check(form2), false);
                 assert.ok(new Validator({a: '!between:5,10'}).check(form2));
 
@@ -1440,7 +1448,7 @@ describe('Validator - Core', () => {
 
         describe('FN - lexer: groups', () => {
             it('Should return valid when one of both rules are valid', () => {
-                const validator = new Validator({a: '([max:5|min:2]string)(false)'});
+                const validator = new Validator({a: ['[max:5|min:2]string', 'false']});
                 const form = new FormData();
                 form.append('a', 'hello');
                 form.append('a', 'there');
@@ -1455,22 +1463,22 @@ describe('Validator - Core', () => {
             it('Should return valid when using rules with an underscore in them and one of them is valid', () => {
                 const form = new FormData();
                 form.append('a', 'hello');
-                assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).check(form));
+                assert.ok(new Validator({a: ['string_ne|min:1|max:128', 'false']}).check(form));
 
                 const form2 = new FormData();
                 form2.append('a', 'false');
-                assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).check(form2));
+                assert.ok(new Validator({a: ['string_ne|min:1|max:128', 'false']}).check(form2));
             });
 
             it('Should return valid when using rules with a dash in them and one of them is valid', () => {
                 Validator.extend('my-test-rule', val => val === true);
                 const form = new FormData();
                 form.append('a', 'true');
-                assert.ok(new Validator({a: '(my-test-rule)(false)'}).check(form));
+                assert.ok(new Validator({a: ['my-test-rule', 'false']}).check(form));
             });
 
             it('Should return valid when all rules are valid', () => {
-                const validator = new Validator({a: '([max:5|min:2]string)([max:5|min:3]string_ne)'});
+                const validator = new Validator({a: ['[max:5|min:2]string', '[max:5|min:3]string_ne']});
                 const form = new FormData();
                 form.append('a', 'hello');
                 form.append('a', 'there');
@@ -1479,26 +1487,26 @@ describe('Validator - Core', () => {
             });
 
             it('Should return valid when no rules are valid but sometimes flag is set and its the only rule', () => {
-                const validator = new Validator({a: '?(guid)(false)'});
+                const validator = new Validator({a: ['?', 'guid', 'false']});
                 assert.ok(validator.check(new FormData()));
             });
 
             it('Should return valid when no rules are valid but sometimes flag is set and multiple fields but those are valid too', () => {
-                const validator = new Validator({a: '?(guid)(false)', b: 'integer|between:10,50'});
+                const validator = new Validator({a: ['?', 'guid', 'false'], b: 'integer|between:10,50'});
                 const form = new FormData();
                 form.append('b', '42');
                 assert.ok(validator.check(form));
             });
 
             it('Should return invalid when both rules are invalid and correctly set error messages as multi-dimensional array', () => {
-                const validator = new Validator({a: '(guid)(false)'});
+                const validator = new Validator({a: ['guid', 'false']});
                 const form = new FormData();
                 form.append('a', 'foobar');
                 assert.equal(validator.check(form), false);
             });
 
             it('Should return invalid and correctly set error messages as multi-dimensional array with multiple rules to a group', () => {
-                const validator = new Validator({a: '(integer|between:20,42)(false)'});
+                const validator = new Validator({a: ['integer|between:20,42', 'false']});
                 const form = new FormData();
                 form.append('a', 'foobar');
                 assert.equal(validator.check(form), false);
@@ -2444,7 +2452,7 @@ describe('Validator - Core', () => {
 
     describe('@validate FN - lexer: groups', () => {
         it('Should return valid when one of both rules are valid', () => {
-            const validator = new Validator({a: '([max:5|min:2]string)(false)'});
+            const validator = new Validator({a: ['[max:5|min:2]string', 'false']});
             assert.deepEqual(
                 validator.validate({a: ['hello', 'there', 'cool']}),
                 {is_valid: true, count: 0, errors: {}}
@@ -2457,19 +2465,19 @@ describe('Validator - Core', () => {
 
         it('Should return valid when using rules with an underscore in them and one of them is valid', () => {
             assert.deepEqual(new Validator({
-                a: '(string_ne|min:1|max:128)(false)',
+                a: ['string_ne|min:1|max:128', 'false'],
             }).validate({a: 'hello'}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should return valid when using rules with a dash in them and one of them is valid', () => {
             Validator.extend('my-test-rule', val => val === true);
             assert.deepEqual(new Validator({
-                a: '(my-test-rule)(false)',
+                a: ['my-test-rule', 'false'],
             }).validate({a: true}), {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should return valid when all rules are valid', () => {
-            const validator = new Validator({a: '([max:5|min:2]string)([max:5|min:3]string_ne)'});
+            const validator = new Validator({a: ['[max:5|min:2]string', '[max:5|min:3]string_ne']});
             assert.deepEqual(
                 validator.validate({a: ['hello', 'there', 'cool']}),
                 {is_valid: true, count: 0, errors: {}}
@@ -2477,7 +2485,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should return valid when no rules are valid but sometimes flag is set and its the only rule', () => {
-            const validator = new Validator({a: '?(guid)(false)'});
+            const validator = new Validator({a: ['?', 'guid', 'false']});
             assert.deepEqual(
                 validator.validate({}),
                 {is_valid: true, count: 0, errors: {}}
@@ -2485,7 +2493,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should return valid when no rules are valid but sometimes flag is set and multiple fields but those are valid too', () => {
-            const validator = new Validator({a: '?(guid)(false)', b: 'integer|between:10,50'});
+            const validator = new Validator({a: ['?', 'guid', 'false'], b: 'integer|between:10,50'});
             assert.deepEqual(
                 validator.validate({b: 42}),
                 {is_valid: true, count: 0, errors: {}}
@@ -2493,7 +2501,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should return invalid when both rules are invalid and correctly set error messages as multi-dimensional array', () => {
-            const validator = new Validator({a: '(guid)(false)'});
+            const validator = new Validator({a: ['guid', 'false']});
             assert.deepEqual(
                 validator.validate({a: 'foobar'}),
                 {
@@ -2510,7 +2518,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should return invalid and correctly set error messages as multi-dimensional array with multiple rules to a group', () => {
-            const validator = new Validator({a: '(integer|between:20,42)(false)'});
+            const validator = new Validator({a: ['integer|between:20,42', 'false']});
             assert.deepEqual(
                 validator.validate({a: 'foobar'}),
                 {
@@ -2532,7 +2540,7 @@ describe('Validator - Core', () => {
         });
 
         it('Should validate correctly with parameterization', () => {
-            const validator = new Validator({a: '(in:<nums>)([unique|min:1|max:10]in:<meta.strings>)'});
+            const validator = new Validator({a: ['in:<nums>', '[unique|min:1|max:10]in:<meta.strings>']});
             assert.deepEqual(
                 validator.validate({a: 'foobar', nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}),
                 {
@@ -2567,15 +2575,15 @@ describe('Validator - Core', () => {
         describe('FN', () => {
             it('Should return false when invalid', () => {
                 const form = new FormData();
-                form.append('a', 20);
-                form.append('b', false);
+                form.append('a', '20');
+                form.append('b', 'false');
                 assert.equal(new Validator({a: 'number', b: 'number'}).validate(form).is_valid, false);
             });
 
             it('Should return true when valid', () => {
                 const form = new FormData();
-                form.append('a', 20);
-                form.append('b', 42);
+                form.append('a', '20');
+                form.append('b', '42');
                 assert.ok(new Validator({a: 'number', b: 'number'}).validate(form).is_valid);
             });
         });
@@ -2666,7 +2674,7 @@ describe('Validator - Core', () => {
                 assert.ok(new Validator({a: '!number'}).validate(form).is_valid);
 
                 const form2 = new FormData();
-                form2.append('a', 4);
+                form2.append('a', '4');
                 assert.equal(new Validator({a: '!number'}).validate(form2).is_valid, false);
                 assert.ok(new Validator({a: '!between:5,10'}).validate(form2).is_valid);
 
@@ -3192,7 +3200,7 @@ describe('Validator - Core', () => {
 
         describe('FN - lexer: groups', () => {
             it('Should return valid when one of both rules are valid', () => {
-                const validator = new Validator({a: '([max:5|min:2]string)(false)'});
+                const validator = new Validator({a: ['[max:5|min:2]string', 'false']});
                 const form = new FormData();
                 form.append('a', 'hello');
                 form.append('a', 'there');
@@ -3207,22 +3215,22 @@ describe('Validator - Core', () => {
             it('Should return valid when using rules with an underscore in them and one of them is valid', () => {
                 const form = new FormData();
                 form.append('a', 'hello');
-                assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).validate(form).is_valid);
+                assert.ok(new Validator({a: ['string_ne|min:1|max:128', 'false']}).validate(form).is_valid);
 
                 const form2 = new FormData();
                 form2.append('a', 'false');
-                assert.ok(new Validator({a: '(string_ne|min:1|max:128)(false)'}).validate(form2).is_valid);
+                assert.ok(new Validator({a: ['string_ne|min:1|max:128', 'false']}).validate(form2).is_valid);
             });
 
             it('Should return valid when using rules with a dash in them and one of them is valid', () => {
                 Validator.extend('my-test-rule', val => val === true);
                 const form = new FormData();
                 form.append('a', 'true');
-                assert.ok(new Validator({a: '(my-test-rule)(false)'}).validate(form).is_valid);
+                assert.ok(new Validator({a: ['my-test-rule', 'false']}).validate(form).is_valid);
             });
 
             it('Should return valid when all rules are valid', () => {
-                const validator = new Validator({a: '([max:5|min:2]string)([max:5|min:3]string_ne)'});
+                const validator = new Validator({a: ['[max:5|min:2]string', '[max:5|min:3]string_ne']});
                 const form = new FormData();
                 form.append('a', 'hello');
                 form.append('a', 'there');
@@ -3231,26 +3239,26 @@ describe('Validator - Core', () => {
             });
 
             it('Should return valid when no rules are valid but sometimes flag is set and its the only rule', () => {
-                const validator = new Validator({a: '?(guid)(false)'});
+                const validator = new Validator({a: ['?', 'guid', 'false']});
                 assert.ok(validator.validate(new FormData()).is_valid);
             });
 
             it('Should return valid when no rules are valid but sometimes flag is set and multiple fields but those are valid too', () => {
-                const validator = new Validator({a: '?(guid)(false)', b: 'integer|between:10,50'});
+                const validator = new Validator({a: ['?', 'guid', 'false'], b: 'integer|between:10,50'});
                 const form = new FormData();
                 form.append('b', '42');
                 assert.ok(validator.validate(form).is_valid);
             });
 
             it('Should return invalid when both rules are invalid and correctly set error messages as multi-dimensional array', () => {
-                const validator = new Validator({a: '(guid)(false)'});
+                const validator = new Validator({a: ['guid', 'false']});
                 const form = new FormData();
                 form.append('a', 'foobar');
                 assert.equal(validator.validate(form).is_valid, false);
             });
 
             it('Should return invalid and correctly set error messages as multi-dimensional array with multiple rules to a group', () => {
-                const validator = new Validator({a: '(integer|between:20,42)(false)'});
+                const validator = new Validator({a: ['integer|between:20,42', 'false']});
                 const form = new FormData();
                 form.append('a', 'foobar');
                 assert.equal(validator.validate(form).is_valid, false);
@@ -4188,7 +4196,7 @@ describe('Validator - Core', () => {
                     types: '[unique|max:3]is_type',
                 },
                 contact: {
-                    email: '(email)(false)',
+                    email: ['email', 'false'],
                 },
             });
 

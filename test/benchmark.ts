@@ -106,46 +106,46 @@ const vcomplex = new Validator({
         phone: '?phone',
     },
 });
-const vsimple_groups = new Validator({a: '(string_ne)(false)'});
+const vsimple_groups = new Validator({a: ['string_ne', 'false']});
 const vmedium_groups = new Validator({
-    first_name: '(string|alpha_num_spaces|min:2)(false)',
-    last_name: '(string|alpha_num_spaces|min:2)(false)',
+    first_name: ['string|alpha_num_spaces|min:2', 'false'],
+    last_name: ['string|alpha_num_spaces|min:2', 'false'],
     age: '?integer|between:1,150',
     gender: 'in:<meta.gender_options>',
 });
 const venum = new Validator({animal: 'MYENUM'});
-Validator.extendEnum({MYENUM: ['dog', 'cat', 'bird', 'donkey', 'cow', 'horse', 'pig']});
+Validator.extendMulti({
+    MYENUM: ['dog', 'cat', 'bird', 'donkey', 'cow', 'horse', 'pig'],
+    is_hello: /^((h|H)ello|(o|O)la)$/,
+    small: {
+        first_name: 'string_ne|min:3',
+        last_name: 'string_ne|min:3',
+        email: 'email',
+    },
+    medium: {
+        first_name: 'string_ne|min:3',
+        last_name: 'string_ne|min:3',
+        email: 'email',
+        phone: 'phone',
+        tz: 'time_zone',
+    },
+    address: {
+        street: 'string_ne|min:3',
+        zip: 'integer|min:1000|max:9999',
+        number: 'string_ne|min:3',
+        city: 'string_ne|min:2',
+    },
+    large: {
+        first_name: 'string_ne|min:3',
+        last_name: 'string_ne|min:3',
+        email: 'email',
+        phone: 'phone',
+        tz: 'time_zone',
+        address: 'address',
+    },
+});
 
 const vregex = new Validator({a: 'is_hello'});
-Validator.extendRegex({is_hello: /^((h|H)ello|(o|O)la)$/});
-
-Validator.extendSchema('small', {
-    first_name: 'string_ne|min:3',
-    last_name: 'string_ne|min:3',
-    email: 'email',
-});
-Validator.extendSchema('medium', {
-    first_name: 'string_ne|min:3',
-    last_name: 'string_ne|min:3',
-    email: 'email',
-    phone: 'phone',
-    tz: 'time_zone',
-});
-Validator.extendSchema('address', {
-    street: 'string_ne|min:3',
-    zip: 'integer|min:1000|max:9999',
-    number: 'string_ne|min:3',
-    city: 'string_ne|min:2',
-});
-Validator.extendSchema('large', {
-    first_name: 'string_ne|min:3',
-    last_name: 'string_ne|min:3',
-    email: 'email',
-    phone: 'phone',
-    tz: 'time_zone',
-    address: 'address',
-});
-
 const vsimple_schema = new Validator({a: 'small'});
 const vmedium_schema = new Validator({a: 'medium'});
 const vlarge_schema = new Validator({a: 'large'});
@@ -248,13 +248,13 @@ for (const el of [
     },
     {
         lbl: 'Validator@validate - coldstart - groups/simple',
-        fn: () => new Validator({a: '(string_ne)(false)'}).validate({a: 'hello'}),
+        fn: () => new Validator({a: ['string_ne', 'false']}).validate({a: 'hello'}),
     },
     {
         lbl: 'Validator@validate - coldstart - groups/medium',
         fn: () => new Validator({
-            first_name: '(string|alpha_num_spaces|min:2)(false)',
-            last_name: '(string|alpha_num_spaces|min:2)(false)',
+            first_name: ['string|alpha_num_spaces|min:2', 'false'],
+            last_name: ['string|alpha_num_spaces|min:2', 'false'],
             age: '?integer|between:1,150',
             gender: 'in:<meta.gender_options>',
         }).validate({
@@ -471,17 +471,17 @@ for (const el of [
     },
     {
         lbl: 'Validator@check - coldstart - groups/simple - valid',
-        fn: () => new Validator({a: '(string_ne)(false)'}).check({a: 'hello'}),
+        fn: () => new Validator({a: ['string_ne', 'false']}).check({a: 'hello'}),
     },
     {
         lbl: 'Validator@check - coldstart - groups/simple - invalid',
-        fn: () => new Validator({a: '(string_ne)(false)'}).check({a: 42}),
+        fn: () => new Validator({a: ['string_ne', 'false']}).check({a: 42}),
     },
     {
         lbl: 'Validator@check - coldstart - groups/medium - valid',
         fn: () => new Validator({
-            first_name: '(string|alpha_num_spaces|min:2)(false)',
-            last_name: '(string|alpha_num_spaces|min:2)(false)',
+            first_name: ['string|alpha_num_spaces|min:2', 'false'],
+            last_name: ['string|alpha_num_spaces|min:2', 'false'],
             age: '?integer|between:1,150',
             gender: 'in:<meta.gender_options>',
         }).check({
@@ -495,8 +495,8 @@ for (const el of [
     {
         lbl: 'Validator@check - coldstart - groups/medium - invalid',
         fn: () => new Validator({
-            first_name: '(string|alpha_num_spaces|min:2)(false)',
-            last_name: '(string|alpha_num_spaces|min:2)(false)',
+            first_name: ['string|alpha_num_spaces|min:2', 'false'],
+            last_name: ['string|alpha_num_spaces|min:2', 'false'],
             age: '?integer|between:1,150',
             gender: 'in:<meta.gender_options>',
         }).check({

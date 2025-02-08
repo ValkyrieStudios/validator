@@ -62,6 +62,35 @@ import {type Continent, type GeoLatitude, type GeoLongitude} from '@valkyriestud
 - **deps**: Upgrade typescript to 5.7.3
 - **deps**: Upgrade typescript-eslint to 8.23.0
 
+### Breaking
+- **rules**: The syntax for conditional rule groups has had an overhaul to allow for less cognitive overhead, easier understanding of the rules at play as well as further improvements regarding type safety and automatic inference down the line.
+```typescript
+/* old way of defining, the below would validate that first_name needs to be a string with at least 3 chars OR null */
+const v = new Validator({
+    first_name: '(string_ne|min:3)(null)',
+});
+
+/* new way of defining */
+const v = new Validator({
+    first_name: ['string_ne|min:3', 'null'],
+});
+
+/* Optionality: old way of defining, the below would validate that uid can be passed but needs to be a guid or null if passed */
+const v = new Validator({
+    uid: '?(guid)(false)',
+});
+
+/* New way of defining */
+const v = new Validator({
+    uid: ['?', 'guid', 'false'], /* Note the special '?' rule here */
+});
+
+/* Note that the following would also work, but is less interesting from a dx standpoint */
+const v = new Validator({
+    uid: ['?guid', '?false'],
+});
+```
+
 ### Removed
 - Validator@extendEnum (see Validator@extendMulti and Validator@extend changes)
 - Validator@extendRegex (see Validator@extendMulti and Validator@extend changes)
