@@ -39,6 +39,527 @@
     "url": "https://github.com/ValkyrieStudios/validator/issues"
   },
   "homepage": "https://github.com/ValkyrieStudios/validator#readme",
+  "types": "index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+        "import": {
+            "default": "./index.js",
+            "types": "./index.d.ts"
+        },
+        "require": {
+            "default": "./index.js",
+            "types": "./index.d.ts"
+        },
+        "default": "./index.js",
+        "types": "./index.d.ts"
+    },
+    "./package.json": "./package.json",
+    "./functions/vAlphaNumSpaces": {
+        "import": {
+            "default": "./functions/vAlphaNumSpaces.js",
+            "types": "./functions/vAlphaNumSpaces.d.ts"
+        },
+        "require": {
+            "default": "./functions/vAlphaNumSpaces.js",
+            "types": "./functions/vAlphaNumSpaces.d.ts"
+        },
+        "default": "./functions/vAlphaNumSpaces.js",
+        "types": "./functions/vAlphaNumSpaces.d.ts"
+    },
+    "./functions/vAlphaNumSpacesMultiline": {
+        "import": {
+            "default": "./functions/vAlphaNumSpacesMultiline.js",
+            "types": "./functions/vAlphaNumSpacesMultiline.d.ts"
+        },
+        "require": {
+            "default": "./functions/vAlphaNumSpacesMultiline.js",
+            "types": "./functions/vAlphaNumSpacesMultiline.d.ts"
+        },
+        "default": "./functions/vAlphaNumSpacesMultiline.js",
+        "types": "./functions/vAlphaNumSpacesMultiline.d.ts"
+    },
+    "./functions/vBase64": {
+        "import": {
+            "default": "./functions/vBase64.js",
+            "types": "./functions/vBase64.d.ts"
+        },
+        "require": {
+            "default": "./functions/vBase64.js",
+            "types": "./functions/vBase64.d.ts"
+        },
+        "default": "./functions/vBase64.js",
+        "types": "./functions/vBase64.d.ts"
+    },
+    "./functions/vBetween": {
+        "import": {
+            "default": "./functions/vBetween.js",
+            "types": "./functions/vBetween.d.ts"
+        },
+        "require": {
+            "default": "./functions/vBetween.js",
+            "types": "./functions/vBetween.d.ts"
+        },
+        "default": "./functions/vBetween.js",
+        "types": "./functions/vBetween.d.ts"
+    },
+    "./functions/vBetweenInclusive": {
+        "import": {
+            "default": "./functions/vBetweenInclusive.js",
+            "types": "./functions/vBetweenInclusive.d.ts"
+        },
+        "require": {
+            "default": "./functions/vBetweenInclusive.js",
+            "types": "./functions/vBetweenInclusive.d.ts"
+        },
+        "default": "./functions/vBetweenInclusive.js",
+        "types": "./functions/vBetweenInclusive.d.ts"
+    },
+    "./functions/vBlob": {
+        "import": {
+            "default": "./functions/vBlob.js",
+            "types": "./functions/vBlob.d.ts"
+        },
+        "require": {
+            "default": "./functions/vBlob.js",
+            "types": "./functions/vBlob.d.ts"
+        },
+        "default": "./functions/vBlob.js",
+        "types": "./functions/vBlob.d.ts"
+    },
+    "./functions/vColorHex": {
+        "import": {
+            "default": "./functions/vColorHex.js",
+            "types": "./functions/vColorHex.d.ts"
+        },
+        "require": {
+            "default": "./functions/vColorHex.js",
+            "types": "./functions/vColorHex.d.ts"
+        },
+        "default": "./functions/vColorHex.js",
+        "types": "./functions/vColorHex.d.ts"
+    },
+    "./functions/vContinent": {
+        "import": {
+            "default": "./functions/vContinent.js",
+            "types": "./functions/vContinent.d.ts"
+        },
+        "require": {
+            "default": "./functions/vContinent.js",
+            "types": "./functions/vContinent.d.ts"
+        },
+        "default": "./functions/vContinent.js",
+        "types": "./functions/vContinent.d.ts"
+    },
+    "./functions/vCountry": {
+        "import": {
+            "default": "./functions/vCountry.js",
+            "types": "./functions/vCountry.d.ts"
+        },
+        "require": {
+            "default": "./functions/vCountry.js",
+            "types": "./functions/vCountry.d.ts"
+        },
+        "default": "./functions/vCountry.js",
+        "types": "./functions/vCountry.d.ts"
+    },
+    "./functions/vCountryAlpha3": {
+        "import": {
+            "default": "./functions/vCountryAlpha3.js",
+            "types": "./functions/vCountryAlpha3.d.ts"
+        },
+        "require": {
+            "default": "./functions/vCountryAlpha3.js",
+            "types": "./functions/vCountryAlpha3.d.ts"
+        },
+        "default": "./functions/vCountryAlpha3.js",
+        "types": "./functions/vCountryAlpha3.d.ts"
+    },
+    "./functions/vDateSpecs": {
+        "import": {
+            "default": "./functions/vDateSpecs.js",
+            "types": "./functions/vDateSpecs.d.ts"
+        },
+        "require": {
+            "default": "./functions/vDateSpecs.js",
+            "types": "./functions/vDateSpecs.d.ts"
+        },
+        "default": "./functions/vDateSpecs.js",
+        "types": "./functions/vDateSpecs.d.ts"
+    },
+    "./functions/vDateString": {
+        "import": {
+            "default": "./functions/vDateString.js",
+            "types": "./functions/vDateString.d.ts"
+        },
+        "require": {
+            "default": "./functions/vDateString.js",
+            "types": "./functions/vDateString.d.ts"
+        },
+        "default": "./functions/vDateString.js",
+        "types": "./functions/vDateString.d.ts"
+    },
+    "./functions/vEAN": {
+        "import": {
+            "default": "./functions/vEAN.js",
+            "types": "./functions/vEAN.d.ts"
+        },
+        "require": {
+            "default": "./functions/vEAN.js",
+            "types": "./functions/vEAN.d.ts"
+        },
+        "default": "./functions/vEAN.js",
+        "types": "./functions/vEAN.d.ts"
+    },
+    "./functions/vEmail": {
+        "import": {
+            "default": "./functions/vEmail.js",
+            "types": "./functions/vEmail.d.ts"
+        },
+        "require": {
+            "default": "./functions/vEmail.js",
+            "types": "./functions/vEmail.d.ts"
+        },
+        "default": "./functions/vEmail.js",
+        "types": "./functions/vEmail.d.ts"
+    },
+    "./functions/vFalse": {
+        "import": {
+            "default": "./functions/vFalse.js",
+            "types": "./functions/vFalse.d.ts"
+        },
+        "require": {
+            "default": "./functions/vFalse.js",
+            "types": "./functions/vFalse.d.ts"
+        },
+        "default": "./functions/vFalse.js",
+        "types": "./functions/vFalse.d.ts"
+    },
+    "./functions/vFile": {
+        "import": {
+            "default": "./functions/vFile.js",
+            "types": "./functions/vFile.d.ts"
+        },
+        "require": {
+            "default": "./functions/vFile.js",
+            "types": "./functions/vFile.d.ts"
+        },
+        "default": "./functions/vFile.js",
+        "types": "./functions/vFile.d.ts"
+    },
+    "./functions/vGeoLatitude": {
+        "import": {
+            "default": "./functions/vGeoLatitude.js",
+            "types": "./functions/vGeoLatitude.d.ts"
+        },
+        "require": {
+            "default": "./functions/vGeoLatitude.js",
+            "types": "./functions/vGeoLatitude.d.ts"
+        },
+        "default": "./functions/vGeoLatitude.js",
+        "types": "./functions/vGeoLatitude.d.ts"
+    },
+    "./functions/vGeoLongitude": {
+        "import": {
+            "default": "./functions/vGeoLongitude.js",
+            "types": "./functions/vGeoLongitude.d.ts"
+        },
+        "require": {
+            "default": "./functions/vGeoLongitude.js",
+            "types": "./functions/vGeoLongitude.d.ts"
+        },
+        "default": "./functions/vGeoLongitude.js",
+        "types": "./functions/vGeoLongitude.d.ts"
+    },
+    "./functions/vGreaterThan": {
+        "import": {
+            "default": "./functions/vGreaterThan.js",
+            "types": "./functions/vGreaterThan.d.ts"
+        },
+        "require": {
+            "default": "./functions/vGreaterThan.js",
+            "types": "./functions/vGreaterThan.d.ts"
+        },
+        "default": "./functions/vGreaterThan.js",
+        "types": "./functions/vGreaterThan.d.ts"
+    },
+    "./functions/vGreaterThanOrEqual": {
+        "import": {
+            "default": "./functions/vGreaterThanOrEqual.js",
+            "types": "./functions/vGreaterThanOrEqual.d.ts"
+        },
+        "require": {
+            "default": "./functions/vGreaterThanOrEqual.js",
+            "types": "./functions/vGreaterThanOrEqual.d.ts"
+        },
+        "default": "./functions/vGreaterThanOrEqual.js",
+        "types": "./functions/vGreaterThanOrEqual.d.ts"
+    },
+    "./functions/vGuid": {
+        "import": {
+            "default": "./functions/vGuid.js",
+            "types": "./functions/vGuid.d.ts"
+        },
+        "require": {
+            "default": "./functions/vGuid.js",
+            "types": "./functions/vGuid.d.ts"
+        },
+        "default": "./functions/vGuid.js",
+        "types": "./functions/vGuid.d.ts"
+    },
+    "./functions/vIn": {
+        "import": {
+            "default": "./functions/vIn.js",
+            "types": "./functions/vIn.d.ts"
+        },
+        "require": {
+            "default": "./functions/vIn.js",
+            "types": "./functions/vIn.d.ts"
+        },
+        "default": "./functions/vIn.js",
+        "types": "./functions/vIn.d.ts"
+    },
+    "./functions/vISBN": {
+        "import": {
+            "default": "./functions/vISBN.js",
+            "types": "./functions/vISBN.d.ts"
+        },
+        "require": {
+            "default": "./functions/vISBN.js",
+            "types": "./functions/vISBN.d.ts"
+        },
+        "default": "./functions/vISBN.js",
+        "types": "./functions/vISBN.d.ts"
+    },
+    "./functions/vLessThan": {
+        "import": {
+            "default": "./functions/vLessThan.js",
+            "types": "./functions/vLessThan.d.ts"
+        },
+        "require": {
+            "default": "./functions/vLessThan.js",
+            "types": "./functions/vLessThan.d.ts"
+        },
+        "default": "./functions/vLessThan.js",
+        "types": "./functions/vLessThan.d.ts"
+    },
+    "./functions/vLessThanOrEqual": {
+        "import": {
+            "default": "./functions/vLessThanOrEqual.js",
+            "types": "./functions/vLessThanOrEqual.d.ts"
+        },
+        "require": {
+            "default": "./functions/vLessThanOrEqual.js",
+            "types": "./functions/vLessThanOrEqual.d.ts"
+        },
+        "default": "./functions/vLessThanOrEqual.js",
+        "types": "./functions/vLessThanOrEqual.d.ts"
+    },
+    "./functions/vNull": {
+        "import": {
+            "default": "./functions/vNull.js",
+            "types": "./functions/vNull.d.ts"
+        },
+        "require": {
+            "default": "./functions/vNull.js",
+            "types": "./functions/vNull.d.ts"
+        },
+        "default": "./functions/vNull.js",
+        "types": "./functions/vNull.d.ts"
+    },
+    "./functions/vPhone": {
+        "import": {
+            "default": "./functions/vPhone.js",
+            "types": "./functions/vPhone.d.ts"
+        },
+        "require": {
+            "default": "./functions/vPhone.js",
+            "types": "./functions/vPhone.d.ts"
+        },
+        "default": "./functions/vPhone.js",
+        "types": "./functions/vPhone.d.ts"
+    },
+    "./functions/vRequired": {
+        "import": {
+            "default": "./functions/vRequired.js",
+            "types": "./functions/vRequired.d.ts"
+        },
+        "require": {
+            "default": "./functions/vRequired.js",
+            "types": "./functions/vRequired.d.ts"
+        },
+        "default": "./functions/vRequired.js",
+        "types": "./functions/vRequired.d.ts"
+    },
+    "./functions/vSize": {
+        "import": {
+            "default": "./functions/vSize.js",
+            "types": "./functions/vSize.d.ts"
+        },
+        "require": {
+            "default": "./functions/vSize.js",
+            "types": "./functions/vSize.d.ts"
+        },
+        "default": "./functions/vSize.js",
+        "types": "./functions/vSize.d.ts"
+    },
+    "./functions/vSSN": {
+        "import": {
+            "default": "./functions/vSSN.js",
+            "types": "./functions/vSSN.d.ts"
+        },
+        "require": {
+            "default": "./functions/vSSN.js",
+            "types": "./functions/vSSN.d.ts"
+        },
+        "default": "./functions/vSSN.js",
+        "types": "./functions/vSSN.d.ts"
+    },
+    "./functions/vSysIPv4_or_v6": {
+        "import": {
+            "default": "./functions/vSysIPv4_or_v6.js",
+            "types": "./functions/vSysIPv4_or_v6.d.ts"
+        },
+        "require": {
+            "default": "./functions/vSysIPv4_or_v6.js",
+            "types": "./functions/vSysIPv4_or_v6.d.ts"
+        },
+        "default": "./functions/vSysIPv4_or_v6.js",
+        "types": "./functions/vSysIPv4_or_v6.d.ts"
+    },
+    "./functions/vSysIPv4": {
+        "import": {
+            "default": "./functions/vSysIPv4.js",
+            "types": "./functions/vSysIPv4.d.ts"
+        },
+        "require": {
+            "default": "./functions/vSysIPv4.js",
+            "types": "./functions/vSysIPv4.d.ts"
+        },
+        "default": "./functions/vSysIPv4.js",
+        "types": "./functions/vSysIPv4.d.ts"
+    },
+    "./functions/vSysIPv6": {
+        "import": {
+            "default": "./functions/vSysIPv6.js",
+            "types": "./functions/vSysIPv6.d.ts"
+        },
+        "require": {
+            "default": "./functions/vSysIPv6.js",
+            "types": "./functions/vSysIPv6.d.ts"
+        },
+        "default": "./functions/vSysIPv6.js",
+        "types": "./functions/vSysIPv6.d.ts"
+    },
+    "./functions/vSysMac": {
+        "import": {
+            "default": "./functions/vSysMac.js",
+            "types": "./functions/vSysMac.d.ts"
+        },
+        "require": {
+            "default": "./functions/vSysMac.js",
+            "types": "./functions/vSysMac.d.ts"
+        },
+        "default": "./functions/vSysMac.js",
+        "types": "./functions/vSysMac.d.ts"
+    },
+    "./functions/vSysPort": {
+        "import": {
+            "default": "./functions/vSysPort.js",
+            "types": "./functions/vSysPort.d.ts"
+        },
+        "require": {
+            "default": "./functions/vSysPort.js",
+            "types": "./functions/vSysPort.d.ts"
+        },
+        "default": "./functions/vSysPort.js",
+        "types": "./functions/vSysPort.d.ts"
+    },
+    "./functions/vTimeZone": {
+        "import": {
+            "default": "./functions/vTimeZone.js",
+            "types": "./functions/vTimeZone.d.ts"
+        },
+        "require": {
+            "default": "./functions/vTimeZone.js",
+            "types": "./functions/vTimeZone.d.ts"
+        },
+        "default": "./functions/vTimeZone.js",
+        "types": "./functions/vTimeZone.d.ts"
+    },
+    "./functions/vTrue": {
+        "import": {
+            "default": "./functions/vTrue.js",
+            "types": "./functions/vTrue.d.ts"
+        },
+        "require": {
+            "default": "./functions/vTrue.js",
+            "types": "./functions/vTrue.d.ts"
+        },
+        "default": "./functions/vTrue.js",
+        "types": "./functions/vTrue.d.ts"
+    },
+    "./functions/vUlid": {
+        "import": {
+            "default": "./functions/vUlid.js",
+            "types": "./functions/vUlid.d.ts"
+        },
+        "require": {
+            "default": "./functions/vUlid.js",
+            "types": "./functions/vUlid.d.ts"
+        },
+        "default": "./functions/vUlid.js",
+        "types": "./functions/vUlid.d.ts"
+    },
+    "./functions/vUrl": {
+        "import": {
+            "default": "./functions/vUrl.js",
+            "types": "./functions/vUrl.d.ts"
+        },
+        "require": {
+            "default": "./functions/vUrl.js",
+            "types": "./functions/vUrl.d.ts"
+        },
+        "default": "./functions/vUrl.js",
+        "types": "./functions/vUrl.d.ts"
+    },
+    "./functions/vUrlExtensions": {
+        "import": {
+            "default": "./functions/vUrlExtensions.js",
+            "types": "./functions/vUrlExtensions.d.ts"
+        },
+        "require": {
+            "default": "./functions/vUrlExtensions.js",
+            "types": "./functions/vUrlExtensions.d.ts"
+        },
+        "default": "./functions/vUrlExtensions.js",
+        "types": "./functions/vUrlExtensions.d.ts"
+    },
+    "./functions/vUrlNoQuery": {
+        "import": {
+            "default": "./functions/vUrlNoQuery.js",
+            "types": "./functions/vUrlNoQuery.d.ts"
+        },
+        "require": {
+            "default": "./functions/vUrlNoQuery.js",
+            "types": "./functions/vUrlNoQuery.d.ts"
+        },
+        "default": "./functions/vUrlNoQuery.js",
+        "types": "./functions/vUrlNoQuery.d.ts"
+    },
+    "./functions/vUuid": {
+        "import": {
+            "default": "./functions/vUuid.js",
+            "types": "./functions/vUuid.d.ts"
+        },
+        "require": {
+            "default": "./functions/vUuid.js",
+            "types": "./functions/vUuid.d.ts"
+        },
+        "default": "./functions/vUuid.js",
+        "types": "./functions/vUuid.d.ts"
+    }
+  },
   "dependencies": {
     "@valkyriestudios/utils": "^12.31.1"
   },
