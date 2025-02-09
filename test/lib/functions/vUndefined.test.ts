@@ -1,6 +1,5 @@
 import {describe, it}   from 'node:test';
 import * as assert      from 'node:assert/strict';
-import CONSTANTS        from '../../constants';
 import Validator        from '../../../lib';
 
 describe('vUndefined', () => {

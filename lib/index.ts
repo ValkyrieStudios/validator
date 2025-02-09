@@ -1,6 +1,7 @@
 import {isNotEmptyArray}            from '@valkyriestudios/utils/array/isNotEmpty';
 import {isBoolean}                  from '@valkyriestudios/utils/boolean/is';
 import {isDate}                     from '@valkyriestudios/utils/date/is';
+import {deepGet}                    from '@valkyriestudios/utils/deep/get';
 import {isFormData}                 from '@valkyriestudios/utils/formdata/is';
 import {toObject}                   from '@valkyriestudios/utils/formdata/toObject';
 import {isFunction}                 from '@valkyriestudios/utils/function/is';
@@ -238,26 +239,6 @@ const RULE_STORE = {
 type CustomRuleDictionary = Record<string, RuleFn>;
 
 type RuleDictionary = typeof RULE_STORE & CustomRuleDictionary;
-
-/**
- * Get a value from a path in a json-like structure
- *
- * @param obj - Object to pull data from (eg: {a: {b: {c: 'hello}}})
- * @param path - Path to pull from (eg: 'a.b.c')
- *
- * @returns {DataVal} Value at path position
- */
-function deepGet (obj:DataObject, path:string):DataVal {
-    const parts = path.split('.');
-    let cursor: DataVal = obj;
-
-    for (let i = 0; i < parts.length; i++) {
-        if (cursor === undefined) return undefined;
-        cursor = (cursor as DataObject)?.[parts[i]];
-    }
-
-    return cursor;
-}
 
 /* Configuration for an iterable dictionary handler */
 const iterableDictHandler = {

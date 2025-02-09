@@ -3221,7 +3221,7 @@ describe('Validator - Core', () => {
 
             it('Should return valid when using rules with a dash in them and one of them is valid', () => {
                 Validator.extend({
-                    'my-test-rule': val => val === true
+                    'my-test-rule': val => val === true,
                 });
                 const form = new FormData();
                 form.append('a', 'true');
@@ -3787,7 +3787,7 @@ describe('Validator - Core', () => {
 
         it('Should be able to validate complex multidimensional objects [5]', () => {
             Validator.extend({
-                is_type: val => ['type1', 'type2', 'type4'].indexOf(val) >= 0
+                is_type: val => ['type1', 'type2', 'type4'].indexOf(val) >= 0,
             });
 
             const validator = new Validator({

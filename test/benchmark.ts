@@ -114,7 +114,7 @@ const vmedium_groups = new Validator({
     gender: 'in:<meta.gender_options>',
 });
 const venum = new Validator({animal: 'MYENUM'});
-Validator.extendMulti({
+Validator.extend({
     MYENUM: ['dog', 'cat', 'bird', 'donkey', 'cow', 'horse', 'pig'],
     is_hello: /^((h|H)ello|(o|O)la)$/,
     small: {
