@@ -3,6 +3,7 @@ import {isNotEmptyArray}            from '@valkyriestudios/utils/array/isNotEmpt
 import {isBoolean}                  from '@valkyriestudios/utils/boolean/is';
 import {isDate}                     from '@valkyriestudios/utils/date/is';
 import {deepGet}                    from '@valkyriestudios/utils/deep/get';
+import {deepFreeze}                 from '@valkyriestudios/utils/deep/freeze';
 import {isFormData}                 from '@valkyriestudios/utils/formdata/is';
 import {toObject}                   from '@valkyriestudios/utils/formdata/toObject';
 import {isFunction}                 from '@valkyriestudios/utils/function/is';
@@ -83,7 +84,7 @@ import {
     type ValidationResult,
     type ValidationRules,
     type InferredSchema,
-} from "./types";
+} from './types';
 
 /* Validator components */
 type TV<T> = {
@@ -499,22 +500,34 @@ let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
 class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
     /* Validation plan */
-    #plan:ValidationGroup[];
+    #plan!:ValidationGroup[];
 
     /* Length of plan */
-    #plan_length:number;
+    #plan_length!:number;
 
-    constructor (rules:TypedValidator) {
+    /* Schema type prop */
+    #schema!:DeepMutable<T>;
+
+    constructor (schema:TypedValidator) {
         /* Check for rules */
-        if (!isObject(rules)) throw new TypeError('Provide an object to define the rules of this validator');
+        if (!isObject(schema)) throw new TypeError('Provide an object to define the rules of this validator');
 
         /* Recursively parse our validation rules, to allow for deeply nested validation to be done */
         const plan:ValidationGroup[] = [];
-        recursor(plan, rules as RulesRawVal);
+        recursor(plan, schema as RulesRawVal);
 
         /* Set the parsed plan as a get property on our validation instance */
         this.#plan = plan;
         this.#plan_length = plan.length;
+        this.#schema = deepFreeze(schema) as DeepMutable<T>;
+    }
+
+    /**
+     * Getter for configured schema.
+     * @note Using this with typeof (eg: typeof myValidator.schema) returns the type of the store
+     */
+    get schema ():DeepMutable<T> {
+        return JSON.parse(JSON.stringify(this.#schema));
     }
 
     /**
@@ -525,7 +538,7 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      */
     /* eslint-disable-next-line */
     /* @ts-ignore */
-    check <K extends GenericObject|FormData> (raw:K):raw is T {
+    check <K extends GenericObject|FormData> (raw:K):raw is typeof this['schema'] {
         const plan_len = this.#plan_length;
 
         /* No data passed? Check if rules were set up */
@@ -566,10 +579,10 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      * @param {FormData} raw - FormData instance to check
      * @returns {T|false} Returns the formdata as an object if valid or false if not valid
      */
-    checkForm (raw:FormData):T|false {
+    checkForm (raw:FormData) {
         if (!(raw instanceof FormData)) return false;
         const data = toObject<GenericObject>(raw);
-        return this.check(data) ? data as T : false;
+        return this.check(data) ? data : false;
     }
 
     /**
@@ -691,6 +704,9 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
         return {is_valid: !count, count, errors};
     }
 
+    /**
+     * Getter for the rules object on the validator
+     */
     static get rules ():Readonly<RuleDictionary> {
         return FROZEN_RULE_STORE;
     }
@@ -792,6 +808,13 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
         /* Freeze Rule store */
         FROZEN_RULE_STORE = freezeStore(RULE_STORE);
+    }
+
+    /**
+     * Create a validator instance and have its type auto-inferred
+     */
+    static create<const TSchema extends RulesRaw> (schema: TSchema): Validator<InferredSchema<TSchema, typeof Validator>> {
+        return new Validator(schema);
     }
 
 }

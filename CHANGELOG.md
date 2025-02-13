@@ -6,6 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - 10.x
+### Added
+- **dx**: Validator@schema getter which can be used to both understand the existing raw ruleset configured for a validator **and infer the type of the validator from**
+- **feat**: Validator@create static which acts as a proxy for creating a new Validator **while also automatically inferring a type** off of the provided schema
+```typescript
+const myValidator = Validator.create({
+    first_name: "string_ne|min:3",
+    last_name: "?string_ne",
+    role: 'user_role',
+    communication: ["?", "email", "phone"],
+    geo: {
+        lat: "geo_latitude",
+        lng: "geo_longitude",
+    },
+});
+
+type VType = typeof myValidator.schema;
+/* At this point the type will be this */
+{
+    first_name: string;
+    last_name: string | undefined;
+    /**
+     * Given Validator was extended
+     * Validator.extend({user_role: ["admin", "manager", "user", "guest"]})
+     */
+    role: "admin" | "manager" | "user" | "guest";
+    communication: Email | Phone | undefined; /* Note the branded types here */
+    geo: {
+        lat: GeoLatitude;
+        lng: GeoLongitude;
+    };
+}
+```
+
 ### Improved
 - **feat**: Validator@extend now works with kv-map setup
 - **feat**: Validator@extend now also allows RegExp values on its kv-map (previously Validator@extendRegex)
@@ -52,7 +85,7 @@ const v = new Validator({
 
 /* new way of defining */
 const v = new Validator({
-    first_name: ['string_ne|min:3', 'null'],
+    irst_name: ['string_ne|min:3', 'null'],
 });
 
 /* Optionality: old way of defining, the below would validate that uid can be passed but needs to be a guid or null if passed */
@@ -72,10 +105,10 @@ const v = new Validator({
 ```
 
 ### Removed
-- Validator@extendMulti (see Validator@extend change)
-- Validator@extendEnum (see Validator@extend change)
-- Validator@extendRegex (see Validator@extend change)
-- Validator@extendSchema (see Validator@extend change)
+- Validator@extendMulti (see improved)
+- Validator@extendEnum (see improved)
+- Validator@extendRegex (see improved)
+- Validator@extendSchema (see improved)
 
 ## [9.29.0] - 2024-11-03
 ### Improved
