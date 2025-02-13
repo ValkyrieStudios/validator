@@ -70,10 +70,10 @@ import {type Continent, type GeoLatitude, type GeoLongitude} from '@valkyriestud
 ...
 ```
 - **deps**: Upgrade @valkyriestudios/utils to 12.31.1
-- **deps**: Upgrade @types/node to 22.13.1
-- **deps**: Upgrade eslint to 9.20.0
+- **deps**: Upgrade @types/node to 22.13.2
+- **deps**: Upgrade eslint to 9.20.1
 - **deps**: Upgrade typescript to 5.7.3
-- **deps**: Upgrade typescript-eslint to 8.23.0
+- **deps**: Upgrade typescript-eslint to 8.24.0
 
 ### Breaking
 - **rules**: The syntax for conditional rule groups has had an overhaul to allow for less cognitive overhead, easier understanding of the rules at play as well as further improvements regarding type safety and automatic inference down the line.
