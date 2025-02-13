@@ -4,12 +4,13 @@ import {describe, it}           from 'node:test';
 import * as assert              from 'node:assert/strict';
 import {isString, isNeString}   from '@valkyriestudios/utils/string';
 import {isObject, isNeObject}   from '@valkyriestudios/utils/object';
-import {isNeArray}              from '@valkyriestudios/utils/array';
+import {isArray, isNeArray}     from '@valkyriestudios/utils/array';
 import {isBoolean}              from '@valkyriestudios/utils/boolean';
 import {isDate}                 from '@valkyriestudios/utils/date';
 import {equal}                  from '@valkyriestudios/utils/equal';
 import {isFn, isAsyncFn}        from '@valkyriestudios/utils/function';
 import {isFormData}             from '@valkyriestudios/utils/formdata';
+import {isNumber, isInteger}    from '@valkyriestudios/utils/number';
 import guid                     from '@valkyriestudios/utils/hash/guid';
 import CONSTANTS                from '../constants';
 import Validator                from '../../lib';
@@ -164,7 +165,7 @@ describe('Validator - Core', () => {
             assert.deepEqual(Validator.rules, {
                 alpha_num_spaces            : vAlphaNumSpaces,
                 alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
-                array                       : Array.isArray,
+                array                       : isArray,
                 array_ne                    : isNeArray,
                 base64                      : vBase64,
                 between                     : vBetween,
@@ -195,7 +196,7 @@ describe('Validator - Core', () => {
                 greater_than_or_equal       : vGreaterThanOrEqual,
                 guid                        : vGuid,
                 in                          : vIn,
-                integer                     : Number.isInteger,
+                integer                     : isInteger,
                 isbn                        : vISBN,
                 isbn_10                     : vISBN10,
                 isbn_13                     : vISBN13,
@@ -204,7 +205,7 @@ describe('Validator - Core', () => {
                 max                         : vLessThanOrEqual,
                 min                         : vGreaterThanOrEqual,
                 null                        : vNull,
-                number                      : Number.isFinite,
+                number                      : isNumber,
                 object                      : isObject,
                 object_ne                   : isNeObject,
                 phone                       : vPhone,
