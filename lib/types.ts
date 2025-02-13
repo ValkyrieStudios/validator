@@ -73,6 +73,7 @@ export type DeepMutable<T> =
   T extends symbol ? T :
   T extends null ? T :
   T extends undefined ? T :
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   T extends Function ? T :
   T extends object ? { -readonly [K in keyof T]: DeepMutable<T[K]> } :
   T;
@@ -87,7 +88,7 @@ type ExtractGuard<T> =
 
 /* Builds mapping from rules in dictionary */
 type RuleMap<V extends {rules: Record<string, any>}> = {
-    [K in keyof V["rules"]]: ExtractGuard<V["rules"][K]>
+    [K in keyof V['rules']]: ExtractGuard<V['rules'][K]>
 };
 
 /* Extracts rule name from a string (eg: "string|min:2", extract "string") */
@@ -116,7 +117,7 @@ type InferRuleTypeFromStore<S extends string, V extends {rules: Record<string, a
  * - If it’s an array (conditional group), we take the union of the inferences.
  * - If it’s an object, we recursively map its keys.
  */
-export type InferredSchema<S, V extends {rules: Record<string, any>} = {rules: {}}> =
+export type InferredSchema<S, V extends {rules: Record<string, any>} = {rules: object}> =
   S extends string ? InferRuleTypeFromStore<S, V> :
   S extends Array<infer U> ? InferredSchema<U, V> :
   S extends object ? { [K in keyof S]: InferredSchema<S[K], V> } : unknown;
