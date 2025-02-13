@@ -70,18 +70,20 @@ import {
     vUrlVideo,
     vUrlMedia,
 } from './functions/vUrlExtensions';
-
-/* Raw data type for input checking */
-type DataPrimitive          = string | number | boolean | Date | symbol | null | unknown;
-
-type DataVal                = DataPrimitive | DataObject | DataArray; /* eslint-disable-line */
-type DataArray              = Array<DataVal>;
-type DataObject             = {[key:string]: DataVal};
-export type GenericObject   = {[key:string]:any};
-
-/* Validation rule input data types */
-type RulesRawVal            = string | string[] | RulesRaw; /* eslint-disable-line */
-export type RulesRaw        = {[key:string]: RulesRawVal};
+import {
+    type DataObject,
+    type DataVal,
+    type DeepMutable,
+    type GenericObject,
+    type RulesRaw,
+    type RulesRawVal,
+    type ValidationError,
+    type ValidationGroup,
+    type ValidationIterable,
+    type ValidationResult,
+    type ValidationRules,
+    type InferredSchema,
+} from "./types";
 
 /* Validator components */
 type TV<T> = {
@@ -94,62 +96,6 @@ type TV<T> = {
 
 type RuleFn = (...args:any[]) => boolean;
 type RuleExtension = RuleFn | RegExp | (string|number)[] | TV<GenericObject>;
-
-/* Validation components */
-interface ValidationError {
-    idx?:number;
-    msg:string;
-    params:DataVal[];
-}
-
-interface ValidationIterable {
-    unique: boolean;
-    max: number;
-    min: number;
-    handler: {
-        typ: (obj:any) => boolean;
-        len: (obj:any) => number;
-        val: (obj:any) => any[];
-    };
-}
-
-interface ValidationRulePart {
-    type:string;
-    params:unknown[];
-    params_length:number;
-    not:boolean;
-}
-
-interface ValidationRules {
-    iterable:ValidationIterable|false;
-    list: ValidationRulePart[];
-    list_length:number;
-}
-
-interface ValidationGroup {
-    key:string;
-    sometimes:boolean;
-    rules:ValidationRules[];
-}
-
-interface ValidationResult {
-    /**
-     * Whether or not the validation was valid
-     */
-    is_valid:boolean;
-    /**
-     * Integer value defining how many fields were invalid in the provided data object
-     */
-    count:number;
-    /**
-     * Errors object which will be filled with the errors of the validation result if there are any.
-     *
-     * Take note: 'NO_DATA' is set when no data was passed to the validator.
-     *
-     * Example: {b: [{msg: 'number', params: []}]}
-     */
-    errors: 'NO_DATA' | {[key:string]:ValidationError[]};
-}
 
 /* Used for enum storage */
 const ENUM_STORE:Map<string, Set<string | number>> = new Map();

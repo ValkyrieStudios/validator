@@ -42,3 +42,65 @@ export type UUID_3          = Brand<string, 'UUID_V3'>;
 export type UUID_4          = Brand<string, 'UUID_V4'>;
 export type UUID_5          = Brand<string, 'UUID_V5'>;
 export type UUID            = UUID_1 | UUID_2 | UUID_3 | UUID_4 | UUID_5;
+/* Raw data type for input checking */
+export type DataVal         = string | number | boolean | Date | symbol | null | unknown | DataObject | DataVal[]; /* eslint-disable-line */
+export type DataObject      = {[key:string]: DataVal};
+export type GenericObject   = {[key:string]:any};
+
+/* Validation rule input data types */
+export type RulesRawVal     = string | string[] | RulesRaw; /* eslint-disable-line */
+export type RulesRaw        = {[key:string]: RulesRawVal};
+
+
+export type ValidationError = {
+    idx?:number;
+    msg:string;
+    params:DataVal[];
+}
+
+export type ValidationIterable = {
+    unique: boolean;
+    max: number;
+    min: number;
+    handler: {
+        typ: (obj:any) => boolean;
+        len: (obj:any) => number;
+        val: (obj:any) => any[];
+    };
+}
+
+export type ValidationRules = {
+    iterable:ValidationIterable|false;
+    list:  {
+        type:string;
+        params:unknown[];
+        params_length:number;
+        not:boolean;
+    }[];
+    list_length:number;
+}
+
+export type ValidationGroup = {
+    key:string;
+    sometimes:boolean;
+    rules:ValidationRules[];
+}
+
+export type ValidationResult = {
+    /**
+     * Whether or not the validation was valid
+     */
+    is_valid:boolean;
+    /**
+     * Integer value defining how many fields were invalid in the provided data object
+     */
+    count:number;
+    /**
+     * Errors object which will be filled with the errors of the validation result if there are any.
+     *
+     * Take note: 'NO_DATA' is set when no data was passed to the validator.
+     *
+     * Example: {b: [{msg: 'number', params: []}]}
+     */
+    errors: 'NO_DATA' | {[key:string]:ValidationError[]};
+}
