@@ -1,3 +1,4 @@
+import {isArray}                    from '@valkyriestudios/utils/array/is';
 import {isNotEmptyArray}            from '@valkyriestudios/utils/array/isNotEmpty';
 import {isBoolean}                  from '@valkyriestudios/utils/boolean/is';
 import {isDate}                     from '@valkyriestudios/utils/date/is';
@@ -6,6 +7,8 @@ import {isFormData}                 from '@valkyriestudios/utils/formdata/is';
 import {toObject}                   from '@valkyriestudios/utils/formdata/toObject';
 import {isFunction}                 from '@valkyriestudios/utils/function/is';
 import {isAsyncFunction}            from '@valkyriestudios/utils/function/isAsync';
+import {isNumber}                   from '@valkyriestudios/utils/number/is';
+import {isInteger}                  from '@valkyriestudios/utils/number/isInteger';
 import {isObject}                   from '@valkyriestudios/utils/object/is';
 import {isNotEmptyObject}           from '@valkyriestudios/utils/object/isNotEmpty';
 import {isString}                   from '@valkyriestudios/utils/string/is';
@@ -159,7 +162,7 @@ const RGX_PARAM_NAME    = /^[a-zA-Z0-9_.]+$/i;
 const RULE_STORE = {
     alpha_num_spaces: vAlphaNumSpaces,
     alpha_num_spaces_multiline: vAlphaNumSpacesMultiline,
-    array: Array.isArray,
+    array: isArray,
     array_ne: isNotEmptyArray,
     base64: vBase64,
     between: vBetween,
@@ -190,7 +193,7 @@ const RULE_STORE = {
     greater_than_or_equal: vGreaterThanOrEqual,
     guid: vGuid,
     in: vIn,
-    integer: Number.isInteger,
+    integer: isInteger,
     isbn: vISBN,
     isbn_10: vISBN10,
     isbn_13: vISBN13,
@@ -199,7 +202,7 @@ const RULE_STORE = {
     max: vLessThanOrEqual,
     min: vGreaterThanOrEqual,
     null: vNull,
-    number: Number.isFinite,
+    number: isNumber,
     object: isObject,
     object_ne: isNotEmptyObject,
     phone: vPhone,
