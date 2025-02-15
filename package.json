@@ -54,6 +54,18 @@
       "default": "./index.js",
       "types": "./index.d.ts"
     },
+    "./types": {
+      "import": {
+        "default": "./types.js",
+        "types": "./types.d.ts"
+      },
+      "require": {
+        "default": "./types.js",
+        "types": "./types.d.ts"
+      },
+      "default": "./types.js",
+      "types": "./types.d.ts"
+    },
     "./package.json": "./package.json",
     "./functions/vAlphaNumSpaces": {
       "import": {
@@ -379,18 +391,6 @@
       "default": "./functions/vPhone.js",
       "types": "./functions/vPhone.d.ts"
     },
-    "./functions/vRequired": {
-      "import": {
-        "default": "./functions/vRequired.js",
-        "types": "./functions/vRequired.d.ts"
-      },
-      "require": {
-        "default": "./functions/vRequired.js",
-        "types": "./functions/vRequired.d.ts"
-      },
-      "default": "./functions/vRequired.js",
-      "types": "./functions/vRequired.d.ts"
-    },
     "./functions/vSize": {
       "import": {
         "default": "./functions/vSize.js",
@@ -510,6 +510,18 @@
       },
       "default": "./functions/vUlid.js",
       "types": "./functions/vUlid.d.ts"
+    },
+    "./functions/vUndefined": {
+      "import": {
+        "default": "./functions/vUndefined.js",
+        "types": "./functions/vUndefined.d.ts"
+      },
+      "require": {
+        "default": "./functions/vUndefined.js",
+        "types": "./functions/vUndefined.d.ts"
+      },
+      "default": "./functions/vUndefined.js",
+      "types": "./functions/vUndefined.d.ts"
     },
     "./functions/vUrl": {
       "import": {
