@@ -479,8 +479,8 @@ for (const el of [
     {
         lbl: 'Validator@check - coldstart - groups/medium - valid',
         fn: () => new Validator({
-            first_name: ['string|alpha_num_spaces|min:2', 'false'],
-            last_name: ['string|alpha_num_spaces|min:2', 'false'],
+            first_name: ['string|min:2', 'false'],
+            last_name: ['string|min:2', 'false'],
             age: '?integer|between:1,150',
             gender: 'in:<meta.gender_options>',
         }).check({
@@ -494,8 +494,8 @@ for (const el of [
     {
         lbl: 'Validator@check - coldstart - groups/medium - invalid',
         fn: () => new Validator({
-            first_name: ['string|alpha_num_spaces|min:2', 'false'],
-            last_name: ['string|alpha_num_spaces|min:2', 'false'],
+            first_name: ['string|min:2', 'false'],
+            last_name: ['string|min:2', 'false'],
             age: '?integer|between:1,150',
             gender: 'in:<meta.gender_options>',
         }).check({
