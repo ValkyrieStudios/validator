@@ -79,25 +79,18 @@ import {
     type GenericObject,
     type RulesRaw,
     type RulesRawVal,
+    type RuleExtension,
+    type RuleFn,
     type ValidationError,
     type ValidationGroup,
     type ValidationIterable,
     type ValidationResult,
     type ValidationRules,
     type InferredSchema,
+    type MergeExtensions,
+    type MappedExtensions,
+    type TV,
 } from './internalTypes';
-
-/* Validator components */
-type TV<T> = {
-    [K in keyof T]: T[K] extends Array<any>
-        ? string
-        : T[K] extends Record<string, any>
-            ? TV<T[K]>|string
-            : string;
-};
-
-type RuleFn = (...args:any[]) => boolean;
-type RuleExtension = RuleFn | RegExp | (string|number)[] | TV<GenericObject>;
 
 /* Used for enum storage */
 const ENUM_STORE:Map<string, Set<string | number>> = new Map();
@@ -553,7 +546,25 @@ function freezeStore (dict:Record<string, RuleFn>):Readonly<RuleDictionary>  {
 
 let FROZEN_RULE_STORE:Readonly<RuleDictionary> = freezeStore(RULE_STORE);
 
-class Validator <T extends GenericObject, TypedValidator = TV<T>> {
+/* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
+type CombinedRules<Extensions = {}> = typeof RULE_STORE & Extensions;
+
+/* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
+export interface IValidator<Extensions extends Record<string, unknown> = {}> {
+    /* eslint-disable-next-line no-use-before-define */
+    new <T extends GenericObject, TypedValidator = TV<T>>(schema: TypedValidator): Validator<T, Extensions>;
+    readonly rules: Readonly<CombinedRules<Extensions>>;
+    extend<NewExtensions extends Record<string, RuleExtension>>(
+      extensions: NewExtensions
+    ): IValidator<MergeExtensions<Extensions, MappedExtensions<NewExtensions, typeof RULE_STORE>>>;
+    create<const TSchema extends RulesRaw>(
+        schema: TSchema
+    /* eslint-disable-next-line no-use-before-define */
+    ): Validator<InferredSchema<TSchema, CombinedRules<Extensions>>>;
+}
+
+/* eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-unused-vars */
+class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T>> {
 
     /* Validation plan */
     #plan!:ValidationGroup[];
@@ -778,7 +789,10 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
      *
      * @param {Record<string, RuleExtension>} obj - KV Map of rule extensions
      */
-    static extend (obj:Record<string, RuleExtension>):void {
+    static extend <const NewExtensions extends Record<string, RuleExtension>> (
+        obj:NewExtensions
+    /* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
+    ):IValidator<MergeExtensions<{}, MappedExtensions<NewExtensions, typeof Validator['rules']>>> {
         /* Check if rules are valid */
         if (!isObject(obj)) throw new Error('Invalid extension');
 
@@ -864,12 +878,15 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
 
         /* Freeze Rule store */
         FROZEN_RULE_STORE = freezeStore(RULE_STORE);
+
+        /* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
+        return this as unknown as IValidator<MergeExtensions<{}, MappedExtensions<NewExtensions, typeof Validator['rules']>>>;
     }
 
     /**
      * Create a validator instance and have its type auto-inferred
      */
-    static create<const TSchema extends RulesRaw> (schema: TSchema): Validator<InferredSchema<TSchema, typeof Validator>> {
+    static create<const TSchema extends RulesRaw> (schema: TSchema): Validator<InferredSchema<TSchema, typeof Validator['rules']>> {
         return new Validator(schema);
     }
 

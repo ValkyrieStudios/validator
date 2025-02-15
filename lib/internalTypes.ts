@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 /**
  * MARK: Data
  */
@@ -7,9 +8,20 @@ export type DataVal         = string | number | boolean | Date | symbol | null |
 export type DataObject      = {[key:string]: DataVal};
 export type GenericObject   = {[key:string]:any};
 
+/* Typed Validator */
+export type TV<T> = {
+    [K in keyof T]: T[K] extends Array<any>
+        ? string
+        : T[K] extends Record<string, any>
+            ? TV<T[K]>|string
+            : string;
+};
+
 /* Validation rule input data types */
 export type RulesRawVal     = string | string[] | RulesRaw; /* eslint-disable-line */
 export type RulesRaw        = {[key:string]: RulesRawVal};
+export type RuleFn          = (...args:any[]) => boolean;
+export type RuleExtension   = RuleFn | RegExp | (string|number)[] | TV<GenericObject>;
 
 /* Recursively remove the readonly modifier from all properties */
 export type DeepMutable<T> =
@@ -34,8 +46,8 @@ type ExtractGuard<T> =
   T extends (val: unknown, ...args: any[]) => val is infer R ? R : never;
 
 /* Builds mapping from rules in dictionary */
-type RuleMap<V extends {rules: Record<string, any>}> = {
-    [K in keyof V['rules']]: ExtractGuard<V['rules'][K]>
+type RuleMap<Rules extends Record<string, any>> = {
+    [K in keyof Rules]: ExtractGuard<Rules[K]>
 };
 
 /* Extracts rule name from a string (eg: "string|min:2", extract "string") */
@@ -51,11 +63,11 @@ type RemoveNegation<S extends string> = S extends `!${infer Rest}` ? Rest : S;
  * Given a rule string S, infer its type using the default rule type mapping.
  * If the rule begins with a "?" then we union with undefined.
  */
-type InferRuleTypeFromStore<S extends string, V extends {rules: Record<string, any>}> =
+type InferRuleTypeFromStore<S extends string, Rules extends Record<string, any> = {}> =
   S extends `?${infer Rest}`
-    ? (Rest extends '' ? undefined : InferRuleTypeFromStore<RemoveNegation<Rest>, V> | undefined)
-    : ExtractRuleName<RemoveNegation<S>> extends keyof RuleMap<V>
-      ? RuleMap<V>[ExtractRuleName<RemoveNegation<S>>]
+    ? (Rest extends '' ? undefined : InferRuleTypeFromStore<RemoveNegation<Rest>, Rules> | undefined)
+    : ExtractRuleName<RemoveNegation<S>> extends keyof RuleMap<Rules>
+      ? RuleMap<Rules>[ExtractRuleName<RemoveNegation<S>>]
       : unknown;
 
 /**
@@ -64,18 +76,38 @@ type InferRuleTypeFromStore<S extends string, V extends {rules: Record<string, a
  * - If it’s an array (conditional group), we take the union of the inferences.
  * - If it’s an object, we recursively map its keys.
  */
-export type InferredSchema<S, V extends {rules: Record<string, any>} = {rules: object}> =
+export type InferredSchema<S, Rules extends Record<string, any> = {}> =
   S extends string
     ? S extends `[${infer Inner}]${infer Rest}` /* eslint-disable-line @typescript-eslint/no-unused-vars */
-      ? InferredSchema<Rest, V>[] /* eg: [unique|min:1]string_ne -> string[] */
+      ? InferredSchema<Rest, Rules>[] /* eg: [unique|min:1]string_ne -> string[] */
       : S extends `{${infer Inner}}${infer Rest}` /* eslint-disable-line @typescript-eslint/no-unused-vars */
-        ? {[key: string]: InferredSchema<Rest, V>}  /* eg: {unique}string_ne -> {[key:string]:string} */
-        : InferRuleTypeFromStore<S, V>
+        ? {[key: string]: InferredSchema<Rest, Rules>}  /* eg: {unique}string_ne -> {[key:string]:string} */
+        : InferRuleTypeFromStore<S, Rules>
     : S extends Array<infer U>
-      ? InferredSchema<U, V>
+      ? InferredSchema<U, Rules>
       : S extends object
-        ? { [K in keyof S]: InferredSchema<S[K], V> }
+        ? { [K in keyof S]: InferredSchema<S[K], Rules> }
         : unknown;
+
+export type MappedExtensions<Ext extends Record<string, RuleExtension>, Rules extends Record<string, any> = {}> = {
+    [K in keyof Ext]: Ext[K] extends RegExp
+        /* RegEx rule extension */
+        ? (val: unknown, ...args: any[]) => val is string
+        /* Enum rule extension */
+        : Ext[K] extends (infer U)[]
+            ? (val: unknown, ...args: any[]) => val is U
+            /* Function extension */
+            : Ext[K] extends (...args: any[]) => any
+                ? Ext[K]
+                : Ext[K] extends Record<string, any>
+                    ? (val: unknown, ...args: any[]) => val is DeepMutable<InferredSchema<Ext[K], Rules>>
+                    : unknown
+};
+
+export type MergeExtensions<
+    E1 extends Record<string, unknown>,
+    E2 extends Record<string, unknown>
+> = Omit<E1, keyof E2> & E2;
 
 /**
  * MARK: Validation
