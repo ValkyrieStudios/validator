@@ -44,7 +44,6 @@ import {vLessThanOrEqual}           from './functions/vLessThanOrEqual';
 import {vNull}                      from './functions/vNull';
 import {vPhone}                     from './functions/vPhone';
 import {vTimeZone}                  from './functions/vTimeZone';
-import {vRequired}                  from './functions/vRequired';
 import {vSize}                      from './functions/vSize';
 import {vSysMac}                    from './functions/vSysMac';
 import {vSysIPv4}                   from './functions/vSysIPv4';
@@ -157,7 +156,6 @@ const RULE_STORE = {
     object: isObject,
     object_ne: isNotEmptyObject,
     phone: vPhone,
-    required: vRequired,
     size: vSize,
     ssn: vSSN,
     string: isString,

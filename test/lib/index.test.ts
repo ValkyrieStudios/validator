@@ -39,7 +39,6 @@ import vLessThan                from '../../lib/functions/vLessThan';
 import vLessThanOrEqual         from '../../lib/functions/vLessThanOrEqual';
 import vNull                    from '../../lib/functions/vNull';
 import vPhone                   from '../../lib/functions/vPhone';
-import vRequired                from '../../lib/functions/vRequired';
 import vSize                    from '../../lib/functions/vSize';
 import vSysMac                  from '../../lib/functions/vSysMac';
 import vSysIPv4                 from '../../lib/functions/vSysIPv4';
@@ -203,7 +202,6 @@ describe('Validator - Core', () => {
                 object                      : isObject,
                 object_ne                   : isNeObject,
                 phone                       : vPhone,
-                required                    : vRequired,
                 size                        : vSize,
                 ssn                         : vSSN,
                 string                      : isString,

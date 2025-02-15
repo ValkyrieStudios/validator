@@ -23,7 +23,6 @@ import vIn                      from '../lib/functions/vIn';
 import vLessThan                from '../lib/functions/vLessThan';
 import vLessThanOrEqual         from '../lib/functions/vLessThanOrEqual';
 import vPhone                   from '../lib/functions/vPhone';
-import vRequired                from '../lib/functions/vRequired';
 import vSize                    from '../lib/functions/vSize';
 import vSysIPv4                 from '../lib/functions/vSysIPv4';
 import vSysIPv4_or_v6           from '../lib/functions/vSysIPv4_or_v6';
@@ -977,15 +976,6 @@ for (const el of [
     {
         lbl: 'functions/vPhone - invalid',
         fn: () => vPhone('+32 487'),
-    },
-    //  vRequired
-    {
-        lbl: 'functions/vRequired - valid',
-        fn: () => vRequired('amazing'),
-    },
-    {
-        lbl: 'functions/vRequired - invalid',
-        fn: () => vRequired(null),
     },
     //  vSize
     {

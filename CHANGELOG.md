@@ -103,6 +103,8 @@ const v = new Validator({
     uid: ['?guid', '?false'],
 });
 ```
+- **rules**: `required` as a rule has been removed as this rule did nothing other than tell you a value is not empty and as such does not help in truly validating the contents of the value, on top of this it caused conflicting behavior when determining the type of something. For those whishing to 'recreate' the behaviors of this rule you can always apply the following conditional:
+`['string_ne', 'number', 'array_ne', 'object_ne']`.
 
 ### Removed
 - Validator@extendMulti (see improved)
