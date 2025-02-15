@@ -207,7 +207,7 @@ const iterableArrayHandler = (val:unknown) => {
  *
  * @returns {ValidationIterable} Iterable configuration
  */
-function getIterableConfig (val:string, dict:boolean = false):ValidationIterable {
+function getIterableConfig (val:string, dict:boolean):ValidationIterable {
     const unique = val.includes('unique');
     const len = val.length;
 
@@ -481,7 +481,7 @@ function checkRule (
  *
  * @param {ValidationGroup[]} plan - Plan accumulator
  * @param {RulesRawVal} val - Raw rules value cursor
- * @param {string?} key - Cursor key prefix (used when recursing in sub structure)
+ * @param {string} key - Cursor key prefix (used when recursing in sub structure)
  */
 function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
     const type = typeof val;
@@ -490,7 +490,7 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
     if (type === 'string' && val) {
         const sometimes = (val as string)[0] === '?';
         plan.push({
-            key: key || '',
+            key: key as string,
             sometimes,
             rules: [parseRule((sometimes ? (val as string).slice(1) : val) as string)],
         });
@@ -514,7 +514,7 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
                 }
             }
             if (rules.length) {
-                plan.push({key: key || '', sometimes, rules});
+                plan.push({key: key as string, sometimes, rules});
                 return;
             }
         }
@@ -644,7 +644,6 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
      * content as an object if it is
      *
      * @param {FormData} raw - FormData instance to check
-     * @returns {T|false} Returns the formdata as an object if valid or false if not valid
      */
     checkForm (raw:FormData) {
         if (!(raw instanceof FormData)) return false;
@@ -656,7 +655,6 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
      * Fully validates the provided data against the validator's rules
      *
      * @param {GenericObject|FormData} raw - Raw object or FormData instance to check
-     * @returns {ValidationResult}
      */
     validate <K extends GenericObject|FormData> (raw:K):ValidationResult {
         const plan_len = this.#plan_length;

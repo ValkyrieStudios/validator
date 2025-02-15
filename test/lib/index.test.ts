@@ -247,6 +247,28 @@ describe('Validator - Core', () => {
         });
     });
 
+    describe('@schema GET', () => {
+        it('Should return the raw schema passed to the validator on construction', () => {
+            const v = new Validator({foo: 'number'});
+            assert.deepEqual(v.schema, {foo: 'number'});
+        });
+
+        it('Should return the raw schema passed to the validator on construction using Validator.create', () => {
+            const v = Validator.create({foo: 'number'});
+            assert.deepEqual(v.schema, {foo: 'number'});
+        });
+
+        it('Should not be editable', () => {
+            const v = new Validator({foo: 'number'});
+            const out = v.schema;
+            assert.deepEqual(v.schema, {foo: 'number'});
+            assert.deepEqual(out, {foo: 'number'});
+            /* @ts-ignore */
+            out.bla = 'hia';
+            assert.deepEqual(v.schema, {foo: 'number'});
+        });
+    });
+
     describe('@checkForm FN', () => {
         it('Should return false when passed a value that is not an instance of FormData', () => {
             for (const el of CONSTANTS.NOT_FORM_DATA) {
@@ -908,6 +930,13 @@ describe('Validator - Core', () => {
         });
 
         describe('FN - lexer: iterable array', () => {
+            it('Should throw when passed an invalid group', () => {
+                assert.throws(
+                    () => new Validator({a: '[string'}),
+                    new TypeError('Iterable misconfiguration, verify rule config for [string')
+                );
+            });
+
             it('Should return invalid when passing a non-array to an iterable', () => {
                 const validator = new Validator({a: '[]string'});
                 const form = new FormData();
@@ -1154,6 +1183,13 @@ describe('Validator - Core', () => {
         });
 
         describe('FN - lexer: iterable object', () => {
+            it('Should throw when passed an invalid group', () => {
+                assert.throws(
+                    () => new Validator({a: '{string'}),
+                    new TypeError('Iterable misconfiguration, verify rule config for {string')
+                );
+            });
+
             it('Should return invalid when passing a non-object to an iterable', () => {
                 const validator = new Validator({a: '{}string'});
                 const form = new FormData();
@@ -3616,6 +3652,13 @@ describe('Validator - Core', () => {
                 assert.ok(Validator.rules[uid] instanceof Function);
                 assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen', email: 'contact@valkyriestudios.be'}));
                 assert.ok(Validator.rules[uid]({first_name: 'Peter', last_name: 'Vermeulen'}));
+            });
+
+            it('Should throw if providing a schema with invalid rule constructs', () => {
+                assert.throws(
+                    () => Validator.extend({user: {uids: '[string', first_name: 'string_ne'}}),
+                    new Error('Invalid extension')
+                );
             });
         });
     });

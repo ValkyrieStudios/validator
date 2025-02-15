@@ -1,6 +1,7 @@
 import {describe, it}   from 'node:test';
 import * as assert      from 'node:assert/strict';
 import Validator        from '../../../lib';
+import vUndefined from '../../../lib/functions/vUndefined';
 
 describe('vUndefined', () => {
     it('Should be valid if passed undefined', () => {
@@ -8,6 +9,11 @@ describe('vUndefined', () => {
             new Validator({a: '?'}).validate({a: undefined}),
             {is_valid: true, count: 0, errors: {}}
         );
+        assert.ok(vUndefined(undefined));
+    });
+
+    it('Should be invalid if passed a value', () => {
+        assert.ok(!vUndefined('hi'));
     });
 
     it('Should be valid if does not exist', () => {
