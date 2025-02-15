@@ -193,6 +193,12 @@ v.validate({
 //    },
 // }
 ```
+### Q: I want to get the type of a validator to use in my code
+There is a **schema** getter on any Validator instance which returns the raw schema passed to the Validator. By design this getter's **return type** is set to the inferred schema of the Validator. As such doing `type myType = typeof myValidator.schema` will work a treat. For example:
+```typescript
+const v = Validator.create({first_name: 'string_ne', email: '?email'});
+type vType = typeof v.schema; // {first_name:string; email: Email | undefined}
+```
 
 ### Q: I want to do full evaluations with validate while also being able to make use of automatic typing
 Validate by design does not act as a typeguard, to still be able to infer types you will need to manually cast them. There are multiple ways to do this, below is one native example:
