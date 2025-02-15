@@ -65,9 +65,17 @@ type InferRuleTypeFromStore<S extends string, V extends {rules: Record<string, a
  * - If it’s an object, we recursively map its keys.
  */
 export type InferredSchema<S, V extends {rules: Record<string, any>} = {rules: object}> =
-  S extends string ? InferRuleTypeFromStore<S, V> :
-  S extends Array<infer U> ? InferredSchema<U, V> :
-  S extends object ? { [K in keyof S]: InferredSchema<S[K], V> } : unknown;
+  S extends string
+    ? S extends `[${infer Inner}]${infer Rest}` /* eslint-disable-line @typescript-eslint/no-unused-vars */
+      ? InferredSchema<Rest, V>[] /* eg: [unique|min:1]string_ne -> string[] */
+      : S extends `{${infer Inner}}${infer Rest}` /* eslint-disable-line @typescript-eslint/no-unused-vars */
+        ? {[key: string]: InferredSchema<Rest, V>}  /* eg: {unique}string_ne -> {[key:string]:string} */
+        : InferRuleTypeFromStore<S, V>
+    : S extends Array<infer U>
+      ? InferredSchema<U, V>
+      : S extends object
+        ? { [K in keyof S]: InferredSchema<S[K], V> }
+        : unknown;
 
 /**
  * MARK: Validation
