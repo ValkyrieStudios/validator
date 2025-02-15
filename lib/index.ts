@@ -195,17 +195,18 @@ type CustomRuleDictionary = Record<string, RuleFn>;
 type RuleDictionary = typeof RULE_STORE & CustomRuleDictionary;
 
 /* Configuration for an iterable dictionary handler */
-const iterableDictHandler = {
-    typ: isObject,
-    len: (obj:GenericObject) => Object.keys(obj).length,
-    val: (obj:GenericObject) => Object.values(obj),
+const iterableDictHandler = (val:unknown) => {
+    if (!isObject(val)) return null;
+
+    const values = Object.values(val);
+    return {len: values.length, values};
 };
 
 /* Configuration for an iterable array handler */
-const iterableArrayHandler = {
-    typ: Array.isArray,
-    len: (obj:any[]) => obj.length,
-    val: (obj:any[]) => obj,
+const iterableArrayHandler = (val:unknown) => {
+    if (!Array.isArray(val)) return null;
+
+    return {len: val.length, values: val};
 };
 
 /**
@@ -347,45 +348,60 @@ function parseRule (raw: string): ValidationRules {
 }
 
 /**
+ * Internal function which for a provided params array constructs the final product
+ *
+ * @param {ValidationRules['list'][0]} rule_el - Rule part for which to construct the params for
+ * @param {number} size - Size of the params array
+ * @param {DataObject} data - Data Object to extract from
+ */
+function constructParams (rule_el:ValidationRules['list'][0], data:DataObject) {
+    const {params_length, params} = rule_el;
+    const acc = new Array(params_length);
+    for (let i = 0; i < params_length; i++) {
+        const p = params[i];
+        acc[i] = !p[1] ? p[0] : deepGet(data, p[0] as string);
+    }
+    return acc;
+}
+
+/**
  * Fully validate a rule list against a certain field cursor
  *
- * @param cursor - Cursor value to run the rule list against
- * @param list - List of rules to run against the cursor
- * @param data - Original data object (used in param checks)
- *
- * @returns Object containing an errors array and is_valid prop
+ * @param {DataVal} cursor - Cursor value to run the rule list against
+ * @param {ValidationRules} rule - List of rules to run against the cursor
+ * @param {DataObject} data - Original data object (used in param checks)
+ * @param {number?} idx - The index of the array element if running validateField inside of an array
  */
 function validateField (
     cursor:DataVal,
     rule:ValidationRules,
-    data:DataObject
+    data:DataObject,
+    idx?:number
 ):{
     errors:ValidationError[];
     is_valid:boolean;
 } {
     const errors:ValidationError[] = [];
     for (let i = 0; i < rule.list_length; i++) {
-        const {type, not, params, params_length} = rule.list[i];
-        const rulefn = RULE_STORE[type as keyof typeof RULE_STORE];
+        const rule_el = rule.list[i];
+        const rulefn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE];
 
         /* Check if rule exists */
         if (!rulefn) {
-            errors.push({msg: 'rule_not_found', params: [type]});
+            errors.push({msg: 'rule_not_found', params: [rule_el.type]});
             continue;
         }
 
-        /* Get params that need to be passed, each param is either a function or a primitive */
-        const n_params = [];
-        for (let x = 0; x < params_length; x++) {
-            const p = params[x];
-            n_params.push(typeof p === 'function' ? p(data) : p);
-        }
+        /* Get params */
+        const params = constructParams(rule_el, data);
 
         /* Run rule - if check fails (not valid && not not | not && valid) push into errors */
         /* eslint-disable-next-line */
         /* @ts-ignore */
-        if (rulefn(cursor, ...n_params) === not) {
-            errors.push({msg: (not ? 'not_' : '') + type, params: n_params});
+        if (rulefn(cursor, ...params) === rule_el.not) {
+            errors.push(idx !== undefined
+                ? {msg: rule_el.msg, params, idx}
+                : {msg: rule_el.msg, params});
         }
     }
 
@@ -406,70 +422,63 @@ function checkRule (
     rule:ValidationRules,
     data:DataObject
 ):boolean {
-    if (!rule.iterable) {
-        for (let i = 0; i < rule.list_length; i++) {
-            const {type, not, params, params_length} = rule.list[i];
-            const rulefn = RULE_STORE[type as keyof typeof RULE_STORE];
+    const {iterable, list_length, list} = rule;
+    if (!iterable) {
+        for (let i = 0; i < list_length; i++) {
+            const rule_el = list[i];
+            const rulefn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE];
             if (!rulefn) return false;
 
-            /* Get params that need to be passed, each param is either a function or a primitive */
-            const n_params = [];
-            for (let x = 0; x < params_length; x++) {
-                const p = params[x];
-                n_params.push(typeof p === 'function' ? p(data) : p);
-            }
+            /* Get params */
+            const params = constructParams(rule_el, data);
 
             /* Run rule - if check fails (not valid && not not | not && valid) */
             /* eslint-disable-next-line */
             /* @ts-ignore */
-            if (rulefn(cursor, ...n_params) === not) return false;
+            if (rulefn(cursor, ...params) === rule_el.not) return false;
         }
-    } else {
-        /* If not a valid type for the iterable -> invalid */
-        if (!rule.iterable.handler.typ(cursor)) return false;
 
-        /* Get len of cursor and check with min/max */
-        const len = rule.iterable.handler.len(cursor);
-        if (len < rule.iterable.min || len > rule.iterable.max) return false;
+        return true;
+    }
 
-        /**
-         * If rule.iterable.unique is set create map to store hashes and keep tabs
-         * on uniqueness as we run through the array
-         */
-        const unique_set    = new Set();
-        const values        = rule.iterable.handler.val(cursor);
-        const param_acc     = [];
-        let cursor_value;
-        for (let idx = 0; idx < len; idx++) {
-            cursor_value = values[idx];
-            for (let i = 0; i < rule.list_length; i++) {
-                const {type, not, params, params_length} = rule.list[i];
-                const rulefn = RULE_STORE[type as keyof typeof RULE_STORE];
+    /* If not a valid type for the iterable -> invalid */
+    const iterable_data = iterable.handler(cursor);
+    if (!iterable_data) return false;
 
-                /* Check if rule exists */
-                if (!rulefn) return false;
+    const {len, values} = iterable_data;
 
-                /* Get params that need to be passed, each param is either a function or a primitive */
-                if (!param_acc[i]) {
-                    const n_params = [];
-                    for (let x = 0; x < params_length; x++) {
-                        const p = params[x];
-                        n_params.push(typeof p === 'function' ? p(data) : p);
-                    }
-                    param_acc[i] = n_params;
-                }
+    /* Check length with min/max */
+    if (len < iterable.min || len > iterable.max) return false;
 
-                /* Run rule - if check fails (not valid && not not | not && valid) */
-                /* eslint-disable-next-line */
-                /* @ts-ignore */
-                if (rulefn(cursor_value, ...param_acc[i]) === not) return false;
-            }
+    /**
+     * If iterable.unique is set create map to store hashes and keep tabs
+     * on uniqueness as we run through the array
+     */
+    const unique_set    = new Set();
+    const param_acc     = [];
+    let cursor_value;
+    for (let idx = 0; idx < len; idx++) {
+        cursor_value = values[idx];
+        for (let i = 0; i < list_length; i++) {
+            const rule_el = list[i];
+            const rulefn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE];
 
-            /* Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique */
-            if (rule.iterable.unique) {
-                unique_set.add(fnv1A(cursor_value));
-                if (unique_set.size !== (idx + 1)) return false;
-            }
+            /* Check if rule exists */
+            if (!rulefn) return false;
+
+            /* Get params */
+            if (!param_acc[i]) param_acc[i] = constructParams(rule_el, data);
+
+            /* Run rule - if check fails (not valid && not not | not && valid) */
+            /* eslint-disable-next-line */
+            /* @ts-ignore */
+            if (rulefn(cursor_value, ...param_acc[i]) === rule_el.not) return false;
+        }
+
+        /* Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique */
+        if (iterable.unique) {
+            unique_set.add(fnv1A(cursor_value));
+            if (unique_set.size !== (idx + 1)) return false;
         }
     }
 
@@ -676,69 +685,69 @@ class Validator <T extends GenericObject, TypedValidator = TV<T>> {
                 const rule = part.rules[x];
 
                 /* Check for iterable config */
-                if (rule.iterable) {
-                    const error_cursor:ValidationError[] = [];
-
-                    /* Check type */
-                    if (!rule.iterable.handler.typ(cursor)) {
-                        error_cursor.push({msg: 'iterable', params: []});
-                    } else {
-                        const len = rule.iterable.handler.len(cursor);
-
-                        /**
-                         * if   rule.iterable.min is set and len is below the min -> invalid
-                         * Elif rule.iterable.max is set and len is above max -> invalid
-                         * El   iterable validation
-                         */
-                        if (len < rule.iterable.min) {
-                            error_cursor.push({msg: 'iterable_min', params: [rule.iterable.min]});
-                        } else if (len > rule.iterable.max) {
-                            error_cursor.push({msg: 'iterable_max', params: [rule.iterable.max]});
-                        } else {
-                            /**
-                             * If rule.iterable.unique is set create map to store hashes and keep tabs
-                             * on uniqueness as we run through the array
-                             */
-                            let unique_set = rule.iterable.unique ? new Set() : false;
-                            const values = rule.iterable.handler.val(cursor);
-                            let cursor_value;
-                            for (let idx = 0; idx < len; idx++) {
-                                cursor_value = values[idx];
-                                const evaluation = validateField(cursor_value, rule, data as DataObject);
-                                if (!evaluation.is_valid) {
-                                    for (let z = 0; z < evaluation.errors.length; z++) {
-                                        error_cursor.push({idx, ...evaluation.errors[z]});
-                                    }
-                                }
-
-                                /**
-                                 * Compute fnv hash if uniqueness needs to be checked, if map size differs from
-                                 * our current point in the iteration add uniqueness error
-                                 */
-                                if (unique_set) {
-                                    unique_set.add(fnv1A(cursor_value));
-                                    if (unique_set.size !== (idx + 1)) {
-                                        unique_set = false;
-                                        error_cursor.unshift({msg: 'iterable_unique', params: []});
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (!error_cursor.length) {
-                        has_valid = true;
-                        break;
-                    }
-
-                    part_errors.push(error_cursor);
-                } else {
+                if (!rule.iterable) {
                     const evaluation = validateField(cursor, rule, data as DataObject);
                     if (evaluation.is_valid) {
                         has_valid = true;
                         break;
                     }
                     part_errors.push(evaluation.errors);
+                    continue;
+                }
+
+                const iterable_data = rule.iterable.handler(cursor);
+
+                /* Check type */
+                if (!iterable_data) {
+                    part_errors.push([{msg: 'iterable', params: []}]);
+                    continue;
+                }
+
+                const error_cursor:ValidationError[] = [];
+                const {len, values} = iterable_data;
+
+                /**
+                 * if   rule.iterable.min is set and len is below the min -> invalid
+                 * Elif rule.iterable.max is set and len is above max -> invalid
+                 * El   iterable validation
+                 */
+                if (len < rule.iterable.min) {
+                    error_cursor.push({msg: 'iterable_min', params: [rule.iterable.min]});
+                } else if (len > rule.iterable.max) {
+                    error_cursor.push({msg: 'iterable_max', params: [rule.iterable.max]});
+                } else {
+                    /**
+                     * If rule.iterable.unique is set create map to store hashes and keep tabs
+                     * on uniqueness as we run through the array
+                     */
+                    let unique_set = rule.iterable.unique ? new Set() : false;
+                    let cursor_value;
+                    for (let idx = 0; idx < len; idx++) {
+                        cursor_value = values[idx];
+                        const evaluation = validateField(cursor_value, rule, data as DataObject, idx);
+                        if (!evaluation.is_valid) error_cursor.push(...evaluation.errors);
+
+                        /**
+                         * Compute fnv hash if uniqueness needs to be checked, if map size differs from
+                         * our current point in the iteration add uniqueness error
+                         */
+                        if (unique_set) {
+                            const hash = fnv1A(cursor_value);
+                            if (unique_set.has(hash)) {
+                                unique_set = false;
+                                error_cursor.unshift({msg: 'iterable_unique', params: []});
+                            } else {
+                                unique_set.add(hash);
+                            }
+                        }
+                    }
+                }
+
+                if (error_cursor.length) {
+                    part_errors.push(error_cursor);
+                } else {
+                    has_valid = true;
+                    break;
                 }
             }
 
