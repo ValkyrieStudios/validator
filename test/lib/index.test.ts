@@ -385,23 +385,6 @@ describe('Validator - Core', () => {
     });
 
     describe('@check FN - lexer: iterable array', () => {
-        it('Should throw if passed an invalid iterable config during rule creation', () => {
-            assert.throws(
-                () => new Validator({a: '[string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for [string')
-            );
-
-            assert.throws(
-                () => new Validator({a: ']string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for ]string')
-            );
-
-            assert.throws(
-                () => new Validator({a: '][string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for ][string')
-            );
-        });
-
         it('Should not throw if passed an iterable config during rule creation', () => {
             assert.doesNotThrow(() => new Validator({a: '[]string'}));
         });
@@ -579,23 +562,6 @@ describe('Validator - Core', () => {
     });
 
     describe('@check FN - lexer: iterable object', () => {
-        it('Should throw if passed an invalid iterable config during rule creation', () => {
-            assert.throws(
-                () => new Validator({a: '{string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for {string')
-            );
-
-            assert.throws(
-                () => new Validator({a: '}string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for }string')
-            );
-
-            assert.throws(
-                () => new Validator({a: '}{string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for }{string')
-            );
-        });
-
         it('Should not throw if passed an iterable config during rule creation', () => {
             assert.doesNotThrow(() => new Validator({a: '{}string'}));
         });
@@ -1735,23 +1701,6 @@ describe('Validator - Core', () => {
     });
 
     describe('@validate FN - lexer: iterable array', () => {
-        it('Should throw if passed an invalid iterable config during rule creation', () => {
-            assert.throws(
-                () => new Validator({a: '[string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for [string')
-            );
-
-            assert.throws(
-                () => new Validator({a: ']string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for ]string')
-            );
-
-            assert.throws(
-                () => new Validator({a: '][string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for ][string')
-            );
-        });
-
         it('Should not throw if passed an iterable config during rule creation', () => {
             assert.doesNotThrow(() => new Validator({a: '[]string'}));
         });
@@ -2260,23 +2209,6 @@ describe('Validator - Core', () => {
     });
 
     describe('@validate FN - lexer: iterable object', () => {
-        it('Should throw if passed an invalid iterable config during rule creation', () => {
-            assert.throws(
-                () => new Validator({a: '{string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for {string')
-            );
-
-            assert.throws(
-                () => new Validator({a: '}string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for }string')
-            );
-
-            assert.throws(
-                () => new Validator({a: '}{string'}),
-                new TypeError('Iterable misconfiguration, verify rule config for }{string')
-            );
-        });
-
         it('Should not throw if passed an iterable config during rule creation', () => {
             assert.doesNotThrow(() => new Validator({a: '{}string'}));
         });

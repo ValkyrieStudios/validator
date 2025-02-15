@@ -1,9 +1,11 @@
+/* eslint-disable max-statements,complexity */
+
 import {isArray}                    from '@valkyriestudios/utils/array/is';
 import {isNotEmptyArray}            from '@valkyriestudios/utils/array/isNotEmpty';
 import {isBoolean}                  from '@valkyriestudios/utils/boolean/is';
 import {isDate}                     from '@valkyriestudios/utils/date/is';
-import {deepGet}                    from '@valkyriestudios/utils/deep/get';
 import {deepFreeze}                 from '@valkyriestudios/utils/deep/freeze';
+import {deepGet}                    from '@valkyriestudios/utils/deep/get';
 import {isFormData}                 from '@valkyriestudios/utils/formdata/is';
 import {toObject}                   from '@valkyriestudios/utils/formdata/toObject';
 import {isFunction}                 from '@valkyriestudios/utils/function/is';
@@ -84,7 +86,7 @@ import {
     type ValidationResult,
     type ValidationRules,
     type InferredSchema,
-} from './types';
+} from './internalTypes';
 
 /* Validator components */
 type TV<T> = {
@@ -100,12 +102,14 @@ type RuleExtension = RuleFn | RegExp | (string|number)[] | TV<GenericObject>;
 
 /* Used for enum storage */
 const ENUM_STORE:Map<string, Set<string | number>> = new Map();
+
+/* Used for regexp storage */
 const REGEX_STORE:Map<string, RegExp> = new Map();
-const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map(); /* eslint-disable-line */
 
-/* Regexes used in processing */
-const RGX_PARAM_NAME    = /^[a-zA-Z0-9_.]+$/i;
+/* Used for schema storage */
+const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map(); /* eslint-disable-line no-use-before-define */
 
+/* Global rule storage */
 const RULE_STORE = {
     alpha_num_spaces: vAlphaNumSpaces,
     alpha_num_spaces_multiline: vAlphaNumSpacesMultiline,
@@ -451,6 +455,7 @@ function checkRule (
 function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
     /**
      * If   the cursor is a string -> parse
+     * Elif the cursor is an array -> group
      * Elif the cursor is an object -> recurse
      * El   throw error as misconfiguration
      */
