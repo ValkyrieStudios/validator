@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - 10.x
+Version 10.x represents a major step forward in Validator by enhancing type safety, developer experience while also further improving on performance. The overall API has been streamlined to better align with modern TypeScript practices. Key improvements include:
+- **Enhanced Type Inference & DX**
+-- A new schema getter lets you inspect the raw ruleset and automatically infer the validator’s output type.
+-- The static create method now auto-infers types from your validation schema without extra type assertions.
+- **Unified & Powerful Extension Mechanism:**
+-- The revamped extend method consolidates previous extension APIs, supporting key/value mappings with RegExp, enum arrays, and even nested schema objects.
+-- This mechanism returns an adjusted Validator class, ensuring that custom extensions correctly augment type inference.
+- **Branded Types & Better Rule Definitions:**
+-- Branded types (e.g., GeoLatitude, GeoLongitude, and others) are now built into the library for more precise validation.
+- **Breaking Changes:**
+-- The DSL for conditional rule groups has been simplified for reduced cognitive overhead and improved clarity.
+-- The deprecated required rule has been removed, and several legacy extension methods have been consolidated.
+
 ### Added
 - **dx**: Validator@schema getter which can be used to both understand the existing raw ruleset configured for a validator **and infer the type of the validator from**
 - **feat**: Validator@create static which acts as a proxy for creating a new Validator **while also automatically inferring a type** off of the provided schema
@@ -61,6 +74,42 @@ Validator.extend({
     },
 });
 ```
+- **feat**: Validator@extend will now return an adjusted class definition for Validator containing the rule extensions. Using this returned class as the base class to create Validators on ensures proper typing as well.
+```typescript
+/* validator.ts: Example File somewhere in your project */
+import {Validator} from '@valkyriestudios/validator';
+
+const CustomValidator = Validator.extend({
+    is_fruit: ['apple', 'pear', 'banana', 'kiwi', 'orange', 'grape'],
+    user: {
+        first_name: 'string_ne',
+        last_name: 'string_ne',
+        phone: '?phone',
+    },
+});
+
+export default CustomValidator;
+
+/* handler.ts: Example file somewhere in your project making use of the custom validator */
+import Validator from './validator.ts';
+
+const v = CustomValidator.create({
+    fruit: 'is_fruit',
+    users: '[]user',
+    type: 'string_ne',
+});
+
+type vType = typeof v.schema;
+/* The above will result in: the following type: {
+    fruit: "apple" | "pear" | "banana" | "kiwi" | "orange" | "grape";
+    users: {
+        first_name: string;
+        last_name: string;
+        phone: Phone | undefined;
+    }[];
+    bla: string;
+}*/
+```
 - **dx**: A branded `GeoLatitude` type is now available for the `geo_latitude` rule as its typeguard
 - **dx**: A branded `GeoLongitude` type is now available for the `geo_longitude` rule as its typeguard
 - **dx**: All branded types are now exported from a root-level types file (for easy access)
@@ -85,7 +134,7 @@ const v = new Validator({
 
 /* new way of defining */
 const v = new Validator({
-    irst_name: ['string_ne|min:3', 'null'],
+    first_name: ['string_ne|min:3', 'null'],
 });
 
 /* Optionality: old way of defining, the below would validate that uid can be passed but needs to be a guid or null if passed */
