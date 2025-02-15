@@ -564,7 +564,7 @@
     "@valkyriestudios/utils": "^12.31.1"
   },
   "devDependencies": {
-    "@types/node": "^22.13.2",
+    "@types/node": "^22.13.4",
     "@valkyriestudios/data-continents": "^0.3.0",
     "@valkyriestudios/data-countries": "^0.3.0",
     "@valkyriestudios/data-timezones": "^0.6.0",
