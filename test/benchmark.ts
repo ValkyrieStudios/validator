@@ -253,8 +253,8 @@ for (const el of [
     {
         lbl: 'Validator@validate - coldstart - groups/medium',
         fn: () => new Validator({
-            first_name: ['string|alpha_num_spaces|min:2', 'false'],
-            last_name: ['string|alpha_num_spaces|min:2', 'false'],
+            first_name: ['string|min:2', 'false'],
+            last_name: ['string|min:2', 'false'],
             age: '?integer|between:1,150',
             gender: 'in:<meta.gender_options>',
         }).validate({

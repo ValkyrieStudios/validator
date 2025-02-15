@@ -249,67 +249,98 @@ function getIterableConfig (val:string, dict:boolean = false):ValidationIterable
  *
  * @returns {ValidationRules} Parsed validation rule
  */
-function parseRule (raw:string):ValidationRules {
-    /* ([...]) Check for iterable behavior */
-    let iterable:ValidationIterable|false = false;
+function parseRule (raw: string): ValidationRules {
+    let iterable: ValidationIterable | false = false;
+    let pos = 0;
+    const len = raw.length;
 
-    const arr_start_idx = raw.indexOf('[');
-    const arr_end_idx   = raw.indexOf(']');
-    if (arr_start_idx > -1 || arr_end_idx > -1) {
-        if (arr_start_idx !== 0 || arr_end_idx < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
-
-        iterable    = getIterableConfig(raw.slice(0, arr_end_idx));
-        raw         = raw.slice(arr_end_idx + 1);
-    } else {
-        const obj_start_idx = raw.indexOf('{');
-        const obj_end_idx   = raw.indexOf('}');
-        if (obj_start_idx > -1 || obj_end_idx > -1) {
-            if (obj_start_idx !== 0 || obj_end_idx < 0) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
-
-            iterable    = getIterableConfig(raw.slice(0, obj_end_idx), true);
-            raw         = raw.slice(obj_end_idx + 1);
+    /* Check if the rule starts with an iterable config ([...] or {...}) */
+    if (len > 0 && (raw[0] === '[' || raw[0] === '{')) {
+        const closingChar = raw[0] === '[' ? ']' : '}';
+        let endPos = -1;
+        /* Loop to find the closing bracket/brace. */
+        for (let i = 1; i < len; i++) {
+            if (raw[i] === closingChar) {
+                endPos = i;
+                break;
+            }
         }
+        if (endPos === -1) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
+
+        iterable = getIterableConfig(raw.slice(0, endPos), raw[0] !== '[');
+        pos = endPos + 1;
     }
 
     /**
      * Accumulate all the checks that need to be run for this field
      * (eg: string_ne|min:20 will become an array with two checks)
      */
-    const list  = [];
-    const parts = raw.split('|');
-    for (let y = 0; y < parts.length; y++) {
-        let params:string[]|string[][]|unknown[]|unknown[][] = parts[y].split(':');
-        let type = params.shift() as string;
+    const list = [];
+
+    /* Process rule parts separated by '|' */
+    while (pos < len) {
+        /* Identify the boundaries for the current part. */
+        const partStart = pos;
+        while (pos < len && raw[pos] !== '|') pos++;
+        const part = raw.slice(partStart, pos);
+
+        /* Parse the current part in the format "type[:params]" */
+        let colonPos = -1;
+        for (let i = 0; i < part.length; i++) {
+            if (part[i] !== ':') continue;
+            colonPos = i;
+            break;
+        }
+        let ruleType: string;
+        let not = false;
+        let params: [unknown, boolean][] = [];
+
+        if (colonPos === -1) {
+            /* If no colon is present, the entire part is the rule type. */
+            ruleType = part;
+        } else {
+            ruleType = part.slice(0, colonPos);
+        }
 
         /* Get 'not' flag */
-        const not = type[0] === '!';
-        if (not) type = type.slice(1);
+        if (ruleType[0] === '!') {
+            not = true;
+            ruleType = ruleType.slice(1);
+        }
 
-        /* Get parameters */
-        let params_length = params.length;
-        if (params_length) {
-            params = (params[0] as string).split(',');
-            params_length = params.length;
-            if (type === 'in' && params_length > 1) {
-                params = [params];
-            } else {
-                /* Parse parameters into callback functions */
-                for (let i = 0; i < params_length; i++) {
-                    let param = params[i] as string;
-                    const param_len = param.length;
-                    if (param[0] === '<' && param[param_len - 1] === '>') {
-                        param = param.slice(1, -1);
-                        /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
-                        if (!RGX_PARAM_NAME.test(param)) {
-                            throw new TypeError(`Parameterization misconfiguration, verify rule config for ${raw}`);
-                        }
+        /* If there is a colon, process parameters. */
+        if (colonPos !== -1) {
+            const paramsPart = part.slice(colonPos + 1);
+            let pPos = 0;
+            const pLen = paramsPart.length;
+            while (pPos < pLen) {
+                /* Read until next comma or end-of-string. */
+                const start = pPos;
+                while (pPos < pLen && paramsPart[pPos] !== ',') pPos++;
 
-                        params[i] = (data:DataObject) => deepGet(data, param);
-                    }
+                let token = paramsPart.slice(start, pPos);
+                let extract = false;
+                /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
+                if (token[0] === '<' && token[token.length - 1] === '>') {
+                    token = token.slice(1, -1);
+                    if (!isNotEmptyString(token)) throw new TypeError('Parameterization misconfiguration');
+                    extract = true;
                 }
+                params.push([token, extract]);
+                pPos++; /* Skip the comma */
+            }
+
+            /**
+             * For type 'in' with multiple parameters, revert to original logic:
+             * use the raw parameters split by comma as a single parameter.
+             */
+            if (ruleType === 'in' && params.length > 1) {
+                params = [[paramsPart.split(','), false]];
             }
         }
-        list.push({type, params, params_length, not});
+
+        list.push({type: ruleType, not, msg: (not ? 'not_' : '') + ruleType, params, params_length: params.length});
+        pos++; /* Skip the '|' character */
     }
 
     return {iterable, list, list_length: list.length};
@@ -453,38 +484,51 @@ function checkRule (
  * @param {string?} key - Cursor key prefix (used when recursing in sub structure)
  */
 function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
-    /**
-     * If   the cursor is a string -> parse
-     * Elif the cursor is an array -> group
-     * Elif the cursor is an object -> recurse
-     * El   throw error as misconfiguration
-     */
-    if (isNotEmptyString(val)) {
-        const sometimes = val[0] === '?';
-        let raw = val;
-        if (sometimes) raw = raw.slice(1);
-        plan.push({key: key || '', sometimes, rules: [parseRule(raw)]});
-    } else if (isNotEmptyArray(val)) {
-        const group:ValidationGroup = {key: key || '', sometimes: false, rules: []};
-        for (let i = 0; i < val.length; i++) {
-            const branch = val[i];
-            if (!isNotEmptyString(branch)) throw new TypeError('Conditional group alternatives must be strings');
+    const type = typeof val;
 
-            /* Special case: If the branch is exactly '?' we treat the entire group as optional */
-            if (branch === '?') {
-                group.sometimes = true;
-                continue;
-            }
-
-            group.rules.push(parseRule(branch));
-        }
-        plan.push(group);
-    } else if (isObject(val)) {
-        for (const val_key in val) recursor(plan, val[val_key], key ? key + '.' + val_key : val_key);
-    } else {
-        /* Throw a type error if neither a string nor an object */
-        throw new TypeError('Invalid rule value');
+    /* String */
+    if (type === 'string' && val) {
+        const sometimes = (val as string)[0] === '?';
+        plan.push({
+            key: key || '',
+            sometimes,
+            rules: [parseRule((sometimes ? (val as string).slice(1) : val) as string)],
+        });
+        return;
     }
+
+    /* Array */
+    if (Array.isArray(val)) {
+        if (val.length) {
+            let sometimes = false;
+            const rules: ValidationRules[] = [];
+            for (let i = 0, len = val.length; i < len; i++) {
+                const branch = val[i];
+                if (!branch || typeof branch !== 'string') throw new TypeError('Conditional group alternatives must be strings');
+
+                /* Special case as a branch can be just '?' */
+                if (branch === '?') {
+                    sometimes = true;
+                } else {
+                    rules.push(parseRule(branch));
+                }
+            }
+            if (rules.length) {
+                plan.push({key: key || '', sometimes, rules});
+                return;
+            }
+        }
+    }
+
+    /* Object */
+    if (val !== null && type === 'object') {
+        for (const k in val as RulesRaw) {
+            recursor(plan, (val as RulesRaw)[k], key ? key + '.' + k : k);
+        }
+        return;
+    }
+
+    throw new TypeError('Invalid rule value');
 }
 
 /**

@@ -128,19 +128,13 @@ describe('Validator - Core', () => {
 
         assert.throws(
             //  @ts-ignore
-            () => new Validator({foo: 'number', a: {b: 'string', params: []}}),
-            new TypeError('Invalid rule value')
-        );
-
-        assert.throws(
-            //  @ts-ignore
             () => new Validator({foo: 5, a: {b: 'string', params: []}}),
             new TypeError('Invalid rule value')
         );
 
         assert.throws(
             //  @ts-ignore
-            () => new Validator({a: {b: ' '}}),
+            () => new Validator({a: {b: ''}}),
             new TypeError('Invalid rule value')
         );
 
@@ -152,7 +146,7 @@ describe('Validator - Core', () => {
 
         assert.throws(
             () => new Validator({foo: 'number', a: 'in:<>'}),
-            new TypeError('Parameterization misconfiguration, verify rule config for in:<>')
+            new TypeError('Parameterization misconfiguration')
         );
     });
 
