@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **deps**: Upgrade @types/node to 22.13.5
+- **deps**: Upgrade eslint to 9.21.0
+- **deps**: Upgrade typescript-eslint to 8.24.1
+
+### Fixed
+- Fix an issue where generic usage causes issues with typescript builds in some configurations
+
 ## [10.0.0] - 2025-02-15
 Version 10.x represents a major step forward in Validator by enhancing type safety, developer experience while also further improving on performance. The overall API has been streamlined to better align with modern TypeScript practices. Key improvements include:
 - **Enhanced Type Inference & DX**

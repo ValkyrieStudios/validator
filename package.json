@@ -576,14 +576,14 @@
     "@valkyriestudios/utils": "^12.31.1"
   },
   "devDependencies": {
-    "@types/node": "^22.13.4",
+    "@types/node": "^22.13.5",
     "@valkyriestudios/data-continents": "^0.3.0",
     "@valkyriestudios/data-countries": "^0.3.0",
     "@valkyriestudios/data-timezones": "^0.6.0",
     "esbuild-register": "^3.6.0",
-    "eslint": "^9.20.1",
+    "eslint": "^9.21.0",
     "nyc": "^17.1.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.24.0"
+    "typescript-eslint": "^8.24.1"
   }
 }
