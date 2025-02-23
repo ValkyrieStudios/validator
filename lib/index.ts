@@ -484,51 +484,46 @@ function checkRule (
  * @param {string} key - Cursor key prefix (used when recursing in sub structure)
  */
 function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
+    if (!val) throw new TypeError('Invalid rule value');
     const type = typeof val;
 
-    /* String */
-    if (type === 'string' && val) {
+    if (type === 'string') {
+        /* String */
         const sometimes = (val as string)[0] === '?';
         plan.push({
             key: key as string,
             sometimes,
             rules: [parseRule((sometimes ? (val as string).slice(1) : val) as string)],
         });
-        return;
-    }
+    } else if (Array.isArray(val)) {
+        /* Array */
+        let sometimes = false;
+        const rules: ValidationRules[] = [];
+        for (let i = 0, len = val.length; i < len; i++) {
+            const branch = val[i];
 
-    /* Array */
-    if (Array.isArray(val)) {
-        if (val.length) {
-            let sometimes = false;
-            const rules: ValidationRules[] = [];
-            for (let i = 0, len = val.length; i < len; i++) {
-                const branch = val[i];
-                if (!branch || typeof branch !== 'string') throw new TypeError('Conditional group alternatives must be strings');
-
-                /* Special case as a branch can be just '?' */
-                if (branch === '?') {
-                    sometimes = true;
-                } else {
-                    rules.push(parseRule(branch));
-                }
-            }
-            if (rules.length) {
-                plan.push({key: key as string, sometimes, rules});
-                return;
+            /* Special case as a branch can be just '?' */
+            if (branch === '?') {
+                sometimes = true;
+            } else if (branch && typeof branch === 'string') {
+                rules.push(parseRule(branch));
+            } else {
+                throw new TypeError('Conditional group alternatives must be strings');
             }
         }
-    }
-
-    /* Object */
-    if (val !== null && type === 'object') {
+        if (rules.length) {
+            plan.push({key: key as string, sometimes, rules});
+        } else {
+            throw new TypeError('Invalid rule value');
+        }
+    } else if (type === 'object') {
+        /* Object */
         for (const k in val as RulesRaw) {
             recursor(plan, (val as RulesRaw)[k], key ? key + '.' + k : k);
         }
-        return;
+    } else {
+        throw new TypeError('Invalid rule value');
     }
-
-    throw new TypeError('Invalid rule value');
 }
 
 /**
