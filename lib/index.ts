@@ -603,9 +603,7 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
      * @param {GenericObject|FormData} raw - Raw object or FormData instance to check
      * @returns {boolean} Whether or not it's valid
      */
-    /* eslint-disable-next-line */
-    /* @ts-ignore */
-    check <K extends GenericObject|FormData> (raw:K):raw is typeof this['schema'] {
+    check (raw:unknown):raw is typeof this['schema'] {
         const plan_len = this.#plan_length;
 
         /* No data passed? Check if rules were set up */
