@@ -748,6 +748,10 @@ describe('Validator - Core', () => {
     });
 
     describe('@check FN - lexer: groups', () => {
+        it('Should throw when passed a fully empty branch', () => {
+            assert.throws(() => new Validator({a: []}));
+        });
+
         it('Should return valid when one of both rules are valid', () => {
             const validator = new Validator({a: ['[max:5|min:2]string', 'false']});
             assert.ok(validator.check({a: ['hello', 'there', 'cool']}));
