@@ -140,7 +140,7 @@ describe('Validator - Core', () => {
         assert.throws(
             //  @ts-ignore
             () => new Validator({foo: ['string_ne', '', '   ', '?']}),
-            new TypeError('Conditional group alternatives must be strings')
+            new TypeError('Invalid Conditional group alternative')
         );
 
         assert.throws(
@@ -798,6 +798,111 @@ describe('Validator - Core', () => {
             assert.equal(validator.check({a: 'foobar', nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}), false);
             assert.ok(validator.check({a: 2, nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}));
             assert.ok(validator.check({a: ['other'], nums: [1, 2, 3], meta: {strings: ['male', 'female', 'other', 'undecided']}}));
+        });
+
+        it('Should work with nested schemas', () => {
+            const v = new Validator({
+                a: ['?', {first_name: '?string_ne', last_name: 'string_ne'}, 'string_ne'],
+                b: '?string_ne',
+            });
+
+            assert.ok(v.check({b: 'hello'}));
+            assert.ok(v.check({}));
+            assert.ok(v.check({a: {first_name: 'Peter', last_name: 'V'}}));
+            assert.ok(!v.check({a: {first_name: 'Peter'}})); // Last name is missing
+            assert.ok(v.check({a: {last_name: 'V'}})); // Good: First name is optional
+            assert.ok(v.check({a: 'Hello World'}));
+        });
+
+        it('Should work with nested schemas deep inside of an object', () => {
+            const v = new Validator({
+                user: ['?', {
+                    details: ['?', {
+                        security: ['?', {types: '?[unique|min:1|max:10]in:<securityTypes>'}],
+                    }],
+                }],
+            });
+
+            assert.ok(v.check({}));
+            assert.ok(!v.check({
+                user: 'hello',
+            }));
+            assert.ok(v.check({
+                user: {},
+            }));
+            assert.ok(!v.check({
+                user: {
+                    details: 'hello',
+                },
+            }));
+            assert.ok(v.check({
+                user: {
+                    details: {},
+                },
+            }));
+            assert.ok(!v.check({
+                user: {
+                    details: {
+                        security: 'hello',
+                    },
+                },
+            }));
+            assert.ok(v.check({
+                user: {
+                    details: {
+                        security: {},
+                    },
+                },
+            }));
+            assert.ok(!v.check({
+                user: {
+                    details: {
+                        security: {
+                            types: 'hello',
+                        },
+                    },
+                },
+            }));
+            assert.ok(!v.check({
+                user: {
+                    details: {
+                        security: {
+                            types: [],
+                        },
+                    },
+                },
+                securityTypes: ['credentials', 'otp', 'sso'],
+            }));
+            assert.ok(v.check({
+                user: {
+                    details: {
+                        security: {
+                            types: ['otp'],
+                        },
+                    },
+                },
+                securityTypes: ['credentials', 'otp', 'sso'],
+            }));
+            assert.ok(v.check({
+                user: {
+                    details: {
+                        security: {
+                            types: ['otp', 'sso'],
+                        },
+                    },
+                },
+                securityTypes: ['credentials', 'otp', 'sso'],
+            }));
+            assert.ok(!v.check({
+                user: {
+                    details: {
+                        security: {
+                            types: ['otp', 'credentials', 'sso', 'sso'],
+                        },
+                    },
+                },
+                securityTypes: ['credentials', 'otp', 'sso'],
+            }));
         });
     });
 

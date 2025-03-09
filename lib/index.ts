@@ -86,6 +86,7 @@ import {
     type ValidationIterable,
     type ValidationResult,
     type ValidationRules,
+    type ValidationNested,
     type InferredSchema,
     type MergeExtensions,
     type MappedExtensions,
@@ -205,9 +206,8 @@ const iterableArrayHandler = (val:unknown) => {
 /**
  * Parse raw string into iterable configuration
  *
- * @param val - Value to determine config from, eg: 'unique|min:1|max:5'
- *
- * @returns {ValidationIterable} Iterable configuration
+ * @param {string} val - Value to determine config from, eg: 'unique|min:1|max:5'
+ * @param {boolean} dict - Whether or not it's a dictionary style (eg: Object)
  */
 function getIterableConfig (val:string, dict:boolean):ValidationIterable {
     const unique = val.includes('unique');
@@ -240,8 +240,6 @@ function getIterableConfig (val:string, dict:boolean):ValidationIterable {
  * Parse a rule into a sub validator pipeline
  *
  * @param raw - Raw validation rule
- *
- * @returns {ValidationRules} Parsed validation rule
  */
 function parseRule (raw: string): ValidationRules {
     let iterable: ValidationIterable | false = false;
@@ -337,7 +335,7 @@ function parseRule (raw: string): ValidationRules {
         pos++; /* Skip the '|' character */
     }
 
-    return {iterable, list, list_length: list.length};
+    return {nested: false, iterable, list, list_length: list.length};
 }
 
 /**
@@ -402,11 +400,9 @@ function validateField (
 /**
  * Check a rule list against a certain field cursor
  *
- * @param cursor - Cursor value to run the rule list against
- * @param rule - Rule to validate against the cursor
- * @param data - Original data object (used in param checks)
- *
- * @returns {boolean} Whether or not the value is valid
+ * @param {unknown} cursor - Cursor value to run the rule list against
+ * @param {ValidationRules} rule - Rule to validate against the cursor
+ * @param {DataObject} data - Original data object (used in param checks)
  */
 function checkRule (
     cursor:unknown,
@@ -470,6 +466,41 @@ function checkRule (
 }
 
 /**
+ * Checks a data object against a validation group
+ *
+ * @param {DataObject} data - Data object to check
+ * @param {ValidationGroup[]} plan - Plan to validate
+ */
+function checkPlan (data:DataObject, plan:ValidationGroup[]) {
+    mainloop: for (let i = 0; i < plan.length; i++) { /* eslint-disable-line no-labels */
+        const {key, sometimes, rules} = plan[i];
+
+        /* Retrieve cursor that part is run against */
+        const cursor = deepGet(data as DataObject, key);
+
+        /* If we cant find cursor we need to validate for the 'sometimes' flag */
+        if (cursor === undefined) {
+            if (!sometimes) return false;
+            continue;
+        }
+
+        /* Go through rules in cursor: if all of them are invalid return false immediately */
+        for (let x = 0; x < rules.length; x++) {
+            const rule = rules[x];
+            if (!rule.nested) {
+                if (checkRule(cursor, rule, data)) continue mainloop; /* eslint-disable-line no-labels */
+            } else if (isObject(cursor) && checkPlan(data, rule.plan)) {
+                continue mainloop; /* eslint-disable-line no-labels */
+            }
+        }
+
+        return false;
+    }
+
+    return true;
+}
+
+/**
  * Recursor used during validator construction to parse and convert a raw rule object into a validation plan
  *
  * @param {ValidationGroup[]} plan - Plan accumulator
@@ -488,17 +519,27 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key:string):void {
         });
     } else if (isArray(val)) {
         let sometimes = false;
-        const rules: ValidationRules[] = [];
+        const rules: (ValidationRules|ValidationNested)[] = [];
         for (let i = 0, len = val.length; i < len; i++) {
             const branch = val[i];
 
             /* Special case as a branch can be just '?' */
             if (branch === '?') {
                 sometimes = true;
-            } else if (branch && typeof branch === 'string') {
-                rules.push(parseRule(branch));
+            } else if (branch) {
+                if (isString(branch)) {
+                    rules.push(parseRule(branch));
+                } else if (isObject(branch)) {
+                    const nested_plan:ValidationGroup[] = [];
+                    recursor(nested_plan, branch, key);
+                    if (!nested_plan.length) throw new Error('Invalid rule value');
+                    rules.push({
+                        nested: true,
+                        plan: nested_plan,
+                    });
+                }
             } else {
-                throw new TypeError('Conditional group alternatives must be strings');
+                throw new TypeError('Invalid Conditional group alternative');
             }
         }
         if (rules.length) {
@@ -519,8 +560,6 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key:string):void {
  * Freeze a store for public consumption through Validator.rules
  *
  * @param store - Rule store to freeze
- *
- * @returns Frozen rule store
  */
 function freezeStore (dict:Record<string, RuleFn>):Readonly<RuleDictionary>  {
     const store:{[key:string]:RuleFn} = {};
@@ -553,9 +592,6 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
     /* Validation plan */
     #plan!:ValidationGroup[];
 
-    /* Length of plan */
-    #plan_length!:number;
-
     /* Schema type prop */
     #schema!:DeepMutable<T>;
 
@@ -569,7 +605,6 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
 
         /* Set the parsed plan as a get property on our validation instance */
         this.#plan = plan;
-        this.#plan_length = plan.length;
         this.#schema = deepFreeze(schema) as DeepMutable<T>;
     }
 
@@ -585,40 +620,16 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
      * Checks if the provided data is valid against the validator's rules
      *
      * @param {GenericObject|FormData} raw - Raw object or FormData instance to check
-     * @returns {boolean} Whether or not it's valid
      */
     check (raw:unknown):raw is typeof this['schema'] {
-        const plan_len = this.#plan_length;
+        const data = raw instanceof FormData
+            ? toObject<GenericObject>(raw)
+            : raw as GenericObject;
 
         /* No data passed? Check if rules were set up */
-        const data = raw instanceof FormData ? toObject<GenericObject>(raw) : raw as GenericObject;
-        if (!isObject(data)) return !plan_len;
+        if (!isObject(data)) return !this.#plan.length;
 
-        const plan = this.#plan;
-
-        for (let i = 0; i < plan_len; i++) {
-            const {key, sometimes, rules} = plan[i];
-
-            /* Retrieve cursor that part is run against */
-            const cursor = deepGet(data as DataObject, key);
-
-            /* If we cant find cursor we need to validate for the 'sometimes' flag */
-            if (cursor === undefined) {
-                if (!sometimes) return false;
-                continue;
-            }
-
-            /* Go through rules in cursor: if all of them are invalid return false immediately */
-            let is_valid = false;
-            for (let x = 0; x < rules.length; x++) {
-                is_valid = checkRule(cursor, rules[x], data);
-                if (is_valid) break;
-            }
-
-            if (!is_valid) return false;
-        }
-
-        return true;
+        return checkPlan(data, this.#plan);
     }
 
     /**
@@ -639,22 +650,21 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
      * @param {GenericObject|FormData} raw - Raw object or FormData instance to check
      */
     validate <K extends GenericObject|FormData> (raw:K):ValidationResult {
-        const plan_len = this.#plan_length;
-
         /* No data passed? Check if rules were set up */
         const data = raw instanceof FormData ? toObject<GenericObject>(raw) : raw as GenericObject;
         if (!isObject(data)) {
+            const plan_length = this.#plan.length;
             return {
-                is_valid: !plan_len,
-                count: plan_len,
-                errors: plan_len ? 'NO_DATA' : {},
+                is_valid: !plan_length,
+                count: plan_length,
+                errors: plan_length ? 'NO_DATA' : {},
             };
         }
 
         const plan = this.#plan;
         const errors:{[key:string]: ValidationError[]} = {};
         let count:number = 0;
-        for (let i = 0; i < plan_len; i++) {
+        for (let i = 0; i < this.#plan.length; i++) {
             const part = plan[i];
             /* Retrieve cursor that part is run against */
             const cursor = deepGet(data as DataObject, part.key);

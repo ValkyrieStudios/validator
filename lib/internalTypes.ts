@@ -127,6 +127,7 @@ export type ValidationIterable = {
 }
 
 export type ValidationRules = {
+    nested: false;
     iterable:ValidationIterable|false;
     list:  {
         /* Type of the rule */
@@ -138,12 +139,17 @@ export type ValidationRules = {
         msg:string;
     }[];
     list_length:number;
-}
+};
 
 export type ValidationGroup = {
     key:string;
     sometimes:boolean;
-    rules:ValidationRules[];
+    rules:(ValidationRules|ValidationNested)[]; /* eslint-disable-line no-use-before-define */
+}
+
+export type ValidationNested = {
+    nested: true;
+    plan: ValidationGroup[];
 }
 
 export type ValidationResult = {
