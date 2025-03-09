@@ -2635,6 +2635,519 @@ describe('Validator - Core', () => {
                 {is_valid: true, count: 0, errors: {}}
             );
         });
+
+        it('Should work with nested schemas', () => {
+            const v = new Validator({
+                a: ['?', {first_name: '?string_ne', last_name: 'string_ne'}, 'string_ne'],
+                b: '?string_ne',
+            });
+
+            assert.deepEqual(
+                v.validate({b: 'hello'}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+            assert.deepEqual(
+                v.validate({}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+            assert.deepEqual(
+                v.validate({a: {first_name: 'Peter', last_name: 'V'}}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+            assert.deepEqual(
+                v.validate({a: {first_name: 'Peter'}}), // Last name is missing
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        'a.last_name': [
+                            {msg: 'not_found', params: []},
+                        ],
+                    },
+                }
+            );
+            assert.deepEqual(
+                v.validate({a: {last_name: 'V'}}), // Good: First name is optional
+                {is_valid: true, count: 0, errors: {}}
+            );
+            assert.deepEqual(
+                v.validate({a: 'Hello World'}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+        });
+
+        it('Should work with nested schemas deep inside of an object', () => {
+            const v = new Validator({
+                user: ['?', {
+                    details: ['?', {
+                        security: ['?', {types: '?[unique|min:1|max:10]in:<securityTypes>'}],
+                    }],
+                }],
+            });
+
+            assert.deepEqual(
+                v.validate({}),
+                {is_valid: true, count: 0, errors: {}}
+            );
+            assert.deepEqual(
+                v.validate({user: 'hello'}),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        user: [
+                            {msg: 'not_object', params: []},
+                        ],
+                    },
+                }
+            );
+            assert.deepEqual(
+                v.validate({user: {}}),
+                {
+                    is_valid: true,
+                    count: 0,
+                    errors: {},
+                }
+            );
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: 'hello',
+                    },
+                }),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        'user.details': [
+                            {msg: 'not_object', params: []},
+                        ],
+                    },
+                }
+            );
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {},
+                    },
+                }),
+                {
+                    is_valid: true,
+                    count: 0,
+                    errors: {},
+                }
+            );
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: 'hello',
+                        },
+                    },
+                }),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        'user.details.security': [
+                            {msg: 'not_object', params: []},
+                        ],
+                    },
+                }
+            );
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {},
+                        },
+                    },
+                }),
+                {
+                    is_valid: true,
+                    count: 0,
+                    errors: {},
+                }
+            );
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: 'hello',
+                            },
+                        },
+                    },
+                }),
+                {
+                    count: 1,
+                    errors: {
+                        'user.details.security.types': [
+                            {msg: 'iterable', params: []},
+                        ],
+                    },
+                    is_valid: false,
+                }
+            );
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: [],
+                            },
+                        },
+                    },
+                    securityTypes: ['credentials', 'otp', 'sso'],
+                }),
+                {
+                    count: 1,
+                    errors: {
+                        'user.details.security.types': [
+                            {msg: 'iterable_min', params: [1]},
+                        ],
+                    },
+                    is_valid: false,
+                }
+            );
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: ['otp'],
+                            },
+                        },
+                    },
+                    securityTypes: ['credentials', 'otp', 'sso'],
+                }),
+                {
+                    is_valid: true,
+                    errors: {},
+                    count: 0,
+                }
+            );
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: ['otp', 'sso'],
+                            },
+                        },
+                    },
+                    securityTypes: ['credentials', 'otp', 'sso'],
+                }),
+                {
+                    is_valid: true,
+                    errors: {},
+                    count: 0,
+                }
+            );
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: ['otp', 'credentials', 'sso', 'sso'],
+                            },
+                        },
+                    },
+                    securityTypes: ['credentials', 'otp', 'sso'],
+                }),
+                {
+                    is_valid: false,
+                    count: 1,
+                    errors: {
+                        'user.details.security.types': [
+                            {msg: 'iterable_unique', params: []},
+                        ],
+                    },
+                }
+            );
+        });
+
+        it('Should work with nested schemas deep inside of an object as well as other behaviors', () => {
+            const v = new Validator({
+                user: ['?', {
+                    details: ['?', {
+                        security: ['?', {types: '?[unique|min:1|max:10]in:<securityTypes>'}],
+                    }],
+                }],
+                settings: ['?', {
+                    isActive: 'boolean',
+                    isEnabled: 'boolean',
+                }],
+                email: 'email',
+                phone: 'phone',
+            });
+
+            assert.deepEqual(
+                v.validate({
+                    user: {},
+                    settings: {},
+                    email: 'contact@valkyriestudios.be',
+                }),
+                {
+                    count: 3,
+                    is_valid: false,
+                    errors: {
+                        'settings.isActive': [
+                            {msg: 'not_found', params: []},
+                        ],
+                        'settings.isEnabled': [
+                            {msg: 'not_found', params: []},
+                        ],
+                        phone: [
+                            {msg: 'not_found', params: []},
+                        ],
+                    },
+                }
+            );
+
+            assert.deepEqual(
+                v.validate({
+                    user: {},
+                    settings: {isEnabled: true},
+                    email: 'contact@valkyriestudios.be',
+                }),
+                {
+                    count: 2,
+                    is_valid: false,
+                    errors: {
+                        'settings.isActive': [
+                            {msg: 'not_found', params: []},
+                        ],
+                        phone: [
+                            {msg: 'not_found', params: []},
+                        ],
+                    },
+                }
+            );
+
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {},
+                        },
+                    },
+                    settings: {isEnabled: true},
+                    email: 'contact@valkyriestudios.be',
+                }),
+                {
+                    count: 2,
+                    is_valid: false,
+                    errors: {
+                        'settings.isActive': [
+                            {msg: 'not_found', params: []},
+                        ],
+                        phone: [
+                            {msg: 'not_found', params: []},
+                        ],
+                    },
+                }
+            );
+
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: ['sso', 'creds', 'sos'],
+                            },
+                        },
+                    },
+                    settings: {isEnabled: true},
+                    email: 'contact@valkyriestudios.be',
+                    securityTypes: ['oss', 'creds'],
+                }),
+                {
+                    count: 3,
+                    is_valid: false,
+                    errors: {
+                        'user.details.security.types': [
+                            {
+                                idx: 0,
+                                msg: 'in',
+                                params: [['oss', 'creds']],
+                            },
+                            {
+                                idx: 2,
+                                msg: 'in',
+                                params: [['oss', 'creds']],
+                            },
+                        ],
+                        'settings.isActive': [
+                            {msg: 'not_found', params: []},
+                        ],
+                        phone: [
+                            {msg: 'not_found', params: []},
+                        ],
+                    },
+                }
+            );
+
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: ['sso', 'creds', 'sos'],
+                            },
+                        },
+                    },
+                    settings: {isEnabled: true, isActive: 'hello'},
+                    email: 'contact@valkyriestudios.be',
+                    securityTypes: ['oss', 'creds'],
+                }),
+                {
+                    count: 3,
+                    is_valid: false,
+                    errors: {
+                        'user.details.security.types': [
+                            {
+                                idx: 0,
+                                msg: 'in',
+                                params: [['oss', 'creds']],
+                            },
+                            {
+                                idx: 2,
+                                msg: 'in',
+                                params: [['oss', 'creds']],
+                            },
+                        ],
+                        'settings.isActive': [
+                            {msg: 'boolean', params: []},
+                        ],
+                        phone: [
+                            {msg: 'not_found', params: []},
+                        ],
+                    },
+                }
+            );
+
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: ['sso', 'creds', 'sos'],
+                            },
+                        },
+                    },
+                    settings: {isEnabled: true, isActive: false},
+                    email: 'contact@valkyriestudios.be',
+                    phone: 'yello',
+                    securityTypes: ['oss', 'creds'],
+                }),
+                {
+                    count: 2,
+                    is_valid: false,
+                    errors: {
+                        'user.details.security.types': [
+                            {
+                                idx: 0,
+                                msg: 'in',
+                                params: [['oss', 'creds']],
+                            },
+                            {
+                                idx: 2,
+                                msg: 'in',
+                                params: [['oss', 'creds']],
+                            },
+                        ],
+                        phone: [
+                            {msg: 'phone', params: []},
+                        ],
+                    },
+                }
+            );
+
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: ['sso', 'creds', 'sos'],
+                            },
+                        },
+                    },
+                    settings: {isEnabled: true, isActive: false},
+                    email: 'contact@valkyriestudios.be',
+                    phone: '0123456789',
+                    securityTypes: ['oss', 'creds'],
+                }),
+                {
+                    count: 1,
+                    is_valid: false,
+                    errors: {
+                        'user.details.security.types': [
+                            {
+                                idx: 0,
+                                msg: 'in',
+                                params: [['oss', 'creds']],
+                            },
+                            {
+                                idx: 2,
+                                msg: 'in',
+                                params: [['oss', 'creds']],
+                            },
+                        ],
+                    },
+                }
+            );
+
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: ['sso', 'creds', 'sos'],
+                            },
+                        },
+                    },
+                    settings: {isEnabled: true, isActive: false},
+                    email: 'contact@valkyriestudios.be',
+                    phone: '0123456789',
+                    securityTypes: ['sso', 'creds'],
+                }),
+                {
+                    count: 1,
+                    is_valid: false,
+                    errors: {
+                        'user.details.security.types': [
+                            {
+                                idx: 2,
+                                msg: 'in',
+                                params: [['sso', 'creds']],
+                            },
+                        ],
+                    },
+                }
+            );
+
+            assert.deepEqual(
+                v.validate({
+                    user: {
+                        details: {
+                            security: {
+                                types: ['sso'],
+                            },
+                        },
+                    },
+                    settings: {isEnabled: true, isActive: false},
+                    email: 'contact@valkyriestudios.be',
+                    phone: '0123456789',
+                    securityTypes: ['sso', 'creds'],
+                }),
+                {
+                    count: 0,
+                    is_valid: true,
+                    errors: {},
+                }
+            );
+        });
     });
 
 

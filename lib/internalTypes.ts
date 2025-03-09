@@ -18,7 +18,7 @@ export type TV<T> = {
 };
 
 /* Validation rule input data types */
-export type RulesRawVal     = string | string[] | RulesRaw; /* eslint-disable-line */
+export type RulesRawVal     = string | (string|RulesRaw)[] | RulesRaw; /* eslint-disable-line */
 export type RulesRaw        = {[key:string]: RulesRawVal};
 export type RuleFn          = (...args:any[]) => boolean;
 export type RuleExtension   = RuleFn | RegExp | (string|number)[] | TV<GenericObject>;
@@ -31,6 +31,7 @@ export type DeepMutable<T> =
   T extends bigint ? T :
   T extends symbol ? T :
   T extends null ? T :
+  T extends Date ? T :
   T extends undefined ? T :
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   T extends Function ? T :

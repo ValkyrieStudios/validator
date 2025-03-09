@@ -1,4 +1,4 @@
-/* eslint-disable max-statements,complexity */
+/* eslint-disable no-labels,max-statements,complexity */
 
 import {isArray}                    from '@valkyriestudios/utils/array/is';
 import {isNotEmptyArray}            from '@valkyriestudios/utils/array/isNotEmpty';
@@ -398,6 +398,126 @@ function validateField (
 }
 
 /**
+ * Recursively validates a data object against a validation plan.
+ *
+ * @param {DataObject} data - The data object to validate.
+ * @param {ValidationGroup[]} plan - The precompiled validation plan.
+ */
+function validatePlan (
+    data: DataObject,
+    plan: ValidationGroup[]
+): {is_valid:boolean; count:number; errors: {[key:string]: ValidationError[]}} {
+    const errors: { [key: string]: ValidationError[] } = {};
+    let count = 0;
+
+    mainLoop: for (let i = 0; i < plan.length; i++) {
+        const group = plan[i];
+        const {key, rules, sometimes} = group;
+
+        /* Retrieve cursor that part is run against */
+        const cursor = deepGet(data, key);
+
+        /* If we cant find cursor we need to validate for the 'sometimes' flag */
+        if (cursor === undefined) {
+            if (!sometimes) {
+                count++;
+                errors[key] = [{msg: 'not_found', params: []}];
+            }
+            continue;
+        }
+
+        const group_errors = [];
+        for (let x = 0; x < rules.length; x++) {
+            const rule = rules[x];
+            let evaluation: ValidationError[] | {[key:string]:ValidationError[]};
+
+            if (rule.nested) {
+                if (!isObject(cursor)) {
+                    evaluation = [{msg: 'not_object', params: []}];
+                } else {
+                    const result = validatePlan(data, rule.plan);
+                    if (result.is_valid) continue mainLoop;
+
+                    evaluation = result.errors;
+                }
+            } else if (!rule.iterable) {
+                const result = validateField(cursor, rule, data);
+                if (result.is_valid) continue mainLoop;
+                evaluation = result.errors;
+            } else {
+                const iterable_data = rule.iterable.handler(cursor);
+                if (!iterable_data) {
+                    evaluation = [{msg: 'iterable', params: []}];
+                } else {
+                    const {len, values} = iterable_data;
+                    const error_cursor: ValidationError[] = [];
+
+                    /**
+                     * if   rule.iterable.min is set and len is below the min -> invalid
+                     * Elif rule.iterable.max is set and len is above max -> invalid
+                     * El   iterable validation
+                     */
+                    if (len < rule.iterable.min) {
+                        error_cursor.push({msg: 'iterable_min', params: [rule.iterable.min]});
+                    } else if (len > rule.iterable.max) {
+                        error_cursor.push({msg: 'iterable_max', params: [rule.iterable.max]});
+                    } else {
+                        let unique_set = rule.iterable.unique ? new Set() : false;
+                        for (let idx = 0; idx < len; idx++) {
+                            const cursor_value = values[idx];
+                            const eval_field = validateField(cursor_value, rule, data, idx);
+                            if (!eval_field.is_valid) error_cursor.push(...eval_field.errors);
+
+                            /**
+                             * Compute fnv hash if uniqueness needs to be checked, if map size differs from
+                             * our current point in the iteration add uniqueness error
+                             */
+                            if (unique_set) {
+                                const hash = fnv1A(cursor_value);
+                                if (unique_set.has(hash)) {
+                                    unique_set = false;
+                                    error_cursor.unshift({msg: 'iterable_unique', params: []});
+                                } else {
+                                    unique_set.add(hash);
+                                }
+                            }
+                        }
+                    }
+                    if (error_cursor.length === 0) continue mainLoop;
+
+                    evaluation = error_cursor;
+                }
+            }
+
+            /* Push into errors if we have errors */
+            if (evaluation) group_errors.push(evaluation);
+        }
+
+        /* Process errors */
+        const error = group_errors[0];
+        if (isArray(error)) {
+            if (group.rules.length > 1) {
+                const normalized:ValidationError[] = [];
+                for (let x = 0; x < group_errors.length; x++) {
+                    /* eslint-disable-next-line */
+                    /* @ts-ignore */
+                    normalized.push(group_errors[x]);
+                }
+                errors[key] = normalized;
+            } else {
+                errors[key] = error as ValidationError[];
+            }
+            count++;
+        } else {
+            Object.assign(errors, error);
+            count+= Object.keys(error).length;
+        }
+    }
+
+    return {is_valid: count === 0, count, errors};
+}
+
+/**
  * Check a rule list against a certain field cursor
  *
  * @param {unknown} cursor - Cursor value to run the rule list against
@@ -472,7 +592,7 @@ function checkRule (
  * @param {ValidationGroup[]} plan - Plan to validate
  */
 function checkPlan (data:DataObject, plan:ValidationGroup[]) {
-    mainloop: for (let i = 0; i < plan.length; i++) { /* eslint-disable-line no-labels */
+    mainloop: for (let i = 0; i < plan.length; i++) {
         const {key, sometimes, rules} = plan[i];
 
         /* Retrieve cursor that part is run against */
@@ -488,9 +608,9 @@ function checkPlan (data:DataObject, plan:ValidationGroup[]) {
         for (let x = 0; x < rules.length; x++) {
             const rule = rules[x];
             if (!rule.nested) {
-                if (checkRule(cursor, rule, data)) continue mainloop; /* eslint-disable-line no-labels */
+                if (checkRule(cursor, rule, data)) continue mainloop;
             } else if (isObject(cursor) && checkPlan(data, rule.plan)) {
-                continue mainloop; /* eslint-disable-line no-labels */
+                continue mainloop;
             }
         }
 
@@ -532,11 +652,7 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key:string):void {
                 } else if (isObject(branch)) {
                     const nested_plan:ValidationGroup[] = [];
                     recursor(nested_plan, branch, key);
-                    if (!nested_plan.length) throw new Error('Invalid rule value');
-                    rules.push({
-                        nested: true,
-                        plan: nested_plan,
-                    });
+                    rules.push({nested: true, plan: nested_plan});
                 }
             } else {
                 throw new TypeError('Invalid Conditional group alternative');
@@ -650,8 +766,11 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
      * @param {GenericObject|FormData} raw - Raw object or FormData instance to check
      */
     validate <K extends GenericObject|FormData> (raw:K):ValidationResult {
+        const data = raw instanceof FormData
+            ? toObject<GenericObject>(raw)
+            : raw as GenericObject;
+
         /* No data passed? Check if rules were set up */
-        const data = raw instanceof FormData ? toObject<GenericObject>(raw) : raw as GenericObject;
         if (!isObject(data)) {
             const plan_length = this.#plan.length;
             return {
@@ -661,104 +780,7 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
             };
         }
 
-        const plan = this.#plan;
-        const errors:{[key:string]: ValidationError[]} = {};
-        let count:number = 0;
-        for (let i = 0; i < this.#plan.length; i++) {
-            const part = plan[i];
-            /* Retrieve cursor that part is run against */
-            const cursor = deepGet(data as DataObject, part.key);
-
-            /* If we cant find cursor we need to validate for the 'sometimes' flag */
-            if (cursor === undefined) {
-                if (!part.sometimes) {
-                    count++;
-                    errors[part.key] = [{msg: 'not_found', params: []}];
-                }
-                continue;
-            }
-
-            let has_valid = false;
-            const part_errors:(ValidationError|ValidationError[])[] = [];
-            for (let x = 0; x < part.rules.length; x++) {
-                const rule = part.rules[x];
-
-                /* Check for iterable config */
-                if (!rule.iterable) {
-                    const evaluation = validateField(cursor, rule, data as DataObject);
-                    if (evaluation.is_valid) {
-                        has_valid = true;
-                        break;
-                    }
-                    part_errors.push(evaluation.errors);
-                    continue;
-                }
-
-                const iterable_data = rule.iterable.handler(cursor);
-
-                /* Check type */
-                if (!iterable_data) {
-                    part_errors.push([{msg: 'iterable', params: []}]);
-                    continue;
-                }
-
-                const error_cursor:ValidationError[] = [];
-                const {len, values} = iterable_data;
-
-                /**
-                 * if   rule.iterable.min is set and len is below the min -> invalid
-                 * Elif rule.iterable.max is set and len is above max -> invalid
-                 * El   iterable validation
-                 */
-                if (len < rule.iterable.min) {
-                    error_cursor.push({msg: 'iterable_min', params: [rule.iterable.min]});
-                } else if (len > rule.iterable.max) {
-                    error_cursor.push({msg: 'iterable_max', params: [rule.iterable.max]});
-                } else {
-                    /**
-                     * If rule.iterable.unique is set create map to store hashes and keep tabs
-                     * on uniqueness as we run through the array
-                     */
-                    let unique_set = rule.iterable.unique ? new Set() : false;
-                    let cursor_value;
-                    for (let idx = 0; idx < len; idx++) {
-                        cursor_value = values[idx];
-                        const evaluation = validateField(cursor_value, rule, data as DataObject, idx);
-                        if (!evaluation.is_valid) error_cursor.push(...evaluation.errors);
-
-                        /**
-                         * Compute fnv hash if uniqueness needs to be checked, if map size differs from
-                         * our current point in the iteration add uniqueness error
-                         */
-                        if (unique_set) {
-                            const hash = fnv1A(cursor_value);
-                            if (unique_set.has(hash)) {
-                                unique_set = false;
-                                error_cursor.unshift({msg: 'iterable_unique', params: []});
-                            } else {
-                                unique_set.add(hash);
-                            }
-                        }
-                    }
-                }
-
-                if (error_cursor.length) {
-                    part_errors.push(error_cursor);
-                } else {
-                    has_valid = true;
-                    break;
-                }
-            }
-
-            if (!has_valid) {
-                count++;
-                errors[part.key] = part.rules.length > 1
-                    ? (part_errors as ValidationError[])
-                    : (part_errors[0] as ValidationError[]);
-            }
-        }
-
-        return {is_valid: !count, count, errors};
+        return validatePlan(data, this.#plan);
     }
 
     /**

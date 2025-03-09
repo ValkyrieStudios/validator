@@ -112,6 +112,14 @@ const vmedium_groups = new Validator({
     age: '?integer|between:1,150',
     gender: 'in:<meta.gender_options>',
 });
+const vcomplex_groups = new Validator({
+    user: ['?', {
+        first_name: ['string|alpha_num_spaces|min:2', 'false'],
+        last_name: ['string|alpha_num_spaces|min:2', 'false'],
+        age: '?integer|between:1,150',
+        gender: 'in:<meta.gender_options>',
+    }],
+});
 const venum = new Validator({animal: 'MYENUM'});
 Validator.extend({
     MYENUM: ['dog', 'cat', 'bird', 'donkey', 'cow', 'horse', 'pig'],
@@ -262,6 +270,25 @@ for (const el of [
             age: 33,
             gender: 'M',
             meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@validate - coldstart - groups/complex',
+        fn: () => new Validator({
+            user: ['?', {
+                first_name: ['string|min:2', 'false'],
+                last_name: ['string|min:2', 'false'],
+                age: '?integer|between:1,150',
+                gender: 'in:<meta.gender_options>',
+            }],
+        }).validate({
+            user: {
+                first_name: 'Peter',
+                last_name: false,
+                age: 33,
+                gender: 'M',
+                meta: {gender_options: ['F', 'M', 'U']},
+            },
         }),
     },
     {
@@ -507,6 +534,44 @@ for (const el of [
         }),
     },
     {
+        lbl: 'Validator@check - coldstart - groups/complex - valid',
+        fn: () => new Validator({
+            user: ['?', {
+                first_name: ['string|min:2', 'false'],
+                last_name: ['string|min:2', 'false'],
+                age: '?integer|between:1,150',
+                gender: 'in:<meta.gender_options>',
+            }],
+        }).check({
+            user: {
+                first_name: 'Peter',
+                last_name: false,
+                age: 33,
+                gender: 'M',
+                meta: {gender_options: ['F', 'M', 'U']},
+            },
+        }),
+    },
+    {
+        lbl: 'Validator@check - coldstart - groups/complex - invalid',
+        fn: () => new Validator({
+            user: ['?', {
+                first_name: ['string|min:2', 'false'],
+                last_name: ['string|min:2', 'false'],
+                age: '?integer|between:1,150',
+                gender: 'in:<meta.gender_options>',
+            }],
+        }).check({
+            user: {
+                first_name: 'Peter',
+                last_name: 20,
+                age: 33,
+                gender: 'M',
+                meta: {gender_options: ['F', 'M', 'U']},
+            },
+        }),
+    },
+    {
         lbl: 'Validator@check - coldstart - schema/small - valid',
         fn: () => new Validator({a: 'small'}).check({a: {
             first_name: 'Peter',
@@ -665,6 +730,30 @@ for (const el of [
             age: 'None of ya business',
             gender: 'M',
             meta: {gender_options: ['F', 'M', 'U']},
+        }),
+    },
+    {
+        lbl: 'Validator@check - existing - groups/complex - valid',
+        fn: () => vcomplex_groups.check({
+            user: {
+                first_name: 'Peter',
+                last_name: 'Vermeulen',
+                age: 33,
+                gender: 'M',
+                meta: {gender_options: ['F', 'M', 'U']},
+            },
+        }),
+    },
+    {
+        lbl: 'Validator@check - existing - groups/complex - invalid',
+        fn: () => vcomplex_groups.check({
+            user: {
+                first_name: 'Peter',
+                last_name: 'Vermeulen',
+                age: 'None of ya business',
+                gender: 'M',
+                meta: {gender_options: ['F', 'M', 'U']},
+            },
         }),
     },
     {

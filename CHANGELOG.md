@@ -6,6 +6,112 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- **feat**: Added support for using schemas in conditional blocks, eg:
+```typescript
+const v = Validator.create({
+    user: ['?', {
+        first_name: 'string_ne',
+        last_name: 'string_ne',
+        email: 'email',
+        details: ['?', {
+            isActive: 'boolean',
+            isEnabled: 'boolean',
+        }],
+    }],
+    createdAt: 'date',
+    updatedAt: '?date',
+});
+
+/* Getting the output type */
+type vType = typeof v.schema;
+
+/* This type will be equivalent to this */
+type vType = {
+    user: {
+        first_name: string;
+        last_name: string;
+        email: Email;
+        details: {
+            isActive: boolean;
+            isEnabled: boolean;
+        } | undefined;
+    } | undefined;
+    createdAt: Date;
+    updatedAt: Date | undefined;
+};
+```
+
+This also works with multiple schemas:
+```typescript
+const v = Validator.create({
+    obj: [
+        '?',
+        {
+            first_name: 'string_ne',
+            last_name: 'string_ne',
+            email: 'email',
+            details: ['?', {
+                isActive: 'boolean',
+                isEnabled: 'boolean',
+            }],
+        },
+        {
+            type: 'string_ne',
+            phone: 'phone',
+        }
+    ],
+    createdAt: 'date',
+    updatedAt: '?date',
+});
+
+/* Getting the output type */
+type vType = typeof v.schema;
+
+/* This type will be equivalent to this */
+type vType = {
+    user: {
+        first_name: string;
+        last_name: string;
+        email: Email;
+        details: {
+            isActive: boolean;
+            isEnabled: boolean;
+        } | undefined;
+    } | {
+        type: string;
+        phone: Phone;  
+    } undefined;
+    createdAt: Date;
+    updatedAt: Date | undefined;
+};
+```
+
+And other primitive rules:
+```typescript
+const v = Validator.create({
+    obj: ['?', {
+        first_name: 'string_ne',
+        last_name: 'string_ne',
+    }, 'string_ne'],
+    createdAt: 'date',
+    updatedAt: '?date',
+});
+
+/* Getting the output type */
+type vType = typeof v.schema;
+
+/* This type will be equivalent to this */
+type vType = {
+    obj: string | {
+        first_name: string;
+        last_name: string;
+    } | undefined;
+    createdAt: Date;
+    updatedAt: Date | undefined;
+}
+```
+
 ### Improved
 - **deps**: Upgrade @types/node to 22.13.0
 - **deps**: Upgrade @valkyriestudios/utils to 12.34.0
