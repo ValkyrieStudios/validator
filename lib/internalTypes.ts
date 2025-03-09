@@ -61,34 +61,31 @@ type ExtractRuleName<S extends string> =
 type RemoveNegation<S extends string> = S extends `!${infer Rest}` ? Rest : S;
 
 /**
- * Given a rule string S, infer its type using the default rule type mapping.
- * If the rule begins with a "?" then we union with undefined.
- */
-type InferRuleTypeFromStore<S extends string, Rules extends Record<string, any> = {}> =
-  S extends `?${infer Rest}`
-    ? (Rest extends '' ? undefined : InferRuleTypeFromStore<RemoveNegation<Rest>, Rules> | undefined)
-    : ExtractRuleName<RemoveNegation<S>> extends keyof RuleMap<Rules>
-      ? RuleMap<Rules>[ExtractRuleName<RemoveNegation<S>>]
-      : unknown;
-
-/**
  * Recursively infer the type for a schema.
  * - If the schema value is a string, we use InferRuleTypeFromStore.
  * - If it’s an array (conditional group), we take the union of the inferences.
  * - If it’s an object, we recursively map its keys.
  */
 export type InferredSchema<S, Rules extends Record<string, any> = {}> =
-  S extends string
-    ? S extends `[${infer Inner}]${infer Rest}` /* eslint-disable-line @typescript-eslint/no-unused-vars */
-      ? InferredSchema<Rest, Rules>[] /* eg: [unique|min:1]string_ne -> string[] */
-      : S extends `{${infer Inner}}${infer Rest}` /* eslint-disable-line @typescript-eslint/no-unused-vars */
-        ? {[key: string]: InferredSchema<Rest, Rules>}  /* eg: {unique}string_ne -> {[key:string]:string} */
-        : InferRuleTypeFromStore<S, Rules>
-    : S extends Array<infer U>
-      ? InferredSchema<U, Rules>
-      : S extends object
-        ? { [K in keyof S]: InferredSchema<S[K], Rules> }
-        : unknown;
+    S extends string
+        ? S extends `?${infer Rest}`
+            ? (Rest extends ''
+                ? undefined
+                : InferredSchema<RemoveNegation<Rest>, Rules> | undefined)
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+            : S extends `[${infer Inner}]${infer Rest}`
+                ? InferredSchema<Rest, Rules>[]
+                /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+                : S extends `{${infer Inner}}${infer Rest}`
+                    ? { [key: string]: InferredSchema<Rest, Rules> }
+                    : ExtractRuleName<RemoveNegation<S>> extends keyof RuleMap<Rules>
+                        ? RuleMap<Rules>[ExtractRuleName<RemoveNegation<S>>]
+                        : unknown
+        : S extends Array<infer U>
+            ? InferredSchema<U, Rules>
+            : S extends object
+                ? { [K in keyof S]: InferredSchema<S[K], Rules> }
+                : unknown;
 
 export type MappedExtensions<Ext extends Record<string, RuleExtension>, Rules extends Record<string, any> = {}> = {
     [K in keyof Ext]: Ext[K] extends RegExp

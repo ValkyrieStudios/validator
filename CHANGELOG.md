@@ -148,6 +148,9 @@ type vType = {
 - **deps**: Upgrade typescript to 5.8.2
 - **deps**: Upgrade typescript-eslint to 8.26.0
 
+### Fixed
+- **dx**: Fixed an issue where optional array rules (eg: `?[unique|min:1]string_ne`) would not be correctly inferred
+
 ## [10.0.1] - 2025-02-23
 ### Improved
 - **deps**: Upgrade @types/node to 22.13.5
