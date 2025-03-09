@@ -185,6 +185,8 @@ type CustomRuleDictionary = Record<string, RuleFn>;
 
 type RuleDictionary = typeof RULE_STORE & CustomRuleDictionary;
 
+const NOEXISTS = () => false;
+
 /* Configuration for an iterable dictionary handler */
 const iterableDictHandler = (val:unknown) => {
     if (!isObject(val)) return null;
@@ -390,9 +392,7 @@ function validateField (
         /* eslint-disable-next-line */
         /* @ts-ignore */
         if (rulefn(cursor, ...params) === rule_el.not) {
-            errors.push(idx !== undefined
-                ? {msg: rule_el.msg, params, idx}
-                : {msg: rule_el.msg, params});
+            errors.push({msg: rule_el.msg, params, ...idx !== undefined && {idx}});
         }
     }
 
@@ -417,16 +417,12 @@ function checkRule (
     if (!iterable) {
         for (let i = 0; i < list_length; i++) {
             const rule_el = list[i];
-            const rulefn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE];
-            if (!rulefn) return false;
-
-            /* Get params */
-            const params = constructParams(rule_el, data);
-
-            /* Run rule - if check fails (not valid && not not | not && valid) */
-            /* eslint-disable-next-line */
-            /* @ts-ignore */
-            if (rulefn(cursor, ...params) === rule_el.not) return false;
+            if ((RULE_STORE[rule_el.type as keyof typeof RULE_STORE] || NOEXISTS)(
+                cursor,
+                /* eslint-disable-next-line */
+                /* @ts-ignore */
+                ...constructParams(rule_el, data)
+            ) === rule_el.not) return false;
         }
 
         return true;
@@ -436,9 +432,8 @@ function checkRule (
     const iterable_data = iterable.handler(cursor);
     if (!iterable_data) return false;
 
-    const {len, values} = iterable_data;
-
     /* Check length with min/max */
+    const {len, values} = iterable_data;
     if (len < iterable.min || len > iterable.max) return false;
 
     /**
@@ -452,18 +447,16 @@ function checkRule (
         cursor_value = values[idx];
         for (let i = 0; i < list_length; i++) {
             const rule_el = list[i];
-            const rulefn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE];
-
-            /* Check if rule exists */
-            if (!rulefn) return false;
 
             /* Get params */
             if (!param_acc[i]) param_acc[i] = constructParams(rule_el, data);
 
-            /* Run rule - if check fails (not valid && not not | not && valid) */
-            /* eslint-disable-next-line */
-            /* @ts-ignore */
-            if (rulefn(cursor_value, ...param_acc[i]) === rule_el.not) return false;
+            if ((RULE_STORE[rule_el.type as keyof typeof RULE_STORE] || NOEXISTS)(
+                cursor_value,
+                /* eslint-disable-next-line */
+                /* @ts-ignore */
+                ...param_acc[i]
+            ) === rule_el.not) return false;
         }
 
         /* Compute fnv hash if uniqueness needs to be checked, if map size differs its not unique */
@@ -483,20 +476,17 @@ function checkRule (
  * @param {RulesRawVal} val - Raw rules value cursor
  * @param {string} key - Cursor key prefix (used when recursing in sub structure)
  */
-function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
+function recursor (plan:ValidationGroup[], val:RulesRawVal, key:string):void {
     if (!val) throw new TypeError('Invalid rule value');
-    const type = typeof val;
 
-    if (type === 'string') {
-        /* String */
-        const sometimes = (val as string)[0] === '?';
+    if (isString(val)) {
+        const sometimes = val[0] === '?';
         plan.push({
-            key: key as string,
+            key,
             sometimes,
-            rules: [parseRule((sometimes ? (val as string).slice(1) : val) as string)],
+            rules: [parseRule(sometimes ? val.slice(1) : val)],
         });
-    } else if (Array.isArray(val)) {
-        /* Array */
+    } else if (isArray(val)) {
         let sometimes = false;
         const rules: ValidationRules[] = [];
         for (let i = 0, len = val.length; i < len; i++) {
@@ -512,14 +502,13 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key?:string):void {
             }
         }
         if (rules.length) {
-            plan.push({key: key as string, sometimes, rules});
+            plan.push({key, sometimes, rules});
         } else {
             throw new TypeError('Invalid rule value');
         }
-    } else if (type === 'object') {
-        /* Object */
-        for (const k in val as RulesRaw) {
-            recursor(plan, (val as RulesRaw)[k], key ? key + '.' + k : k);
+    } else if (isObject(val)) {
+        for (const val_key in val) {
+            recursor(plan, val[val_key], key ? key + '.' + val_key : val_key);
         }
     } else {
         throw new TypeError('Invalid rule value');
@@ -576,7 +565,7 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
 
         /* Recursively parse our validation rules, to allow for deeply nested validation to be done */
         const plan:ValidationGroup[] = [];
-        recursor(plan, schema as RulesRawVal);
+        recursor(plan, schema as RulesRawVal, '');
 
         /* Set the parsed plan as a get property on our validation instance */
         this.#plan = plan;
