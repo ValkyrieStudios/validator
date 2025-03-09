@@ -480,7 +480,7 @@ v.check({a: 'foobar'}); // false
 v.check({a: true}); // false
 ```
 
-And can also be combined with other operators to form more complex rules such as:
+Can also be combined with other operators to form more complex rules such as:
 ```typescript
 const v = Validator.create({
     a: ['?', 'integer|between:1,150|!between:50,100', 'integer|between:-1,-150'],
@@ -492,12 +492,45 @@ v.check({a: -20}); // true
 v.check({a: 65}); // false
 ```
 
-And even with array combinators:
+And array combinators:
 ```typescript
 const v = Validator.create({a: ['email', '[unique|min:1]email']);
 v.check({a: 'contact@valkyriestudios.be'}); // true
 v.check({a: ['contact@valkyriestudios.be', 'peter@valkyriestudios.be'}); // true
 v.check({a: ['contact@valkyriestudios.be', 'contact@valkyriestudios.be']}); // false
+```
+
+And even schemas:
+```typescript
+const v = Validator.create({
+    user: ['?', {
+        details: ['?', {
+            security: ['?', {types: '?[unique|min:1|max:10]in:<securityTypes>'}],
+        }],
+    }],
+});
+v.check({user: {details: {}}}); // true
+v.check({user: "Hello"}); // false
+v.check({
+    user: {
+        details: {
+            security: {
+                types: [],
+            },
+        },
+    },
+    securityTypes: ['credentials', 'otp', 'sso'],
+}); // false
+v.check({
+    user: {
+        details: {
+            security: {
+                types: ['sso', 'credentials'],
+            },
+        },
+    },
+    securityTypes: ['credentials', 'otp', 'sso'],
+}); // true
 ```
 
 ## Want to use the validation rules directly without a validator?

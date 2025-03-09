@@ -112,6 +112,35 @@ type vType = {
 }
 ```
 
+You can even go pretty far with this (sidenote, please don't do stuff like this in production-grade application code):
+```typescript
+const CustomValidator = Validator.extend({
+    security_type: ['sso', 'credentials', 'otp'],
+});
+
+const v = CustomValidator.create({
+    user: ['?', {
+        details: ['?', {
+            security: ['?', {types: '?[unique|min:1|max:10]security_type'}],
+        }],
+    }],
+});
+
+/* Getting the output type */
+type vType = typeof v.schema;
+
+/* This type will be equivalent to this */
+type vType = {
+    user: {
+        details: {
+            security: {
+                types: ('sso' | 'credentials' | 'otp')[] | undefined;
+            } | undefined;
+        } | undefined;
+    } | undefined;
+}
+```
+
 ### Improved
 - **deps**: Upgrade @types/node to 22.13.0
 - **deps**: Upgrade @valkyriestudios/utils to 12.34.0
