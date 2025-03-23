@@ -724,15 +724,17 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
         for (let i = 0; i < raw.length; i++) {
             const plan:ValidationGroup[] = [];
             recursor(plan, raw[i], '');
-            if (!plan.length) throw new TypeError('Validator@ctor: Invalid schema provided');
             plans.push(plan);
         }
 
         /* Set the parsed plan as a get property on our validation instance */
-        this.#plan = plans.length > 1
-            ? {type: 'multi', plans: plans}
-            : {type: 'single', plan: plans[0]};
-        this.#schema = deepFreeze(raw) as DeepMutable<T>;
+        if (plans.length > 1) {
+            this.#plan = {type: 'multi', plans: plans};
+            this.#schema = deepFreeze(raw) as DeepMutable<T>;
+        } else {
+            this.#plan = {type: 'single', plan: plans[0]};
+            this.#schema = deepFreeze(raw[0] as GenericObject) as DeepMutable<T>;
+        }
     }
 
     /**

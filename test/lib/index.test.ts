@@ -80,7 +80,7 @@ import {
 
 describe('Validator - Core', () => {
     it('Should instantiate to a validator object', () => {
-        const validator = new Validator({});
+        const validator = new Validator({firstName: 'string_ne'});
 
         //  It should have a check function on its instance
         assert.equal(typeof validator.check, 'function');
@@ -105,25 +105,25 @@ describe('Validator - Core', () => {
         assert.throws(
             //  @ts-ignore
             () => new Validator(),
-            new TypeError('Provide an object to define the rules of this validator')
+            new TypeError('Validator@ctor: Schema needs to be an object or array of objects')
         );
 
         assert.throws(
             //  @ts-ignore
             () => new Validator(5),
-            new TypeError('Provide an object to define the rules of this validator')
+            new TypeError('Validator@ctor: Schema needs to be an object or array of objects')
         );
 
         assert.throws(
             //  @ts-ignore
             () => new Validator([{hello: 'world'}, 5, true]),
-            new TypeError('Provide an object to define the rules of this validator')
+            new TypeError('Invalid rule value')
         );
 
         assert.throws(
             //  @ts-ignore
             () => new Validator('foo'),
-            new TypeError('Provide an object to define the rules of this validator')
+            new TypeError('Validator@ctor: Schema needs to be an object or array of objects')
         );
 
         assert.throws(
@@ -309,12 +309,6 @@ describe('Validator - Core', () => {
 
         it('Should return true when valid', () => {
             assert.ok(new Validator({a: 'number', b: 'number'}).check({a: 20, b: 42}));
-        });
-
-        it('Should validate to true if no data was passed and no rules were set up', () => {
-            const validator = new Validator({});
-            //  @ts-ignore
-            assert.ok(validator.check());
         });
 
         it('Should validate to false if data was passed but rule does not exist', () => {
@@ -1663,13 +1657,6 @@ describe('Validator - Core', () => {
                     ],
                 },
             });
-        });
-
-        it('Should validate to true if no data was passed and no rules were set up', () => {
-            const validator = new Validator({});
-            //  @ts-ignore
-            const evaluation = validator.validate();
-            assert.deepEqual(evaluation, {is_valid: true, count: 0, errors: {}});
         });
 
         it('Should validate to false with \'NO_DATA\' if no data was passed and rules were set up', () => {
@@ -3152,7 +3139,6 @@ describe('Validator - Core', () => {
         });
     });
 
-
     describe('@check:FormData', () => {
         describe('FN', () => {
             it('Should return false when invalid', () => {
@@ -4619,6 +4605,179 @@ describe('Validator - Core', () => {
             });
 
             assert.equal(validator.check({contact_email: 'contact@valkyriestudios.be'}), false);
+        });
+    });
+
+    describe('Multi-Validation scenarios', () => {
+        describe('rawSchema', () => {
+            describe('@check', () => {
+                it('Should return true if one of them passes', () => {
+                    const v = Validator.create([
+                        {type: 'literal:send', target: ['email', 'phone'], message: 'string_ne'},
+                        {type: 'literal:received', target: ['email', 'phone'], message: 'string_ne'},
+                    ]);
+                    assert.ok(v.check({type: 'send', target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}));
+                    assert.ok(v.check({type: 'received', target: 'contact@valkyriestudios.be', message: 'Yes let\'s'}));
+                });
+
+                it('Should return true if all of them pass', () => {
+                    const v = Validator.create([
+                        {target: ['email', 'phone'], message: 'string_ne'},
+                        {target: ['email', 'phone'], message: 'string_ne', isValid: '?boolean'},
+                    ]);
+                    assert.ok(v.check({target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}));
+                    assert.ok(v.check({target: 'contact@valkyriestudios.be', message: 'Yes let\'s', isValid: true}));
+                    assert.ok(v.check({target: 'contact@valkyriestudios.be', message: 'Yes let\'s', isValid: false}));
+                });
+
+                it('Should return false if none of them pass', () => {
+                    const v = Validator.create([
+                        {type: 'literal:send', target: ['email', 'phone'], message: 'string_ne'},
+                        {type: 'literal:received', target: ['email', 'phone'], message: 'string_ne'},
+                    ]);
+                    assert.ok(!v.check({type: 'activate', target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}));
+                    assert.ok(!v.check({type: 'send', target: 'blabla', message: 'Yes let\'s'}));
+                });
+            });
+
+            describe('@validate', () => {
+                it('Should return is valid if one of them passes', () => {
+                    const v = Validator.create([
+                        {type: 'literal:send', target: ['email', 'phone'], message: 'string_ne'},
+                        {type: 'literal:received', target: ['email', 'phone'], message: 'string_ne'},
+                    ]);
+                    assert.deepEqual(
+                        v.validate({type: 'send', target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}),
+                        {is_valid: true, count: 0, errors: {}}
+                    );
+                    assert.deepEqual(
+                        v.validate({type: 'received', target: 'contact@valkyriestudios.be', message: 'Yes let\'s'}),
+                        {is_valid: true, count: 0, errors: {}}
+                    );
+                });
+
+                it('Should return is valid if all of them pass', () => {
+                    const v = Validator.create([
+                        {target: ['email', 'phone'], message: 'string_ne'},
+                        {target: ['email', 'phone'], message: 'string_ne', isValid: '?boolean'},
+                    ]);
+                    assert.deepEqual(
+                        v.validate({target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}),
+                        {is_valid: true, count: 0, errors: {}}
+                    );
+                    assert.deepEqual(
+                        v.validate({target: 'contact@valkyriestudios.be', message: 'Yes let\'s', isValid: true}),
+                        {is_valid: true, count: 0, errors: {}}
+                    );
+                    assert.deepEqual(
+                        v.validate({target: 'contact@valkyriestudios.be', message: 'Yes let\'s', isValid: false}),
+                        {is_valid: true, count: 0, errors: {}}
+                    );
+                });
+
+                it('Should return first error result if none of them pass', () => {
+                    const v = Validator.create([
+                        {type: 'literal:send', target: ['email', 'phone'], message: 'string_ne'},
+                        {type: 'literal:received', target: ['email', 'phone'], message: 'string_ne'},
+                    ]);
+                    assert.deepEqual(
+                        v.validate({type: 'activate', target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}),
+                        {is_valid: false, count: 1, errors: {
+                            type: [
+                                {msg: 'literal', params: ['send']},
+                            ],
+                        }}
+                    );
+                    assert.deepEqual(
+                        v.validate({type: 'send', target: 'blabla', message: 'Yes let\'s'}),
+                        {is_valid: false, count: 1, errors: {
+                            target: [
+                                [{msg: 'email', params: []}],
+                                [{msg: 'phone', params: []}],
+                            ],
+                        }}
+                    );
+                });
+            });
+        });
+
+        describe('validator', () => {
+            const vSend = Validator.create({type: 'literal:send', target: ['email', 'phone'], message: 'string_ne'});
+            const vReceived = Validator.create({type: 'literal:received', target: ['email', 'phone'], message: 'string_ne'});
+            const vTarget = Validator.create({target: ['email', 'phone'], message: 'string_ne'});
+            const vtargetWithActive = Validator.create({target: ['email', 'phone'], message: 'string_ne', isValid: '?boolean'});
+
+            describe('@check', () => {
+                it('Should return true if one of them passes', () => {
+                    const v = Validator.create([vSend, vReceived]);
+                    assert.ok(v.check({type: 'send', target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}));
+                    assert.ok(v.check({type: 'received', target: 'contact@valkyriestudios.be', message: 'Yes let\'s'}));
+                });
+
+                it('Should return true if all of them pass', () => {
+                    const v = Validator.create([vTarget, vtargetWithActive]);
+                    assert.ok(v.check({target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}));
+                    assert.ok(v.check({target: 'contact@valkyriestudios.be', message: 'Yes let\'s', isValid: true}));
+                    assert.ok(v.check({target: 'contact@valkyriestudios.be', message: 'Yes let\'s', isValid: false}));
+                });
+
+                it('Should return false if none of them pass', () => {
+                    const v = Validator.create([vSend, vReceived]);
+                    assert.ok(!v.check({type: 'activate', target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}));
+                    assert.ok(!v.check({type: 'send', target: 'blabla', message: 'Yes let\'s'}));
+                });
+            });
+
+            describe('@validate', () => {
+                it('Should return is valid if one of them passes', () => {
+                    const v = Validator.create([vSend, vReceived]);
+                    assert.deepEqual(
+                        v.validate({type: 'send', target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}),
+                        {is_valid: true, count: 0, errors: {}}
+                    );
+                    assert.deepEqual(
+                        v.validate({type: 'received', target: 'contact@valkyriestudios.be', message: 'Yes let\'s'}),
+                        {is_valid: true, count: 0, errors: {}}
+                    );
+                });
+
+                it('Should return is valid if all of them pass', () => {
+                    const v = Validator.create([vTarget, vtargetWithActive]);
+                    assert.deepEqual(
+                        v.validate({target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}),
+                        {is_valid: true, count: 0, errors: {}}
+                    );
+                    assert.deepEqual(
+                        v.validate({target: 'contact@valkyriestudios.be', message: 'Yes let\'s', isValid: true}),
+                        {is_valid: true, count: 0, errors: {}}
+                    );
+                    assert.deepEqual(
+                        v.validate({target: 'contact@valkyriestudios.be', message: 'Yes let\'s', isValid: false}),
+                        {is_valid: true, count: 0, errors: {}}
+                    );
+                });
+
+                it('Should return first error result if none of them pass', () => {
+                    const v = Validator.create([vSend, vReceived]);
+                    assert.deepEqual(
+                        v.validate({type: 'activate', target: 'contact@valkyriestudios.be', message: 'Let\'s do business'}),
+                        {is_valid: false, count: 1, errors: {
+                            type: [
+                                {msg: 'literal', params: ['send']},
+                            ],
+                        }}
+                    );
+                    assert.deepEqual(
+                        v.validate({type: 'send', target: 'blabla', message: 'Yes let\'s'}),
+                        {is_valid: false, count: 1, errors: {
+                            target: [
+                                [{msg: 'email', params: []}],
+                                [{msg: 'phone', params: []}],
+                            ],
+                        }}
+                    );
+                });
+            });
         });
     });
 });
