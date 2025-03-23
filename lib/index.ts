@@ -93,15 +93,6 @@ import {
     type TV,
 } from './internalTypes';
 
-/* Used for enum storage */
-const ENUM_STORE:Map<string, Set<string | number>> = new Map();
-
-/* Used for regexp storage */
-const REGEX_STORE:Map<string, RegExp> = new Map();
-
-/* Used for schema storage */
-const SCHEMA_STORE:Map<string, Validator<RulesRaw>> = new Map(); /* eslint-disable-line no-use-before-define */
-
 /* Global rule storage */
 const RULE_STORE = {
     alpha_num_spaces: vAlphaNumSpaces,
@@ -836,49 +827,41 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
         for (const [key, value] of Object.entries(obj)) {
             let builtValue:RuleFn;
             if (value instanceof RegExp) {
-                /* Create function and transfer key to it */
-                builtValue = function (val:string):boolean {
+                builtValue = function (val) {
                     /* eslint-disable-next-line */
                     /* @ts-ignore */
-                    return typeof val === 'string' && val.match(REGEX_STORE.get(this.uid)) !== null; /* eslint-disable-line no-invalid-this,max-len */
+                    return typeof val === 'string' && this.rgx.test(val); /* eslint-disable-line no-invalid-this */
                 };
 
                 /* eslint-disable-next-line */
                 /* @ts-ignore */
-                builtValue.uid = key;
+                builtValue.rgx = new RegExp(value);
 
                 builtValue = builtValue.bind(builtValue);
-                REGEX_STORE.set(key, new RegExp(value)); /* Copy regex */
             } else if (Array.isArray(value)) {
-                /* Convert array to set (also dedupes) */
-                const enum_set:Set<string|number> = new Set([...value]);
-
-                /* Create function and transfer key to it */
-                builtValue = function (val:string|number):boolean {
+                builtValue = function (val) {
                     /* eslint-disable-next-line */
                     /* @ts-ignore */
-                    return ENUM_STORE.get(this.uid)!.has(val); /* eslint-disable-line no-invalid-this */
+                    return (this.set as Set<string | number>).has(val); /* eslint-disable-line no-invalid-this */
                 };
 
                 /* eslint-disable-next-line */
                 /* @ts-ignore */
-                builtValue.uid = key;
+                builtValue.set = new Set([...value]);
 
                 builtValue = builtValue.bind(builtValue);
-                ENUM_STORE.set(key, enum_set);
             } else if (isObject(value)) {
-                builtValue = function (val:GenericObject):boolean {
+                builtValue = function (val) {
                     /* eslint-disable-next-line */
                     /* @ts-ignore */
-                    return SCHEMA_STORE.get(this.uid)!.check(val); /* eslint-disable-line no-invalid-this */
+                    return this.v.check(val); /* eslint-disable-line no-invalid-this */
                 };
 
                 /* eslint-disable-next-line */
                 /* @ts-ignore */
-                builtValue.uid = key;
+                builtValue.v = schemas_map[key];
 
                 builtValue = builtValue.bind(builtValue);
-                SCHEMA_STORE.set(key, schemas_map[key]);
             } else {
                 builtValue = value;
             }

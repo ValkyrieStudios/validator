@@ -7,6 +7,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- **perf**: Minor performance improvement in extended enum/regex/schema rules thanks to eliminating an internal retrieval step
 - **deps**: Upgrade @types/node to 22.13.11
 - **deps**: Upgrade @valkyriestudios/utils to 12.35.0
 - **deps**: Upgrade eslint to 9.23.0
