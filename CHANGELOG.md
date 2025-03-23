@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [10.2.0] - 2025-03-23
 ### Added
 - **feat**: Added a new validation rule `literal` which is used to tell validator that a provided value is a **fixed/literal value**. From a typing perspective this rule will be inferred as being of the provided param value.
 ```typescript
@@ -98,7 +98,7 @@ function someFunction (data:Record<string, unknown>) {
     if (!v.check(data)) return false;
 
     /* Typescript will automatically infer data.type as 'sent' | 'received' thanks to the type guard on v.check */
-    switch (data.type) { 
+    switch (data.type) {
         case 'sent':
             console.log('Sent a message');
             break;
