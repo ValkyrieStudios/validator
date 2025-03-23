@@ -41,6 +41,7 @@ import {vGuid}                      from './functions/vGuid';
 import {vIn}                        from './functions/vIn';
 import {vLessThan}                  from './functions/vLessThan';
 import {vLessThanOrEqual}           from './functions/vLessThanOrEqual';
+import {vLiteral}                   from './functions/vLiteral';
 import {vNull}                      from './functions/vNull';
 import {vPhone}                     from './functions/vPhone';
 import {vTimeZone}                  from './functions/vTimeZone';
@@ -134,6 +135,7 @@ const RULE_STORE = {
     isbn_13: vISBN13,
     less_than: vLessThan,
     less_than_or_equal: vLessThanOrEqual,
+    literal: vLiteral,
     max: vLessThanOrEqual,
     min: vGreaterThanOrEqual,
     null: vNull,
@@ -524,6 +526,8 @@ function checkRule (
     if (!iterable) {
         for (let i = 0; i < list_length; i++) {
             const rule_el = list[i];
+            /* eslint-disable-next-line */
+            /* @ts-ignore */
             if ((RULE_STORE[rule_el.type as keyof typeof RULE_STORE] || NOEXISTS)(
                 cursor,
                 /* eslint-disable-next-line */
@@ -558,6 +562,8 @@ function checkRule (
             /* Get params */
             if (!param_acc[i]) param_acc[i] = constructParams(rule_el, data);
 
+            /* eslint-disable-next-line */
+            /* @ts-ignore */
             if ((RULE_STORE[rule_el.type as keyof typeof RULE_STORE] || NOEXISTS)(
                 cursor_value,
                 /* eslint-disable-next-line */

@@ -72,15 +72,17 @@ export type InferredSchema<S, Rules extends Record<string, any> = {}> =
             ? (Rest extends ''
                 ? undefined
                 : InferredSchema<RemoveNegation<Rest>, Rules> | undefined)
-            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-            : S extends `[${infer Inner}]${infer Rest}`
-                ? InferredSchema<Rest, Rules>[]
+            : (S extends `literal:${infer Literal}`
+                ? Literal
                 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-                : S extends `{${infer Inner}}${infer Rest}`
-                    ? { [key: string]: InferredSchema<Rest, Rules> }
-                    : ExtractRuleName<RemoveNegation<S>> extends keyof RuleMap<Rules>
-                        ? RuleMap<Rules>[ExtractRuleName<RemoveNegation<S>>]
-                        : unknown
+                : S extends `[${infer Inner}]${infer Rest}`
+                    ? InferredSchema<Rest, Rules>[]
+                    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+                    : S extends `{${infer Inner}}${infer Rest}`
+                        ? { [key: string]: InferredSchema<Rest, Rules> }
+                        : ExtractRuleName<RemoveNegation<S>> extends keyof RuleMap<Rules>
+                            ? RuleMap<Rules>[ExtractRuleName<RemoveNegation<S>>]
+                            : unknown)
         : S extends Array<infer U>
             ? InferredSchema<U, Rules>
             : S extends object

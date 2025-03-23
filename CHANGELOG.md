@@ -6,6 +6,61 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- **feat**: Added a new validation rule `literal` which is used to tell validator that a provided value is a **fixed/literal value**. From a typing perspective this rule will be inferred as being of the provided param value.
+```typescript
+const v = Validator.create({
+    type: 'literal:act_send',
+    message: 'string_ne',
+    target: 'email',
+});
+
+/* Get type */
+type vType = typeof v.schema;
+
+/* Type will be the following */
+type vType = {
+    type: 'act_send',
+    message: string;
+    target: Email;
+}
+```
+
+This of course can be used in conditional groups as well:
+```typescript
+const v = Validator.create({
+    userId: 'guid',
+    action: [
+        {
+            type: 'literal:sent',
+            message: 'string_ne',
+            target: ['email', 'phone']
+        }, {
+            type: 'literal:received',
+            message: 'string_ne',
+            from: ['email', 'phone']
+        }
+    ],
+});
+
+/* Get type */
+type vType = typeof v.schema;
+
+/* Type will be the following */
+type vType = {
+    userId: GUID;
+    action: {
+        type: 'sent';
+        message: string;
+        target: Email | Phone
+    } | {
+        type: 'received';
+        message: string;
+        from: Email | Phone
+    }
+}
+```
+
 ### Improved
 - **perf**: Minor performance improvement in extended enum/regex/schema rules thanks to eliminating an internal retrieval step
 - **deps**: Upgrade @types/node to 22.13.11

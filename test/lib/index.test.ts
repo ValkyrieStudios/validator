@@ -37,6 +37,7 @@ import vGuid                    from '../../lib/functions/vGuid';
 import vIn                      from '../../lib/functions/vIn';
 import vLessThan                from '../../lib/functions/vLessThan';
 import vLessThanOrEqual         from '../../lib/functions/vLessThanOrEqual';
+import vLiteral                 from '../../lib/functions/vLiteral';
 import vNull                    from '../../lib/functions/vNull';
 import vPhone                   from '../../lib/functions/vPhone';
 import vSize                    from '../../lib/functions/vSize';
@@ -195,6 +196,7 @@ describe('Validator - Core', () => {
                 isbn_13                     : vISBN13,
                 less_than                   : vLessThan,
                 less_than_or_equal          : vLessThanOrEqual,
+                literal                     : vLiteral,
                 max                         : vLessThanOrEqual,
                 min                         : vGreaterThanOrEqual,
                 null                        : vNull,

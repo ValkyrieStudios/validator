@@ -651,6 +651,7 @@ The following list shows you all the default rules that are provided by this lib
 | isbn_13 | Validates International Standard Book Number (ISBNs) 13-character format |
 | less_than | Validate that a provided value is less than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
 | less_than_or_equal | Validate that a provided value is less than or equal to a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
+| literal | Validate that a provided value is equal to a literal value. This rule is special in that type inferrence treats the param as literal, eg: `literal:sent` the type for this rule in the schema will be `sent` |
 | lt | Alias of less_than |
 | lte | Alias of less_than_or_equal |
 | max | Alias of less_than_or_equal |
