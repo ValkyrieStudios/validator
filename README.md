@@ -305,6 +305,69 @@ As such 'to type' or 'not to type' truly depends on your usecase. Here's a set o
 - If you **DO NOT** have fixed/prebuilt types use `Validator.create(...)` and the schema will be automatically inferred and check/checkForm will be type-guarded.
 - If you want to **extract the type** for a validator make use of `typeof myValidator.schema`.
 
+## Multi-Schema validation
+Sometimes an object can have one of several shapes, all of which are valid shapes, to accomodate for this you can pass multiple schemas to `Validator.create` as an array of schemas. In the **How does this work** section of the documentation you will read about OR-groups, in essence this array of schemas acts as an 'OR-group' on the root level of the Validator.
+
+For example let's say you're building an endpoint which handles incoming messages, you have several possible types of messages and wish to validate ahead of time that your payload is a valid shape.
+
+You could do something like this (which is a perfectly valid approach):
+```typescript
+const vSent = Validator.create({type: 'literal:sent', message: 'string_ne', target: ['email', 'phone']});
+const vReceived = Validator.create({type: 'literal:received', message: 'string_ne', from: ['email', 'phone']});
+
+function someFunction (data:Record<string, unknown>) {
+    if (vSent.check(data)) {
+        return onVSent(data);
+    } else if (vReceived.check(data)) {
+        return onVReceived(data);
+    }
+};
+```
+
+Going one step further, you could also create an or-based validator from the two validators:
+```typescript
+import {vSent, onSent} from './onSentHandler';
+import {vReceived, onReceived} from './onReceivedHandler';
+
+const v = Validator.create([vSent, vReceived]);
+
+function someFunction (data:Record<string, unknown>) {
+    if (!v.check(data)) return false;
+
+    switch (data.type) {
+        case 'sent': onSent(data); break;
+        case 'received': onReceived(data); break;
+        case 'bla' /* Typescript will complain here as there's no bla in the union */
+    }
+};
+```
+
+Or you could just define it all internally:
+```typescript
+import {onSent} from './onSentHandler';
+import {onReceived} from './onReceivedHandler';
+
+const v = Validator.create([
+    {type: 'literal:sent', message: 'string_ne', target: ['email', 'phone']},
+    {type: 'literal:received', message: 'string_ne', from: ['email', 'phone']},
+]);
+
+function someFunction (data:Record<string, unknown>) {
+    if (!v.check(data)) return false;
+
+    switch (data.type) {
+        case 'sent': onSent(data); break;
+        case 'received': onReceived(data); break;
+        case 'bla' /* Typescript will complain here as there's no bla in the union */
+    }
+};
+```
+
+As per usual there's multiple roads to validation. It very much depends on your preferences but here's some tips:
+- Endpoints like in the example are prevalent in many systems, to make them scalable you will want to modularize, the benefit of being able to create a union of two or more Validators is that you can keep the logic for a particular 'type' internal while outsourcing the validation. You have the best of both worlds as you can still infer the type from the original validator.
+- Try to have one property on which you can 'discriminate' against, in many systems this is a 'type' or 'action' value. The `literal` rule is your best friend here.
+- If you want to **extract the type** for a union validator you can still do this of course, make use of `typeof myValidator.schema`.
+
 ## How does this work?
 ### Instantiating a new validator
 A validator instance is reusable across multiple validation runs, it's instantiated with a set of rules that it needs to validate later down the

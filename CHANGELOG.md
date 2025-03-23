@@ -95,8 +95,7 @@ const v = Validator.create([
 ]);
 
 function someFunction (data:Record<string, unknown>) {
-    const o = v.check(data);
-    if (!o) return;
+    if (!v.check(data)) return false;
 
     /* Typescript will automatically infer data.type as 'sent' | 'received' thanks to the type guard on v.check */
     switch (data.type) { 
@@ -111,6 +110,24 @@ function someFunction (data:Record<string, unknown>) {
             break;
     }
 }
+```
+
+Going one step further, you could also externally define those validators and create an or-based validator from the external validators:
+```typescript
+import {vSent, onSent} from './onSentHandler'; /* vSent is a Validator instance here */
+import {vReceived, onReceived} from './onReceivedHandler'; /* vReceived is a Validator instance here */
+
+const v = Validator.create([vSent, vReceived]);
+
+function someFunction (data:Record<string, unknown>) {
+    if (!v.check(data)) return false;
+
+    switch (data.type) {
+        case 'sent': onSent(data); break;
+        case 'received': onReceived(data); break;
+        case 'bla' /* Typescript will complain here as there's no bla in the union */
+    }
+};
 ```
 
 ### Improved

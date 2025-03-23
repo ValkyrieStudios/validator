@@ -905,16 +905,35 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
         return this as unknown as IValidator<MergeExtensions<{}, MappedExtensions<NewExtensions, typeof Validator['rules']>>>;
     }
 
+    /* Overload for raw schema(s) */
+    static create<const TSchema extends RulesRaw | readonly RulesRaw[]>(
+        schema: TSchema
+    ): Validator<
+        TSchema extends readonly RulesRaw[]
+            ? InferredSchema<TSchema[number], typeof Validator['rules']>
+            : InferredSchema<TSchema, typeof Validator['rules']>
+    >;
+
+    /* Overload for an array of Validator instances */
+    static create<const TValidators extends readonly Validator<any>[]>(
+        validators: TValidators
+    ): Validator<
+        TValidators[number] extends Validator<infer U, any, any>
+            ? U
+            : never
+    >;
+
     /**
      * Create a validator instance and have its type auto-inferred
      */
-    static create <const TSchema extends RulesRaw | readonly RulesRaw[]> (
-        schema: TSchema
-    ): Validator<TSchema extends readonly RulesRaw[]
-        ? InferredSchema<TSchema[number], typeof Validator['rules']>
-        : InferredSchema<TSchema, typeof Validator['rules']>
-    > {
-        return new Validator(schema);
+    static create<const TSchemaOrValidators> (schema: TSchemaOrValidators): any {
+        if (isNotEmptyArray(schema) && schema[0] instanceof Validator) {
+            const normalized = [];
+            for (let i = 0; i < schema.length; i++) normalized.push((schema[i] as unknown as Validator<GenericObject>).schema);
+            return new Validator(normalized);
+        } else {
+            return new Validator(schema);
+        }
     }
 
 }
