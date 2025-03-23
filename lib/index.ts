@@ -703,22 +703,36 @@ export interface IValidator<Extensions extends Record<string, unknown> = {}> {
 class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T>> {
 
     /* Validation plan */
-    #plan!:ValidationGroup[];
+    #plan!:
+        | {type: 'single', plan: ValidationGroup[]}
+        | {type: 'multi', plans: ValidationGroup[][] };
 
     /* Schema type prop */
     #schema!:DeepMutable<T>;
 
     constructor (schema:TypedValidator) {
+        const raw:RulesRawVal[] = (isObject(schema)
+            ? [schema]
+            : isArray(schema)
+                ? schema
+                : []) as RulesRawVal[];
         /* Check for rules */
-        if (!isObject(schema)) throw new TypeError('Provide an object to define the rules of this validator');
+        if (!raw.length) throw new TypeError('Validator@ctor: Schema needs to be an object or array of objects');
 
         /* Recursively parse our validation rules, to allow for deeply nested validation to be done */
-        const plan:ValidationGroup[] = [];
-        recursor(plan, schema as RulesRawVal, '');
+        const plans:ValidationGroup[][] = [];
+        for (let i = 0; i < raw.length; i++) {
+            const plan:ValidationGroup[] = [];
+            recursor(plan, raw[i], '');
+            if (!plan.length) throw new TypeError('Validator@ctor: Invalid schema provided');
+            plans.push(plan);
+        }
 
         /* Set the parsed plan as a get property on our validation instance */
-        this.#plan = plan;
-        this.#schema = deepFreeze(schema) as DeepMutable<T>;
+        this.#plan = plans.length > 1
+            ? {type: 'multi', plans: plans}
+            : {type: 'single', plan: plans[0]};
+        this.#schema = deepFreeze(raw) as DeepMutable<T>;
     }
 
     /**
@@ -738,11 +752,17 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
         const data = raw instanceof FormData
             ? toObject<GenericObject>(raw)
             : raw as GenericObject;
+        if (!isObject(data)) return false;
 
-        /* No data passed? Check if rules were set up */
-        if (!isObject(data)) return !this.#plan.length;
-
-        return checkPlan(data, this.#plan);
+        if (this.#plan.type === 'multi') {
+            for (let i = 0; i < this.#plan.plans.length; i++) {
+                const plan = this.#plan.plans[i];
+                if (checkPlan(data, plan)) return true;
+            }
+            return false;
+        } else {
+            return checkPlan(data, this.#plan.plan);
+        }
     }
 
     /**
@@ -766,18 +786,19 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
         const data = raw instanceof FormData
             ? toObject<GenericObject>(raw)
             : raw as GenericObject;
+        if (!isObject(data)) return {is_valid: false, errors: 'NO_DATA', count: 1};
 
-        /* No data passed? Check if rules were set up */
-        if (!isObject(data)) {
-            const plan_length = this.#plan.length;
-            return {
-                is_valid: !plan_length,
-                count: plan_length,
-                errors: plan_length ? 'NO_DATA' : {},
-            };
+        if (this.#plan.type === 'multi') {
+            const results:ValidationResult[] = [];
+            for (let i = 0; i < this.#plan.plans.length; i++) {
+                const result = validatePlan(data, this.#plan.plans[i]);
+                if (result.is_valid) return result;
+                results.push(result);
+            }
+            return results[0];
+        } else {
+            return validatePlan(data, this.#plan.plan);
         }
-
-        return validatePlan(data, this.#plan);
     }
 
     /**
@@ -887,7 +908,12 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
     /**
      * Create a validator instance and have its type auto-inferred
      */
-    static create<const TSchema extends RulesRaw> (schema: TSchema): Validator<InferredSchema<TSchema, typeof Validator['rules']>> {
+    static create <const TSchema extends RulesRaw | readonly RulesRaw[]> (
+        schema: TSchema
+    ): Validator<TSchema extends readonly RulesRaw[]
+        ? InferredSchema<TSchema[number], typeof Validator['rules']>
+        : InferredSchema<TSchema, typeof Validator['rules']>
+    > {
         return new Validator(schema);
     }
 

@@ -60,6 +60,58 @@ type vType = {
     }
 }
 ```
+- **feat**: Added support to pass **multiple schemas** to `Validator.create`, if multiple schemas are passed they will be treated as an OR group and if one of them passes it will be seen as valid.
+```typescript
+const v = Validator.create([
+    {
+        type: 'literal:sent',
+        message: 'string_ne',
+        target: ['email', 'phone']
+    }, {
+        type: 'literal:received',
+        message: 'string_ne',
+        from: ['email', 'phone']
+    },
+]);
+
+type vType = typeof v.schema;
+
+/* Type will be the following */
+type vType = {
+    type: 'sent';
+    message: string;
+    target: Email | Phone
+} | {
+    type: 'received';
+    message: string;
+    from: Email | Phone
+}
+```
+This can lead to some very powerful scripting simply based on the behind-the-scenes type inferrence, for example:
+```typescript
+const v = Validator.create([
+    {type: 'literal:sent', message: 'string_ne', target: ['email', 'phone']},
+    {type: 'literal:received', message: 'string_ne', from: ['email', 'phone']},
+]);
+
+function someFunction (data:Record<string, unknown>) {
+    const o = v.check(data);
+    if (!o) return;
+
+    /* Typescript will automatically infer data.type as 'sent' | 'received' thanks to the type guard on v.check */
+    switch (data.type) { 
+        case 'sent':
+            console.log('Sent a message');
+            break;
+        case 'received':
+            console.log('Received a message');
+            break;
+        case 'bla': /* Typescript will complain here as there's no possible branch called 'bla' */
+            console.log('Something unknown');
+            break;
+    }
+}
+```
 
 ### Improved
 - **perf**: Minor performance improvement in extended enum/regex/schema rules thanks to eliminating an internal retrieval step
