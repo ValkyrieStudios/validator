@@ -367,6 +367,18 @@
       "default": "./functions/vLessThanOrEqual.js",
       "types": "./functions/vLessThanOrEqual.d.ts"
     },
+    "./functions/vLiteral": {
+      "import": {
+        "default": "./functions/vLiteral.js",
+        "types": "./functions/vLiteral.d.ts"
+      },
+      "require": {
+        "default": "./functions/vLiteral.js",
+        "types": "./functions/vLiteral.d.ts"
+      },
+      "default": "./functions/vLiteral.js",
+      "types": "./functions/vLiteral.d.ts"
+    },
     "./functions/vNull": {
       "import": {
         "default": "./functions/vNull.js",
