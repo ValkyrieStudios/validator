@@ -573,17 +573,17 @@
     }
   },
   "dependencies": {
-    "@valkyriestudios/utils": "^12.34.0"
+    "@valkyriestudios/utils": "^12.35.0"
   },
   "devDependencies": {
-    "@types/node": "^22.13.0",
+    "@types/node": "^22.13.11",
     "@valkyriestudios/data-continents": "^0.3.0",
     "@valkyriestudios/data-countries": "^0.3.0",
     "@valkyriestudios/data-timezones": "^0.6.0",
     "esbuild-register": "^3.6.0",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "nyc": "^17.1.0",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.26.0"
+    "typescript-eslint": "^8.27.0"
   }
 }
