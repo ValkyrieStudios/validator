@@ -11,6 +11,7 @@ import vColorHex                from '../lib/functions/vColorHex';
 import vContinent               from '../lib/functions/vContinent';
 import vCountry                 from '../lib/functions/vCountry';
 import vCountryAlpha3           from '../lib/functions/vCountryAlpha3';
+import vCron                    from '../lib/functions/vCron';
 import vDateString              from '../lib/functions/vDateString';
 import vEmail                   from '../lib/functions/vEmail';
 import vFalse                   from '../lib/functions/vFalse';
@@ -944,6 +945,15 @@ for (const el of [
     {
         lbl: 'functions/vCountryAlpha3 - invalid',
         fn: () => vCountryAlpha3('Antarctica'),
+    },
+    //  vCron
+    {
+        lbl: 'functions/vCron - valid',
+        fn: () => vCron('5,10,15 * 1,2 * *'),
+    },
+    {
+        lbl: 'functions/vCron - invalid',
+        fn: () => vCron('5,10,15 * 1,2,99 * *'),
     },
     //  vDateString
     {

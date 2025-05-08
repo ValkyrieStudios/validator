@@ -1,5 +1,5 @@
-import {isIntGt, isIntBetween} from "@valkyriestudios/utils/number";
-import {type CronSchedule} from "../types";
+import {isIntGt, isIntBetween} from '@valkyriestudios/utils/number';
+import {type CronSchedule} from '../types';
 
 const RGX_DIGITS = /^\d+$/;
 
