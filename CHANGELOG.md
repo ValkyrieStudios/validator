@@ -6,11 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- **feat**: functions barrel export is now available for built-in functions at `@valkyriestudios/validator/functions`. This allows using just the built-in functions without having to import the entire Validator, and is built in such a way that tree shaking will optimize the imports. example usage:
+```typescript
+import {vUrl, vEmail} from '@valkyriestudios/validator/functions';
+
+...
+```
+- **feat**: Rule `cron` with branded type CronSchedule to verify that a provided value is a valid cron schedule.
+```typescript
+const v = new Validator({val: 'cron'});
+v.check('* * * * *') // true
+v.check('0,5,10 * * * *') // true
+v.check('0,5,10,65 * * * *') // false
+```
+
 ### Improved
 - **perf**: Minor perf improvement in `date_day` thanks to simpler internal operations
 - **perf**: Minor perf improvement in `date_iso` thanks to simpler internal operations
 - **perf**: Minor perf improvement in `email` thanks to simpler internal operations
 - **perf**: Minor perf improvement in `phone` thanks to precomputed regex operations
+- **misc**: Updated license to include all contributors portion and add license badge to readme
+- **misc**: Improved on CI, bundle existing lint/coverage/test workflows in one ci workflow, add types, audit, publish jobs
 - **deps**: Upgrade @types/node to 22.15.16
 - **deps**: Upgrade @valkyriestudios/utils to 12.36.0
 - **deps**: Upgrade eslint to 9.26.0
