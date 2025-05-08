@@ -28,7 +28,7 @@
     "lint": "npm run lint:src && npm run lint:test",
     "lint:src": "./node_modules/.bin/eslint ./lib",
     "lint:test": "./node_modules/.bin/eslint ./test",
-    "codecov": "codecov",
+    "types": "tsc -p ./tsconfig.json --noEmit",
     "benchmark": "node --require esbuild-register ./test/benchmark.ts"
   },
   "repository": {
@@ -67,6 +67,18 @@
       "types": "./types.d.ts"
     },
     "./package.json": "./package.json",
+    "./functions": {
+      "import": {
+        "default": "./functions/index.js",
+        "types": "./functions/index.d.ts"
+      },
+      "require": {
+        "default": "./functions/index.js",
+        "types": "./functions/index.d.ts"
+      },
+      "default": "./functions/index.js",
+      "types": "./functions/index.d.ts"
+    },
     "./functions/vAlphaNumSpaces": {
       "import": {
         "default": "./functions/vAlphaNumSpaces.js",
