@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **deps**: Upgrade @types/node to 22.15.16
+- **deps**: Upgrade @valkyriestudios/utils to 12.36.0
+- **deps**: Upgrade eslint to 9.26.0
+- **deps**: Upgrade typescript to 5.8.3
+- **deps**: Upgrade typescript-eslint to 8.32.0
+
 ## [10.2.0] - 2025-03-23
 ### Added
 - **feat**: Added a new validation rule `literal` which is used to tell validator that a provided value is a **fixed/literal value**. From a typing perspective this rule will be inferred as being of the provided param value.
