@@ -15,7 +15,7 @@ function vEmail (val:unknown):val is Email {
 
     /* Check that string has content and does not contain spaces */
     const len = val.length;
-    if (!len || val.trim().length !== len) return false;
+    if (!len) return false;
 
     /* Split into user and domain parts, eg: 'contact@valkyriestudios.be' => ['contact', 'valkyriestudios.be'] */
     const parts = val.split('@');

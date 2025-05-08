@@ -36,9 +36,7 @@ const RGX_64_QUAD_DASH = /^[0-9A-Fa-f]{4}-[0-9A-Fa-f]{2}FF-FE[0-9A-Fa-f]{2}-[0-9
  * @param {unknown} val - Value to verify
  */
 function vSysMac (val:unknown):val is MAC {
-    if (typeof val !== 'string') return false;
-
-    return (
+    return typeof val === 'string' && (
         RGX_DOUBLE_DASH.test(val) ||
         RGX_DOUBLE_COLON.test(val) ||
         RGX_TRIPLE_DOT.test(val) ||

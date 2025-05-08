@@ -1,6 +1,8 @@
 import {type Phone} from '../types';
 
 const RGX = /^\+?\d{0,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
+const RGX_DIGIT = /\d/g;
+const RGX_PARTS = /(\.|-)/g;
 
 /**
  * Validate that a string is a valid phone number (will match phone numbers entered with
@@ -13,10 +15,10 @@ function vPhone (val:unknown):val is Phone {
     if (typeof val !== 'string') return false;
 
     /* If number of digits is less than 5, return false */
-    if ((val.match(/\d/g) || []).length < 5) return false;
+    if ((val.match(RGX_DIGIT) || []).length < 5) return false;
 
     /* Check parts */
-    const sparts = val.replace(/(\.|-)/g, ' ').split(' ');
+    const sparts = val.replace(RGX_PARTS, ' ').split(' ');
     for (const el of sparts) {
         const first = el[0];
         const last  = el[el.length - 1];

@@ -7,6 +7,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- **perf**: Minor perf improvement in `date_day` thanks to simpler internal operations
+- **perf**: Minor perf improvement in `date_iso` thanks to simpler internal operations
+- **perf**: Minor perf improvement in `email` thanks to simpler internal operations
+- **perf**: Minor perf improvement in `phone` thanks to precomputed regex operations
 - **deps**: Upgrade @types/node to 22.15.16
 - **deps**: Upgrade @valkyriestudios/utils to 12.36.0
 - **deps**: Upgrade eslint to 9.26.0
