@@ -25,6 +25,7 @@ export type Continent       = (typeof CONTINENTS)[number];
 export type ColorHex        = Brand<string, 'ColorHex'>;
 export type CountryAlpha2   = (typeof COUNTRY_ALPHA2)[number];
 export type CountryAlpha3   = (typeof COUNTRY_ALPHA3)[number];
+export type CronSchedule    = Brand<string, 'CronSchedule'>;
 export type DateString      = Brand<string, 'DateString'>;
 export type EAN_8           = Brand<string, 'EAN_8'>;
 export type EAN_13          = Brand<string, 'EAN_13'>;

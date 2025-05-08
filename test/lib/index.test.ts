@@ -14,69 +14,7 @@ import {isNumber, isInteger}    from '@valkyriestudios/utils/number';
 import guid                     from '@valkyriestudios/utils/hash/guid';
 import CONSTANTS                from '../constants';
 import Validator                from '../../lib';
-import vAlphaNumSpaces          from '../../lib/functions/vAlphaNumSpaces';
-import vAlphaNumSpacesMultiline from '../../lib/functions/vAlphaNumSpacesMultiline';
-import vBase64                  from '../../lib/functions/vBase64';
-import vBetween                 from '../../lib/functions/vBetween';
-import vBetweenInclusive        from '../../lib/functions/vBetweenInclusive';
-import vBlob                    from '../../lib/functions/vBlob';
-import vColorHex                from '../../lib/functions/vColorHex';
-import vContinent               from '../../lib/functions/vContinent';
-import vCountry                 from '../../lib/functions/vCountry';
-import vCountryAlpha3           from '../../lib/functions/vCountryAlpha3';
-import vDateString              from '../../lib/functions/vDateString';
-import {vDateISO, vDateDay}     from '../../lib/functions/vDateSpecs';
-import vEmail                   from '../../lib/functions/vEmail';
-import vFalse                   from '../../lib/functions/vFalse';
-import vFile                    from '../../lib/functions/vFile';
-import vGeoLatitude             from '../../lib/functions/vGeoLatitude';
-import vGeoLongitude            from '../../lib/functions/vGeoLongitude';
-import vGreaterThan             from '../../lib/functions/vGreaterThan';
-import vGreaterThanOrEqual      from '../../lib/functions/vGreaterThanOrEqual';
-import vGuid                    from '../../lib/functions/vGuid';
-import vIn                      from '../../lib/functions/vIn';
-import vLessThan                from '../../lib/functions/vLessThan';
-import vLessThanOrEqual         from '../../lib/functions/vLessThanOrEqual';
-import vLiteral                 from '../../lib/functions/vLiteral';
-import vNull                    from '../../lib/functions/vNull';
-import vPhone                   from '../../lib/functions/vPhone';
-import vSize                    from '../../lib/functions/vSize';
-import vSysMac                  from '../../lib/functions/vSysMac';
-import vSysIPv4                 from '../../lib/functions/vSysIPv4';
-import vSysIPv6                 from '../../lib/functions/vSysIPv6';
-import vSysIPv4_or_v6           from '../../lib/functions/vSysIPv4_or_v6';
-import vSysPort                 from '../../lib/functions/vSysPort';
-import vTimeZone                from '../../lib/functions/vTimeZone';
-import vTrue                    from '../../lib/functions/vTrue';
-import vUrl                     from '../../lib/functions/vUrl';
-import vUrlNoQuery              from '../../lib/functions/vUrlNoQuery';
-import {
-    vISBN,
-    vISBN10,
-    vISBN13,
-} from '../../lib/functions/vISBN';
-import {vSSN}                   from '../../lib/functions/vSSN';
-import {
-    vEAN,
-    vEAN8,
-    vEAN13,
-} from '../../lib/functions/vEAN';
-import {vUlid}                  from '../../lib/functions/vUlid';
-import {vUndefined}             from '../../lib/functions/vUndefined';
-import {
-    vUuid,
-    vUuidV1,
-    vUuidV2,
-    vUuidV3,
-    vUuidV4,
-    vUuidV5,
-} from '../../lib/functions/vUuid';
-import {
-    vUrlImage,
-    vUrlVideo,
-    vUrlMedia,
-    vUrlAudio,
-} from '../../lib/functions/vUrlExtensions';
+import * as VR                  from '../../lib/functions';
 
 describe('Validator - Core', () => {
     it('Should instantiate to a validator object', () => {
@@ -157,83 +95,84 @@ describe('Validator - Core', () => {
 
         it('Should return a correct kv-map of configured rules', () => {
             assert.deepEqual(Validator.rules, {
-                alpha_num_spaces            : vAlphaNumSpaces,
-                alpha_num_spaces_multiline  : vAlphaNumSpacesMultiline,
+                alpha_num_spaces            : VR.vAlphaNumSpaces,
+                alpha_num_spaces_multiline  : VR.vAlphaNumSpacesMultiline,
                 array                       : isArray,
                 array_ne                    : isNeArray,
-                base64                      : vBase64,
-                between                     : vBetween,
-                between_inc                 : vBetweenInclusive,
+                base64                      : VR.vBase64,
+                between                     : VR.vBetween,
+                between_inc                 : VR.vBetweenInclusive,
                 boolean                     : isBoolean,
-                blob                        : vBlob,
-                color_hex                   : vColorHex,
-                continent                   : vContinent,
-                country                     : vCountry,
-                country_alpha3              : vCountryAlpha3,
+                blob                        : VR.vBlob,
+                color_hex                   : VR.vColorHex,
+                continent                   : VR.vContinent,
+                country                     : VR.vCountry,
+                country_alpha3              : VR.vCountryAlpha3,
+                cron                        : VR.vCron,
                 date                        : isDate,
-                date_day                    : vDateDay,
-                date_iso                    : vDateISO,
-                date_string                 : vDateString,
-                ean                         : vEAN,
-                ean_8                       : vEAN8,
-                ean_13                      : vEAN13,
-                email                       : vEmail,
+                date_day                    : VR.vDateDay,
+                date_iso                    : VR.vDateISO,
+                date_string                 : VR.vDateString,
+                ean                         : VR.vEAN,
+                ean_8                       : VR.vEAN8,
+                ean_13                      : VR.vEAN13,
+                email                       : VR.vEmail,
                 equal_to                    : equal,
-                false                       : vFalse,
-                file                        : vFile,
+                false                       : VR.vFalse,
+                file                        : VR.vFile,
                 formdata                    : isFormData,
                 function                    : isFn,
                 async_function              : isAsyncFn,
-                geo_latitude                : vGeoLatitude,
-                geo_longitude               : vGeoLongitude,
-                greater_than                : vGreaterThan,
-                greater_than_or_equal       : vGreaterThanOrEqual,
-                guid                        : vGuid,
-                in                          : vIn,
+                geo_latitude                : VR.vGeoLatitude,
+                geo_longitude               : VR.vGeoLongitude,
+                greater_than                : VR.vGreaterThan,
+                greater_than_or_equal       : VR.vGreaterThanOrEqual,
+                guid                        : VR.vGuid,
+                in                          : VR.vIn,
                 integer                     : isInteger,
-                isbn                        : vISBN,
-                isbn_10                     : vISBN10,
-                isbn_13                     : vISBN13,
-                less_than                   : vLessThan,
-                less_than_or_equal          : vLessThanOrEqual,
-                literal                     : vLiteral,
-                max                         : vLessThanOrEqual,
-                min                         : vGreaterThanOrEqual,
-                null                        : vNull,
+                isbn                        : VR.vISBN,
+                isbn_10                     : VR.vISBN10,
+                isbn_13                     : VR.vISBN13,
+                less_than                   : VR.vLessThan,
+                less_than_or_equal          : VR.vLessThanOrEqual,
+                literal                     : VR.vLiteral,
+                max                         : VR.vLessThanOrEqual,
+                min                         : VR.vGreaterThanOrEqual,
+                null                        : VR.vNull,
                 number                      : isNumber,
                 object                      : isObject,
                 object_ne                   : isNeObject,
-                phone                       : vPhone,
-                size                        : vSize,
-                ssn                         : vSSN,
+                phone                       : VR.vPhone,
+                size                        : VR.vSize,
+                ssn                         : VR.vSSN,
                 string                      : isString,
                 string_ne                   : isNeString,
-                sys_mac                     : vSysMac,
-                sys_ipv4                    : vSysIPv4,
-                sys_ipv6                    : vSysIPv6,
-                sys_ipv4_or_v6              : vSysIPv4_or_v6,
-                sys_port                    : vSysPort,
-                time_zone                   : vTimeZone,
-                true                        : vTrue,
-                ulid                        : vUlid,
-                url                         : vUrl,
-                url_noquery                 : vUrlNoQuery,
-                url_img                     : vUrlImage,
-                url_vid                     : vUrlVideo,
-                url_aud                     : vUrlAudio,
-                url_med                     : vUrlMedia,
-                uuid                        : vUuid,
-                uuid_v1                     : vUuidV1,
-                uuid_v2                     : vUuidV2,
-                uuid_v3                     : vUuidV3,
-                uuid_v4                     : vUuidV4,
-                uuid_v5                     : vUuidV5,
-                gt                          : vGreaterThan,
-                gte                         : vGreaterThanOrEqual,
-                lt                          : vLessThan,
-                lte                         : vLessThanOrEqual,
+                sys_mac                     : VR.vSysMac,
+                sys_ipv4                    : VR.vSysIPv4,
+                sys_ipv6                    : VR.vSysIPv6,
+                sys_ipv4_or_v6              : VR.vSysIPv4_or_v6,
+                sys_port                    : VR.vSysPort,
+                time_zone                   : VR.vTimeZone,
+                true                        : VR.vTrue,
+                ulid                        : VR.vUlid,
+                url                         : VR.vUrl,
+                url_noquery                 : VR.vUrlNoQuery,
+                url_img                     : VR.vUrlImage,
+                url_vid                     : VR.vUrlVideo,
+                url_aud                     : VR.vUrlAudio,
+                url_med                     : VR.vUrlMedia,
+                uuid                        : VR.vUuid,
+                uuid_v1                     : VR.vUuidV1,
+                uuid_v2                     : VR.vUuidV2,
+                uuid_v3                     : VR.vUuidV3,
+                uuid_v4                     : VR.vUuidV4,
+                uuid_v5                     : VR.vUuidV5,
+                gt                          : VR.vGreaterThan,
+                gte                         : VR.vGreaterThanOrEqual,
+                lt                          : VR.vLessThan,
+                lte                         : VR.vLessThanOrEqual,
                 eq                          : equal,
-                '?'                         : vUndefined,
+                '?'                         : VR.vUndefined,
             });
         });
 

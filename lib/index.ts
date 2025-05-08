@@ -1,78 +1,17 @@
 /* eslint-disable no-labels,max-statements,complexity */
 
-import {isArray}                    from '@valkyriestudios/utils/array/is';
-import {isNotEmptyArray}            from '@valkyriestudios/utils/array/isNotEmpty';
-import {isBoolean}                  from '@valkyriestudios/utils/boolean/is';
-import {isDate}                     from '@valkyriestudios/utils/date/is';
-import {deepFreeze}                 from '@valkyriestudios/utils/deep/freeze';
-import {deepGet}                    from '@valkyriestudios/utils/deep/get';
-import {isFormData}                 from '@valkyriestudios/utils/formdata/is';
-import {toObject}                   from '@valkyriestudios/utils/formdata/toObject';
-import {isFunction}                 from '@valkyriestudios/utils/function/is';
-import {isAsyncFunction}            from '@valkyriestudios/utils/function/isAsync';
-import {isNumber}                   from '@valkyriestudios/utils/number/is';
-import {isInteger}                  from '@valkyriestudios/utils/number/isInteger';
-import {isObject}                   from '@valkyriestudios/utils/object/is';
-import {isNotEmptyObject}           from '@valkyriestudios/utils/object/isNotEmpty';
-import {isString}                   from '@valkyriestudios/utils/string/is';
-import {isNotEmptyString}           from '@valkyriestudios/utils/string/isNotEmpty';
-import {equal}                      from '@valkyriestudios/utils/equal';
-import {fnv1A}                      from '@valkyriestudios/utils/hash/fnv1A';
-import {vAlphaNumSpaces}            from './functions/vAlphaNumSpaces';
-import {vAlphaNumSpacesMultiline}   from './functions/vAlphaNumSpacesMultiline';
-import {vBase64}                    from './functions/vBase64';
-import {vBetween}                   from './functions/vBetween';
-import {vBetweenInclusive}          from './functions/vBetweenInclusive';
-import {vBlob}                      from './functions/vBlob';
-import {vColorHex}                  from './functions/vColorHex';
-import {vContinent}                 from './functions/vContinent';
-import {vCountry}                   from './functions/vCountry';
-import {vCountryAlpha3}             from './functions/vCountryAlpha3';
-import {vDateString}                from './functions/vDateString';
-import {vDateISO, vDateDay}         from './functions/vDateSpecs';
-import {vEmail}                     from './functions/vEmail';
-import {vFalse}                     from './functions/vFalse';
-import {vFile}                      from './functions/vFile';
-import {vGeoLatitude}               from './functions/vGeoLatitude';
-import {vGeoLongitude}              from './functions/vGeoLongitude';
-import {vGreaterThan}               from './functions/vGreaterThan';
-import {vGreaterThanOrEqual}        from './functions/vGreaterThanOrEqual';
-import {vGuid}                      from './functions/vGuid';
-import {vIn}                        from './functions/vIn';
-import {vLessThan}                  from './functions/vLessThan';
-import {vLessThanOrEqual}           from './functions/vLessThanOrEqual';
-import {vLiteral}                   from './functions/vLiteral';
-import {vNull}                      from './functions/vNull';
-import {vPhone}                     from './functions/vPhone';
-import {vTimeZone}                  from './functions/vTimeZone';
-import {vSize}                      from './functions/vSize';
-import {vSysMac}                    from './functions/vSysMac';
-import {vSysIPv4}                   from './functions/vSysIPv4';
-import {vSysIPv6}                   from './functions/vSysIPv6';
-import {vSysIPv4_or_v6}             from './functions/vSysIPv4_or_v6';
-import {vSysPort}                   from './functions/vSysPort';
-import {vTrue}                      from './functions/vTrue';
-import {vISBN, vISBN10, vISBN13}    from './functions/vISBN';
-import {vSSN}                       from './functions/vSSN';
-import {vEAN, vEAN8, vEAN13}        from './functions/vEAN';
-import {vUlid}                      from './functions/vUlid';
-import {vUndefined}                 from './functions/vUndefined';
-import {
-    vUuid,
-    vUuidV1,
-    vUuidV2,
-    vUuidV3,
-    vUuidV4,
-    vUuidV5,
-} from './functions/vUuid';
-import {vUrl}                       from './functions/vUrl';
-import {vUrlNoQuery}                from './functions/vUrlNoQuery';
-import {
-    vUrlImage,
-    vUrlAudio,
-    vUrlVideo,
-    vUrlMedia,
-} from './functions/vUrlExtensions';
+import {isArray, isNeArray}     from '@valkyriestudios/utils/array';
+import {isBoolean}              from '@valkyriestudios/utils/boolean';
+import {isDate}                 from '@valkyriestudios/utils/date';
+import {deepFreeze, deepGet}    from '@valkyriestudios/utils/deep';
+import {isFormData, toObject}   from '@valkyriestudios/utils/formdata';
+import {isFn, isAsyncFn}        from '@valkyriestudios/utils/function';
+import {isNum, isInt}           from '@valkyriestudios/utils/number';
+import {isObject, isNeObject}   from '@valkyriestudios/utils/object';
+import {isString, isNeString}   from '@valkyriestudios/utils/string';
+import {equal}                  from '@valkyriestudios/utils/equal';
+import {fnv1A}                  from '@valkyriestudios/utils/hash/fnv1A';
+import * as VR                  from './functions/index';
 import {
     type DataObject,
     type DataVal,
@@ -96,83 +35,84 @@ import {
 
 /* Global rule storage */
 const RULE_STORE = {
-    alpha_num_spaces: vAlphaNumSpaces,
-    alpha_num_spaces_multiline: vAlphaNumSpacesMultiline,
+    alpha_num_spaces: VR.vAlphaNumSpaces,
+    alpha_num_spaces_multiline: VR.vAlphaNumSpacesMultiline,
     array: isArray,
-    array_ne: isNotEmptyArray,
-    base64: vBase64,
-    between: vBetween,
-    between_inc: vBetweenInclusive,
-    blob: vBlob,
+    array_ne: isNeArray,
+    base64: VR.vBase64,
+    between: VR.vBetween,
+    between_inc: VR.vBetweenInclusive,
+    blob: VR.vBlob,
     boolean: isBoolean,
-    color_hex: vColorHex,
-    continent: vContinent,
-    country: vCountry,
-    country_alpha3: vCountryAlpha3,
+    color_hex: VR.vColorHex,
+    continent: VR.vContinent,
+    country: VR.vCountry,
+    country_alpha3: VR.vCountryAlpha3,
+    cron: VR.vCron,
     date: isDate,
-    date_day: vDateDay,
-    date_iso: vDateISO,
-    date_string: vDateString,
-    ean: vEAN,
-    ean_8: vEAN8,
-    ean_13: vEAN13,
-    email: vEmail,
+    date_day: VR.vDateDay,
+    date_iso: VR.vDateISO,
+    date_string: VR.vDateString,
+    ean: VR.vEAN,
+    ean_8: VR.vEAN8,
+    ean_13: VR.vEAN13,
+    email: VR.vEmail,
     equal_to: equal,
-    false: vFalse,
-    file: vFile,
+    false: VR.vFalse,
+    file: VR.vFile,
     formdata: isFormData,
-    function: isFunction,
-    async_function: isAsyncFunction,
-    geo_latitude: vGeoLatitude,
-    geo_longitude: vGeoLongitude,
-    greater_than: vGreaterThan,
-    greater_than_or_equal: vGreaterThanOrEqual,
-    guid: vGuid,
-    in: vIn,
-    integer: isInteger,
-    isbn: vISBN,
-    isbn_10: vISBN10,
-    isbn_13: vISBN13,
-    less_than: vLessThan,
-    less_than_or_equal: vLessThanOrEqual,
-    literal: vLiteral,
-    max: vLessThanOrEqual,
-    min: vGreaterThanOrEqual,
-    null: vNull,
-    number: isNumber,
+    function: isFn,
+    async_function: isAsyncFn,
+    geo_latitude: VR.vGeoLatitude,
+    geo_longitude: VR.vGeoLongitude,
+    greater_than: VR.vGreaterThan,
+    greater_than_or_equal: VR.vGreaterThanOrEqual,
+    guid: VR.vGuid,
+    in: VR.vIn,
+    integer: isInt,
+    isbn: VR.vISBN,
+    isbn_10: VR.vISBN10,
+    isbn_13: VR.vISBN13,
+    less_than: VR.vLessThan,
+    less_than_or_equal: VR.vLessThanOrEqual,
+    literal: VR.vLiteral,
+    max: VR.vLessThanOrEqual,
+    min: VR.vGreaterThanOrEqual,
+    null: VR.vNull,
+    number: isNum,
     object: isObject,
-    object_ne: isNotEmptyObject,
-    phone: vPhone,
-    size: vSize,
-    ssn: vSSN,
+    object_ne: isNeObject,
+    phone: VR.vPhone,
+    size: VR.vSize,
+    ssn: VR.vSSN,
     string: isString,
-    string_ne: isNotEmptyString,
-    sys_mac: vSysMac,
-    sys_ipv4: vSysIPv4,
-    sys_ipv6: vSysIPv6,
-    sys_ipv4_or_v6: vSysIPv4_or_v6,
-    sys_port: vSysPort,
-    time_zone: vTimeZone,
-    true: vTrue,
-    ulid: vUlid,
-    url: vUrl,
-    url_noquery: vUrlNoQuery,
-    url_img: vUrlImage,
-    url_vid: vUrlVideo,
-    url_aud: vUrlAudio,
-    url_med: vUrlMedia,
-    uuid: vUuid,
-    uuid_v1: vUuidV1,
-    uuid_v2: vUuidV2,
-    uuid_v3: vUuidV3,
-    uuid_v4: vUuidV4,
-    uuid_v5: vUuidV5,
-    gt: vGreaterThan,
-    gte: vGreaterThanOrEqual,
-    lt: vLessThan,
-    lte: vLessThanOrEqual,
+    string_ne: isNeString,
+    sys_mac: VR.vSysMac,
+    sys_ipv4: VR.vSysIPv4,
+    sys_ipv6: VR.vSysIPv6,
+    sys_ipv4_or_v6: VR.vSysIPv4_or_v6,
+    sys_port: VR.vSysPort,
+    time_zone: VR.vTimeZone,
+    true: VR.vTrue,
+    ulid: VR.vUlid,
+    url: VR.vUrl,
+    url_noquery: VR.vUrlNoQuery,
+    url_img: VR.vUrlImage,
+    url_vid: VR.vUrlVideo,
+    url_aud: VR.vUrlAudio,
+    url_med: VR.vUrlMedia,
+    uuid: VR.vUuid,
+    uuid_v1: VR.vUuidV1,
+    uuid_v2: VR.vUuidV2,
+    uuid_v3: VR.vUuidV3,
+    uuid_v4: VR.vUuidV4,
+    uuid_v5: VR.vUuidV5,
+    gt: VR.vGreaterThan,
+    gte: VR.vGreaterThanOrEqual,
+    lt: VR.vLessThan,
+    lte: VR.vLessThanOrEqual,
     eq: equal,
-    '?': vUndefined,
+    '?': VR.vUndefined,
 } as const;
 
 type CustomRuleDictionary = Record<string, RuleFn>;
@@ -308,7 +248,7 @@ function parseRule (raw: string): ValidationRules {
                 /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
                 if (token[0] === '<' && token[token.length - 1] === '>') {
                     token = token.slice(1, -1);
-                    if (!isNotEmptyString(token)) throw new TypeError('Parameterization misconfiguration');
+                    if (!isNeString(token)) throw new TypeError('Parameterization misconfiguration');
                     extract = true;
                 }
                 params.push([token, extract]);
@@ -835,12 +775,12 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
             /* RegExp/Enum/Fn extensions */
             if (
                 val instanceof RegExp ||
-                (isNotEmptyArray(val) && val.filter(el => isNotEmptyString(el) || Number.isFinite(el)).length === val.length) ||
-                (isFunction(val) && !isAsyncFunction(val))
+                (isNeArray(val) && val.filter(el => isNeString(el) || isNum(el)).length === val.length) ||
+                (isFn(val) && !isAsyncFn(val))
             ) continue;
 
             /* Schema-like extension */
-            if (isNotEmptyObject(val)) {
+            if (isNeObject(val)) {
                 try {
                     schemas_map[key] = new Validator(val);
                     continue;
@@ -929,7 +869,7 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
      * Create a validator instance and have its type auto-inferred
      */
     static create<const TSchemaOrValidators> (schema: TSchemaOrValidators): any {
-        if (isNotEmptyArray(schema) && schema[0] instanceof Validator) {
+        if (isNeArray(schema) && schema[0] instanceof Validator) {
             const normalized = [];
             for (let i = 0; i < schema.length; i++) normalized.push((schema[i] as unknown as Validator<GenericObject>).schema);
             return new Validator(normalized);
