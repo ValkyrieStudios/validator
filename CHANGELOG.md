@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [10.3.0] - 2025-05-08
 ### Added
 - **feat**: functions barrel export is now available for built-in functions at `@valkyriestudios/validator/functions`. This allows using just the built-in functions without having to import the entire Validator, and is built in such a way that tree shaking will optimize the imports. example usage:
 ```typescript
@@ -22,10 +22,6 @@ v.check('0,5,10,65 * * * *') // false
 ```
 
 ### Improved
-- **perf**: Minor perf improvement in `date_day` thanks to simpler internal operations
-- **perf**: Minor perf improvement in `date_iso` thanks to simpler internal operations
-- **perf**: Minor perf improvement in `email` thanks to simpler internal operations
-- **perf**: Minor perf improvement in `phone` thanks to precomputed regex operations
 - **misc**: Updated license to include all contributors portion and add license badge to readme
 - **misc**: Improved on CI, bundle existing lint/coverage/test workflows in one ci workflow, add types, audit, publish jobs
 - **deps**: Upgrade @types/node to 22.15.16
