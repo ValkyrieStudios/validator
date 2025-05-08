@@ -1,8 +1,8 @@
 # @valkyriestudios/validator
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![CodeCov](https://codecov.io/gh/ValkyrieStudios/validator/branch/main/graph/badge.svg)](https://codecov.io/gh/ValkyrieStudios/validator)
-[![Test](https://github.com/ValkyrieStudios/validator/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/ValkyrieStudios/validator/actions/workflows/test.yml)
-[![Lint](https://github.com/ValkyrieStudios/validator/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/ValkyrieStudios/validator/actions/workflows/lint.yml)
+[![CI](https://github.com/ValkyrieStudios/validator/actions/workflows/ci.yml/badge.svg)](https://github.com/ValkyrieStudios/validator/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/ValkyrieStudios/validator/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/ValkyrieStudios/validator/actions/workflows/github-code-scanning/codeql)
 [![npm](https://img.shields.io/npm/v/@valkyriestudios/validator.svg)](https://www.npmjs.com/package/@valkyriestudios/validator)
 [![npm](https://img.shields.io/npm/dm/@valkyriestudios/validator.svg)](https://www.npmjs.com/package/@valkyriestudios/validator)
