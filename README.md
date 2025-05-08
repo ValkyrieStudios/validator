@@ -672,82 +672,83 @@ The following list shows you all the default rules that are provided by this lib
 
 | Rule     | Description               |
 |:---------|:--------------------------|
-| alpha_num_spaces | Validate a string to only contain alphabetical, numerical and space characters |
-| alpha_num_spaces_multiline | Ditto alpha_num_spaces but with the addition of allowing linebreak and carriage returns |
-| array | Validate that a provided value is an array |
-| array_ne | Same behavior as `array`, with the additional check that empty arrays will not be seen as valid |
-| base64 | Validate that a provided value is a valid base64 encoded string |
-| between | Validate that a provided value is between two numbers, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
-| between_inc | Validate that a provided value is between or equal to two numbers, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
-| blob | Validate that a provided value is an instance of Blob |
-| boolean | Validate that a provided value is a boolean |
-| color_hex | Validate that a provided value is a hex color (with the # included) |
-| continent | Validate that a provided value is a continent code |
-| country | Validate that a provided value is an alpha-2 code according to ISO 3166-1 |
-| country_alpha3 | Validate that a provided value is an alpha-3 code according to ISO 3166-1 |
-| date | Validate that a provided value is a date object |
-| date_day | Validate that a provided value is a valid date string in format of 'YYYY-MM-DD' |
-| date_iso | Validate that a provided value is a valid ISO formatted date string in format of 'YYYY-MM-DDTHH:mm:ss.SSSZ' or 'YYYY-MM-DDTHH:mm:ssZ' |
-| date_string | Validate that a provided value is a valid date string |
-| ean | Validates European Article Numbers (EANs), supporting both 8-character (EAN-8) and 13-character (EAN-13) formats |
-| ean_8 | Validates European Article Number (EANs) 8-character format |
-| ean_13 | Validates European Article Number (EANs) 13-character format |
-| email | Validate that a provided value is an email, take note: this only structurally tests if an email is good, it doesn't test whether an email actually exists |
-| eq | Alias of equal_to |
-| equal_to | Validate that a provided value is equal to another value, this can be used on primitives (string, number, boolean) but also on non-primitives (objects, arrays, dates). Equality checks for non-primitives are done through FNV1A hashing |
-| false | Validate that a provided value is strictly equal to false |
-| file | Validate that a provided value is an instance of File |
-| formdata | Validate that a provided value is an instance of FormData |
-| function | Validate that a provided value is a Function |
-| async_function | Validate that a provided value is an async function |
-| geo_latitude | Validate that a provided value is a valid latitude value |
-| geo_longitude | Validate that a provided value is a valid longitude value |
-| greater_than | Validate that a provided value is greater than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
-| greater_than_or_equal | Validate that a provided value is greater than or equal than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
-| gt | Alias of greater_than |
-| gte | Alias of greater_than_or_equal |
-| guid | Validate that a provided value is a valid guid according to rfc 4122 |
-| in | Validate that a provided value is in a set of values, this requires parameterization (see above) |
-| integer | Validate that a provided value is an integer, this will see NaN as invalid |
-| isbn | Validates International Standard Book Numbers (ISBNs), supporting both ISBN-10 and ISBN-13 formats |
-| isbn_10 | Validates International Standard Book Number (ISBNs) 10-character format |
-| isbn_13 | Validates International Standard Book Number (ISBNs) 13-character format |
-| less_than | Validate that a provided value is less than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
-| less_than_or_equal | Validate that a provided value is less than or equal to a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
-| literal | Validate that a provided value is equal to a literal value. This rule is special in that type inferrence treats the param as literal, eg: `literal:sent` the type for this rule in the schema will be `sent` |
-| lt | Alias of less_than |
-| lte | Alias of less_than_or_equal |
-| max | Alias of less_than_or_equal |
-| min | Alias of greater_than_or_equal |
-| null | Validate that a provided value is null |
-| number | Validate that a provided value is a number, this will see NaN as invalid |
-| object | Validate that a provided value is an object, arrays will not be seen as objects by this rule |
-| object_ne | Same behavior as `object`, with the additional check that empty objects will not be seen as valid |
-| phone | Validate that a string is a valid phone number (will match phone numbers entered with delimiters such as spaces, dots, brackets, etc, and supports international phone numbers), take note: this does not check whether or not the phone number is in use, merely that a valid format is provided |
-| size | Validate that a provided value has a specific size, this only applies to strings and arrays and checks on length |
-| string | Validate that a provided value is a string |
-| string_ne | Same behavior as `string`, with the additional check that empty strings (after trimming) will not be seen as valid |
-| ssn | Validates U.S. Social Security Numbers (SSN), ensuring the format XXX-XX-XXXX where each "X" is a digit |
-| sys_ipv4 | Validate that a provided value is a valid IPv4 address |
-| sys_ipv6 | Validate that a provided value is a valid IPv6 address |
-| sys_ipv4_or_v6 | Validate that a provided value is either a valid IPv4 or a valid IPv6 address |
-| sys_mac | Validate that a provided value is a valid MAC address |
-| sys_port | Validate that a provided value is a valid port number (between 1 and 65535) |
-| time_zone | Validate that a provided value is a time_zone string |
-| true | Validate that a provided value is strictly equal to true |
-| url | Validate that a provided value is a url, this allows for query string values as well |
-| url_noquery | Validate that a provided value is a url without any query string values |
-| url_img | Validate that a provided value is a url linking to an image file (eg: https://mywebsite.com/123.jpg) |
-| url_vid | Validate that a provided value is a url linking to a video file (eg: https://mywebsite.com/123.mp4) |
-| url_aud | Validate that a provided value is a url linking to an audio file (eg: https://mywebsite.com/123.mp3) |
-| url_med | Validate that a provided value is a url linking to an audio/image or video file (eg: https://mywebsite.com/123.mp3) |
-| ulid | Validates ULIDs (Universally Unique Lexicographically Sortable Identifiers), ensuring a 26-character uppercase alphanumeric format |
-| uuid | Validates general UUIDs, supporting versions 1 through 5 |
-| uuid_v1 | Validate that a provided value is a valid v1 UUID |
-| uuid_v2 | Validate that a provided value is a valid v2 UUID |
-| uuid_v3 | Validate that a provided value is a valid v3 UUID |
-| uuid_V4 | Validate that a provided value is a valid v4 UUID |
-| uuid_v5 | Validate that a provided value is a valid v5 UUID |
+| `alpha_num_spaces` | Validate a string to only contain alphabetical, numerical and space characters |
+| `alpha_num_spaces_multiline` | Ditto alpha_num_spaces but with the addition of allowing linebreak and carriage returns |
+| `array` | Validate that a provided value is an array |
+| `array_ne` | Same behavior as `array`, with the additional check that empty arrays will not be seen as valid |
+| `base64` | Validate that a provided value is a valid base64 encoded string |
+| `between` | Validate that a provided value is between two numbers, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
+| `between_inc` | Validate that a provided value is between or equal to two numbers, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
+| `blob` | Validate that a provided value is an instance of Blob |
+| `boolean` | Validate that a provided value is a boolean |
+| `color_hex` | Validate that a provided value is a hex color (with the # included) |
+| `continent` | Validate that a provided value is a continent code |
+| `country` | Validate that a provided value is an alpha-2 code according to ISO 3166-1 |
+| `country_alpha3` | Validate that a provided value is an alpha-3 code according to ISO 3166-1 |
+| `cron` | Validate that a provided value is a valid cron schedule |
+| `date` | Validate that a provided value is a date object |
+| `date_day` | Validate that a provided value is a valid date string in format of 'YYYY-MM-DD' |
+| `date_iso` | Validate that a provided value is a valid ISO formatted date string in format of 'YYYY-MM-DDTHH:mm:ss.SSSZ' or 'YYYY-MM-DDTHH:mm:ssZ' |
+| `date_string` | Validate that a provided value is a valid date string |
+| `ean` | Validates European Article Numbers (EANs), supporting both 8-character (EAN-8) and 13-character (EAN-13) formats |
+| `ean_8` | Validates European Article Number (EANs) 8-character format |
+| `ean_13` | Validates European Article Number (EANs) 13-character format |
+| `email` | Validate that a provided value is an email, take note: this only structurally tests if an email is good, it doesn't test whether an email actually exists |
+| `eq` | Alias of equal_to |
+| `equal_to` | Validate that a provided value is equal to another value, this can be used on primitives (string, number, boolean) but also on non-primitives (objects, arrays, dates). Equality checks for non-primitives are done through FNV1A hashing |
+| `false` | Validate that a provided value is strictly equal to false |
+| `file` | Validate that a provided value is an instance of File |
+| `formdata` | Validate that a provided value is an instance of FormData |
+| `function` | Validate that a provided value is a Function |
+| `async_function` | Validate that a provided value is an async function |
+| `geo_latitude` | Validate that a provided value is a valid latitude value |
+| `geo_longitude` | Validate that a provided value is a valid longitude value |
+| `greater_than` | Validate that a provided value is greater than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
+| `greater_than_or_equal` | Validate that a provided value is greater than or equal than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
+| `gt` | Alias of greater_than |
+| `gte` | Alias of greater_than_or_equal |
+| `guid` | Validate that a provided value is a valid guid according to rfc 4122 |
+| `in` | Validate that a provided value is in a set of values, this requires parameterization (see above) |
+| `integer` | Validate that a provided value is an integer, this will see NaN as invalid |
+| `isbn` | Validates International Standard Book Numbers (ISBNs), supporting both ISBN-10 and ISBN-13 formats |
+| `isbn_10` | Validates International Standard Book Number (ISBNs) 10-character format |
+| `isbn_13` | Validates International Standard Book Number (ISBNs) 13-character format |
+| `less_than` | Validate that a provided value is less than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
+| `less_than_or_equal` | Validate that a provided value is less than or equal to a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
+| `literal` | Validate that a provided value is equal to a literal value. This rule is special in that type inferrence treats the param as literal, eg: `literal:sent` the type for this rule in the schema will be `sent` |
+| `lt` | Alias of less_than |
+| `lte` | Alias of less_than_or_equal |
+| `max` | Alias of less_than_or_equal |
+| `min` | Alias of greater_than_or_equal |
+| `null` | Validate that a provided value is null |
+| `number` | Validate that a provided value is a number, this will see NaN as invalid |
+| `object` | Validate that a provided value is an object, arrays will not be seen as objects by this rule |
+| `object_ne` | Same behavior as `object`, with the additional check that empty objects will not be seen as valid |
+| `phone` | Validate that a string is a valid phone number (will match phone numbers entered with delimiters such as spaces, dots, brackets, etc, and supports international phone numbers), take note: this does not check whether or not the phone number is in use, merely that a valid format is provided |
+| `size` | Validate that a provided value has a specific size, this only applies to strings and arrays and checks on length |
+| `string` | Validate that a provided value is a string |
+| `string_ne` | Same behavior as `string`, with the additional check that empty strings (after trimming) will not be seen as valid |
+| `ssn` | Validates U.S. Social Security Numbers (SSN), ensuring the format XXX-XX-XXXX where each "X" is a digit |
+| `sys_ipv4` | Validate that a provided value is a valid IPv4 address |
+| `sys_ipv6` | Validate that a provided value is a valid IPv6 address |
+| `sys_ipv4_or_v6` | Validate that a provided value is either a valid IPv4 or a valid IPv6 address |
+| `sys_mac` | Validate that a provided value is a valid MAC address |
+| `sys_port` | Validate that a provided value is a valid port number (between 1 and 65535) |
+| `time_zone` | Validate that a provided value is a time_zone string |
+| `true` | Validate that a provided value is strictly equal to true |
+| `url` | Validate that a provided value is a url, this allows for query string values as well |
+| `url_noquery` | Validate that a provided value is a url without any query string values |
+| `url_img` | Validate that a provided value is a url linking to an image file (eg: https://mywebsite.com/123.jpg) |
+| `url_vid` | Validate that a provided value is a url linking to a video file (eg: https://mywebsite.com/123.mp4) |
+| `url_aud` | Validate that a provided value is a url linking to an audio file (eg: https://mywebsite.com/123.mp3) |
+| `url_med` | Validate that a provided value is a url linking to an audio/image or video file (eg: https://mywebsite.com/123.mp3) |
+| `ulid` | Validates ULIDs (Universally Unique Lexicographically Sortable Identifiers), ensuring a 26-character uppercase alphanumeric format |
+| `uuid` | Validates general UUIDs, supporting versions 1 through 5 |
+| `uuid_v1` | Validate that a provided value is a valid v1 UUID |
+| `uuid_v2` | Validate that a provided value is a valid v2 UUID |
+| `uuid_v3` | Validate that a provided value is a valid v3 UUID |
+| `uuid_V4` | Validate that a provided value is a valid v4 UUID |
+| `uuid_v5` | Validate that a provided value is a valid v5 UUID |
 
 ## Contributors
 - [Peter Vermeulen](https://www.linkedin.com/in/petervermeulen1/)
