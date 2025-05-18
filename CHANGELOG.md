@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **deps**: Upgrade @types/node to 22.15.18
+- **deps**: Upgrade @valkyriestudios/utils to 12.37.0
+- **deps**: Upgrade eslint to 9.27.0
+- **deps**: Upgrade typescript-eslint to 8.32.1
+
 ## [10.3.0] - 2025-05-08
 ### Added
 - **feat**: functions barrel export is now available for built-in functions at `@valkyriestudios/validator/functions`. This allows using just the built-in functions without having to import the entire Validator, and is built in such a way that tree shaking will optimize the imports. example usage:
