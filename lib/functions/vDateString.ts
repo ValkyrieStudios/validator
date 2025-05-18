@@ -8,7 +8,7 @@ import {type DateString} from '../types';
 function vDateString (val:unknown):val is DateString {
     return (
         typeof val === 'string' &&
-        val.trim().length > 0 &&
+        val.length > 0 &&
         !isNaN(Date.parse(val)) &&
         !isNaN(new Date(val).getTime())
     ) as boolean;

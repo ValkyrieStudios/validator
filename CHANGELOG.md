@@ -7,6 +7,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
+- **perf**: Minor improvement in vDateString by reducing internal operations
+- **perf**: Minor improvement in vLiteral by reducing internal operations
 - **deps**: Upgrade @types/node to 22.15.18
 - **deps**: Upgrade @valkyriestudios/utils to 12.37.0
 - **deps**: Upgrade eslint to 9.27.0

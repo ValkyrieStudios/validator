@@ -6,7 +6,6 @@
 function vLiteral <T extends string = string> (val:unknown, literal:T):val is T {
     return typeof val === 'string' &&
         typeof literal === 'string' &&
-        literal.trim().length > 0 &&
         val === literal;
 }
 
