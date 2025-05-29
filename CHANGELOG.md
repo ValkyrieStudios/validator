@@ -15,7 +15,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - **cicd**: Validator now has two builds, one for cjs and one for esm, this ensures further tree shaking can take place in runtimes/build systems that support this while ensuring legacy systems using CommonJS are not impacted
 - **cicd**: Validator will now run lint/types/test jobs against the latest bun runtime as well (in addition to already testing node 20 and 22)
 - **deps**: Upgrade @types/node to 22.15.24
-- **deps**: Upgrade @valkyriestudios/utils to 12.38.0
+- **deps**: Upgrade @valkyriestudios/utils to 12.39.0
 - **deps**: Upgrade typescript-eslint to 8.33.0
 
 ### Removed
