@@ -20,11 +20,13 @@ function vBetweenInclusive (
     if (typeof val === 'string' || Array.isArray(val)) {
         const len = val.length;
         return len >= n_lower_bound && len <= n_upper_bound;
+    } else if (Number.isFinite(val)) {
+        return (val as number) >= n_lower_bound && (val as number) <= n_upper_bound;
     } else if (val instanceof File || val instanceof Blob) {
         const len = val.size;
         return len >= n_lower_bound && len <= n_upper_bound;
     } else {
-        return Number.isFinite(val) && val >= n_lower_bound && val <= n_upper_bound;
+        return false;
     }
 }
 

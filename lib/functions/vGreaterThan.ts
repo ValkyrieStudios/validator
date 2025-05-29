@@ -16,10 +16,12 @@ function vGreaterThan (
 
     if (typeof val === 'string' || Array.isArray(val)) {
         return val.length > n_bound;
+    } else if (Number.isFinite(val)) {
+        return (val as number) > n_bound;
     } else if (val instanceof File || val instanceof Blob) {
         return val.size > n_bound;
     } else {
-        return Number.isFinite(val) && val > n_bound;
+        return false;
     }
 }
 
