@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [10.5.0] - 2025-05-29
 ### Added
 - **deps**: (dev) vitest@3.1.4
 - **deps**: (dev) @vitest/coverage-v8@3.1.4
 
 ### Improved
 - **sys**: Migrate to vitest
+- **misc**: Package.json exports block will now link to cjs/esm built files
 - **cicd**: Validator now has two builds, one for cjs and one for esm, this ensures further tree shaking can take place in runtimes/build systems that support this while ensuring legacy systems using CommonJS are not impacted
 - **cicd**: Validator will now run lint/types/test jobs against the latest bun runtime as well (in addition to already testing node 20 and 22)
 - **deps**: Upgrade @types/node to 22.15.24
