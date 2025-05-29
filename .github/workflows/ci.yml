@@ -22,8 +22,8 @@ jobs:
         run: npm ci
       - name: Run Audit
         run: npm audit --omit=dev --audit-level=moderate
-  lint:
-    name: Lint
+  runtimes_node:
+    name: Node
     runs-on: ubuntu-latest
     needs: [audit]
     strategy:
@@ -32,48 +32,39 @@ jobs:
         node: [20, 22]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Use Node
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
-  types:
-    name: Types
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run Lint
+        run: npm run lint
+      - name: Run Types
+        run: npm run types
+      - name: Run Tests
+        run: npm run test
+  runtimes_bun:
+    name: Bun
     runs-on: ubuntu-latest
     needs: [audit]
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [20, 22]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run types
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    needs: [audit]
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [20, 22]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run test
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v1
+      - name: Install Dependencies
+        run: bun install
+      - name: Run Lint
+        run: bun run lint
+      - name: Run Types
+        run: bun run types
+      - name: Run Tests
+        run: bun run test
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
-    needs: [lint, types, test]
+    needs: [runtimes_node, runtimes_bun]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -110,7 +101,8 @@ jobs:
         run: |
           rm -rf ./dist
           mkdir ./dist
-          npx tsc -p ./tsconfig.build.json
+          npx tsc -p ./tsconfig.build.cjs.json
+          npx tsc -p ./tsconfig.build.esm.json
           npx tsc -p ./tsconfig.types.json
           npx tsc -p ./tsconfig.types_all.json
           cp package.json README.md LICENSE.md .npmignore ./dist
