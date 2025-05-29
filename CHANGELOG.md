@@ -6,10 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- **deps**: (dev) vitest@3.1.4
+- **deps**: (dev) @vitest/coverage-v8@3.1.4
+
 ### Improved
+- **sys**: Migrate to vitest
 - **deps**: Upgrade @types/node to 22.15.24
 - **deps**: Upgrade @valkyriestudios/utils to 12.38.0
 - **deps**: Upgrade typescript-eslint to 8.33.0
+
+### Removed
+- **deps**: nyc
 
 ## [10.4.0] - 2025-05-18
 ### Improved
