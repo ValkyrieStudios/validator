@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **deps**: Upgrade @types/node to 22.15.24
+- **deps**: Upgrade @valkyriestudios/utils to 12.38.0
+- **deps**: Upgrade typescript-eslint to 8.33.0
+
 ## [10.4.0] - 2025-05-18
 ### Improved
 - **perf**: Minor improvement in vDateString by reducing internal operations
