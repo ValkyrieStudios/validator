@@ -43,235 +43,235 @@
     "sideEffects": false,
     "exports": {
         ".": {
+            "types": "./index.d.ts",
             "import": "./esm/index.js",
-            "require": "./cjs/index.js",
-            "types": "./index.d.ts"
+            "require": "./cjs/index.js"
         },
         "./types": {
+            "types": "./types.d.ts",
             "import": "./esm/types.js",
-            "require": "./cjs/types.js",
-            "types": "./types.d.ts"
+            "require": "./cjs/types.js"
         },
         "./package.json": "./package.json",
         "./functions": {
+            "types": "./functions/index.d.ts",
             "import": "./esm/functions/index.js",
-            "require": "./cjs/functions/index.js",
-            "types": "./functions/index.d.ts"
+            "require": "./cjs/functions/index.js"
         },
         "./functions/vAlphaNumSpaces": {
+            "types": "./functions/vAlphaNumSpaces.d.ts",
             "import": "./esm/functions/vAlphaNumSpaces.js",
-            "require": "./cjs/functions/vAlphaNumSpaces.js",
-            "types": "./functions/vAlphaNumSpaces.d.ts"
+            "require": "./cjs/functions/vAlphaNumSpaces.js"
         },
         "./functions/vAlphaNumSpacesMultiline": {
+            "types": "./functions/vAlphaNumSpacesMultiline.d.ts",
             "import": "./esm/functions/vAlphaNumSpacesMultiline.js",
-            "require": "./cjs/functions/vAlphaNumSpacesMultiline.js",
-            "types": "./functions/vAlphaNumSpacesMultiline.d.ts"
+            "require": "./cjs/functions/vAlphaNumSpacesMultiline.js"
         },
         "./functions/vBase64": {
+            "types": "./functions/vBase64.d.ts",
             "import": "./esm/functions/vBase64.js",
-            "require": "./cjs/functions/vBase64.js",
-            "types": "./functions/vBase64.d.ts"
+            "require": "./cjs/functions/vBase64.js"
         },
         "./functions/vBetween": {
+            "types": "./functions/vBetween.d.ts",
             "import": "./esm/functions/vBetween.js",
-            "require": "./cjs/functions/vBetween.js",
-            "types": "./functions/vBetween.d.ts"
+            "require": "./cjs/functions/vBetween.js"
         },
         "./functions/vBetweenInclusive": {
+            "types": "./functions/vBetweenInclusive.d.ts",
             "import": "./esm/functions/vBetweenInclusive.js",
-            "require": "./cjs/functions/vBetweenInclusive.js",
-            "types": "./functions/vBetweenInclusive.d.ts"
+            "require": "./cjs/functions/vBetweenInclusive.js"
         },
         "./functions/vBlob": {
+            "types": "./functions/vBlob.d.ts",
             "import": "./esm/functions/vBlob.js",
-            "require": "./cjs/functions/vBlob.js",
-            "types": "./functions/vBlob.d.ts"
+            "require": "./cjs/functions/vBlob.js"
         },
         "./functions/vColorHex": {
+            "types": "./functions/vColorHex.d.ts",
             "import": "./esm/functions/vColorHex.js",
-            "require": "./cjs/functions/vColorHex.js",
-            "types": "./functions/vColorHex.d.ts"
+            "require": "./cjs/functions/vColorHex.js"
         },
         "./functions/vContinent": {
+            "types": "./functions/vContinent.d.ts",
             "import": "./esm/functions/vContinent.js",
-            "require": "./cjs/functions/vContinent.js",
-            "types": "./functions/vContinent.d.ts"
+            "require": "./cjs/functions/vContinent.js"
         },
         "./functions/vCountry": {
+            "types": "./functions/vCountry.d.ts",
             "import": "./esm/functions/vCountry.js",
-            "require": "./cjs/functions/vCountry.js",
-            "types": "./functions/vCountry.d.ts"
+            "require": "./cjs/functions/vCountry.js"
         },
         "./functions/vCountryAlpha3": {
+            "types": "./functions/vCountryAlpha3.d.ts",
             "import": "./esm/functions/vCountryAlpha3.js",
-            "require": "./cjs/functions/vCountryAlpha3.js",
-            "types": "./functions/vCountryAlpha3.d.ts"
+            "require": "./cjs/functions/vCountryAlpha3.js"
         },
         "./functions/vDateSpecs": {
+            "types": "./functions/vDateSpecs.d.ts",
             "import": "./esm/functions/vDateSpecs.js",
-            "require": "./cjs/functions/vDateSpecs.js",
-            "types": "./functions/vDateSpecs.d.ts"
+            "require": "./cjs/functions/vDateSpecs.js"
         },
         "./functions/vDateString": {
+            "types": "./functions/vDateString.d.ts",
             "import": "./esm/functions/vDateString.js",
-            "require": "./cjs/functions/vDateString.js",
-            "types": "./functions/vDateString.d.ts"
+            "require": "./cjs/functions/vDateString.js"
         },
         "./functions/vEAN": {
+            "types": "./functions/vEAN.d.ts",
             "import": "./esm/functions/vEAN.js",
-            "require": "./cjs/functions/vEAN.js",
-            "types": "./functions/vEAN.d.ts"
+            "require": "./cjs/functions/vEAN.js"
         },
         "./functions/vEmail": {
+            "types": "./functions/vEmail.d.ts",
             "import": "./esm/functions/vEmail.js",
-            "require": "./cjs/functions/vEmail.js",
-            "types": "./functions/vEmail.d.ts"
+            "require": "./cjs/functions/vEmail.js"
         },
         "./functions/vFalse": {
+            "types": "./functions/vFalse.d.ts",
             "import": "./esm/functions/vFalse.js",
-            "require": "./cjs/functions/vFalse.js",
-            "types": "./functions/vFalse.d.ts"
+            "require": "./cjs/functions/vFalse.js"
         },
         "./functions/vFile": {
+            "types": "./functions/vFile.d.ts",
             "import": "./esm/functions/vFile.js",
-            "require": "./cjs/functions/vFile.js",
-            "types": "./functions/vFile.d.ts"
+            "require": "./cjs/functions/vFile.js"
         },
         "./functions/vGeoLatitude": {
+            "types": "./functions/vGeoLatitude.d.ts",
             "import": "./esm/functions/vGeoLatitude.js",
-            "require": "./cjs/functions/vGeoLatitude.js",
-            "types": "./functions/vGeoLatitude.d.ts"
+            "require": "./cjs/functions/vGeoLatitude.js"
         },
         "./functions/vGeoLongitude": {
+            "types": "./functions/vGeoLongitude.d.ts",
             "import": "./esm/functions/vGeoLongitude.js",
-            "require": "./cjs/functions/vGeoLongitude.js",
-            "types": "./functions/vGeoLongitude.d.ts"
+            "require": "./cjs/functions/vGeoLongitude.js"
         },
         "./functions/vGreaterThan": {
+            "types": "./functions/vGreaterThan.d.ts",
             "import": "./esm/functions/vGreaterThan.js",
-            "require": "./cjs/functions/vGreaterThan.js",
-            "types": "./functions/vGreaterThan.d.ts"
+            "require": "./cjs/functions/vGreaterThan.js"
         },
         "./functions/vGreaterThanOrEqual": {
+            "types": "./functions/vGreaterThanOrEqual.d.ts",
             "import": "./esm/functions/vGreaterThanOrEqual.js",
-            "require": "./cjs/functions/vGreaterThanOrEqual.js",
-            "types": "./functions/vGreaterThanOrEqual.d.ts"
+            "require": "./cjs/functions/vGreaterThanOrEqual.js"
         },
         "./functions/vGuid": {
+            "types": "./functions/vGuid.d.ts",
             "import": "./esm/functions/vGuid.js",
-            "require": "./cjs/functions/vGuid.js",
-            "types": "./functions/vGuid.d.ts"
+            "require": "./cjs/functions/vGuid.js"
         },
         "./functions/vIn": {
+            "types": "./functions/vIn.d.ts",
             "import": "./esm/functions/vIn.js",
-            "require": "./cjs/functions/vIn.js",
-            "types": "./functions/vIn.d.ts"
+            "require": "./cjs/functions/vIn.js"
         },
         "./functions/vISBN": {
+            "types": "./functions/vISBN.d.ts",
             "import": "./esm/functions/vISBN.js",
-            "require": "./cjs/functions/vISBN.js",
-            "types": "./functions/vISBN.d.ts"
+            "require": "./cjs/functions/vISBN.js"
         },
         "./functions/vLessThan": {
+            "types": "./functions/vLessThan.d.ts",
             "import": "./esm/functions/vLessThan.js",
-            "require": "./cjs/functions/vLessThan.js",
-            "types": "./functions/vLessThan.d.ts"
+            "require": "./cjs/functions/vLessThan.js"
         },
         "./functions/vLessThanOrEqual": {
+            "types": "./functions/vLessThanOrEqual.d.ts",
             "import": "./esm/functions/vLessThanOrEqual.js",
-            "require": "./cjs/functions/vLessThanOrEqual.js",
-            "types": "./functions/vLessThanOrEqual.d.ts"
+            "require": "./cjs/functions/vLessThanOrEqual.js"
         },
         "./functions/vLiteral": {
+            "types": "./functions/vLiteral.d.ts",
             "import": "./esm/functions/vLiteral.js",
-            "require": "./cjs/functions/vLiteral.js",
-            "types": "./functions/vLiteral.d.ts"
+            "require": "./cjs/functions/vLiteral.js"
         },
         "./functions/vNull": {
+            "types": "./functions/vNull.d.ts",
             "import": "./esm/functions/vNull.js",
-            "require": "./cjs/functions/vNull.js",
-            "types": "./functions/vNull.d.ts"
+            "require": "./cjs/functions/vNull.js"
         },
         "./functions/vPhone": {
+            "types": "./functions/vPhone.d.ts",
             "import": "./esm/functions/vPhone.js",
-            "require": "./cjs/functions/vPhone.js",
-            "types": "./functions/vPhone.d.ts"
+            "require": "./cjs/functions/vPhone.js"
         },
         "./functions/vSize": {
+            "types": "./functions/vSize.d.ts",
             "import": "./esm/functions/vSize.js",
-            "require": "./cjs/functions/vSize.js",
-            "types": "./functions/vSize.d.ts"
+            "require": "./cjs/functions/vSize.js"
         },
         "./functions/vSSN": {
+            "types": "./functions/vSSN.d.ts",
             "import": "./esm/functions/vSSN.js",
-            "require": "./cjs/functions/vSSN.js",
-            "types": "./functions/vSSN.d.ts"
+            "require": "./cjs/functions/vSSN.js"
         },
         "./functions/vSysIPv4_or_v6": {
+            "types": "./functions/vSysIPv4_or_v6.d.ts",
             "import": "./esm/functions/vSysIPv4_or_v6.js",
-            "require": "./cjs/functions/vSysIPv4_or_v6.js",
-            "types": "./functions/vSysIPv4_or_v6.d.ts"
+            "require": "./cjs/functions/vSysIPv4_or_v6.js"
         },
         "./functions/vSysIPv4": {
+            "types": "./functions/vSysIPv4.d.ts",
             "import": "./esm/functions/vSysIPv4.js",
-            "require": "./cjs/functions/vSysIPv4.js",
-            "types": "./functions/vSysIPv4.d.ts"
+            "require": "./cjs/functions/vSysIPv4.js"
         },
         "./functions/vSysIPv6": {
+            "types": "./functions/vSysIPv6.d.ts",
             "import": "./esm/functions/vSysIPv6.js",
-            "require": "./cjs/functions/vSysIPv6.js",
-            "types": "./functions/vSysIPv6.d.ts"
+            "require": "./cjs/functions/vSysIPv6.js"
         },
         "./functions/vSysMac": {
+            "types": "./functions/vSysMac.d.ts",
             "import": "./esm/functions/vSysMac.js",
-            "require": "./cjs/functions/vSysMac.js",
-            "types": "./functions/vSysMac.d.ts"
+            "require": "./cjs/functions/vSysMac.js"
         },
         "./functions/vSysPort": {
+            "types": "./functions/vSysPort.d.ts",
             "import": "./esm/functions/vSysPort.js",
-            "require": "./cjs/functions/vSysPort.js",
-            "types": "./functions/vSysPort.d.ts"
+            "require": "./cjs/functions/vSysPort.js"
         },
         "./functions/vTimeZone": {
+            "types": "./functions/vTimeZone.d.ts",
             "import": "./esm/functions/vTimeZone.js",
-            "require": "./cjs/functions/vTimeZone.js",
-            "types": "./functions/vTimeZone.d.ts"
+            "require": "./cjs/functions/vTimeZone.js"
         },
         "./functions/vTrue": {
+            "types": "./functions/vTrue.d.ts",
             "import": "./esm/functions/vTrue.js",
-            "require": "./cjs/functions/vTrue.js",
-            "types": "./functions/vTrue.d.ts"
+            "require": "./cjs/functions/vTrue.js"
         },
         "./functions/vUlid": {
+            "types": "./functions/vUlid.d.ts",
             "import": "./esm/functions/vUlid.js",
-            "require": "./cjs/functions/vUlid.js",
-            "types": "./functions/vUlid.d.ts"
+            "require": "./cjs/functions/vUlid.js"
         },
         "./functions/vUndefined": {
+            "types": "./functions/vUndefined.d.ts",
             "import": "./esm/functions/vUndefined.js",
-            "require": "./cjs/functions/vUndefined.js",
-            "types": "./functions/vUndefined.d.ts"
+            "require": "./cjs/functions/vUndefined.js"
         },
         "./functions/vUrl": {
+            "types": "./functions/vUrl.d.ts",
             "import": "./esm/functions/vUrl.js",
-            "require": "./cjs/functions/vUrl.js",
-            "types": "./functions/vUrl.d.ts"
+            "require": "./cjs/functions/vUrl.js"
         },
         "./functions/vUrlExtensions": {
+            "types": "./functions/vUrlExtensions.d.ts",
             "import": "./esm/functions/vUrlExtensions.js",
-            "require": "./cjs/functions/vUrlExtensions.js",
-            "types": "./functions/vUrlExtensions.d.ts"
+            "require": "./cjs/functions/vUrlExtensions.js"
         },
         "./functions/vUrlNoQuery": {
+            "types": "./functions/vUrlNoQuery.d.ts",
             "import": "./esm/functions/vUrlNoQuery.js",
-            "require": "./cjs/functions/vUrlNoQuery.js",
-            "types": "./functions/vUrlNoQuery.d.ts"
+            "require": "./cjs/functions/vUrlNoQuery.js"
         },
         "./functions/vUuid": {
+            "types": "./functions/vUuid.d.ts",
             "import": "./esm/functions/vUuid.js",
-            "require": "./cjs/functions/vUuid.js",
-            "types": "./functions/vUuid.d.ts"
+            "require": "./cjs/functions/vUuid.js"
         }
     },
     "dependencies": {
