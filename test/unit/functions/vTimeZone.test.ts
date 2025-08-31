@@ -50,7 +50,7 @@ describe('vTimeZone', () => {
     it('Should be valid when passing a string that is in the Intl.supportedValueOf spec', () => {
         //  @ts-ignore
         for (const el of Intl.supportedValuesOf('timeZone')) {
-            expect(new Validator({a: 'time_zone'}).check({a: el})).toBe(true);
+            expect(new Validator({a: 'time_zone'}).check({a: el}), el).toBe(true);
         }
     });
 
