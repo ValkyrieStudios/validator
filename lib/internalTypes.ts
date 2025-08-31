@@ -4,7 +4,7 @@
  */
 
 /* Raw data type for input checking */
-export type DataVal         = string | number | boolean | Date | symbol | null | unknown | DataObject | DataVal[]; /* eslint-disable-line */
+export type DataVal         = string | number | boolean | Date | symbol | null | unknown | DataObject | DataVal[];
 export type DataObject      = {[key:string]: DataVal};
 export type GenericObject   = {[key:string]:any};
 
@@ -18,7 +18,7 @@ export type TV<T> = {
 };
 
 /* Validation rule input data types */
-export type RulesRawVal     = string | (string|RulesRaw)[] | RulesRaw; /* eslint-disable-line */
+export type RulesRawVal     = string | (string|RulesRaw)[] | RulesRaw;
 export type RulesRaw        = {[key:string]: RulesRawVal};
 export type RuleFn          = (...args:any[]) => boolean;
 export type RuleExtension   = RuleFn | RegExp | (string|number)[] | TV<GenericObject>;
@@ -144,7 +144,7 @@ export type ValidationRules = {
 export type ValidationGroup = {
     key:string;
     sometimes:boolean;
-    rules:(ValidationRules|ValidationNested)[]; /* eslint-disable-line no-use-before-define */
+    rules:(ValidationRules|ValidationNested)[];
 }
 
 export type ValidationNested = {
