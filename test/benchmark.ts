@@ -53,6 +53,9 @@ import {
     vUuidV3,
     vUuidV4,
     vUuidV5,
+    vUuidV6,
+    vUuidV7,
+    vUuidV8,
 } from '../lib/functions/vUuid';
 import Validator                from '../lib/index';
 import {
@@ -1325,6 +1328,33 @@ for (const el of [
     {
         lbl: 'functions/vUUID_V5 - invalid',
         fn: () => vUuidV5('12345678901234'),
+    },
+    //  vUUID_V6
+    {
+        lbl: 'functions/vUUID_V6 - valid',
+        fn: () => vUuidV6('550e8400-e29b-61d4-a716-446655440000'),
+    },
+    {
+        lbl: 'functions/vUUID_V6 - invalid',
+        fn: () => vUuidV6('12345678901234'),
+    },
+    //  vUUID_V7
+    {
+        lbl: 'functions/vUUID_V7 - valid',
+        fn: () => vUuidV7('550e8400-e29b-71d4-a716-446655440000'),
+    },
+    {
+        lbl: 'functions/vUUID_V7 - invalid',
+        fn: () => vUuidV7('12345678901234'),
+    },
+    //  vUUID_V8
+    {
+        lbl: 'functions/vUUID_V8 - valid',
+        fn: () => vUuidV8('550e8400-e29b-81d4-a716-446655440000'),
+    },
+    {
+        lbl: 'functions/vUUID_V8 - invalid',
+        fn: () => vUuidV8('12345678901234'),
     },
     //  vUUID
     {

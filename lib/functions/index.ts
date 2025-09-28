@@ -55,3 +55,6 @@ export {vUuidV2} from './vUuid';
 export {vUuidV3} from './vUuid';
 export {vUuidV4} from './vUuid';
 export {vUuidV5} from './vUuid';
+export {vUuidV6} from './vUuid';
+export {vUuidV7} from './vUuid';
+export {vUuidV8} from './vUuid';

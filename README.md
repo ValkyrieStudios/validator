@@ -743,12 +743,15 @@ The following list shows you all the default rules that are provided by this lib
 | `url_aud` | Validate that a provided value is a url linking to an audio file (eg: https://mywebsite.com/123.mp3) |
 | `url_med` | Validate that a provided value is a url linking to an audio/image or video file (eg: https://mywebsite.com/123.mp3) |
 | `ulid` | Validates ULIDs (Universally Unique Lexicographically Sortable Identifiers), ensuring a 26-character uppercase alphanumeric format |
-| `uuid` | Validates general UUIDs, supporting versions 1 through 5 |
+| `uuid` | Validates general UUIDs, supporting versions 1 through 8 |
 | `uuid_v1` | Validate that a provided value is a valid v1 UUID |
 | `uuid_v2` | Validate that a provided value is a valid v2 UUID |
 | `uuid_v3` | Validate that a provided value is a valid v3 UUID |
 | `uuid_V4` | Validate that a provided value is a valid v4 UUID |
 | `uuid_v5` | Validate that a provided value is a valid v5 UUID |
+| `uuid_v6` | Validate that a provided value is a valid v6 UUID |
+| `uuid_v7` | Validate that a provided value is a valid v7 UUID |
+| `uuid_v8` | Validate that a provided value is a valid v8 UUID |
 
 ## Contributors
 - [Peter Vermeulen](https://www.linkedin.com/in/petervermeulen1/)
