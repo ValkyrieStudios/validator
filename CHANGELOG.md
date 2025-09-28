@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **deps**: Upgrade @valkyriestudios/utils to 12.46.0
+- **deps**: Upgrade @types/node to 22.18.6
+- **deps**: Upgrade eslint to 9.36.0
+- **deps**: Upgrade typescript-eslint to 8.44.1
+
 ## [10.7.0] - 2025-08-31
 ### Improved
 - **feat**: Add America/Coyhaique to valid timezones
