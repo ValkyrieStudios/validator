@@ -7,7 +7,7 @@ import {type DateString} from '../types';
  * @param {unknown} val - Value to verify
  */
 export function vDateISO (val:unknown):val is DateString {
-    return typeof val === 'string' && isDateFormat(val, 'ISO');
+    return typeof val === 'string' && val[4] === '-' && val[7] === '-' && val[10] === 'T' && isDateFormat(val, 'ISO');
 }
 
 /**
@@ -16,5 +16,5 @@ export function vDateISO (val:unknown):val is DateString {
  * @param {unknown} val - Value to verify
  */
 export function vDateDay (val:unknown):val is DateString {
-    return typeof val === 'string' && isDateFormat(val, 'YYYY-MM-DD');
+    return typeof val === 'string' && val[4] === '-' && val[7] === '-' && isDateFormat(val, 'YYYY-MM-DD');
 }
