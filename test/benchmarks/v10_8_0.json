@@ -1,0 +1,674 @@
+[
+    {
+        "lbl": "Validator@ctor - simple",
+        "ops": 3739526
+    },
+    {
+        "lbl": "Validator@ctor - medium",
+        "ops": 883876
+    },
+    {
+        "lbl": "Validator@ctor - complex",
+        "ops": 459292
+    },
+    {
+        "lbl": "Validator@validate - coldstart - simple",
+        "ops": 2719392
+    },
+    {
+        "lbl": "Validator@validate - coldstart - medium",
+        "ops": 341715
+    },
+    {
+        "lbl": "Validator@validate - coldstart - complex",
+        "ops": 168055
+    },
+    {
+        "lbl": "Validator@validate - coldstart - groups/simple",
+        "ops": 239171
+    },
+    {
+        "lbl": "Validator@validate - coldstart - groups/medium",
+        "ops": 95102
+    },
+    {
+        "lbl": "Validator@validate - coldstart - groups/complex",
+        "ops": 74558
+    },
+    {
+        "lbl": "Validator@validate - coldstart - schema/small - valid",
+        "ops": 760762
+    },
+    {
+        "lbl": "Validator@validate - coldstart - schema/small - invalid",
+        "ops": 999246
+    },
+    {
+        "lbl": "Validator@validate - coldstart - schema/medium - valid",
+        "ops": 2716504
+    },
+    {
+        "lbl": "Validator@validate - coldstart - schema/medium - invalid",
+        "ops": 2791729
+    },
+    {
+        "lbl": "Validator@validate - coldstart - schema/large - valid",
+        "ops": 2773670
+    },
+    {
+        "lbl": "Validator@validate - coldstart - schema/large - invalid",
+        "ops": 2749660
+    },
+    {
+        "lbl": "Validator@validate - existing - simple",
+        "ops": 9223779
+    },
+    {
+        "lbl": "Validator@validate - existing - medium",
+        "ops": 730485
+    },
+    {
+        "lbl": "Validator@validate - existing - complex",
+        "ops": 331648
+    },
+    {
+        "lbl": "Validator@check - coldstart - simple - valid",
+        "ops": 2550127
+    },
+    {
+        "lbl": "Validator@check - coldstart - simple - invalid",
+        "ops": 2573955
+    },
+    {
+        "lbl": "Validator@check - coldstart - medium - valid",
+        "ops": 348542
+    },
+    {
+        "lbl": "Validator@check - coldstart - medium - invalid",
+        "ops": 446060
+    },
+    {
+        "lbl": "Validator@check - coldstart - complex - valid",
+        "ops": 169768
+    },
+    {
+        "lbl": "Validator@check - coldstart - complex - invalid",
+        "ops": 215476
+    },
+    {
+        "lbl": "Validator@check - coldstart - groups/simple - valid",
+        "ops": 251017
+    },
+    {
+        "lbl": "Validator@check - coldstart - groups/simple - invalid",
+        "ops": 247487
+    },
+    {
+        "lbl": "Validator@check - coldstart - groups/medium - valid",
+        "ops": 99948
+    },
+    {
+        "lbl": "Validator@check - coldstart - groups/medium - invalid",
+        "ops": 108120
+    },
+    {
+        "lbl": "Validator@check - coldstart - groups/complex - valid",
+        "ops": 79486
+    },
+    {
+        "lbl": "Validator@check - coldstart - groups/complex - invalid",
+        "ops": 85476
+    },
+    {
+        "lbl": "Validator@check - coldstart - schema/small - valid",
+        "ops": 828091
+    },
+    {
+        "lbl": "Validator@check - coldstart - schema/small - invalid",
+        "ops": 1163910
+    },
+    {
+        "lbl": "Validator@check - coldstart - schema/medium - valid",
+        "ops": 3062153
+    },
+    {
+        "lbl": "Validator@check - coldstart - schema/medium - invalid",
+        "ops": 3046889
+    },
+    {
+        "lbl": "Validator@check - coldstart - schema/large - valid",
+        "ops": 3082789
+    },
+    {
+        "lbl": "Validator@check - coldstart - schema/large - invalid",
+        "ops": 3027120
+    },
+    {
+        "lbl": "Validator@check - existing - simple - valid",
+        "ops": 10131897
+    },
+    {
+        "lbl": "Validator@check - existing - simple - invalid",
+        "ops": 10452533
+    },
+    {
+        "lbl": "Validator@check - existing - medium - valid",
+        "ops": 829562
+    },
+    {
+        "lbl": "Validator@check - existing - medium - invalid",
+        "ops": 1438729
+    },
+    {
+        "lbl": "Validator@check - existing - complex - valid",
+        "ops": 367657
+    },
+    {
+        "lbl": "Validator@check - existing - complex - invalid",
+        "ops": 572474
+    },
+    {
+        "lbl": "Validator@check - existing - groups/simple - valid",
+        "ops": 10376698
+    },
+    {
+        "lbl": "Validator@check - existing - groups/simple - invalid",
+        "ops": 7889412
+    },
+    {
+        "lbl": "Validator@check - existing - groups/medium - valid",
+        "ops": 827794
+    },
+    {
+        "lbl": "Validator@check - existing - groups/medium - invalid",
+        "ops": 1430517
+    },
+    {
+        "lbl": "Validator@check - existing - groups/complex - valid",
+        "ops": 565896
+    },
+    {
+        "lbl": "Validator@check - existing - groups/complex - invalid",
+        "ops": 848969
+    },
+    {
+        "lbl": "Validator@check - existing - schema/small - valid",
+        "ops": 1138393
+    },
+    {
+        "lbl": "Validator@check - existing - schema/small - invalid",
+        "ops": 1855033
+    },
+    {
+        "lbl": "Validator@check - existing - schema/medium - valid",
+        "ops": 15804099
+    },
+    {
+        "lbl": "Validator@check - existing - schema/medium - invalid",
+        "ops": 15412303
+    },
+    {
+        "lbl": "Validator@check - existing - schema/large - valid",
+        "ops": 14564220
+    },
+    {
+        "lbl": "Validator@check - existing - schema/large - invalid",
+        "ops": 14108075
+    },
+    {
+        "lbl": "Validator@check - existing - enum - valid",
+        "ops": 5661216
+    },
+    {
+        "lbl": "Validator@check - existing - enum - invalid",
+        "ops": 5590696
+    },
+    {
+        "lbl": "Validator@check - existing - regex - valid",
+        "ops": 9031381
+    },
+    {
+        "lbl": "Validator@check - existing - regex - invalid",
+        "ops": 9699059
+    },
+    {
+        "lbl": "Validator@checkForm - valid",
+        "ops": 2019789
+    },
+    {
+        "lbl": "Validator@checkForm - invalid",
+        "ops": 2064987
+    },
+    {
+        "lbl": "rules/* - string_ne for comparison",
+        "ops": 33707779
+    },
+    {
+        "lbl": "functions/vAlphaNumSpaces - 10 chars",
+        "ops": 42823860
+    },
+    {
+        "lbl": "functions/vAlphaNumSpaces - 20 chars",
+        "ops": 30391402
+    },
+    {
+        "lbl": "functions/vAlphaNumSpaces - not valid",
+        "ops": 46415149
+    },
+    {
+        "lbl": "functions/vAlphaNumSpacesMultiline - 10 chars",
+        "ops": 19040821
+    },
+    {
+        "lbl": "functions/vAlphaNumSpacesMultiline - 20 chars",
+        "ops": 16407725
+    },
+    {
+        "lbl": "functions/vAlphaNumSpacesMultiline - not valid",
+        "ops": 13191607
+    },
+    {
+        "lbl": "functions/vBase64 - valid",
+        "ops": 12415934
+    },
+    {
+        "lbl": "functions/vBase64 - invalid",
+        "ops": 9225658
+    },
+    {
+        "lbl": "functions/vBetween - valid",
+        "ops": 32011829
+    },
+    {
+        "lbl": "functions/vBetween - invalid",
+        "ops": 32281771
+    },
+    {
+        "lbl": "functions/vBetweenInclusive - valid",
+        "ops": 31730321
+    },
+    {
+        "lbl": "functions/vBetweenInclusive - invalid",
+        "ops": 32436067
+    },
+    {
+        "lbl": "functions/vColorHex - valid",
+        "ops": 22026790
+    },
+    {
+        "lbl": "functions/vColorHex - invalid",
+        "ops": 26388484
+    },
+    {
+        "lbl": "functions/vContinent - valid",
+        "ops": 28162117
+    },
+    {
+        "lbl": "functions/vContinent - invalid",
+        "ops": 29463917
+    },
+    {
+        "lbl": "functions/vCountry - valid",
+        "ops": 27524701
+    },
+    {
+        "lbl": "functions/vCountry - invalid",
+        "ops": 27572544
+    },
+    {
+        "lbl": "functions/vCountryAlpha3 - valid",
+        "ops": 24781651
+    },
+    {
+        "lbl": "functions/vCountryAlpha3 - invalid",
+        "ops": 27375150
+    },
+    {
+        "lbl": "functions/vCron - valid",
+        "ops": 1906741
+    },
+    {
+        "lbl": "functions/vCron - invalid",
+        "ops": 1797597
+    },
+    {
+        "lbl": "functions/vDateString - valid",
+        "ops": 2913333
+    },
+    {
+        "lbl": "functions/vDateString - invalid",
+        "ops": 11380787
+    },
+    {
+        "lbl": "functions/vEmail - valid short",
+        "ops": 8050919
+    },
+    {
+        "lbl": "functions/vEmail - valid medium",
+        "ops": 7963433
+    },
+    {
+        "lbl": "functions/vEmail - valid long",
+        "ops": 7365183
+    },
+    {
+        "lbl": "functions/vGeoLatitude - valid",
+        "ops": 31968195
+    },
+    {
+        "lbl": "functions/vGeoLatitude - invalid",
+        "ops": 32563821
+    },
+    {
+        "lbl": "functions/vGeoLongitude - valid",
+        "ops": 31905036
+    },
+    {
+        "lbl": "functions/vGeoLongitude - invalid",
+        "ops": 31520775
+    },
+    {
+        "lbl": "functions/vGreaterThan - valid",
+        "ops": 31391883
+    },
+    {
+        "lbl": "functions/vGreaterThan - invalid",
+        "ops": 32464867
+    },
+    {
+        "lbl": "functions/vGreaterThanOrEqual - valid",
+        "ops": 31582983
+    },
+    {
+        "lbl": "functions/vGreaterThanOrEqual - invalid",
+        "ops": 32506639
+    },
+    {
+        "lbl": "functions/vGuid - valid",
+        "ops": 10447694
+    },
+    {
+        "lbl": "functions/vGuid - invalid",
+        "ops": 20403975
+    },
+    {
+        "lbl": "functions/vIn - valid",
+        "ops": 29569560
+    },
+    {
+        "lbl": "functions/vIn - invalid",
+        "ops": 30491990
+    },
+    {
+        "lbl": "functions/vFalse - valid",
+        "ops": 32223039
+    },
+    {
+        "lbl": "functions/vFalse - invalid",
+        "ops": 32271008
+    },
+    {
+        "lbl": "functions/vTrue - valid",
+        "ops": 32139940
+    },
+    {
+        "lbl": "functions/vTrue - invalid",
+        "ops": 32533605
+    },
+    {
+        "lbl": "functions/vLessThan - valid",
+        "ops": 31355859
+    },
+    {
+        "lbl": "functions/vLessThan - invalid",
+        "ops": 32419284
+    },
+    {
+        "lbl": "functions/vLessThanOrEqual - valid",
+        "ops": 31639478
+    },
+    {
+        "lbl": "functions/vLessThanOrEqual - invalid",
+        "ops": 32693106
+    },
+    {
+        "lbl": "functions/vPhone - valid",
+        "ops": 2448320
+    },
+    {
+        "lbl": "functions/vPhone - invalid",
+        "ops": 3678612
+    },
+    {
+        "lbl": "functions/vSize - string valid",
+        "ops": 31451230
+    },
+    {
+        "lbl": "functions/vSize - string invalid",
+        "ops": 32685728
+    },
+    {
+        "lbl": "functions/vSize - array valid",
+        "ops": 31887299
+    },
+    {
+        "lbl": "functions/vSize - array invalid",
+        "ops": 31900492
+    },
+    {
+        "lbl": "functions/vSysIPv4 - valid",
+        "ops": 25588078
+    },
+    {
+        "lbl": "functions/vSysIPv4 - invalid",
+        "ops": 32489844
+    },
+    {
+        "lbl": "functions/vSysIPv4_or_v6 - valid ipv4",
+        "ops": 17043598
+    },
+    {
+        "lbl": "functions/vSysIPv4_or_v6 - invalid ipv4",
+        "ops": 4932387
+    },
+    {
+        "lbl": "functions/vSysIPv4_or_v6 - valid ipv6",
+        "ops": 6274809
+    },
+    {
+        "lbl": "functions/vSysIPv4_or_v6 - invalid ipv6",
+        "ops": 3760171
+    },
+    {
+        "lbl": "functions/vSysIPv6 - valid",
+        "ops": 7792088
+    },
+    {
+        "lbl": "functions/vSysIPv6 - invalid",
+        "ops": 4261361
+    },
+    {
+        "lbl": "functions/vSysPort - valid",
+        "ops": 30700301
+    },
+    {
+        "lbl": "functions/vSysPort - invalid",
+        "ops": 31313662
+    },
+    {
+        "lbl": "functions/vSysMac - valid",
+        "ops": 13567466
+    },
+    {
+        "lbl": "functions/vSysMac - invalid",
+        "ops": 6423456
+    },
+    {
+        "lbl": "functions/vTimeZone - valid",
+        "ops": 25481388
+    },
+    {
+        "lbl": "functions/vTimeZone - invalid",
+        "ops": 28632733
+    },
+    {
+        "lbl": "functions/vUrl - valid",
+        "ops": 7677517
+    },
+    {
+        "lbl": "functions/vUrl - invalid",
+        "ops": 25521660
+    },
+    {
+        "lbl": "functions/vUrlNoQuery - valid",
+        "ops": 5974130
+    },
+    {
+        "lbl": "functions/vUrlNoQuery - invalid",
+        "ops": 5250529
+    },
+    {
+        "lbl": "functions/vUrlImage - valid",
+        "ops": 1838651
+    },
+    {
+        "lbl": "functions/vUrlImage - invalid",
+        "ops": 2016539
+    },
+    {
+        "lbl": "functions/vUrlAudio - valid",
+        "ops": 1787498
+    },
+    {
+        "lbl": "functions/vUrlAudio - invalid",
+        "ops": 1955323
+    },
+    {
+        "lbl": "functions/vUrlVideo - valid",
+        "ops": 1782649
+    },
+    {
+        "lbl": "functions/vUrlVideo - invalid",
+        "ops": 1923689
+    },
+    {
+        "lbl": "functions/vUrlMedia - valid",
+        "ops": 1814574
+    },
+    {
+        "lbl": "functions/vUrlMedia - invalid",
+        "ops": 1960149
+    },
+    {
+        "lbl": "functions/vISBN - valid",
+        "ops": 36530008
+    },
+    {
+        "lbl": "functions/vISBN - invalid",
+        "ops": 8263106
+    },
+    {
+        "lbl": "functions/vISBN10 - valid",
+        "ops": 30292593
+    },
+    {
+        "lbl": "functions/vISBN10 - invalid",
+        "ops": 11754537
+    },
+    {
+        "lbl": "functions/vISBN13 - valid",
+        "ops": 25046738
+    },
+    {
+        "lbl": "functions/vISBN10 - invalid",
+        "ops": 18367419
+    },
+    {
+        "lbl": "functions/vEAN - valid",
+        "ops": 13785780
+    },
+    {
+        "lbl": "functions/vEAN - invalid",
+        "ops": 10421336
+    },
+    {
+        "lbl": "functions/vEAN8 - valid",
+        "ops": 31137081
+    },
+    {
+        "lbl": "functions/vEAN8 - invalid",
+        "ops": 22777979
+    },
+    {
+        "lbl": "functions/vEAN13 - valid",
+        "ops": 26252745
+    },
+    {
+        "lbl": "functions/vEAN13 - invalid",
+        "ops": 16104716
+    },
+    {
+        "lbl": "functions/vSSN - valid",
+        "ops": 25272448
+    },
+    {
+        "lbl": "functions/vSSN - invalid",
+        "ops": 30450606
+    },
+    {
+        "lbl": "functions/vULID - valid",
+        "ops": 13098297
+    },
+    {
+        "lbl": "functions/vULID - invalid",
+        "ops": 11543356
+    },
+    {
+        "lbl": "functions/vUUID_V1 - valid",
+        "ops": 19081086
+    },
+    {
+        "lbl": "functions/vUUID_V1 - invalid",
+        "ops": 280169020
+    },
+    {
+        "lbl": "functions/vUUID_V2 - valid",
+        "ops": 16860932
+    },
+    {
+        "lbl": "functions/vUUID_V2 - invalid",
+        "ops": 80270556
+    },
+    {
+        "lbl": "functions/vUUID_V3 - valid",
+        "ops": 16412719
+    },
+    {
+        "lbl": "functions/vUUID_V3 - invalid",
+        "ops": 81709466
+    },
+    {
+        "lbl": "functions/vUUID_V4 - valid",
+        "ops": 17184793
+    },
+    {
+        "lbl": "functions/vUUID_V4 - invalid",
+        "ops": 83591226
+    },
+    {
+        "lbl": "functions/vUUID_V5 - valid",
+        "ops": 16900069
+    },
+    {
+        "lbl": "functions/vUUID_V5 - invalid",
+        "ops": 84545004
+    },
+    {
+        "lbl": "functions/vUUID - valid",
+        "ops": 15112361
+    },
+    {
+        "lbl": "functions/vUUID - invalid",
+        "ops": 80997513
+    }
+]
