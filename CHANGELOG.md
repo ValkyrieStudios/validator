@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.9.0] - 2025-09-28
+### Added
+- **feat**: `uuid_v6` validation rule and `UUID_6` branded type
+- **feat**: `uuid_v7` validation rule and `UUID_7` branded type
+- **feat**: `uuid_v8` validation rule and `UUID_8` branded type
+
+### Improved
+- **feat**: `uuid` validation rule will now also treat v6,v7,v8 uuids as valid
+- **perf**: `guid`, `uuid`, `uuid_v*`, `date_day`, `date_iso`  rules are now faster at detecting invalid values
+
 ## [10.8.0] - 2025-09-28
 ### Improved
 - **perf**: Major performance increase in `checkForm` behavior thanks to performance improvements in formdata to object conversion in the valkyrie utils
