@@ -1,6 +1,6 @@
 {
     "name": "@valkyriestudios/validator",
-    "version": "10.10.0",
+    "version": "10.11.0",
     "description": "A lightweight configurable javascript validator",
     "author": {
         "name": "Peter Vermeulen",
@@ -275,18 +275,18 @@
         }
     },
     "dependencies": {
-        "@valkyriestudios/utils": "^12.47.0"
+        "@valkyriestudios/utils": "^12.48.0"
     },
     "devDependencies": {
-        "@types/node": "^24.6.0",
+        "@types/node": "^24.10.4",
         "@valkyriestudios/data-continents": "^0.3.0",
         "@valkyriestudios/data-countries": "^0.3.0",
         "@valkyriestudios/data-timezones": "^0.7.0",
-        "@vitest/coverage-v8": "^3.2.4",
+        "@vitest/coverage-v8": "^4.0.16",
         "esbuild-register": "^3.6.0",
-        "eslint": "^9.36.0",
-        "typescript": "^5.9.2",
-        "typescript-eslint": "^8.45.0",
-        "vitest": "^3.2.4"
+        "eslint": "^9.39.2",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.51.0",
+        "vitest": "^4.0.16"
     }
 }

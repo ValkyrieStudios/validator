@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.0] - 2026-01-03
+### Improved
+- **deps**: Upgrade @types/node to 24.10.4
+- **deps**: Upgrade @valkyriestudios/utils to 12.48.0
+- **deps**: Upgrade @vitest/coverage-v8 to 4.0.16
+- **deps**: Upgrade eslint to 9.39.2
+- **deps**: Upgrade typescript to 5.9.3
+- **deps**: Upgrade typescript-eslint to 8.51.0
+- **deps**: Upgrade vitest to 4.0.16
+
 ## [10.10.0] - 2025-09-30
 ### Improved
 - **deps**: Upgrade @valkyriestudios/utils to 12.47.0

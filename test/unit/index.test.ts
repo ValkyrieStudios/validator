@@ -4284,19 +4284,21 @@ describe('Validator - Core', () => {
                 count: 5,
                 errors: {
                     'profile.uid': [
-                        {msg: 'not_found', params: []},
+                        {msg: 'guid', params: []},
                     ],
                     'profile.user.type': [
-                        {msg: 'not_found', params: []},
+                        {msg: 'is_type', params: []},
                     ],
                     'profile.user.details.email': [
-                        {msg: 'not_found', params: []},
+                        {msg: 'email', params: []},
                     ],
                     'profile.user.details.first_name': [
-                        {msg: 'not_found', params: []},
+                        {msg: 'string_ne', params: []},
+                        {msg: 'min', params: ['2']},
                     ],
                     'profile.user.details.last_name': [
-                        {msg: 'not_found', params: []},
+                        {msg: 'string_ne', params: []},
+                        {msg: 'min', params: ['2']},
                     ],
                 },
             });

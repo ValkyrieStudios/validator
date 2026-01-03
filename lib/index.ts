@@ -10,7 +10,6 @@ import {isNum, isInt}           from '@valkyriestudios/utils/number';
 import {isObject, isNeObject}   from '@valkyriestudios/utils/object';
 import {isString, isNeString}   from '@valkyriestudios/utils/string';
 import {equal}                  from '@valkyriestudios/utils/equal';
-import {djb2}                   from '@valkyriestudios/utils/hash/djb2';
 import * as VR                  from './functions/index';
 import {
     type DataObject,
@@ -32,6 +31,7 @@ import {
     type MappedExtensions,
     type TV,
 } from './internalTypes';
+import fnv1A from '@valkyriestudios/utils/hash/fnv1A';
 
 /* Global rule storage */
 const RULE_STORE = {
@@ -405,11 +405,11 @@ function validatePlan (
                             if (!eval_field.is_valid) error_cursor.push(...eval_field.errors);
 
                             /**
-                             * Compute djb2 hash if uniqueness needs to be checked, if map size differs from
+                             * Compute hash if uniqueness needs to be checked, if map size differs from
                              * our current point in the iteration add uniqueness error
                              */
                             if (unique_set) {
-                                const hash = djb2(cursor_value);
+                                const hash = fnv1A(cursor_value);
                                 if (unique_set.has(hash)) {
                                     unique_set = false;
                                     error_cursor.unshift({msg: 'iterable_unique', params: []});
@@ -515,9 +515,9 @@ function checkRule (
             ) === rule_el.not) return false;
         }
 
-        /* Compute djb2 hash if uniqueness needs to be checked, if map size differs its not unique */
+        /* Compute hash if uniqueness needs to be checked, if map size differs its not unique */
         if (iterable.unique) {
-            unique_set.add(djb2(cursor_value));
+            unique_set.add(fnv1A(cursor_value));
             if (unique_set.size !== (idx + 1)) return false;
         }
     }
