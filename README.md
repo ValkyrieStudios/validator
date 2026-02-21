@@ -686,6 +686,8 @@ The following list shows you all the default rules that are provided by this lib
 | `country` | Validate that a provided value is an alpha-2 code according to ISO 3166-1 |
 | `country_alpha3` | Validate that a provided value is an alpha-3 code according to ISO 3166-1 |
 | `cron` | Validate that a provided value is a valid cron schedule |
+| `cuid` | Validate that a provided value is a cuid |
+| `cuid_2` | Validate that a provided value is a cuid_2 |
 | `date` | Validate that a provided value is a date object |
 | `date_day` | Validate that a provided value is a valid date string in format of 'YYYY-MM-DD' |
 | `date_iso` | Validate that a provided value is a valid ISO formatted date string in format of 'YYYY-MM-DDTHH:mm:ss.SSSZ' or 'YYYY-MM-DDTHH:mm:ssZ' |
@@ -713,6 +715,7 @@ The following list shows you all the default rules that are provided by this lib
 | `isbn` | Validates International Standard Book Numbers (ISBNs), supporting both ISBN-10 and ISBN-13 formats |
 | `isbn_10` | Validates International Standard Book Number (ISBNs) 10-character format |
 | `isbn_13` | Validates International Standard Book Number (ISBNs) 13-character format |
+| `jwt` | Checks whether or not a string is JWT-like |
 | `less_than` | Validate that a provided value is less than a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
 | `less_than_or_equal` | Validate that a provided value is less than or equal to a provided number, if passed a string or array this will validate on length, if passed a Blob or File this will validate on their size |
 | `literal` | Validate that a provided value is equal to a literal value. This rule is special in that type inferrence treats the param as literal, eg: `literal:sent` the type for this rule in the schema will be `sent` |
