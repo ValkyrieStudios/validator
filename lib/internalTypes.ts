@@ -134,6 +134,8 @@ export type ValidationRules = {
         type:string;
         params:[unknown,boolean][];
         params_length:number;
+        static_params: unknown[];
+        is_dynamic: boolean;
         not:boolean;
         /* The message to use when validating */
         msg:string;

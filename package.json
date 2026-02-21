@@ -108,6 +108,16 @@
             "import": "./esm/functions/vCountryAlpha3.js",
             "require": "./cjs/functions/vCountryAlpha3.js"
         },
+        "./functions/vCuid": {
+            "types": "./functions/vCuid.d.ts",
+            "import": "./esm/functions/vCuid.js",
+            "require": "./cjs/functions/vCuid.js"
+        },
+        "./functions/vCuid2": {
+            "types": "./functions/vCuid2.d.ts",
+            "import": "./esm/functions/vCuid2.js",
+            "require": "./cjs/functions/vCuid2.js"
+        },
         "./functions/vDateSpecs": {
             "types": "./functions/vDateSpecs.d.ts",
             "import": "./esm/functions/vDateSpecs.js",
@@ -172,6 +182,11 @@
             "types": "./functions/vISBN.d.ts",
             "import": "./esm/functions/vISBN.js",
             "require": "./cjs/functions/vISBN.js"
+        },
+        "./functions/vJWT": {
+            "types": "./functions/vJWT.d.ts",
+            "import": "./esm/functions/vJWT.js",
+            "require": "./cjs/functions/vJWT.js"
         },
         "./functions/vLessThan": {
             "types": "./functions/vLessThan.d.ts",

@@ -338,13 +338,14 @@ function validateField (
         }
 
         /* Get params */
-        const params = constructParams(rule_el, data);
+        const params = rule_el.is_dynamic ? constructParams(rule_el, data) : rule_el.static_params;
 
         /* Run rule - if check fails (not valid && not not | not && valid) push into errors */
-        /* eslint-disable-next-line */
-        /* @ts-ignore */
-        if (rulefn(cursor, ...params) === rule_el.not) {
-            errors.push({msg: rule_el.msg, params, ...idx !== undefined && {idx}});
+        /* @ts-expect-error Atomic optimization */
+        const is_valid = rulefn(cursor, ...params) !== rule_el.not;
+
+        if (!is_valid) {
+            errors.push({msg: rule_el.msg, params: params as DataVal[], ...idx !== undefined && {idx}});
         }
     }
 
@@ -487,16 +488,12 @@ function checkRule (
     if (!iterable) {
         for (let i = 0; i < list_length; i++) {
             const rule_el = list[i];
-            /* eslint-disable-next-line */
-            /* @ts-ignore */
-            if ((RULE_STORE[rule_el.type as keyof typeof RULE_STORE] || NOEXISTS)(
-                cursor,
-                /* eslint-disable-next-line */
-                /* @ts-ignore */
-                ...constructParams(rule_el, data)
-            ) === rule_el.not) return false;
-        }
+            const fn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE] || NOEXISTS;
+            const params = rule_el.is_dynamic ? constructParams(rule_el, data) : rule_el.static_params;
 
+            /* @ts-expect-error Atomic optimization */
+            if (fn(cursor, ...params) === rule_el.not) return false;
+        }
         return true;
     }
 
@@ -508,29 +505,23 @@ function checkRule (
     const {len, values} = iterable_data;
     if (len < iterable.min || len > iterable.max) return false;
 
-    /**
-     * If iterable.unique is set create map to store hashes and keep tabs
-     * on uniqueness as we run through the array
-     */
-    const unique_set    = new Set();
-    const param_acc     = [];
-    let cursor_value;
+    const unique_set = new Set();
+
+    /* Resolve dynamic params ONCE per data object. Statics use the permanent schema array */
+    const precomputed_params = new Array(list_length);
+    for (let i = 0; i < list_length; i++) {
+        const rule_el = list[i];
+        precomputed_params[i] = rule_el.is_dynamic ? constructParams(rule_el, data) : rule_el.static_params;
+    }
+
     for (let idx = 0; idx < len; idx++) {
-        cursor_value = values[idx];
+        const cursor_value = values[idx];
         for (let i = 0; i < list_length; i++) {
             const rule_el = list[i];
+            const fn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE] || NOEXISTS;
 
-            /* Get params */
-            if (!param_acc[i]) param_acc[i] = constructParams(rule_el, data);
-
-            /* eslint-disable-next-line */
-            /* @ts-ignore */
-            if ((RULE_STORE[rule_el.type as keyof typeof RULE_STORE] || NOEXISTS)(
-                cursor_value,
-                /* eslint-disable-next-line */
-                /* @ts-ignore */
-                ...param_acc[i]
-            ) === rule_el.not) return false;
+            /* @ts-expect-error Atomic optimization */
+            if (fn(cursor_value, ...precomputed_params[i]) === rule_el.not) return false;
         }
 
         /* Compute hash if uniqueness needs to be checked, if map size differs its not unique */
