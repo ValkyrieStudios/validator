@@ -132,6 +132,7 @@ export type ValidationRules = {
     list:  {
         /* Type of the rule */
         type:string;
+        fn: RuleFn | null;
         params:[unknown,boolean][];
         params_length:number;
         static_params: unknown[];

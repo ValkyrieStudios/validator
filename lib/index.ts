@@ -125,8 +125,6 @@ type CustomRuleDictionary = Record<string, RuleFn>;
 
 type RuleDictionary = typeof RULE_STORE & CustomRuleDictionary;
 
-const NOEXISTS = () => false;
-
 /* Configuration for an iterable dictionary handler */
 const iterableDictHandler = (val:unknown) => {
     if (!isObject(val)) return null;
@@ -278,8 +276,13 @@ function parseRule (raw: string): ValidationRules {
         /* Build static array once, ahead of time. If dynamic, we leave it empty to save memory */
         const static_params = is_dynamic ? [] : params.map(p => p[0]);
 
+        /* Resolve the function reference ONCE at compile time! */
+        /* @ts-expect-error Atomic binding */
+        const fn = RULE_STORE[ruleType] || null;
+
         list.push({
             type: ruleType,
+            fn,
             not,
             msg: (not ? 'not_' : '') + ruleType,
             params,
@@ -329,10 +332,9 @@ function validateField (
 
     for (let i = 0; i < rule.list_length; i++) {
         const rule_el = rule.list[i];
-        const rulefn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE];
 
         /* Check if rule exists */
-        if (!rulefn) {
+        if (!rule_el.fn) {
             errors.push({msg: 'rule_not_found', params: [rule_el.type]});
             continue;
         }
@@ -341,8 +343,7 @@ function validateField (
         const params = rule_el.is_dynamic ? constructParams(rule_el, data) : rule_el.static_params;
 
         /* Run rule - if check fails (not valid && not not | not && valid) push into errors */
-        /* @ts-expect-error Atomic optimization */
-        const is_valid = rulefn(cursor, ...params) !== rule_el.not;
+        const is_valid = rule_el.fn(cursor, ...params) !== rule_el.not;
 
         if (!is_valid) {
             errors.push({msg: rule_el.msg, params: params as DataVal[], ...idx !== undefined && {idx}});
@@ -488,11 +489,8 @@ function checkRule (
     if (!iterable) {
         for (let i = 0; i < list_length; i++) {
             const rule_el = list[i];
-            const fn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE] || NOEXISTS;
             const params = rule_el.is_dynamic ? constructParams(rule_el, data) : rule_el.static_params;
-
-            /* @ts-expect-error Atomic optimization */
-            if (fn(cursor, ...params) === rule_el.not) return false;
+            if (!rule_el.fn || rule_el.fn(cursor, ...params) === rule_el.not) return false;
         }
         return true;
     }
@@ -518,10 +516,7 @@ function checkRule (
         const cursor_value = values[idx];
         for (let i = 0; i < list_length; i++) {
             const rule_el = list[i];
-            const fn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE] || NOEXISTS;
-
-            /* @ts-expect-error Atomic optimization */
-            if (fn(cursor_value, ...precomputed_params[i]) === rule_el.not) return false;
+            if (!rule_el.fn || rule_el.fn(cursor_value, ...precomputed_params[i]) === rule_el.not) return false;
         }
 
         /* Compute hash if uniqueness needs to be checked, if map size differs its not unique */
