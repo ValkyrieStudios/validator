@@ -290,7 +290,7 @@
         }
     },
     "dependencies": {
-        "@valkyriestudios/utils": "^12.48.0"
+        "@valkyriestudios/utils": "^12.49.0"
     },
     "devDependencies": {
         "@types/node": "^24.10.4",

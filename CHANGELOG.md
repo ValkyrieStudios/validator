@@ -11,6 +11,12 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - **feat**: `cuid` validation rule and `CUID` branded type
 - **feat**: `cuid_2` validation rule and `CUID2` branded type
 
+### Improved
+- **deps**: Upgrade @valkyriestudios/utils to 12.48.0
+- **perf**: Improved performance of array validation thanks to reducing unnecessary param computation
+- **perf**: Improved performance of hot (existing validator) validate/check thanks to preconstructing non-dynamic params
+- **ci**: Add node 24 to test matrix
+
 ## [10.11.0] - 2026-01-03
 ### Improved
 - **deps**: Upgrade @types/node to 24.10.4
