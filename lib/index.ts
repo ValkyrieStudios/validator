@@ -49,6 +49,8 @@ const RULE_STORE = {
     country: VR.vCountry,
     country_alpha3: VR.vCountryAlpha3,
     cron: VR.vCron,
+    cuid: VR.vCuid,
+    cuid_2: VR.vCuid2,
     date: isDate,
     date_day: VR.vDateDay,
     date_iso: VR.vDateISO,
@@ -73,6 +75,7 @@ const RULE_STORE = {
     isbn: VR.vISBN,
     isbn_10: VR.vISBN10,
     isbn_13: VR.vISBN13,
+    jwt: VR.vJWT,
     less_than: VR.vLessThan,
     less_than_or_equal: VR.vLessThanOrEqual,
     literal: VR.vLiteral,
@@ -222,6 +225,7 @@ function parseRule (raw: string): ValidationRules {
         let ruleType: string;
         let not = false;
         let params: [unknown, boolean][] = [];
+        let is_dynamic = false;
 
         if (colonPos === -1) {
             /* If no colon is present, the entire part is the rule type. */
@@ -248,12 +252,15 @@ function parseRule (raw: string): ValidationRules {
 
                 let token = paramsPart.slice(start, pPos);
                 let extract = false;
+
                 /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
-                if (token[0] === '<' && token[token.length - 1] === '>') {
+                if (token.length > 1 && token[0] === '<' && token[token.length - 1] === '>') {
                     token = token.slice(1, -1);
                     if (!isNeString(token)) throw new TypeError('Parameterization misconfiguration');
                     extract = true;
+                    is_dynamic = true; /* Flag it as dynamic! */
                 }
+
                 params.push([token, extract]);
                 pPos++; /* Skip the comma */
             }
@@ -264,10 +271,23 @@ function parseRule (raw: string): ValidationRules {
              */
             if (ruleType === 'in' && params.length > 1) {
                 params = [[paramsPart.split(','), false]];
+                is_dynamic = false; /* Arrays for 'in' are static */
             }
         }
 
-        list.push({type: ruleType, not, msg: (not ? 'not_' : '') + ruleType, params, params_length: params.length});
+        /* Build static array once, ahead of time. If dynamic, we leave it empty to save memory */
+        const static_params = is_dynamic ? [] : params.map(p => p[0]);
+
+        list.push({
+            type: ruleType,
+            not,
+            msg: (not ? 'not_' : '') + ruleType,
+            params,
+            static_params, // Pre-computed array for the fast path
+            is_dynamic,    // Flag for the fast path
+            params_length: params.length,
+        });
+
         pos++; /* Skip the '|' character */
     }
 
@@ -300,15 +320,13 @@ function constructParams (rule_el:ValidationRules['list'][0], data:DataObject) {
  * @param {number?} idx - The index of the array element if running validateField inside of an array
  */
 function validateField (
-    cursor:DataVal,
-    rule:ValidationRules,
-    data:DataObject,
-    idx?:number
-):{
-    errors:ValidationError[];
-    is_valid:boolean;
-} {
-    const errors:ValidationError[] = [];
+    cursor: DataVal,
+    rule: ValidationRules,
+    data: DataObject,
+    idx?: number
+): {errors: ValidationError[]; is_valid: boolean} {
+    const errors: ValidationError[] = [];
+
     for (let i = 0; i < rule.list_length; i++) {
         const rule_el = rule.list[i];
         const rulefn = RULE_STORE[rule_el.type as keyof typeof RULE_STORE];

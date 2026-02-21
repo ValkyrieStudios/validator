@@ -11,6 +11,8 @@ import vColorHex                from '../lib/functions/vColorHex';
 import vContinent               from '../lib/functions/vContinent';
 import vCountry                 from '../lib/functions/vCountry';
 import vCountryAlpha3           from '../lib/functions/vCountryAlpha3';
+import vCuid                    from '../lib/functions/vCuid';
+import vCuid2                   from '../lib/functions/vCuid2';
 import vCron                    from '../lib/functions/vCron';
 import vDateString              from '../lib/functions/vDateString';
 import vEmail                   from '../lib/functions/vEmail';
@@ -21,6 +23,7 @@ import vGreaterThan             from '../lib/functions/vGreaterThan';
 import vGreaterThanOrEqual      from '../lib/functions/vGreaterThanOrEqual';
 import vGuid                    from '../lib/functions/vGuid';
 import vIn                      from '../lib/functions/vIn';
+import vJWT                     from '../lib/functions/vJWT';
 import vLessThan                from '../lib/functions/vLessThan';
 import vLessThanOrEqual         from '../lib/functions/vLessThanOrEqual';
 import vPhone                   from '../lib/functions/vPhone';
@@ -73,7 +76,7 @@ function separator () {
     console.info(''.padEnd(ROW_TEST_WIDTH + ROW_OPS_WIDTH, '-'));
 }
 
-function bench (el:{lbl:string,fn:(...args:any)=>any}, iterations) {
+function bench (el:{lbl:string,fn:(...args:any)=>any}, iterations:number) {
     let runtime = performance.now();
     for (let i = 0; i < iterations; i++) el.fn();
     runtime = performance.now() - runtime;
@@ -1364,6 +1367,33 @@ for (const el of [
     {
         lbl: 'functions/vUUID - invalid',
         fn: () => vUuid('12345678901234'),
+    },
+    //  vJWT
+    {
+        lbl: 'functions/vJWT - valid',
+        fn: () => vJWT('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'),
+    },
+    {
+        lbl: 'functions/vJWT - invalid',
+        fn: () => vJWT('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'),
+    },
+    //  vCuid
+    {
+        lbl: 'functions/vCuid - valid',
+        fn: () => vCuid('cjld2cjxh0000qzrmn831i7rn'),
+    },
+    {
+        lbl: 'functions/vCuid - invalid',
+        fn: () => vCuid('12345678901234'),
+    },
+    //  vCuid2
+    {
+        lbl: 'functions/vCuid2 - valid',
+        fn: () => vCuid2('tz4a98xxat96iws9zmbrgj3a'),
+    },
+    {
+        lbl: 'functions/vCuid2 - invalid',
+        fn: () => vCuid2('12345678901234'),
     },
 ]) bench(el, 500000);
 
