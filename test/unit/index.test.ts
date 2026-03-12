@@ -99,6 +99,7 @@ describe('Validator - Core', () => {
                 continent                   : VR.vContinent,
                 country                     : VR.vCountry,
                 country_alpha3              : VR.vCountryAlpha3,
+                credit_card                 : VR.vCreditCard,
                 cron                        : VR.vCron,
                 cuid                        : VR.vCuid,
                 cuid_2                      : VR.vCuid2,
@@ -110,6 +111,7 @@ describe('Validator - Core', () => {
                 ean_8                       : VR.vEAN8,
                 ean_13                      : VR.vEAN13,
                 email                       : VR.vEmail,
+                eq                          : equal,
                 equal_to                    : equal,
                 false                       : VR.vFalse,
                 file                        : VR.vFile,
@@ -135,6 +137,7 @@ describe('Validator - Core', () => {
                 null                        : VR.vNull,
                 number                      : isNumber,
                 object                      : isObject,
+                object_id                   : VR.vObjectId,
                 object_ne                   : isNeObject,
                 phone                       : VR.vPhone,
                 size                        : VR.vSize,
@@ -168,7 +171,6 @@ describe('Validator - Core', () => {
                 gte                         : VR.vGreaterThanOrEqual,
                 lt                          : VR.vLessThan,
                 lte                         : VR.vLessThanOrEqual,
-                eq                          : equal,
                 '?'                         : VR.vUndefined,
             });
         });

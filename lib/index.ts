@@ -9,6 +9,7 @@ import {isFn, isAsyncFn}        from '@valkyriestudios/utils/function';
 import {isNum, isInt}           from '@valkyriestudios/utils/number';
 import {isObject, isNeObject}   from '@valkyriestudios/utils/object';
 import {isString, isNeString}   from '@valkyriestudios/utils/string';
+import LRU                      from '@valkyriestudios/utils/caching/LRU';
 import {equal}                  from '@valkyriestudios/utils/equal';
 import * as VR                  from './functions/index';
 import {
@@ -48,6 +49,7 @@ const RULE_STORE = {
     continent: VR.vContinent,
     country: VR.vCountry,
     country_alpha3: VR.vCountryAlpha3,
+    credit_card: VR.vCreditCard,
     cron: VR.vCron,
     cuid: VR.vCuid,
     cuid_2: VR.vCuid2,
@@ -84,6 +86,7 @@ const RULE_STORE = {
     null: VR.vNull,
     number: isNum,
     object: isObject,
+    object_id: VR.vObjectId,
     object_ne: isNeObject,
     phone: VR.vPhone,
     size: VR.vSize,
@@ -121,6 +124,9 @@ const RULE_STORE = {
     '?': VR.vUndefined,
 } as const;
 
+/* Global validation rules cache (LRU size capped at 500 AST elements) */
+const PARSE_CACHE = new LRU<ValidationRules>({max_size: 500});
+
 type CustomRuleDictionary = Record<string, RuleFn>;
 
 type RuleDictionary = typeof RULE_STORE & CustomRuleDictionary;
@@ -147,30 +153,34 @@ const iterableArrayHandler = (val:unknown) => {
  * @param {boolean} dict - Whether or not it's a dictionary style (eg: Object)
  */
 function getIterableConfig (val:string, dict:boolean):ValidationIterable {
-    const unique = val.includes('unique');
-    const len = val.length;
-
-    // Extracting max and min values
+    const unique = val.indexOf('unique') !== -1;
     const max_ix = val.indexOf('max:');
     const min_ix = val.indexOf('min:');
-    const rslt:ValidationIterable = {
-        unique,
-        max: Number.MAX_SAFE_INTEGER,
-        min: -1,
-        handler: dict ? iterableDictHandler : iterableArrayHandler,
-    };
+
+    // We can parse early and quickly since the number usually occupies 1-3 chars after max/min
+    let max = Number.MAX_SAFE_INTEGER;
+    let min = -1;
 
     if (max_ix !== -1) {
-        const end_ix = val.indexOf('|', max_ix);
-        rslt.max = parseInt(val.slice(max_ix + 4, end_ix !== -1 ? end_ix : len), 10);
+        const start = max_ix + 4;
+        let end = val.indexOf('|', start);
+        if (end === -1) end = val.length;
+        max = parseInt(val.substring(start, end), 10);
     }
 
     if (min_ix !== -1) {
-        const end_ix = val.indexOf('|', min_ix);
-        rslt.min = parseInt(val.slice(min_ix + 4, end_ix !== -1 ? end_ix : len), 10);
+        const start = min_ix + 4;
+        let end = val.indexOf('|', start);
+        if (end === -1) end = val.length;
+        min = parseInt(val.substring(start, end), 10);
     }
 
-    return rslt;
+    return {
+        unique,
+        max,
+        min,
+        handler: dict ? iterableDictHandler : iterableArrayHandler,
+    };
 }
 
 /**
@@ -179,6 +189,8 @@ function getIterableConfig (val:string, dict:boolean):ValidationIterable {
  * @param raw - Raw validation rule
  */
 function parseRule (raw: string): ValidationRules {
+    if (PARSE_CACHE.has(raw)) return PARSE_CACHE.get(raw) as ValidationRules;
+
     let iterable: ValidationIterable | false = false;
     let pos = 0;
     const len = raw.length;
@@ -186,17 +198,10 @@ function parseRule (raw: string): ValidationRules {
     /* Check if the rule starts with an iterable config ([...] or {...}) */
     if (len > 0 && (raw[0] === '[' || raw[0] === '{')) {
         const closingChar = raw[0] === '[' ? ']' : '}';
-        let endPos = -1;
-        /* Loop to find the closing bracket/brace. */
-        for (let i = 1; i < len; i++) {
-            if (raw[i] === closingChar) {
-                endPos = i;
-                break;
-            }
-        }
+        const endPos = raw.indexOf(closingChar, 1);
         if (endPos === -1) throw new TypeError(`Iterable misconfiguration, verify rule config for ${raw}`);
 
-        iterable = getIterableConfig(raw.slice(0, endPos), raw[0] !== '[');
+        iterable = getIterableConfig(raw.substring(0, endPos), raw[0] !== '[');
         pos = endPos + 1;
     }
 
@@ -209,17 +214,17 @@ function parseRule (raw: string): ValidationRules {
     /* Process rule parts separated by '|' */
     while (pos < len) {
         /* Identify the boundaries for the current part. */
-        const partStart = pos;
-        while (pos < len && raw[pos] !== '|') pos++;
-        const part = raw.slice(partStart, pos);
+        let nextPipe = raw.indexOf('|', pos);
+        if (nextPipe === -1) nextPipe = len;
+
+        const part = raw.substring(pos, nextPipe);
+        pos = nextPipe + 1;
+
+        if (!part) continue;
 
         /* Parse the current part in the format "type[:params]" */
-        let colonPos = -1;
-        for (let i = 0; i < part.length; i++) {
-            if (part[i] !== ':') continue;
-            colonPos = i;
-            break;
-        }
+        const colonPos = part.indexOf(':');
+
         let ruleType: string;
         let not = false;
         let params: [unknown, boolean][] = [];
@@ -229,38 +234,32 @@ function parseRule (raw: string): ValidationRules {
             /* If no colon is present, the entire part is the rule type. */
             ruleType = part;
         } else {
-            ruleType = part.slice(0, colonPos);
+            ruleType = part.substring(0, colonPos);
         }
 
         /* Get 'not' flag */
-        if (ruleType[0] === '!') {
+        if (ruleType.charCodeAt(0) === 33) { // 33 is '!'
             not = true;
-            ruleType = ruleType.slice(1);
+            ruleType = ruleType.substring(1);
         }
 
         /* If there is a colon, process parameters. */
         if (colonPos !== -1) {
-            const paramsPart = part.slice(colonPos + 1);
-            let pPos = 0;
-            const pLen = paramsPart.length;
-            while (pPos < pLen) {
-                /* Read until next comma or end-of-string. */
-                const start = pPos;
-                while (pPos < pLen && paramsPart[pPos] !== ',') pPos++;
-
-                let token = paramsPart.slice(start, pPos);
+            const paramsPart = part.substring(colonPos + 1);
+            const splitParams = paramsPart.split(',');
+            for (let i = 0; i < splitParams.length; i++) {
+                let token = splitParams[i];
                 let extract = false;
 
                 /* Ensure we validate that parameterized string value is correct eg: <meta.myval> */
-                if (token.length > 1 && token[0] === '<' && token[token.length - 1] === '>') {
-                    token = token.slice(1, -1);
+                if (token.length > 1 && token.charCodeAt(0) === 60 && token.charCodeAt(token.length - 1) === 62) { // '<' and '>'
+                    token = token.substring(1, token.length - 1);
                     if (!isNeString(token)) throw new TypeError('Parameterization misconfiguration');
                     extract = true;
                     is_dynamic = true; /* Flag it as dynamic! */
                 }
 
                 params.push([token, extract]);
-                pPos++; /* Skip the comma */
             }
 
             /**
@@ -268,7 +267,7 @@ function parseRule (raw: string): ValidationRules {
              * use the raw parameters split by comma as a single parameter.
              */
             if (ruleType === 'in' && params.length > 1) {
-                params = [[paramsPart.split(','), false]];
+                params = [[splitParams, false]];
                 is_dynamic = false; /* Arrays for 'in' are static */
             }
         }
@@ -290,11 +289,17 @@ function parseRule (raw: string): ValidationRules {
             is_dynamic,    // Flag for the fast path
             params_length: params.length,
         });
-
-        pos++; /* Skip the '|' character */
     }
 
-    return {nested: false, iterable, list, list_length: list.length};
+    const rslt: ValidationRules = {
+        nested: false,
+        iterable,
+        list,
+        list_length: list.length,
+    };
+
+    PARSE_CACHE.set(raw, rslt);
+    return rslt;
 }
 
 /**
@@ -770,6 +775,9 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
         obj:NewExtensions
     /* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
     ):IValidator<MergeExtensions<{}, MappedExtensions<NewExtensions, typeof Validator['rules']>>> {
+        /* Clear the parse cache to ensure new rules take precedence */
+        PARSE_CACHE.clear();
+
         /* Check if rules are valid */
         if (!isObject(obj)) throw new Error('Invalid extension');
 
