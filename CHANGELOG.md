@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [10.13.0] - 2026-03-28
 ### Improved
 - **perf**: Improved performance of coldstart check/validation by anywhere from 10% to 120% (depending on size/complexity of schema) by applying an LRU cache (capped at 500 entries to prevent memory issues)
 - **perf**: Improved performance of warm check/validation by anywhere from 30% to 190% (e.g. complex warm checks jumped from ~564k ops/sec to ~1.45M ops/sec) by precomputing paths and ditching runtime string evaluation
