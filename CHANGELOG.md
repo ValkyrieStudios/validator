@@ -7,7 +7,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 ### Improved
-- **perf**: Improved performance of coldstart check/validation by anywhere from 10% to 80% (depending on size of schema) by applying an LRU cache (capped at 500 entries to prevent memory issues)
+- **perf**: Improved performance of coldstart check/validation by anywhere from 10% to 120% (depending on size/complexity of schema) by applying an LRU cache (capped at 500 entries to prevent memory issues)
+- **perf**: Improved performance of warm check/validation by anywhere from 30% to 190% (e.g. complex warm checks jumped from ~564k ops/sec to ~1.45M ops/sec) by precomputing paths and ditching runtime string evaluation
+- **perf**: Validator.schema now uses structuredClone instead of Json parse/stringify behind the scenes
 - **deps**: Upgrade @valkyriestudios/utils to 12.50.0
 - **deps**: Upgrade @types/node to 24.12.0
 - **deps**: Upgrade @vitest/coverage-v8 to 4.1.2

@@ -146,6 +146,7 @@ export type ValidationRules = {
 
 export type ValidationGroup = {
     key:string;
+    path:string[];
     sometimes:boolean;
     rules:(ValidationRules|ValidationNested)[];
 }

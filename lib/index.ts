@@ -3,7 +3,7 @@
 import {isArray, isNeArray}     from '@valkyriestudios/utils/array';
 import {isBoolean}              from '@valkyriestudios/utils/boolean';
 import {isDate}                 from '@valkyriestudios/utils/date';
-import {deepFreeze, deepGet}    from '@valkyriestudios/utils/deep';
+import {deepFreeze}             from '@valkyriestudios/utils/deep';
 import {isFormData, toObject}   from '@valkyriestudios/utils/formdata';
 import {isFn, isAsyncFn}        from '@valkyriestudios/utils/function';
 import {isNum, isInt}           from '@valkyriestudios/utils/number';
@@ -145,6 +145,30 @@ const iterableArrayHandler = (val:unknown) => {
 };
 
 /**
+ * Runtime path resolver for pre-compiled array paths
+ */
+function fastGet (data: any, path: string[]): any {
+    switch (path.length) {
+        case 0:
+            return data;
+        case 1:
+            return data?.[path[0]];
+        case 2:
+            return data?.[path[0]]?.[path[1]];
+        case 3:
+            return data?.[path[0]]?.[path[1]]?.[path[2]];
+        default: {
+            let cursor = data;
+            for (let i = 0, len = path.length; i < len; i++) {
+                if (cursor === null || cursor === undefined) return undefined;
+                cursor = cursor[path[i]];
+            }
+            return cursor;
+        }
+    }
+}
+
+/**
  * Parse raw string into iterable configuration
  *
  * @param {string} val - Value to determine config from, eg: 'unique|min:1|max:5'
@@ -264,7 +288,7 @@ function parseRule (raw: string): ValidationRules {
                     is_dynamic = true; /* Flag it as dynamic! */
                 }
 
-                params.push([token, extract]);
+                params.push([extract ? token.split('.') : token, extract]);
                 pPos++; /* Skip the comma */
             }
 
@@ -322,7 +346,7 @@ function constructParams (rule_el:ValidationRules['list'][0], data:DataObject) {
     const acc = new Array(params_length);
     for (let i = 0; i < params_length; i++) {
         const p = params[i];
-        acc[i] = !p[1] ? p[0] : deepGet(data, p[0] as string);
+        acc[i] = !p[1] ? p[0] : fastGet(data, p[0] as string[]);
     }
     return acc;
 }
@@ -381,10 +405,10 @@ function validatePlan (
 
     mainLoop: for (let i = 0; i < plan.length; i++) {
         const group = plan[i];
-        const {key, rules, sometimes} = group;
+        const {key, path, rules, sometimes} = group;
 
         /* Retrieve cursor that part is run against */
-        const cursor = deepGet(data, key);
+        const cursor = fastGet(data, path);
 
         /* If we cant find cursor we need to validate for the 'sometimes' flag */
         if (cursor === undefined) {
@@ -550,10 +574,10 @@ function checkRule (
  */
 function checkPlan (data:DataObject, plan:ValidationGroup[]) {
     mainloop: for (let i = 0; i < plan.length; i++) {
-        const {key, sometimes, rules} = plan[i];
+        const {path, sometimes, rules} = plan[i];
 
-        /* Retrieve cursor that part is run against */
-        const cursor = deepGet(data as DataObject, key);
+        /* 2. Retrieve cursor using fastGet */
+        const cursor = fastGet(data, path);
 
         /* If we cant find cursor we need to validate for the 'sometimes' flag */
         if (cursor === undefined) {
@@ -591,6 +615,7 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key:string):void {
         const sometimes = val[0] === '?';
         plan.push({
             key,
+            path: key ? key.split('.') : [],
             sometimes,
             rules: [parseRule(sometimes ? val.slice(1) : val)],
         });
@@ -616,7 +641,12 @@ function recursor (plan:ValidationGroup[], val:RulesRawVal, key:string):void {
             }
         }
         if (rules.length) {
-            plan.push({key, sometimes, rules});
+            plan.push({
+                key,
+                path: key ? key.split('.') : [],
+                sometimes,
+                rules,
+            });
         } else {
             throw new TypeError('Invalid rule value');
         }
@@ -700,7 +730,7 @@ class Validator <T extends GenericObject, Extensions = {}, TypedValidator = TV<T
      * @note Using this with typeof (eg: typeof myValidator.schema) returns the type of the store
      */
     get schema ():DeepMutable<T> {
-        return JSON.parse(JSON.stringify(this.#schema));
+        return structuredClone(this.#schema);
     }
 
     /**
