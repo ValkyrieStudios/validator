@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Improved
+- **perf**: Improved performance of coldstart check/validation by anywhere from 10% to 80% (depending on size of schema) by applying an LRU cache (capped at 500 entries to prevent memory issues)
+- **deps**: Upgrade @valkyriestudios/utils to 12.50.0
+- **deps**: Upgrade @types/node to 24.12.0
+- **deps**: Upgrade @vitest/coverage-v8 to 4.1.2
+- **deps**: Upgrade eslint to 9.39.4
+- **deps**: Upgrade typescript-eslint to 8.57.2
+- **deps**: Upgrade vitest to 4.1.2
+
 ## [10.12.0] - 2026-01-21
 ### Added
 - **feat**: `jwt` validation rule and `JWT` branded type
